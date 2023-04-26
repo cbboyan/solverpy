@@ -11,3 +11,6 @@ class Provider(Plugin):
    def store(self, instance, strategy, output, result):
       pass
 
+   def flush(self):
+      pass
+

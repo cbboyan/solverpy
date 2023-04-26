@@ -25,7 +25,7 @@ class PluginSolver(Solver):
    def init(self, plugins):
       for plugin in plugins:
          plugin.register(self)
-
+   
    # providers
    def query(self, instance, strategy):
       for plugin in self.providers:
@@ -37,6 +37,10 @@ class PluginSolver(Solver):
    def store(self, instance, strategy, output, result):
       for plugin in self.providers:
          plugin.store(instance, strategy, output, result)
+   
+   def flush(self):
+      for plugin in self.providers:
+         plugin.flush()
 
    # decorators
    def decorate(self, cmd):
