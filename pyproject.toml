@@ -14,7 +14,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-dependencies = []
+dependencies = [
+  "PyYAML",
+  "tqdm"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/cbboyan/solverpy"

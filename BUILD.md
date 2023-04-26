@@ -1,2 +1,9 @@
 python3 -m build
-twine upload dist/* 
+
+## to upload
+# twine upload dist/* 
+
+## to generate requirements.txt of the package
+# pipreqs 
+
+

@@ -29,7 +29,10 @@ class Status(CachedProvider):
    def cacheload(self, f):
       if not os.path.isfile(f): 
          return {}
-      solved = open(f).read().strip().split("\n")
+      solved = open(f).read().strip()
+      if not solved:
+         return {}
+      solved = solved.split("\n")
       solved = dict(x.rsplit(":",1) for x in solved)
       return {x:dict(status=y) for (x,y) in solved.items()}
 
