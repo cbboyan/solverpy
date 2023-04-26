@@ -26,6 +26,8 @@ CVC5_KEYS = [
 
 CVC5_PAT = re.compile(r"^(%s) = (.*)$" % "|".join(CVC5_KEYS), flags=re.MULTILINE)
 
+CVC5_TIMEOUT = re.compile(r"cvc5 interrupted by (timeout)")
+
 class Cvc5(SmtSolver):
    
    def __init__(self, limit, binary=CVC5_BINARY, static=CVC5_STATIC, plugins=[]):
@@ -44,5 +46,8 @@ class Cvc5(SmtSolver):
       
       result = patterns.keyval(CVC5_PAT, output)
       result = patterns.mapval(result, parseval)
+      timeouted = patterns.single(CVC5_TIMEOUT, output, None)
+      if timeouted:
+         result["status"] = timeouted
       return result
    

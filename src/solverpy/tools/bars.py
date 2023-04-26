@@ -1,8 +1,8 @@
 from tqdm import tqdm
 
-BAR_DEFAULT = "{desc}: {percentage:.3f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]{postfix}"
+BAR_DEFAULT = "{desc}: {percentage:6.3f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]{postfix}"
 
-BAR_SOLVED = "{desc}: {percentage:.3f}%|{bar}| {n_fmt}/{total_fmt} +{solved}/-{failed}/!{errors}/?{solved_eta:.0f} [{elapsed}<{remaining}]{postfix}"
+BAR_SOLVED = "{desc}: {percentage:6.3f}%|{bar}| {n_fmt}/{total_fmt} +{solved}/-{failed}/!{errors}/?{solved_eta:.0f} [{elapsed}<{remaining}]{postfix}"
 
 class SolvedBar(tqdm):
 
@@ -36,9 +36,13 @@ class SolvedBar(tqdm):
 
 #
 
-def default(total, desc):
-   return tqdm(total=total, desc=desc, bar_format=BAR_DEFAULT)
+def default(total, desc, *args, **kwargs):
+   return tqdm(total=total, desc=desc, bar_format=BAR_DEFAULT, ascii="┈─═━", colour="green", *args, **kwargs)
 
-def solved(total, desc):
-   return SolvedBar(total=total, desc=desc)
+def solved(total, desc, *args, **kwargs):
+   #return SolvedBar(total=total, desc=desc, ascii="░▒█")
+   return SolvedBar(total=total, desc=desc, ascii="┈─═━", colour="blue", *args, **kwargs)
+   #return SolvedBar(total=total, desc=desc, ascii="┈▏ ▎ ▍ ▌ ▋ ▊ ▉█", colour="blue")
+
+
 

@@ -14,5 +14,9 @@ class Tptp(Decorator):
       return cmd
 
    def update(self, instance, strategy, output, result):
-      result["status"] = patterns.single(TPTP_STATUS, output, "Error")
+      status = patterns.single(TPTP_STATUS, output, None)
+      if status:
+         result["status"] = status
+      elif "status" not in result:
+         result["status"] = "Error"
 

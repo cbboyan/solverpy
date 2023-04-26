@@ -8,7 +8,7 @@ def prove1(solver, instance, strategy):
    result = solver.solve(instance, strategy)
    return (instance, result)
 
-def eval1(solver, bid, sid, cores=4, chunksize=1, **others):
+def eval1(solver, bid, sid, cores=4, chunksize=1, desc=None, taskdone=None, **others):
    ps = bids.problems(bid)
    args = [(solver, (bid, p), sid) for p in ps]
    results = {}
@@ -23,33 +23,42 @@ def eval1(solver, bid, sid, cores=4, chunksize=1, **others):
          bar.update_solved()
       else:
          bar.update_failed()
-
-   bar = bars.solved(total=len(args), desc=sid)
+      if taskdone is not None:
+         taskdone()
+ 
+   desc = "%s @ %s" % (sid, bid) if not desc else desc
+   bar = bars.solved(total=len(args), desc=desc)
    par.apply(prove1, args, cores=cores, bar=bar, chunksize=chunksize, callback=callback)
+   solver.flush()
    return results
 
-#def evals(prover, bids, sids, cores=4, **others):
-#   allres = {}
-#   ns = len(bids) * len(sids)
-#   ps = sum([len(problem.problems(bid)) for bid in bids]) * len(sids)
-#   logger.info("+ evaluating %s strategies on %d benchmarks" % (len(sids), len(bids)))
-#   logger.debug(log.data("- evaluation parameters:", dict(
-#      bids=bids, 
-#      sids=sids,
-#      cores=cores,
-#      prover=prover.name(),
-#      resources=prover.resources(),
-#      problems=human.humanint(ps),
-#      eta=human.humantime(ps*prover.timeout()/cores) if prover.timeout() else "unknown",
-#   )))
-#   
-#   n = 1
-#   label = "(%%3d/%d)" % ns
-#   for bid in bids:
-#      for sid in sids:
-#         result1 = eval1(prover, bid, sid, cores=cores, label=label%n, **others)
-#         n += 1
-#         result1 = {(bid,sid,p):result1[p] for p in result1}
-#         allres.update(result1)
-#   return allres
+def evals(jobs, **others):
+   
+   def indent(desc, left=True):
+      nonlocal maxdesc
+      if left:
+         return (" " * (maxdesc-len(desc))) + desc
+      else:
+         return desc + (" " * (maxdesc-len(desc))) 
+
+   allres = {}
+   total = 0
+   maxdesc = 0
+   for (solver, bid, sid) in jobs:
+      total += len(bids.problems(bid))
+      desc = "%s @ %s" % (sid, bid)
+      maxdesc = max(maxdesc, len(desc))
+
+   desc = "Total: %s jobs, %s tasks" % (len(jobs), total)
+   maxdesc = max(maxdesc, len(desc))
+   totbar = bars.default(total, indent(desc, left=False))
+   
+   for (solver, bid, sid) in jobs:
+      desc = "%s @ %s" % (sid, bid)
+      result1 = eval1(solver, bid, sid, taskdone=lambda: totbar.update(1), desc=indent(desc), **others)
+      result1 = {(bid,sid,p):result1[p] for p in result1}
+      allres.update(result1)
+   totbar.close()
+   
+   return allres
 

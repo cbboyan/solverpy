@@ -14,5 +14,9 @@ class Smt(Decorator):
       return cmd
 
    def update(self, instance, strategy, output, result):
-      result["status"] = patterns.single(SMT_STATUS, output, "error")
+      status = patterns.single(SMT_STATUS, output, None)
+      if status:
+         result["status"] = status
+      elif "status" not in result:
+         result["status"] = "error"
 
