@@ -8,10 +8,12 @@ NAME = "results"
 
 class Jsons(CachedProvider):
   
-   def __init__(self, bid, sid):
-      CachedProvider.__init__(self, bid, sid)
+   def __init__(self):
+      CachedProvider.__init__(self)
 
    def cachepath(self):
+      assert(self.bid)
+      assert(self.sid)
       return os.path.join(
          bids.dbpath(NAME),
          bids.name(self.bid),

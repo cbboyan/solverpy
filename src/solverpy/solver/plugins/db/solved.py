@@ -7,13 +7,14 @@ NAME = "solved"
 
 class Solved(CachedProvider):
    
-   def __init__(self, bid, sid):
-      CachedProvider.__init__(self, bid, sid)
+   def __init__(self):
+      CachedProvider.__init__(self)
    
    def query(self, instance, strategy):
       return None
 
    def cachepath(self):
+      assert(self.bid)
       return os.path.join(
          bids.dbpath(NAME),
          bids.name(self.bid, self.solver.limits.limit),

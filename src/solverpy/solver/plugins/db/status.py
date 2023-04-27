@@ -7,8 +7,8 @@ NAME = "status"
 
 class Status(CachedProvider):
    
-   def __init__(self, bid, sid):
-      CachedProvider.__init__(self, bid, sid)
+   def __init__(self):
+      CachedProvider.__init__(self)
    
    def query(self, instance, strategy):
       return None

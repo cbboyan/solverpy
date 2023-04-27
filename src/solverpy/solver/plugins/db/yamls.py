@@ -8,8 +8,8 @@ NAME = "results"
 
 class Yamls(CachedProvider):
   
-   def __init__(self, bid, sid):
-      CachedProvider.__init__(self, bid, sid)
+   def __init__(self):
+      CachedProvider.__init__(self)
 
    def cachepath(self):
       return os.path.join(

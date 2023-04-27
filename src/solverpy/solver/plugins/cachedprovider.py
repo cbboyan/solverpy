@@ -5,17 +5,16 @@ from .provider import Provider
 
 class CachedProvider(Provider):
 
-   def __init__(self, bid, sid):
-      self.bid = bid
-      self.sid = sid
+   def __init__(self):
+      self.bid = None
+      self.sid = None
       man = Manager()
-      self.cache = None
+      self.cache = None # thread-local copy / not synced 
       self.results = man.list() # shared list 
 
    def register(self, solver):
       solver.providers.append(self)
       self.solver = solver
-      self.cache = self.load() # thread-local copy / not synced
 
    def reset(self, bid, sid):
       self.flush()
@@ -41,7 +40,7 @@ class CachedProvider(Provider):
       return (self.bid == bid) and (self.sid == sid)
 
    def flush(self):
-      if self.cache is None:
+      if (self.cache is None) or (self.bid is None) or (self.sid is None):
          return
       self.cache.update(dict(self.results))
       while self.results:

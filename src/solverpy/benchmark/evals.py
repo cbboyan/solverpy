@@ -28,11 +28,16 @@ def eval1(solver, bid, sid, cores=4, chunksize=1, desc=None, taskdone=None, **ot
  
    desc = "%s @ %s" % (sid, bid) if not desc else desc
    bar = bars.solved(total=len(args), desc=desc)
+   solver.reset(bid, sid)
    par.apply(prove1, args, cores=cores, bar=bar, chunksize=chunksize, callback=callback)
    solver.flush()
    return results
 
-def evals(jobs, **others):
+def evals(solver=None, bidlist=None, sidlist=None, jobs=None, **others):
+   assert(jobs or (solver and bidlist and sidlist))
+
+   if not jobs:
+      jobs = [(solver,bid,sid) for bid in bidlist for sid in sidlist]
    
    def indent(desc, left=True):
       nonlocal maxdesc

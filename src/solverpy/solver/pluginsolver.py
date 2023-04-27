@@ -42,6 +42,10 @@ class PluginSolver(Solver):
       for plugin in self.providers:
          plugin.flush()
 
+   def reset(self, bid, sid):
+      for plugin in self.providers:
+         plugin.reset(bid, sid)
+
    # decorators
    def decorate(self, cmd):
       for plugin in self.decorators:

@@ -14,3 +14,6 @@ class Provider(Plugin):
    def flush(self):
       pass
 
+   def reset(self, bid, sid):
+      pass
+

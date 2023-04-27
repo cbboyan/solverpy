@@ -20,7 +20,7 @@ class ShellSolver(TimedSolver):
             stderr=subprocess.STDOUT)
       except subprocess.CalledProcessError as e:
          output = e.output
-      return f"### COMMAND: {cmd}\n" + output.decode()
+      return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def command(self, instance, strategy):
       (instance, strategy) = self.translate(instance, strategy)
