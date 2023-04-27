@@ -2,7 +2,7 @@ import os
 import json
 
 from ..cachedprovider import CachedProvider
-from ....path import bids
+from ....benchmark.path import bids
 
 NAME = "results"
 

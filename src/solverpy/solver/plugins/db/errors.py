@@ -1,7 +1,7 @@
 import os
 
 from ..provider import Provider
-from ....path import bids
+from ....benchmark.path import bids
 
 NAME = "errors"
 

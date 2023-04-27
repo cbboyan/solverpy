@@ -1,6 +1,6 @@
 import os
 
-from ..path import bids, sids
+from ..benchmark.path import bids, sids
 from ..tools import par, bars
 
 

@@ -1,5 +1,5 @@
 from ..translator import Translator
-from ....path import bids
+from ....benchmark.path import bids
 
 class Bid(Translator):
    "Benchmark ids translator."

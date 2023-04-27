@@ -1,5 +1,5 @@
 from ..translator import Translator
-from ....path import sids
+from ....benchmark.path import sids
 
 class Sid(Translator):
    "Strategy ids translator."
