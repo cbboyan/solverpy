@@ -17,6 +17,7 @@ CVC5_KEYS = [
    "resource::resourceUnitsUsed",
    "resource::steps::resource",
    "Instantiate::[^ ]*",
+   "QuantifiersEngine::[^ ]*",
    "SharedTermsDatabase::termsCount",
    "sat::conflicts",
    "sat::decisions",
@@ -24,15 +25,14 @@ CVC5_KEYS = [
    "sat::propagations",
 ]
 
-CVC5_PAT = re.compile(r"^(%s) = (.*)$" % "|".join(CVC5_KEYS), flags=re.MULTILINE)
-
 CVC5_TIMEOUT = re.compile(r"cvc5 interrupted by (timeout)")
 
 class Cvc5(SmtSolver):
    
-   def __init__(self, limit, binary=CVC5_BINARY, static=CVC5_STATIC, plugins=[]):
+   def __init__(self, limit, binary=CVC5_BINARY, static=CVC5_STATIC, plugins=[], keys=CVC5_KEYS):
       cmd = f"{binary} {static}"
       SmtSolver.__init__(self, cmd, limit, CVC5_BUILDER, plugins, wait=1)
+      self.pattern = re.compile(r"^(%s) = (.*)$" % "|".join(keys), flags=re.MULTILINE)
    
    def process(self, output):
       
@@ -44,7 +44,7 @@ class Cvc5(SmtSolver):
             return {x.strip():human.numeric(y.strip()) for (x,y) in val}
          return human.numeric(val)
       
-      result = patterns.keyval(CVC5_PAT, output)
+      result = patterns.keyval(self.pattern, output)
       result = patterns.mapval(result, parseval)
       timeouted = patterns.single(CVC5_TIMEOUT, output, None)
       if timeouted:
