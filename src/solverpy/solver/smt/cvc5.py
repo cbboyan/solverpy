@@ -4,8 +4,10 @@ from ...tools import patterns, human
 
 CVC5_BINARY = "cvc5"
 
-CVC5_STATIC = "--produce-proofs --dump-instantiations --print-inst-full " +\
-              "--stats --stats-internal --track-relevant-literals"
+#CVC5_STATIC = "--produce-proofs --dump-instantiations --print-inst-full " +\
+#              "--stats --stats-internal --track-relevant-literals"
+
+CVC5_STATIC = "--stats --stats-internal"
 
 CVC5_BUILDER = {
    "T": lambda x: "--tlimit=%s" % (1000*int(x)),
@@ -48,6 +50,6 @@ class Cvc5(SmtSolver):
       result = patterns.mapval(result, parseval)
       timeouted = patterns.single(CVC5_TIMEOUT, output, None)
       if timeouted:
-         result["status"] = timeouted
+         result["status"] = timeouted # timeouted == "timeout"
       return result
    
