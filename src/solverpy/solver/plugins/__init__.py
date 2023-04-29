@@ -22,7 +22,7 @@ def dbdebug():
       Bid(),
       Sid(),
       Jsons(),
-      Yamls(),
+      #Yamls(),
       Solved(),
       Outputs(),
       Errors(),
