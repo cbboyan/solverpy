@@ -2,10 +2,12 @@ import subprocess
 from .timedsolver import TimedSolver
 from .plugins.shell.limits import Limits
 from .plugins.shell.timeout import Timeout
+from ..benchmark.path import sids
 
 class ShellSolver(TimedSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True):
+      self.unspace = unspace
       self.limits = Limits(limit, builder)
       new = [ self.limits ]
       if wait is not None:
@@ -14,6 +16,8 @@ class ShellSolver(TimedSolver):
       self.cmd = self.decorate(cmd)
 
    def run(self, instance, strategy):
+      if self.unspace:
+         strategy = sids.unspace(strategy)
       cmd = self.command(instance, strategy)
       try:
          output = subprocess.check_output(cmd, shell=True, 
