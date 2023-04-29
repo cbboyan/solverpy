@@ -16,9 +16,9 @@ class ShellSolver(TimedSolver):
       self.cmd = self.decorate(cmd)
 
    def run(self, instance, strategy):
-      if self.unspace:
-         strategy = sids.unspace(strategy)
       cmd = self.command(instance, strategy)
+      if self.unspace:
+         cmd= sids.unspace(cmd)
       try:
          output = subprocess.check_output(cmd, shell=True, 
             stderr=subprocess.STDOUT)
