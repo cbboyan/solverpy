@@ -11,8 +11,11 @@ TPTP_OK = frozenset([
 ])
 
 TPTP_FAILED = frozenset([
-   'ResourceOut', 
    'GaveUp',
+])
+
+TPTP_TIMEOUT = frozenset([
+   'ResourceOut', 
    'Timeout',
    "TIMEOUT", # simulated timeout
 ])
@@ -22,31 +25,25 @@ TPTP_INCOMPLETE = frozenset([
    'CounterSatisfiable', 
 ])
 
-TPTP_ALL = TPTP_OK | TPTP_FAILED
+TPTP_ALL = TPTP_OK | TPTP_FAILED | TPTP_TIMEOUT
 
 INC_OK = TPTP_OK - TPTP_INCOMPLETE
 
-INC_FAILED = TPTP_FAILED | TPTP_INCOMPLETE
-
-
 class TptpSolver(ShellSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, complete=True):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, complete=True, name=None):
       plugins = plugins + [ Time(), Tptp() ] 
-      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait)
-      if complete:
-         self._ok = TPTP_OK
-         self._failed = TPTP_FAILED
-      else:
-         self._ok = INC_OK
-         self._failed = INC_FAILED
+      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait, name=name)
+      self.complete = complete
 
    def valid(self, result):
       return super().valid(result) and result["status"] in TPTP_ALL
 
-   def solved(self, result):
-      return "status" in result and result["status"] in self._ok
+   @property
+   def success(self):
+      return TPTP_OK if self.complete else INC_OK
 
-   def permanent(self, result):
-      return result["status"] in TPTP_OK
+   @property
+   def timeout(self):
+      return TPTP_TIMEOUT
 

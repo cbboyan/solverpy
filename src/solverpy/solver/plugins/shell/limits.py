@@ -14,15 +14,18 @@ class Limits(Decorator):
          raise Exception(f"solverpy: Invalid limit string: {limit}")
       self.args = " ".join(lims)
       self.limit = limit
-   
+
+   def __str__(self):
+      return self.limit
+
    def register(self, solver):
       super().register(solver)
-      self.solver = solver
+      self._timeouts = solver.timeout
    
    def decorate(self, cmd):
       return f"{cmd} {self.args}" if self.args else cmd
-
+   
    def update(self, instance, strategy, output, result):
-      if not self.solver.permanent(result):
+      if result["status"] in self._timeouts:
          result["timeout"] = self.timeout
 

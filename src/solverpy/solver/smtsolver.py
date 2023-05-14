@@ -9,24 +9,29 @@ SMT_OK = frozenset([
 
 SMT_FAILED = frozenset([
    'unknown', 
+])
+
+SMT_TIMEOUT = frozenset([
    'timeout',
    'TIMEOUT', # simulated timeout
 ])
 
-SMT_ALL = SMT_OK | SMT_FAILED
+SMT_ALL = SMT_OK | SMT_FAILED | SMT_TIMEOUT
 
 class SmtSolver(ShellSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, name=None):
       plugins = plugins + [ Time(), Smt() ] 
-      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait)
+      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait, name=name)
 
    def valid(self, result):
       return super().valid(result) and result["status"] in SMT_ALL
 
-   def solved(self, result):
-      return ("status" in result) and (result["status"] in SMT_OK)
-
-   def permanent(self, result):
-      return result["status"] in SMT_OK
+   @property
+   def success(self):
+      return SMT_OK
+   
+   @property
+   def timeout(self):
+      return SMT_TIMEOUT
 

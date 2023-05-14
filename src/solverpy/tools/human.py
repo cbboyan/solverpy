@@ -1,8 +1,19 @@
+def indent(string, size, left=True):
+   if left:
+      return (" " * (size-len(string))) + string
+   else:
+      return string + (" " * (size-len(string))) 
+
+def lindent(string, size):
+   return indent(string, size, left=True)
+
+def rindent(string, size):
+   return indent(string, size, left=False)
 
 def numeric(strval):
    if strval.isdigit():
       return int(strval)
-   if strval.count(".") == 1 and strval[-1] != ".":
+   elif strval.replace('.','',1).isdigit():
       return float(strval)
    return strval
 

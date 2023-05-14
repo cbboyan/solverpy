@@ -18,5 +18,5 @@ class Tptp(Decorator):
       if status:
          result["status"] = status
       elif "status" not in result:
-         result["status"] = "Error"
+         result["status"] = "ERROR"
 

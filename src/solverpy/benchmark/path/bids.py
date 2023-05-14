@@ -21,15 +21,18 @@ def path(bid, problem=None):
 def name(bid, limit=None):
    bid = bid.replace("/", "-")
    if limit:
-      bid = f"{bid}-{limit}"
+      bid = f"{bid}--{limit}"
    return bid
 
-def problems(bid):
+def problems(bid, cache={}):
+   if bid in cache:
+      return cache[bid]
    p_bid = bidpath(bid)
    if os.path.isfile(p_bid):
       probs = open(p_bid).read().strip().split("\n")
    else: # now os.path.isdir(p_bid) holds
       probs = [x for x in os.listdir(p_bid) \
          if os.path.isfile(os.path.join(p_bid,x))]
+   cache[bid] = probs
    return probs
 

@@ -9,5 +9,8 @@ class Decorator(Plugin):
       return cmd
 
    def update(self, instance, strategy, output, result):
-      pass
+      return 
+
+   def finished(self, instance, strategy, output, result):
+      return
 

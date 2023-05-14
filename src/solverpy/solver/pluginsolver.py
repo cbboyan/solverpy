@@ -1,51 +1,33 @@
+import logging
 from .solver import Solver
+
+logger = logging.getLogger(__name__)
   
 class PluginSolver(Solver):
 
-   def __init__(self, plugins=[]):
-      self.providers = []
+   def __init__(self, plugins=[], name=None):
+      Solver.__init__(self, name=name)
       self.decorators = []
       self.translators = []
       self.init(plugins)
 
    def solve(self, instance, strategy):
-      result = self.query(instance, strategy)
-      if not result: 
-         (output, result) = super().solve(instance, strategy)
-         self.update(instance, strategy, output, result)
-         self.store(instance, strategy, output, result)
-      else:
-         self.store(instance, strategy, None, result)
+      (output, result) = super().solve(instance, strategy)
+      self.update(instance, strategy, output, result)
+      if not self.valid(result):
+         lines = output.split("\n")
+         if len(lines) > 3:
+            msg = f"{lines[2]}\n{lines[3]}" # command and first output line
+         else:
+            msg = output
+         logger.debug(f"failed solver run: {self}:{strategy} @ {instance}\n{msg}")
       return result
-   
-   def applicable(self, result):
-      return self.solved(result)
    
    # plugins initization
    def init(self, plugins):
       for plugin in plugins:
          plugin.register(self)
    
-   # providers
-   def query(self, instance, strategy):
-      for plugin in self.providers:
-         result = plugin.query(instance, strategy)
-         if result and self.applicable(result):
-            return result
-      return None
-
-   def store(self, instance, strategy, output, result):
-      for plugin in self.providers:
-         plugin.store(instance, strategy, output, result)
-   
-   def flush(self):
-      for plugin in self.providers:
-         plugin.flush()
-
-   def reset(self, bid, sid):
-      for plugin in self.providers:
-         plugin.reset(bid, sid)
-
    # decorators
    def decorate(self, cmd):
       for plugin in self.decorators:
@@ -55,6 +37,8 @@ class PluginSolver(Solver):
    def update(self, instance, strategy, output, result):
       for plugin in self.decorators:
          plugin.update(instance, strategy, output, result)
+      for plugin in self.decorators:
+         plugin.finished(instance, strategy, output, result)
 
    # translators
    def translate(self, instance, strategy):

@@ -16,6 +16,7 @@ CVC5_BUILDER = {
 
 CVC5_KEYS = [
    "driver::totalTime",
+   "global::totalTime",
    "resource::resourceUnitsUsed",
    "resource::steps::resource",
    "Instantiate::[^ ]*",
