@@ -1,22 +1,18 @@
 import subprocess
-from .pluginsolver import PluginSolver
+from .timedsolver import TimedSolver
 from .plugins.shell.limits import Limits
 from .plugins.shell.timeout import Timeout
 from ..benchmark.path import sids
 
-class ShellSolver(PluginSolver):
+class ShellSolver(TimedSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True, name=None):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True):
       self.unspace = unspace
-      self.limits = Limits(limit, builder)
-      new = [ self.limits ]
+      limits = Limits(limit, builder)
       if wait is not None:
-         new.append(Timeout(self.limits.timeout + wait))
-      PluginSolver.__init__(self, plugins=plugins+new, name=name)
+         plugins = plugins + [Timeout(limits.timeout+wait)]
+      TimedSolver.__init__(self, limits, plugins=plugins)
       self.cmd = self.decorate(cmd)
-
-   def __str__(self):
-      return super().__str__() + ":" + str(self.limits)
 
    def run(self, instance, strategy):
       cmd = self.command(instance, strategy)
@@ -32,6 +28,3 @@ class ShellSolver(PluginSolver):
       (instance, strategy) = self.translate(instance, strategy)
       return f"{self.cmd} {strategy} {instance}"
 
-   def process(self, output):
-      raise NotImlementedError()
-   

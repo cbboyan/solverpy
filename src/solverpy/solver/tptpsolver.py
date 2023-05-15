@@ -31,9 +31,9 @@ INC_OK = TPTP_OK - TPTP_INCOMPLETE
 
 class TptpSolver(ShellSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, complete=True, name=None):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, complete=True):
       plugins = plugins + [ Time(), Tptp() ] 
-      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait, name=name)
+      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait)
       self.complete = complete
 
    def valid(self, result):

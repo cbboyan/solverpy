@@ -20,9 +20,9 @@ SMT_ALL = SMT_OK | SMT_FAILED | SMT_TIMEOUT
 
 class SmtSolver(ShellSolver):
 
-   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, name=None):
+   def __init__(self, cmd, limit, builder={}, plugins=[], wait=None):
       plugins = plugins + [ Time(), Smt() ] 
-      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait, name=name)
+      ShellSolver.__init__(self, cmd, limit, builder, plugins, wait)
 
    def valid(self, result):
       return super().valid(result) and result["status"] in SMT_ALL

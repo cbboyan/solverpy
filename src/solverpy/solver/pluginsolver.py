@@ -5,8 +5,7 @@ logger = logging.getLogger(__name__)
   
 class PluginSolver(Solver):
 
-   def __init__(self, plugins=[], name=None):
-      Solver.__init__(self, name=name)
+   def __init__(self, plugins=[]):
       self.decorators = []
       self.translators = []
       self.init(plugins)
