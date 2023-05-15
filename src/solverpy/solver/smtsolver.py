@@ -32,6 +32,6 @@ class SmtSolver(ShellSolver):
       return SMT_OK
    
    @property
-   def timeout(self):
+   def timeouts(self):
       return SMT_TIMEOUT
 

@@ -16,7 +16,7 @@ class Jsons(Provider):
       self.load()
 
    def simulate(self, task, result):
-      timeout = task.solver.limits.timeout
+      timeout = task.solver.timelimit
       if "timeout" in result:
          # the cached result is timeout
          if result["timeout"] < timeout:

@@ -3,16 +3,13 @@ from .pluginsolver import PluginSolver
 
 class TimedSolver(PluginSolver):
 
-   def __init__(self, limits, plugins=[]):
-      self.limits = limits
-      PluginSolver.__init__(self, plugins=plugins+[limits])
+   def __init__(self, timelimit, limitname=None, plugins=[]):
+      self.timelimit = timelimit
+      self.limitname = limitname if limitname else f"T{timelimit}"
+      PluginSolver.__init__(self, plugins=plugins)
 
    @property
-   def name(self):
-      return super().name + ":" + str(self.limits)
-
-   @property
-   def timeout(self):
+   def timeouts(self):
       "The set of timeout statuses."
       raise NotImlementedError()
    

@@ -9,10 +9,15 @@ class ShellSolver(TimedSolver):
    def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True):
       self.unspace = unspace
       limits = Limits(limit, builder)
+      new = [limits]
       if wait is not None:
-         plugins = plugins + [Timeout(limits.timeout+wait)]
-      TimedSolver.__init__(self, limits, plugins=plugins)
+         new.append(Timeout(limits.timeout+wait))
+      TimedSolver.__init__(self, limits.timeout, plugins=plugins+new)
       self.cmd = self.decorate(cmd)
+
+   @property
+   def name(self):
+      return super().name + ":" + self.limitname
 
    def run(self, instance, strategy):
       cmd = self.command(instance, strategy)

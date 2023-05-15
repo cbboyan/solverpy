@@ -20,7 +20,7 @@ class Limits(Decorator):
 
    def register(self, solver):
       super().register(solver)
-      self._timeouts = solver.timeout
+      self._timeouts = solver.timeouts
    
    def decorate(self, cmd):
       return f"{cmd} {self.args}" if self.args else cmd

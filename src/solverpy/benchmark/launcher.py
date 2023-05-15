@@ -85,7 +85,7 @@ def summary(solver, bid, sid, results):
    for (problem,res) in results.items():
       if solver.solved(res): solved += 1
       elif not solver.valid(res): errors += 1
-      elif res["status"] in solver.timeout: timeouts += 1
+      elif res["status"] in solver.timeouts: timeouts += 1
       else: unsolved += 1
       
    #errors = [p for (p,r) in results.items() if solver.

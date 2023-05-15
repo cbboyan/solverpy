@@ -16,7 +16,7 @@ class Outputs(Decorator):
    
    def path(self, instance, strategy):
       (bid, problem) = instance
-      bs = bids.name(bid, limit=self.solver.limits)
+      bs = bids.name(bid, limit=self.solver.limitname)
       p = os.path.join(self._path, bs, strategy, problem)
       return p
 

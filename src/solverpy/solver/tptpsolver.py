@@ -44,6 +44,6 @@ class TptpSolver(ShellSolver):
       return TPTP_OK if self.complete else INC_OK
 
    @property
-   def timeout(self):
+   def timeouts(self):
       return TPTP_TIMEOUT
 
