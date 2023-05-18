@@ -8,10 +8,10 @@ class DB:
       self._providers = providers
       self.loaded = {}
 
-   def connect(self, bid, sid):
+   def connect(self, bid, sid, limit):
       if (bid,sid) not in self.loaded:
          logger.debug(f"connecting providers for {sid} @ {bid}")
-         insts = [maker(bid,sid) for maker in self._providers]
+         insts = [maker(bid,sid,limit) for maker in self._providers]
          self.loaded[(bid,sid)] = insts
          logger.debug(f"connected to {len(insts)} providers")
 
@@ -23,16 +23,18 @@ class DB:
          provider.commit()
 
    def querytask(self, task):
-      self.connect(task.bid, task.sid)
+      self.connect(task.bid, task.sid, task.solver.limit)
       for provider in self.providers(task):
+         provider.check(task)
          result = provider.query(task)
          if result:
             return result
       return None
 
    def storetask(self, task, result):
-      self.connect(task.bid, task.sid)
+      self.connect(task.bid, task.sid, task.solver.limit)
       for provider in self.providers(task):
+         provider.check(task)
          provider.store(task, result)
 
    def query(self, tasks):
