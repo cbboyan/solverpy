@@ -6,12 +6,16 @@ from ..tools import human
 from ..task.solvertask import SolverTask
 from ..task.bar import SolvingBar, RunningBar
 from ..task import launcher 
+from .report import markdown
 
 logger = logging.getLogger(__name__)
 
+def jobname(solver, bid, sid):
+   return f"{solver}:{sid} @ {bid}"
+
 def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
-   desc = desc if desc else f"{solver}:{sid} @ {bid}"
-   logger.debug(f"evaluating {desc}: {solver}:{sid} @ {bid}")
+   desc = desc if desc else jobname(solver, bid, sid)
+   logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
    # prepare the tasks to be evaluated
    ps = bids.problems(bid)
    tasks = [SolverTask(solver,bid,sid,p) for p in ps]
@@ -43,64 +47,62 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
       results = done
    return results
 
-def legend(jobs):
-   width = len(str(len(jobs)-1))
-   legs = [(f"{s}:{sid} @ {bid}", f"[{n:{width}}/{len(jobs)-1}]") for (n,(s,bid,sid)) in enumerate(jobs)]
-   desc = "*" * width
-   desc = f"[{desc}/{len(jobs)-1}]"
-   txt = "\n".join(f"> {short} {long}" for (long,short) in legs)
-   return (legs, desc, txt)
-
-def launch(solver, bidlist, sidlist, **others):
+def launch(solver, bidlist, sidlist, ref=None, **others):
    # initialize jobs and compute label width
    logger.debug("evaluation started")
+   if ref is True:
+      ref = (solver, bidlist[0], sidlist[0])
    jobs = [(solver,bid,sid) for bid in bidlist for sid in sidlist]
-   allres = {}
-   nicks = {}
    total = sum(len(bids.problems(bid)) for (s,bid,sid) in jobs)
-   (legs, desc, txt) = legend(jobs)
-   logger.info(f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{txt}")
-   totbar = RunningBar(total, desc)
+   (nicks, totaldesc, report) = legend(jobs, ref)
+   logger.info(f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
+   totbar = RunningBar(total, totaldesc)
    # run the jobs one by one
+   allres = {}
    try:
-      for ((solver,bid,sid),(_,desc)) in zip(jobs,legs):
-         result1 = run(solver, bid, sid, taskdone=totbar.status, desc=desc, **others)
-         allres[(solver,bid,sid)] = result1 # (bid,sid) should be a primary key
-         nicks[(solver,bid,sid)] = desc
+      for job in jobs:
+         result1 = run(*job, taskdone=totbar.status, desc=nicks[job], **others)
+         allres[job] = result1 # (bid,sid) should be a primary key
       totbar.close()
       if totbar._errors:
          logger.error(f"There were errors: {totbar._errors} tasks failed to evaluate.")
    except KeyboardInterrupt as e:
       totbar.close()
       raise e
-   logger.info("Evaluation done.")
-   report(allres, nicks)
+   
+   report = summary(allres, nicks, ref)
+   logger.info(f"Evaluation done:\n{report}")
    return allres
 
-def summary(solver, bid, sid, results):
-   solved = 0
-   errors = 0
-   unsolved = 0
-   timeouts = 0
-   for (problem,res) in results.items():
-      if solver.solved(res): solved += 1
-      elif not solver.valid(res): errors += 1
-      elif res["status"] in solver.timeouts: timeouts += 1
-      else: unsolved += 1
-      
-   #errors = [p for (p,r) in results.items() if solver.
-   return (solved, unsolved, timeouts, errors)
 
-def report(allres, nicks):
-   sums = []
-   width = 0
-   for ((solver,bid,sid),res) in allres.items():
-      s = summary(solver, bid, sid, res)
-      sums.append(s+(nicks[(solver,bid,sid)],))
-      width = max(width, max(s))
-   width = len(str(width))
-   sums.sort(reverse=True)
-   for (solved, unsolved, timeouts, errors, nick) in sums:
-      print(f"> | {nick:{width}} | {solved:{width}} | {unsolved:{width}} | {timeouts:{width}} | {errors:{width}} |")
-   
+
+def legend(jobs, ref=None):
+   width = len(str(len(jobs)-1))
+   total = "*" * width
+   total = f"[{total}/{len(jobs)-1}]"
+   nicks = {}
+   header = ["job", "solver", "benchmark", "strategy"]
+   rows = []
+   for (n,job) in enumerate(jobs):
+      (solver, bid, sid) = job
+      if ref == job:
+         nick = "ref"
+      else:
+         nick = f"{n:{width}}/{len(jobs)-1}"
+      nicks[job] = nick
+      rows.append([nick, solver.name, bid, sid])
+
+   report = [""]
+   report += markdown.heading("Legend", level=3)
+   report += markdown.table(header, rows)
+   report += [""]
+   report = markdown.dump(report, prefix="> ")
+   return (nicks, total, report)
+
+def summary(allres, nicks, ref=None):
+   report  = [""]
+   report += markdown.heading("Summary", level=3)
+   report += markdown.summary(allres, nicks, ref=ref)
+   report += [""]
+   return markdown.dump(report, prefix="> ")
 
