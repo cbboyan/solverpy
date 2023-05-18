@@ -1,8 +1,8 @@
 import os, json
 import logging
 
-from .cachedprovider import CachedProvider
-from ..path import bids
+from ..cachedprovider import CachedProvider
+from ...path import bids
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ NAME = "results"
 class Jsons(CachedProvider):
 
    def __init__(self, bid, sid, limit=None):
-         CachedProvider.__init__(self, bid, sid, limit)
+      CachedProvider.__init__(self, bid, sid, limit)
 
    def query(self, task):
       if task.problem in self.cache:

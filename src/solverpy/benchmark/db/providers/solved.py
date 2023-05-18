@@ -1,8 +1,8 @@
 import os
 import logging
 
-from .cachedprovider import CachedProvider
-from ..path import bids
+from ..cachedprovider import CachedProvider
+from ...path import bids
 
 logger = logging.getLogger(__name__)
 
