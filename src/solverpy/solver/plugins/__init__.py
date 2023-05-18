@@ -3,13 +3,13 @@ from .db.sid import Sid
 from .db.outputs import Outputs
 from .db.errors import Errors
 
-def dbfiles():
+def db():
    return [
       Bid(),
       Sid(),
    ]
 
-def dbdebug():
+def outputs():
    return [
       Bid(),
       Sid(),
@@ -17,5 +17,5 @@ def dbdebug():
       Errors(),
    ]
 
-__all__ = [dbfiles, dbdebug]
+__all__ = [db, outputs]
 
