@@ -18,14 +18,6 @@ class Limits(Decorator):
    def __str__(self):
       return self.limit
 
-   def register(self, solver):
-      super().register(solver)
-      self._timeouts = solver.timeouts
-   
    def decorate(self, cmd):
       return f"{cmd} {self.args}" if self.args else cmd
    
-   def update(self, instance, strategy, output, result):
-      if result["status"] in self._timeouts:
-         result["timeout"] = self.timeout
-

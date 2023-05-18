@@ -23,3 +23,11 @@ class SolverTask(Task):
          return None
       return self.solver.solved(result)
 
+   @property
+   def instance(self):
+      return (self.bid, self.problem)
+
+   @property
+   def strategy(self):
+      return self.sid
+

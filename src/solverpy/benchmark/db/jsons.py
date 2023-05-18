@@ -16,7 +16,7 @@ class Jsons(Provider):
       self.load()
 
    def simulate(self, task, result):
-      timeout = task.solver.timelimit
+      timeout = task.solver.timeout
       if "timeout" in result:
          # the cached result is timeout
          if result["timeout"] < timeout:
@@ -33,7 +33,7 @@ class Jsons(Provider):
       self.check(task)
       if task.problem in self.cache:
          result = self.cache[task.problem] 
-         return self.simulate(task, result)
+         return task.solver.simulate(result)
       return None
 
    def store(self, task, result):

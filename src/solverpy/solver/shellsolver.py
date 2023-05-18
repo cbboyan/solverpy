@@ -12,12 +12,12 @@ class ShellSolver(TimedSolver):
       new = [limits]
       if wait is not None:
          new.append(Timeout(limits.timeout+wait))
-      TimedSolver.__init__(self, limits.timeout, plugins=plugins+new)
+      TimedSolver.__init__(self, limits.timeout, limit=limit, plugins=plugins+new)
       self.cmd = self.decorate(cmd)
 
    @property
    def name(self):
-      return super().name + ":" + self.limitname
+      return super().name + ":" + self.limit
 
    def run(self, instance, strategy):
       cmd = self.command(instance, strategy)
