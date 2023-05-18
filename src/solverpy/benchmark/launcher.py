@@ -79,9 +79,9 @@ def launch(solver, bidlist, sidlist, ref=None, **others):
 def legend(jobs, ref=None):
    width = len(str(len(jobs)-1))
    total = "*" * width
-   total = f"[{total}/{len(jobs)-1}]"
+   total = f"{total}/{len(jobs)-1}"
    nicks = {}
-   header = ["job", "solver", "benchmark", "strategy"]
+   header = ["job", "solver", "benchmark", "strategy", "problems"]
    rows = []
    for (n,job) in enumerate(jobs):
       (solver, bid, sid) = job
@@ -90,7 +90,7 @@ def legend(jobs, ref=None):
       else:
          nick = f"{n:{width}}/{len(jobs)-1}"
       nicks[job] = nick
-      rows.append([nick, solver.name, bid, sid])
+      rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
 
    report = [""]
    report += markdown.heading("Legend", level=3)
