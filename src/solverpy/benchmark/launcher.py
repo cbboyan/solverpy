@@ -2,13 +2,16 @@ import os
 import logging
 
 from ..benchmark.path import bids
-from ..tools import human
+from ..tools import human, log
 from ..task.solvertask import SolverTask
 from ..task.bar import SolvingBar, RunningBar
 from ..task import launcher 
 from .report import markdown
 
 logger = logging.getLogger(__name__)
+
+def init():
+   log.init()
 
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"
