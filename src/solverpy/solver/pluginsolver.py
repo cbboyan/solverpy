@@ -10,6 +10,11 @@ class PluginSolver(Solver):
       self.translators = []
       self.init(plugins)
 
+   def __repr__(self):
+      deco = ",".join(repr(p) for p in self.decorators)
+      tran = ",".join(repr(p) for p in self.translators)
+      return f"{self.name}[{deco};{tran}]"
+
    def solve(self, instance, strategy):
       (output, result) = super().solve(instance, strategy)
       self.update(instance, strategy, output, result)

@@ -67,11 +67,11 @@ def statuses(results, nicks):
    some = list(results.keys())[0][0]
    def rank(status):
       if status in some.success: 
-         return 0
+         return (0, status)
       elif status in some.timeouts: 
-         return 2
+         return (2, status)
       else: 
-         return 1
+         return (1, status)
 
    allstats = frozenset(r["status"] for res in results.values() for r in res.values())
    allstats = sorted(allstats, key=rank)
@@ -81,7 +81,7 @@ def statuses(results, nicks):
       row = [ nicks[(solver,bid,sid)] ]
       row += [ count(status, res) for status in allstats ] 
       rows.append(row)
-   lines = table(header, rows, key=lambda x: x[-1])
+   lines = table(header, rows, key=lambda x: x[1])
    logger.debug(f"statuses created")
    return lines
 

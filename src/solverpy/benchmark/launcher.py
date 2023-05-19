@@ -10,8 +10,22 @@ from .report import markdown
 
 logger = logging.getLogger(__name__)
 
-def init():
+def init(run):
    log.init()
+   header = ["", ""]
+   def fmt(y):
+      if isinstance(y, list):
+         return "[" + ", ".join(str(a) for a in y ) + "]"
+      return repr(y)
+   rows = [[str(x),fmt(y)] for (x,y) in run.items()]
+   print(rows)
+   report = markdown.heading("Experiments", level=2)
+   report += markdown.heading("Setup", level=3)
+   report += markdown.table(header, rows)
+   report += markdown.newline()
+   report = markdown.dump(report, prefix="> ")
+   logger.info(f"Experiments running.\n{report}")
+
 
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"

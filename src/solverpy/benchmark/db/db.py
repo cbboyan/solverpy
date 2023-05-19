@@ -8,6 +8,9 @@ class DB:
       self._providers = providers
       self.loaded = {}
 
+   def __repr__(self):
+      return "DB[%s]" % ",".join(p.__name__ for p in self._providers)
+
    def connect(self, bid, sid, limit):
       if (bid,sid) not in self.loaded:
          logger.debug(f"connecting providers for {sid} @ {bid}")
