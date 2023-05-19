@@ -95,17 +95,22 @@ def legend(jobs, ref=None):
       nicks[job] = nick
       rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
 
-   report = [""]
+   report = markdown.newline()
    report += markdown.heading("Legend", level=3)
    report += markdown.table(header, rows)
-   report += [""]
+   report += markdown.newline()
    report = markdown.dump(report, prefix="> ")
    return (nicks, total, report)
 
 def summary(allres, nicks, ref=None):
-   report  = [""]
+   report  = markdown.newline()
    report += markdown.heading("Summary", level=3)
    report += markdown.summary(allres, nicks, ref=ref)
-   report += [""]
+
+   report += markdown.newline()
+   report += markdown.heading("Statuses", level=3)
+   report += markdown.statuses(allres, nicks)
+   report += markdown.newline()
+
    return markdown.dump(report, prefix="> ")
 
