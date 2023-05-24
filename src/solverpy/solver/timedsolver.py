@@ -29,7 +29,7 @@ class TimedSolver(PluginSolver):
             # simulated timeout
             return dict(result, 
                         status="TIMEOUT", 
-                        runtime=timeout)
+                        runtime=self.timeout)
       # the result is applicable without changes
       return result
    

@@ -64,14 +64,14 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
       results = done
    return results
 
-def launch(solver, bidlist, sidlist, ref=None, **others):
+def launch(solver, bidlist, sidlist, ref=None, sidnames=True, **others):
    # initialize jobs and compute label width
    logger.debug("evaluation started")
    if ref is True:
       ref = (solver, bidlist[0], sidlist[0])
    jobs = [(solver,bid,sid) for bid in bidlist for sid in sidlist]
    total = sum(len(bids.problems(bid)) for (s,bid,sid) in jobs)
-   (nicks, totaldesc, report) = legend(jobs, ref)
+   (nicks, totaldesc, report) = legend(jobs, ref, sidnames=sidnames)
    logger.info(f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
    totbar = RunningBar(total, totaldesc)
    # run the jobs one by one
@@ -93,28 +93,33 @@ def launch(solver, bidlist, sidlist, ref=None, **others):
 
 
 
-def legend(jobs, ref=None):
-   width = len(str(len(jobs)-1))
-   total = "*" * width
-   total = f"{total}/{len(jobs)-1}"
+def legend(jobs, ref=None, sidnames=False):
    nicks = {}
-   header = ["job", "solver", "benchmark", "strategy", "problems"]
+   header = ["name", "solver", "benchmark", "strategy", "problems"]
    rows = []
+   width = 0
    for (n,job) in enumerate(jobs):
       (solver, bid, sid) = job
-      if ref == job:
-         nick = "ref"
+      if sidnames:
+         nick = sid
+         if job == ref: nick += " *" 
       else:
-         nick = f"{n:{width}}/{len(jobs)-1}"
+         nick = "ref" if job == ref else f"{n}/{len(jobs)-1}"
       nicks[job] = nick
+      width = max(width, len(nick))
       rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
+
+   totaldesc = "total"
+   totaldesc = f"{totaldesc:{width}}"
+   nicks = {x:f"{y:{width}}" for (x,y) in nicks.items()}
 
    report = markdown.newline()
    report += markdown.heading("Legend", level=3)
    report += markdown.table(header, rows)
    report += markdown.newline()
    report = markdown.dump(report, prefix="> ")
-   return (nicks, total, report)
+
+   return (nicks, totaldesc, report)
 
 def summary(allres, nicks, ref=None):
    report  = markdown.newline()

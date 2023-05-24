@@ -44,17 +44,20 @@ def table(header, rows, key=None):
 def summary(results, nicks, ref=None):
    logger.debug(f"creating summary for {len(results)} results")
    if ref is None:
-      header = ["solver", "solved", "unsolved", "timeouts", "errors"]
+      header = ["name", "solved", "PAR2", "unsolved", "timeouts", "errors"]
+      refsolved = None
+      refpar2 = None
    else:
-      header = ["solver", "solved", "ref+", "ref-", "unsolved", "timeouts", "errors"]
+      header = ["name", "solved", "ref+", "ref-", "PAR2", "PAR2+", "unsolved", "timeouts", "errors"]
       refsolved = frozenset(p for (p,r) in results[ref].items() if ref[0].solved(r))
+      refpar2 = sum(data.par2score(ref[0], r) for r in results[ref].values())
 
    rows = []
    for ((solver,bid,sid),res) in results.items():
       row = [ nicks[(solver,bid,sid)] ]
-      row.extend(data.summary(solver,bid,sid,res,refsolved))
+      row.extend(data.summary(solver,bid,sid,res,refsolved,refpar2))
       rows.append(row)
-   lines = table(header, rows, key=lambda x: x[1])
+   lines = table(header, rows, key=lambda x: x[1:])
    logger.debug(f"summary created")
    return lines
 
@@ -75,13 +78,13 @@ def statuses(results, nicks):
 
    allstats = frozenset(r["status"] for res in results.values() for r in res.values())
    allstats = sorted(allstats, key=rank)
-   header = ["solver"] + allstats
+   header = ["name"] + allstats
    rows = []
    for ((solver,bid,sid),res) in results.items():
       row = [ nicks[(solver,bid,sid)] ]
       row += [ count(status, res) for status in allstats ] 
       rows.append(row)
-   lines = table(header, rows, key=lambda x: x[1])
+   lines = table(header, rows, key=lambda x: x[1:])
    logger.debug(f"statuses created")
    return lines
 

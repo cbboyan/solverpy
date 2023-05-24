@@ -3,7 +3,7 @@ import os
 DEFAULT_NAME = "."
 DEFAULT_DIR = os.getenv("SOLVERPY_BENCHMARKS", DEFAULT_NAME)
 
-DB_NAME = "00DB"
+DB_NAME = "solverpy_db"
 DB_DIR = os.getenv("SOLVERPY_DB", DB_NAME)
 
 def bidpath(bid):
