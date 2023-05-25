@@ -15,8 +15,7 @@ class SolverTask(Task):
       return f"{self.solver}:{self.sid} @ {self.bid} / {self.problem}"
 
    def run(self):
-      instance = (self.bid, self.problem)
-      return self.solver.solve(instance, self.sid)
+      return self.solver.solve(self.instance, self.strategy)
 
    def status(self, result):
       if not self.solver.valid(result):

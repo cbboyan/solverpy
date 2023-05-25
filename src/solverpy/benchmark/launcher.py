@@ -16,7 +16,7 @@ def init(run):
    def fmt(y):
       if isinstance(y, list):
          return "[" + ", ".join(str(a) for a in y ) + "]"
-      return repr(y)
+      return str(y)
    rows = [[str(x),fmt(y)] for (x,y) in run.items()]
    print(rows)
    report = markdown.heading("Experiments", level=2)
@@ -69,6 +69,8 @@ def launch(solver, bidlist, sidlist, ref=None, sidnames=True, **others):
    logger.debug("evaluation started")
    if ref is True:
       ref = (solver, bidlist[0], sidlist[0])
+   elif type(ref) is int:
+      ref = (solver, bidlist[0], sidlist[ref])
    jobs = [(solver,bid,sid) for bid in bidlist for sid in sidlist]
    total = sum(len(bids.problems(bid)) for (s,bid,sid) in jobs)
    (nicks, totaldesc, report) = legend(jobs, ref, sidnames=sidnames)
@@ -102,7 +104,7 @@ def legend(jobs, ref=None, sidnames=False):
       (solver, bid, sid) = job
       if sidnames:
          nick = sid
-         if job == ref: nick += " *" 
+         if job == ref: nick = f"* {nick}" 
       else:
          nick = "ref" if job == ref else f"{n}/{len(jobs)-1}"
       nicks[job] = nick

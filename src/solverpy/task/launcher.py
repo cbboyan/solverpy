@@ -20,7 +20,7 @@ def run(tasks, cores=4, chunksize=1):
       pool.terminate()
       raise e
 
-def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running"):
+def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running", **others):
    todo = len(tasks)
    pool = Pool(cores)
    m = Manager()

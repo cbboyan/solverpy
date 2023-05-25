@@ -91,5 +91,3 @@ def statuses(results, nicks):
 def dump(report, prefix=""):
    return f"{prefix}" + f"\n{prefix}".join(report) 
 
-
-   

@@ -7,13 +7,11 @@ NAME = "errors"
 
 class Errors(Outputs):
    
-   def __init__(self):
+   def __init__(self, flatten=False):
+      Outputs.__init__(self, flatten)
       self._path = bids.dbpath(NAME)
    
    def finished(self, instance, strategy, output, result):
       if output and not self.solver.valid(result):
-         f = self.path(instance, strategy)
-         os.makedirs(os.path.dirname(f), exist_ok=True)
-         with open(f,"w") as fw:
-            fw.write(output)
+         self.write(instance, strategy, output)
 

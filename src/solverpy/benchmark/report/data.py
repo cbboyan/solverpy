@@ -29,7 +29,7 @@ def summary(solver, bid, sid, results, refsolved=None, refpar2=None):
       return (len(solved), par2, unsolved, timeouts, errors)
    else:
       par2plus = (refpar2 - par2) / (refpar2 / 100.0)
-      par2plus = f"{par2plus:+0.2f}"
+      par2plus = f"{par2plus:+0.2f}%"
       par2 = f"{par2:0.2f}"
       plus = len(solved - refsolved)
       minus = len(refsolved - solved)
