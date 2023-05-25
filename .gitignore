@@ -162,5 +162,5 @@ cython_debug/
 Pipfile
 Pipfile.lock
 requirements.txt
-src/_dust/
+_dust/
 
