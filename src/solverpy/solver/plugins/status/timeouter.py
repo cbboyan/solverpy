@@ -8,6 +8,7 @@ class Timeouter(Decorator):
       self.timeout = solver.timeout
    
    def update(self, instance, strategy, output, result):
-      if result["status"] in self.timeouts:
+      if (result["status" ] in self.timeouts) or \
+            (result["runtime"] > self.timeout):
          result["runtime"] = self.timeout
 

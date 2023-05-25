@@ -24,7 +24,7 @@ class PluginSolver(Solver):
             msg = f"{lines[2]}\n{lines[3]}" # command and first output line
          else:
             msg = output
-         logger.debug(f"failed solver run: {self}:{strategy} @ {instance}\n{msg}")
+         logger.debug(f"failed solver run: {self}:{strategy} @ {instance}\nresult: {result}\n{msg}")
       return result
    
    # plugins initization
