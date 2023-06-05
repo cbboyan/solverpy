@@ -9,7 +9,7 @@ DB_DIR = os.getenv("SOLVERPY_DB", DB_NAME)
 def bidpath(bid):
    return os.path.join(DEFAULT_DIR, bid)
 
-def dbpath(subdir=None):
+def dbpath(subdir=None): # TODO: move this elsewhere
    return os.path.join(DB_DIR, subdir) if subdir else DB_DIR
 
 def path(bid, problem=None, flatten=False):

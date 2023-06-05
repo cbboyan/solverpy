@@ -1,6 +1,8 @@
 import os
 import re
 
+from . import bids
+
 NAME = "strats"
 
 ARGUMENT = re.compile(r"@@@\s*([^@: ]*)\s*:\s*([^@: ]*)\s*@@@")
