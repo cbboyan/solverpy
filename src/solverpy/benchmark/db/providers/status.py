@@ -2,7 +2,7 @@ import os
 import logging
 
 from ..cachedprovider import CachedProvider
-from ...path import bids
+from ...path import bids, sids
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +23,14 @@ class Status(CachedProvider):
       return os.path.join(
          bids.dbpath(NAME),
          bids.name(self.bid, limit=self.limit),
-         self.sid).rstrip("/") 
+         sids.name(self.sid)).rstrip("/") 
 
    def cacheload(self, fr):
       def split(line):
          i = line.rindex(DELIM)
          return (line[:i], line[i+len(DELIM):])
       lines = fr.read().strip().split("\n")
-      self.cache = dict(split(line) for line in lines)
+      self.cache = dict(split(line) for line in lines if line)
 
    def cachedump(self, fw):
       fw.write("\n".join(f"{p}{DELIM}{self.cache[p]}" for p in sorted(self.cache))+"\n")

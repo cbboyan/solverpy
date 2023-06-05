@@ -2,20 +2,21 @@ import os, sys
 import atexit, traceback
 from datetime import datetime
 import logging
+from ..benchmark.path import bids
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_NAME = "solverpy_logs"
-DEFAULT_DIR = os.getenv("SOLVERPY_LOGDIR", DEFAULT_NAME)
+NAME = "logs"
 
 def filename():
-   os.makedirs(DEFAULT_DIR, exist_ok=True)
+   d_logs = bids.dbpath(NAME)
+   os.makedirs(d_logs, exist_ok=True)
    script = sys.argv[0]
-   script = script.lstrip("./").replace("/","+")
+   script = script.lstrip("./").replace("/","-")
    now = datetime.now()
    now = now.strftime("%y-%m-%d__%H:%M:%S")
    f_log = f"{script}__{now}.log"
-   return os.path.join(DEFAULT_DIR, f_log)
+   return os.path.join(d_logs, f_log)
 
 def init():
    # set up logging to file

@@ -1,7 +1,7 @@
 import os
 
 from ..decorator import Decorator
-from ....benchmark.path import bids
+from ....benchmark.path import bids, sids
 
 NAME = "outputs"
 
@@ -24,7 +24,7 @@ class Outputs(Decorator):
       if self._flatten:
          slash = "_._" if (self._flatten is True) else self._flatten
          problem = problem.replace("/", slash)
-      p = os.path.join(self._path, bs, strategy, problem)
+      p = os.path.join(self._path, bs, sids.name(strategy), problem)
       return p
 
    def finished(self, instance, strategy, output, result):

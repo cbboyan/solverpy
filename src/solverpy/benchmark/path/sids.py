@@ -1,14 +1,13 @@
 import os
 import re
 
-DEFAULT_NAME = "strats"
-DEFAULT_DIR = os.getenv("SOLVERPY_STRATS", DEFAULT_NAME)
+NAME = "strats"
 
 ARGUMENT = re.compile(r"@@@\s*([^@: ]*)\s*:\s*([^@: ]*)\s*@@@")
 
 def path(sid):
    f_sid = sid.split("@")[0] if ("@" in sid) else sid
-   return os.path.join(DEFAULT_DIR, f_sid)
+   return os.path.join(bids.dbpath(NAME), f_sid)
 
 def load(sid):
    return open(path(sid)).read().strip()
@@ -17,6 +16,9 @@ def save(sid, strategy):
    f_sid = path(sid, realfile=False)
    os.makedirs(os.path.dirname(f_sid), exist_ok=True)
    open(f_sid, "w").write(strategy.strip())
+
+def name(sid):
+   return sid.replace("/", "-")
 
 def unspace(strategy):
    return " ".join(x for x in strategy.split() if x)

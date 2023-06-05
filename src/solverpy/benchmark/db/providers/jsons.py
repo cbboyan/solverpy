@@ -2,7 +2,7 @@ import os, json
 import logging
 
 from ..cachedprovider import CachedProvider
-from ...path import bids
+from ...path import bids, sids
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class Jsons(CachedProvider):
       return os.path.join(
          bids.dbpath(NAME),
          bids.name(self.bid),
-         self.sid).rstrip("/") + ".json"
+         sids.name(self.sid)).rstrip("/") + ".json"
 
    def cacheload(self, fr):
       self.cache = json.load(fr)

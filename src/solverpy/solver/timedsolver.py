@@ -23,7 +23,7 @@ class TimedSolver(PluginSolver):
 
    def simulate(self, result):
       "Simulate run from the past result."
-      if "timeout" in result:
+      if result["status"] in self.timeouts:
          # the cached result is timeout
          if result["runtime"] < self.timeout:
             # recompute since we have more time
