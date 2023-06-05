@@ -11,6 +11,9 @@ class Outputs(Decorator):
       self._path = bids.dbpath(NAME)
       self._flatten = flatten
    
+   def __repr__(self):
+      return f"{type(self).__name__}({repr(self._flatten)})"
+   
    def register(self, solver):
       solver.decorators.append(self)
       self.solver = solver

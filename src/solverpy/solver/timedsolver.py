@@ -11,6 +11,11 @@ class TimedSolver(PluginSolver):
       new = [Timeouter()]
       PluginSolver.__init__(self, plugins=plugins+new)
 
+   def __repr__(self):
+      plgs = super().__repr__()
+      plgs = f", plugins=[{plgs}]" if plgs else ""
+      return f"{type(self).__name__}('{self.limit}'{plgs})"
+
    @property
    def timeouts(self):
       "The set of timeout statuses."
