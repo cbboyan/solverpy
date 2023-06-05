@@ -18,7 +18,6 @@ def init(run):
          return "[" + ", ".join(str(a) for a in y ) + "]"
       return str(y)
    rows = [[str(x),fmt(y)] for (x,y) in run.items()]
-   print(rows)
    report = markdown.heading("Experiments", level=2)
    report += markdown.heading("Setup", level=3)
    report += markdown.table(header, rows)
