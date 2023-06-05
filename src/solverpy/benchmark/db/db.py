@@ -33,6 +33,12 @@ class DB:
          if result:
             return result
       return None
+   
+   def cachedtask(self, task, result):
+      self.connect(task.bid, task.sid, task.solver.limit)
+      for provider in self.providers(task):
+         provider.check(task)
+         provider.cached(task, result)
 
    def storetask(self, task, result):
       self.connect(task.bid, task.sid, task.solver.limit)
@@ -47,6 +53,9 @@ class DB:
          result = self.querytask(task)
          if result:
             results[task] = result
+      logger.debug(f"announcing {len(results)} cached results")
+      for (task, result) in results.items():
+         self.cachedtask(task, result)
       logger.debug(f"db query done: {len(results)} tasks already done")
       return results
 

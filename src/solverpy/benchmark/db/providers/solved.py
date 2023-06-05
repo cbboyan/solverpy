@@ -16,6 +16,9 @@ class Solved(CachedProvider):
    def store(self, task, result):
       if task.solver.solved(result):
          self.cache.add(task.problem)
+
+   def cached(self, task, result):
+      self.store(task, result)
    
    def load(self):
       super().load()
@@ -32,5 +35,6 @@ class Solved(CachedProvider):
       self.cache = set(x for x in fr.read().strip().split("\n") if x)
 
    def cachedump(self, fw):
-      fw.write("\n".join(sorted(self.cache))+"\n")
+      if self.cache:
+         fw.write("\n".join(sorted(self.cache))+"\n")
 

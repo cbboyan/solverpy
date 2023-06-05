@@ -12,6 +12,9 @@ class Provider:
    def store(self, task, result):
       pass
 
+   def cached(self, task, result):
+      pass
+
    def commit(self):
       pass
 

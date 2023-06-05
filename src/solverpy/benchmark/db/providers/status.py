@@ -19,6 +19,9 @@ class Status(CachedProvider):
       if task.solver.valid(result):
          self.cache[task.problem] = result["status"]
    
+   def cached(self, task, result):
+      self.store(task, result)
+   
    def cachepath(self):
       return os.path.join(
          bids.dbpath(NAME),
@@ -33,5 +36,6 @@ class Status(CachedProvider):
       self.cache = dict(split(line) for line in lines if line)
 
    def cachedump(self, fw):
-      fw.write("\n".join(f"{p}{DELIM}{self.cache[p]}" for p in sorted(self.cache))+"\n")
+      if self.cache:
+         fw.write("\n".join(f"{p}{DELIM}{self.cache[p]}" for p in sorted(self.cache))+"\n")
 
