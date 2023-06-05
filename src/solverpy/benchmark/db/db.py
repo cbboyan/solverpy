@@ -21,9 +21,11 @@ class DB:
    def providers(self, task):
       return self.loaded[(task.bid,task.sid)]
 
-   def commit(self, bid, sid):
-      for provider in self.loaded[(bid,sid)]:
-         provider.commit()
+   def commit(self):
+      for key in self.loaded:
+         logger.debug(f"db commit: {key}")
+         for provider in self.loaded[key]:
+            provider.commit()
 
    def querytask(self, task):
       self.connect(task.bid, task.sid, task.solver.limit)
@@ -61,12 +63,10 @@ class DB:
 
    def store(self, tasks, results):
       logger.debug(f"db store on {len(tasks)} tasks")
-      tocommit = set()
+      count = 0
       for (task, result) in zip(tasks, results):
          self.storetask(task, result)
-         tocommit.add((task.bid,task.sid))
-      for (bid,sid) in tocommit:
-         self.commit(bid, sid)
-      tc = ", ".join(f"{s} @ {b}" for (b,s) in sorted(tocommit))
-      logger.debug(f"db store done: {len(tocommit)} commits {tc}")
+         count += 1
+      self.commit()
+      logger.debug(f"db store done: {count} commits")
 

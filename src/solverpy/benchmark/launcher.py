@@ -60,6 +60,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
       logger.debug(f"evaluation done: +{bar._solved} -{bar._unsolved} !{bar._errors}")
    else:
       logger.debug("evaluation skipped: already done")
+      db.commit() # update cached results (eg. generate `solved`)
       results = done
    return results
 
