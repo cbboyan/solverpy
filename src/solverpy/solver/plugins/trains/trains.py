@@ -39,8 +39,8 @@ class Trains(Decorator):
             self.stats(instance, strategy, samples)
          finally:
             self.lock.release()
-
-    def stats(self, instance, strategy, samples):
+    
+   def stats(self, instance, strategy, samples):
       with open(self._file+"-stats", "a") as infa:
         count = samples.count("\n")
         infa.write(f"{instance} {strategy}: {count}\n")

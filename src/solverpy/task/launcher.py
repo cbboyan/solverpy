@@ -26,7 +26,7 @@ def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running",
    m = Manager()
    queue = m.Queue()
    setqueue(queue, tasks)
-   bar = bar if bar else DefaultBar(len(tasks), desc)
+   bar = bar if bar else DefaultBar(len(tasks), desc, miniters=cores)
    logger.debug(f"launching pool with {cores} workers for {todo} tasks")
    try:
       runner = pool.map_async(runtask, tasks, chunksize=chunksize)

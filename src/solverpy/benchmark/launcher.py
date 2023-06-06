@@ -29,7 +29,7 @@ def init(run):
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"
 
-def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
+def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, **others):
    desc = desc if desc else jobname(solver, bid, sid)
    logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
    # prepare the tasks to be evaluated
@@ -50,8 +50,8 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
    # evaluate the remaining tasks
    logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
    if todo:
-      bar = SolvingBar(len(todo), desc)
-      results = launcher.launch(todo, bar=bar, taskdone=taskdone, **others)
+      bar = SolvingBar(len(todo), desc, miniters=cores)
+      results = launcher.launch(todo, bar=bar, taskdone=taskdone, cores=cores, **others)
       # store the new results in the database
       if db: db.store(todo, results)
       # compose the cached and new results
@@ -64,7 +64,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, **others):
       results = done
    return results
 
-def launch(solver, bidlist, sidlist, ref=None, sidnames=True, **others):
+def launch(solver, bidlist, sidlist, ref=None, sidnames=True, cores=4, **others):
    # initialize jobs and compute label width
    logger.debug("evaluation started")
    if ref is True:
@@ -75,12 +75,12 @@ def launch(solver, bidlist, sidlist, ref=None, sidnames=True, **others):
    total = sum(len(bids.problems(bid)) for (s,bid,sid) in jobs)
    (nicks, totaldesc, report) = legend(jobs, ref, sidnames=sidnames)
    logger.info(f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
-   totbar = RunningBar(total, totaldesc)
+   totbar = RunningBar(total, totaldesc, miniters=cores)
    # run the jobs one by one
    allres = {}
    try:
       for job in jobs:
-         result1 = run(*job, taskdone=totbar.status, desc=nicks[job], **others)
+         result1 = run(*job, taskdone=totbar.status, desc=nicks[job], cores=cores, **others)
          allres[job] = result1 # (bid,sid) should be a primary key
       totbar.close()
       if totbar._errors:
