@@ -12,15 +12,12 @@ DELIM = "\t"
 
 class Status(CachedProvider):
 
-   def __init__(self, bid, sid, limit):
-      CachedProvider.__init__(self, bid, sid, limit)
+   def __init__(self, bid, sid, limit, store_cached=True):
+      CachedProvider.__init__(self, bid, sid, limit, store_cached)
 
    def store(self, task, result):
       if task.solver.valid(result):
          self.cache[task.problem] = result["status"]
-   
-   def cached(self, task, result):
-      self.store(task, result)
    
    def cachepath(self):
       return os.path.join(

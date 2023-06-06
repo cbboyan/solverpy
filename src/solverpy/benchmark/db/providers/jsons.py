@@ -10,8 +10,8 @@ NAME = "results"
 
 class Jsons(CachedProvider):
 
-   def __init__(self, bid, sid, limit=None):
-      CachedProvider.__init__(self, bid, sid, limit)
+   def __init__(self, bid, sid, limit=None, store_cached=False):
+      CachedProvider.__init__(self, bid, sid, limit, store_cached)
 
    def query(self, task):
       if task.problem in self.cache:
@@ -34,4 +34,10 @@ class Jsons(CachedProvider):
 
    def cachedump(self, fw):
       json.dump(self.cache, fw, indent=3, sort_keys=True)
+
+
+class JsonsStore(Jsons):
+
+   def __init__(self, bid, sid, limit=None):
+      Jsons.__init__(self, bid, sid, limit, store_cached=True)
 

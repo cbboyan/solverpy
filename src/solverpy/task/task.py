@@ -28,10 +28,11 @@ class Task:
          status = task.status(res)
       except Exception as e:
          import traceback
-         print("Exception::", e)
-         print("Task::", task)
-         print("Error:: "+traceback.format_exc())
+         logger.warning(f"Exception:: {e}")
+         logger.warning(f"Task:: {task}")
+         logger.warning(f"Error:: {traceback.format_exc()}")
          status = None
+         res = None
       except KeyboardInterrupt:
          return None
       if status is None:

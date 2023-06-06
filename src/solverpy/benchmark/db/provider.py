@@ -1,10 +1,11 @@
 
 class Provider:
 
-   def __init__(self, bid, sid, limit=None):
+   def __init__(self, bid, sid, limit=None, store_cached=False):
       self.bid = bid
       self.sid = sid
       self.limit = limit
+      self.store_cached = store_cached
 
    def query(self, task):
       return None
@@ -13,7 +14,8 @@ class Provider:
       pass
 
    def cached(self, task, result):
-      pass
+      if self.store_cached:
+         self.store(task, result)
 
    def commit(self):
       pass

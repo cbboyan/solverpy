@@ -1,10 +1,12 @@
 from .db import DB
-from .providers.jsons import Jsons
+from .providers.jsons import Jsons, JsonsStore
 from .providers.solved import Solved
 from .providers.status import Status
+from .providers.loader import Loader, FlattenLoader
 
 def default():
    return DB([Jsons, Solved, Status])
 
-__all__ = [DB, Jsons, default]
+__all__ = [DB, Jsons, JsonsStore, Solved, Status, Loader, 
+           FlattenLoader, default]
 

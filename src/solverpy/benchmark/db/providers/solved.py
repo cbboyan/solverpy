@@ -10,8 +10,8 @@ NAME = "solved"
 
 class Solved(CachedProvider):
 
-   def __init__(self, bid, sid, limit):
-      CachedProvider.__init__(self, bid, sid, limit)
+   def __init__(self, bid, sid, limit, store_cached=True):
+      CachedProvider.__init__(self, bid, sid, limit, store_cached)
 
    def store(self, task, result):
       if task.solver.solved(result):

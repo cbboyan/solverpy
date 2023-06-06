@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class CachedProvider(Provider):
 
-   def __init__(self, bid, sid, limit=None):
-      Provider.__init__(self, bid, sid, limit)
+   def __init__(self, bid, sid, limit=None, store_cache=False):
+      Provider.__init__(self, bid, sid, limit, store_cache)
       logger.debug(f"creating provider {self} for {sid} @ {bid}")
       self.load()
 
