@@ -1,6 +1,7 @@
 import os
 import re
 
+from .trains import Trains
 from ..db.outputs import Outputs
 from ....benchmark.path import bids
 
@@ -8,7 +9,26 @@ NAME = "trains"
 
 SAMPLES = re.compile(r"^; QUANTIFIER SAMPLES\n(.*)^; END QUANTIFIER SAMPLES", flags=re.MULTILINE|re.DOTALL)
 
-class Cvc5Trains(Outputs):
+def cvc5samples(output):
+   mo = SAMPLES.search(output)
+   if not mo:
+      return
+   samples = mo.group(1).strip().split("\n")
+   samples = [x for x in samples if x and not x.startswith(";")]
+   samples = "\n".join(samples)+"\n" if samples else ""
+   return samples
+
+
+class Cvc5Trains(Trains):
+   
+   def __init__(self, dataname):
+      Trains.__init__(self, dataname)
+
+   def extract(self, instance, strategy, output, result):
+      return cvc5samples(output)
+
+
+class Cvc5TrainsDebug(Outputs):
    
    def __init__(self, flatten=False):
       Outputs.__init__(self, flatten)
@@ -20,12 +40,7 @@ class Cvc5Trains(Outputs):
    def finished(self, instance, strategy, output, result):
       if not (output and self.solver.solved(result)):
          return
-      mo = SAMPLES.search(output)
-      if not mo:
-         return
-      out = mo.group(1).strip().split("\n")
-      out = [x for x in out if x and not x.startswith(";")]
-      out = "\n".join(out)+"\n" if out else ""
-      if out:
-         self.write(instance, strategy, out)
+      samples = cvc5samples(output)
+      if samples:
+         self.write(instance, strategy, samples)
 
