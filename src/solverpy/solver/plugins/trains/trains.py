@@ -13,7 +13,7 @@ class Trains(Decorator):
 
    def __init__(self, dataname, filename="train.in"):
       self.lock = multiprocessing.Manager().Lock()
-      self._file = os.path.join(bids.dbpath(NAME), dataname, filename)
+      self.file = os.path.join(bids.dbpath(NAME), dataname, filename)
    
    def register(self, solver):
       super().register(solver)
@@ -26,22 +26,22 @@ class Trains(Decorator):
       self.save(instance, strategy, samples)
 
    def extract(self, instance, strategy, output, result):
+      "Extract training samples from `output`."
       raise NotImlementedError
-
+   
    def save(self, instance, strategy, samples):
       if not samples:
          return
       self.lock.acquire()
-      os.makedirs(os.path.dirname(self._file), exist_ok=True)
-      with open(self._file, "a") as fa:
-         try:
+      try:
+         os.makedirs(os.path.dirname(self.file), exist_ok=True)
+         with open(self.file, "a") as fa:
             fa.write(samples)
             self.stats(instance, strategy, samples)
-         finally:
-            self.lock.release()
+      finally:
+         self.lock.release()
     
    def stats(self, instance, strategy, samples):
-      with open(self._file+"-stats", "a") as infa:
-        count = samples.count("\n")
-        infa.write(f"{instance} {strategy}: {count}\n")
+      "Save optional statistics."
+      pass
 

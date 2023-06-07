@@ -47,9 +47,9 @@ def compress(f_in, keep=False):
    numpy.savez_compressed(z_label, label=label)
    logger.debug(f"compressed size: {human.humanbytes(size(f_in))}")
    if iscompressed(f_in) and not keep:
-      logger.debug(f"deleting uncompressed file")
+      logger.debug(f"deleting the uncompressed file")
       os.remove(f_in)
-   logger.info("Trains compressed.")
+   logger.info(f"Trains compressed to {human.humanbytes(size(f_in))}.")
 
 def decompress(f_in, keep=True):
    logger.info(f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
@@ -61,10 +61,10 @@ def decompress(f_in, keep=True):
    dump_svmlight_file(data, label, f_in)
    logger.debug(f"trains dumped; uncompressed size: {human.humanbytes(os.path.getsize(f_in))}")
    if os.path.isfile(f_in) and not keep:
-      logger.debug(f"deleting compressed files")
+      logger.debug(f"deleting the compressed files")
       for f in datafiles(f_in):
          os.remove(f)
-   logger.info("Trains decompressed.")
+   logger.info(f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
 def load(f_in):
    logger.info(f"Loading trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")

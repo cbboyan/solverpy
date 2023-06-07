@@ -1,7 +1,7 @@
 import os
 import re
 
-from .trains import Trains
+from .svm import SvmTrains
 from ..db.outputs import Outputs
 from ....benchmark.path import bids
 
@@ -19,10 +19,10 @@ def cvc5samples(output):
    return samples
 
 
-class Cvc5Trains(Trains):
+class Cvc5Trains(SvmTrains):
    
    def __init__(self, dataname):
-      Trains.__init__(self, dataname)
+      SvmTrains.__init__(self, dataname)
 
    def extract(self, instance, strategy, output, result):
       return cvc5samples(output)
