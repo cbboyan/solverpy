@@ -99,7 +99,10 @@ def launch(solver, bidlist, sidlist, ref=None, sidnames=True, cores=4, **others)
 
 def legend(jobs, ref=None, sidnames=False):
    nicks = {}
-   header = ["name", "solver", "benchmark", "strategy", "problems"]
+   if sidnames:
+      header = ["name", "solver", "benchmark", "problems"]
+   else:
+      header = ["name", "solver", "benchmark", "strategy", "problems"]
    rows = []
    width = 0
    for (n,job) in enumerate(jobs):
@@ -111,7 +114,10 @@ def legend(jobs, ref=None, sidnames=False):
          nick = "ref" if job == ref else f"{n}/{len(jobs)-1}"
       nicks[job] = nick
       width = max(width, len(nick))
-      rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
+      if sidnames:
+         rows.append([nick, solver.name, bid, len(bids.problems(bid))])
+      else:
+         rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
 
    totaldesc = "total"
    totaldesc = f"{totaldesc:{width}}"
