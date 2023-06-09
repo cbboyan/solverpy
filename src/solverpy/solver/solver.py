@@ -17,11 +17,11 @@ class Solver:
       return (output, result)
    
    def valid(self, result):
-      return ("status" in result) and ("runtime" in result)
+      return result and ("status" in result) and ("runtime" in result)
    
    def solved(self, result):
       "Is the result a success?"
-      return ("status" in result) and (result["status"] in self.success)
+      return result and ("status" in result) and (result["status"] in self.success)
 
    def run(self, instance, strategy):
       "Run the solver with the strategy on the instatance. Return the output."

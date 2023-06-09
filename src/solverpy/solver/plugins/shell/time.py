@@ -29,7 +29,8 @@ class Time(Decorator):
       res = patterns.keyval(TIME_PAT, output, TIME_TABLE)
       res = patterns.mapval(res, float)
       result.update(res)
-      result["runtime"] = res["realtime"] - res["systime"]
-      #result["realtime"] = res["realtime"]
-      #result["runtime"] = res["usertime"] 
+      if ("realtime" in res) and ("systime" in res):
+         result["runtime"] = res["realtime"] - res["systime"]
+         #result["realtime"] = res["realtime"]
+         #result["runtime"] = res["usertime"] 
 

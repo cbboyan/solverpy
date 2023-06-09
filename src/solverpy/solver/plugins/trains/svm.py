@@ -32,5 +32,6 @@ class SvmTrains(Trains):
 
    def compress(self):
       logger.info(f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) ")
-      svm.compress(self.file)
+      if os.path.isfile(self.file):
+         svm.compress(self.file)
         

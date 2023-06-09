@@ -76,7 +76,7 @@ def statuses(results, nicks):
       else: 
          return (1, status)
 
-   allstats = frozenset(r["status"] for res in results.values() for r in res.values() if "status" in r)
+   allstats = frozenset(r["status"] for res in results.values() for r in res.values() if r and "status" in r)
    allstats = sorted(allstats, key=rank)
    header = ["name"] + allstats
    rows = []
