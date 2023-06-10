@@ -13,7 +13,7 @@ class ShellSolver(TimedSolver):
       new = [limits]
       if wait is not None:
          new.append(Timeout(limits.timeout+wait))
-      new.append(Memory(1))
+      new.append(Memory())
       TimedSolver.__init__(self, limits.timeout, limit=limit, plugins=plugins+new)
       self.cmd = self.decorate(cmd)
 
