@@ -39,7 +39,7 @@ class Outputs(Decorator):
       if self._compress:
          fw = gzip.open(f+".gz","wb") 
       else:
-         open(f,"wb")
+         fw = open(f,"wb")
       fw.write(content.encode())
       fw.close()
 

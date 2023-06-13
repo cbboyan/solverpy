@@ -9,12 +9,12 @@ def db():
       Sid(),
    ]
 
-def outputs(flatten=True):
+def outputs(flatten=True, compress=True):
    return [
       Bid(),
       Sid(),
-      Outputs(flatten),
-      Errors(flatten),
+      Outputs(flatten, compress),
+      Errors(flatten, compress),
    ]
 
 __all__ = [db, outputs]

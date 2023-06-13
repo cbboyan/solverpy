@@ -7,8 +7,8 @@ NAME = "errors"
 
 class Errors(Outputs):
    
-   def __init__(self, flatten=True):
-      Outputs.__init__(self, flatten)
+   def __init__(self, flatten=True, compress=True):
+      Outputs.__init__(self, flatten, compress)
       self._path = bids.dbpath(NAME)
    
    def finished(self, instance, strategy, output, result):
