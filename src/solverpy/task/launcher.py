@@ -17,8 +17,9 @@ def run(tasks, cores=4, chunksize=1):
       pool.join()
       return results
    except KeyboardInterrupt as e:
-      pool.terminate()
       raise e
+   finally:
+      pool.terminate()
 
 def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running", **others):
    todo = len(tasks)
@@ -26,7 +27,7 @@ def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running",
    m = Manager()
    queue = m.Queue()
    setqueue(queue, tasks)
-   bar = bar if bar else DefaultBar(len(tasks), desc, miniters=cores)
+   bar = bar if bar else DefaultBar(len(tasks), desc, miniters=1)
    logger.debug(f"launching pool with {cores} workers for {todo} tasks")
    try:
       runner = pool.map_async(runtask, tasks, chunksize=chunksize)
@@ -43,8 +44,9 @@ def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running",
       logger.debug(f"pool closed")
       return runner.get(WAIT)
    except KeyboardInterrupt as e:
+      raise e
+   finally:
       bar.close()
       logger.debug("pool terminated (keyboard interupt)")
       pool.terminate()
-      raise e
 

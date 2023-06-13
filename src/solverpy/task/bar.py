@@ -1,3 +1,4 @@
+import datetime
 from tqdm import tqdm
 
 RED = '\033[91m'
@@ -5,14 +6,28 @@ BLUE = '\033[94m'
 PURPLE = '\033[95m'
 END = '\033[0m'
 
-BAR_DEFAULT = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]{postfix}"
-BAR_RUNNING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {errors} [{elapsed}<{remaining}]{postfix}"
-BAR_SOLVING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {solved}/{unsolved}/{errors}/{solved_eta} [{elapsed}<{remaining}]{postfix}"
+#BAR_DEFAULT = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]{postfix}"
+#BAR_RUNNING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {errors} [{elapsed}<{remaining}]{postfix}"
+#BAR_SOLVING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {solved}/{unsolved}/{errors}/{solved_eta} [{elapsed}<{remaining}]{postfix}"
+BAR_DEFAULT = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{speta}]{postfix}"
+BAR_RUNNING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {errors} [{elapsed}<{speta}]{postfix}"
+BAR_SOLVING = "{desc}: {percentage:6.2f}%|{bar}| {n_fmt}/{total_fmt} {solved}/{unsolved}/{errors}/{solved_eta} [{elapsed}<{speta}]{postfix}"
 
 class DefaultBar(tqdm):
    
    def __init__(self, total, desc, ascii="┈─═━", colour="green", bar_format=BAR_DEFAULT, *args, **kwargs):
       tqdm.__init__(self, total=total, desc=desc, bar_format=bar_format, ascii=ascii, colour=colour, *args, **kwargs)
+   
+   @property
+   def format_dict(self):
+      d = super().format_dict
+      speta = d["elapsed"] * (d["total"] or 0) / max(d["n"], 1)
+      speta -= d["elapsed"]
+      speta = str(datetime.timedelta(seconds=int(speta)))
+      if speta.startswith("0:"):
+         speta = speta[2:]
+      d.update(speta=speta)
+      return d
 
    def status(self, status, n=1):
       self.update(n)

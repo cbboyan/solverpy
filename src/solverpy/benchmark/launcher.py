@@ -52,7 +52,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, **others):
    # evaluate the remaining tasks
    logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
    if todo:
-      bar = SolvingBar(len(todo), desc, miniters=cores)
+      bar = SolvingBar(len(todo), desc, miniters=1)
       results = launcher.launch(todo, bar=bar, taskdone=taskdone, cores=cores, **others)
       # store the new results in the database
       if db: db.store(todo, results)
@@ -77,7 +77,7 @@ def launch(solver, bidlist, sidlist, ref=None, sidnames=True, cores=4, **others)
    total = sum(len(bids.problems(bid)) for (s,bid,sid) in jobs)
    (nicks, totaldesc, report) = legend(jobs, ref, sidnames=sidnames)
    logger.info(f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
-   totbar = RunningBar(total, totaldesc, miniters=cores)
+   totbar = RunningBar(total, totaldesc, miniters=1)
    # run the jobs one by one
    allres = {}
    try:
