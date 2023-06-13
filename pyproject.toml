@@ -15,7 +15,10 @@ classifiers = [
 ]
 dependencies = [
   "PyYAML",
-  "tqdm"
+  "tqdm",
+  "numpy",
+  "scipy",
+  "scikit_learn",
 ]
 dynamic = ["version"]
 
