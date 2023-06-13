@@ -1,4 +1,5 @@
 import os
+import gzip
 
 from ..decorator import Decorator
 from ....benchmark.path import bids, sids
@@ -7,9 +8,10 @@ NAME = "outputs"
 
 class Outputs(Decorator):
    
-   def __init__(self, flatten=False):
+   def __init__(self, flatten=True, compress=True):
       self._path = bids.dbpath(NAME)
       self._flatten = flatten
+      self._compress = compress
    
    def __repr__(self):
       return f"{type(self).__name__}({repr(self._flatten)})"
@@ -34,6 +36,10 @@ class Outputs(Decorator):
    def write(self, instance, strategy, content):
       f = self.path(instance, strategy)
       os.makedirs(os.path.dirname(f), exist_ok=True)
-      with open(f,"w") as fw:
-         fw.write(content)
+      if self._compress:
+         fw = gzip.open(f+".gz","wb") 
+      else:
+         open(f,"wb")
+      fw.write(content.encode())
+      fw.close()
 

@@ -7,7 +7,7 @@ NAME = "errors"
 
 class Errors(Outputs):
    
-   def __init__(self, flatten=False):
+   def __init__(self, flatten=True):
       Outputs.__init__(self, flatten)
       self._path = bids.dbpath(NAME)
    

@@ -9,7 +9,7 @@ def db():
       Sid(),
    ]
 
-def outputs(flatten=False):
+def outputs(flatten=True):
    return [
       Bid(),
       Sid(),

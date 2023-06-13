@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Loader(Provider):
       
-   def __init__(self, bid, sid, limit=None, flatten=False):
+   def __init__(self, bid, sid, limit=None, flatten=True):
       Provider.__init__(self, bid, sid, limit, False)
       self.outputs = Outputs(flatten=flatten) 
 
@@ -19,16 +19,20 @@ class Loader(Provider):
       if not os.path.isfile(f):
          return None
       #logger.debug(f"loading output for task {task} from {f}")
-      with open(f) as fr:
-         output = fr.read()
+      if os.path.isfile(f+".gz"):
+         fr = gzip.open(f+".gz","rb")
+      else:
+         fr = open(f,"rb")
+      output = fr.read().decode()
+      fr.close()
       result = task.solver.process(output)
       task.solver.update(task.instance, task.strategy, output, result)
       #logger.debug(f"result = {result}")
       return result
 
-class FlattenLoader(Loader):
+class SlashLoader(Loader):
 
    def __init__(self, bid, sid, limit=None):
-      Loader.__init__(self, bid, sid, limit, flatten=True)
+      Loader.__init__(self, bid, sid, limit, flatten=False)
 
 
