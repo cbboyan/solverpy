@@ -17,9 +17,8 @@ def run(tasks, cores=4, chunksize=1):
       pool.join()
       return results
    except KeyboardInterrupt as e:
-      raise e
-   finally:
       pool.terminate()
+      raise e
 
 def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running", **others):
    todo = len(tasks)
@@ -44,9 +43,8 @@ def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running",
       logger.debug(f"pool closed")
       return runner.get(WAIT)
    except KeyboardInterrupt as e:
-      raise e
-   finally:
       bar.close()
       logger.debug("pool terminated (keyboard interupt)")
       pool.terminate()
+      raise e
 

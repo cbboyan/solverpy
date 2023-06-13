@@ -1,4 +1,5 @@
 import os
+import random
 import logging
 
 from ..benchmark.path import bids
@@ -31,7 +32,7 @@ def init(run=None):
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"
 
-def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, **others):
+def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=True, **others):
    desc = desc if desc else jobname(solver, bid, sid)
    logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
    # prepare the tasks to be evaluated
@@ -52,6 +53,8 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, **others):
    # evaluate the remaining tasks
    logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
    if todo:
+      if shuffle:
+         random.shuffle(todo)
       bar = SolvingBar(len(todo), desc, miniters=1)
       results = launcher.launch(todo, bar=bar, taskdone=taskdone, cores=cores, **others)
       # store the new results in the database
