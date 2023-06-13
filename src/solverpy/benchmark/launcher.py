@@ -32,7 +32,7 @@ def init(run=None):
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"
 
-def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=True, **others):
+def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=True, force=False, **others):
    desc = desc if desc else jobname(solver, bid, sid)
    logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
    # prepare the tasks to be evaluated
@@ -40,7 +40,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=Tr
    tasks = [SolverTask(solver,bid,sid,p) for p in ps]
    logger.debug(f"evaluation: {len(tasks)} tasks scheduled")
    # check for the (cached) results in the database
-   if db:
+   if db and not force:
       done = db.query(tasks)
       todo = [t for t in tasks if t not in done]
       if taskdone:
@@ -51,9 +51,13 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=Tr
       done = {}
       todo = tasks
    # evaluate the remaining tasks
-   logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
+   if db and force:
+      logger.debug(f"forced evaluation: db not queried")
+   else:
+      logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
    if todo:
       if shuffle:
+         logger.debuf(f"shuffling tasks")
          random.shuffle(todo)
       bar = SolvingBar(len(todo), desc, miniters=1)
       results = launcher.launch(todo, bar=bar, taskdone=taskdone, cores=cores, **others)
