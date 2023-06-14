@@ -1,6 +1,6 @@
 import subprocess
 from .pluginsolver import PluginSolver
-from .plugins.status.timeouter import Timeouter
+from .plugins.status.limiter import Limiter
 
 class TimedSolver(PluginSolver):
 
@@ -8,7 +8,7 @@ class TimedSolver(PluginSolver):
       self.timeout = timeout
       self.limit = limit if limit else f"T{timeout}"
       #assert(self.limit.startswith("T"))
-      new = [Timeouter()]
+      new = [Limiter()]
       PluginSolver.__init__(self, plugins=plugins+new)
 
    def __repr__(self):

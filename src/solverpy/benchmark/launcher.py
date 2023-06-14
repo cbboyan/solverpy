@@ -57,7 +57,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=Tr
       logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
    if todo:
       if shuffle:
-         logger.debuf(f"shuffling tasks")
+         logger.debug(f"shuffling tasks")
          random.shuffle(todo)
       bar = SolvingBar(len(todo), desc, miniters=1)
       results = launcher.launch(todo, bar=bar, taskdone=taskdone, cores=cores, **others)
