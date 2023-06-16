@@ -5,8 +5,8 @@ class Limiter(Decorator):
    def register(self, solver):
       super().register(solver)
       self.timeouts = solver.timeouts
-      self.timeout = solver.timeout
-      self.limit = solver.limit
+      self.timeout = solver.limits.timeout
+      self.limit = solver.limits.limit
    
    def update(self, instance, strategy, output, result):
       if (not result) or ("status" not in result) or ("runtime" not in result):

@@ -33,19 +33,40 @@ def format(f_in):
       return "text/svm"
    return "unknown"
 
+def load(f_in):
+   logger.info(f"Loading trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
+   if iscompressed(f_in): 
+      logger.debug(f"loading compressed data")
+      (z_data, z_label) = datafiles(f_in)
+      data = scipy.sparse.load_npz(z_data)
+      label = numpy.load(z_label, allow_pickle=True)["label"]
+      logger.debug(f"compressed data loaded")
+   else:
+      logger.debug(f"loading uncompressed data")
+      (data, label) = load_svmlight_file(f_in, zero_based=True)
+      logger.debug(f"uncompressed data loaded")
+   logger.info("Trains loaded.")
+   return (data, label)
+
+def save(data, label, f_in):
+   (z_data, z_label) = datafiles(f_in)
+   logger.debug(f"saving compressed data to {f_in}")
+   logger.debug(f"> | shape        | {data.shape[0]}x{data.shape[1]} |")
+   logger.debug(f"> | values       | {data.nnz} | ")
+   logger.debug(f"> | format       | {data.format} |")
+   scipy.sparse.save_npz(z_data, data, compressed=True)
+   logger.debug(f"saving compressed labels to {z_label}")
+   numpy.savez_compressed(z_label, label=label)
+   logger.debug(f"> | compressed   | {human.humanbytes(size(f_in))} |")
+
 def compress(f_in, keep=False):
    logger.info(f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
    if iscompressed(f_in):
       logger.warning(f"Trains {f_in} are already compressed.  Skipped.")
       return
-   logger.debug("uncompressed size: %s" % human.humanbytes(size(f_in)))
+   logger.debug(f"> | uncompressed | {human.humanbytes(size(f_in))} |")
    (data, label) = load_svmlight_file(f_in, zero_based=True)
-   (z_data, z_label) = datafiles(f_in)
-   logger.debug(f"compressing data to {z_data}")
-   scipy.sparse.save_npz(z_data, data, compressed=True)
-   logger.debug(f"compressing labels to {z_label}")
-   numpy.savez_compressed(z_label, label=label)
-   logger.debug(f"compressed size: {human.humanbytes(size(f_in))}")
+   save(data, label, f_in)
    if iscompressed(f_in) and not keep:
       logger.debug(f"deleting the uncompressed file")
       os.remove(f_in)
@@ -66,18 +87,4 @@ def decompress(f_in, keep=True):
          os.remove(f)
    logger.info(f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
-def load(f_in):
-   logger.info(f"Loading trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
-   if iscompressed(f_in): 
-      logger.debug(f"loading compressed data")
-      (z_data, z_label) = datafiles(f_in)
-      data = scipy.sparse.load_npz(z_data)
-      label = numpy.load(z_label, allow_pickle=True)["label"]
-      logger.debug(f"compressed data loaded")
-   else:
-      logger.debug(f"loading uncompressed data")
-      (data, label) = load_svmlight_file(f_in, zero_based=True)
-      logger.debug(f"uncompressed data loaded")
-   logger.info("Trains loaded.")
-   return (data, label)
 

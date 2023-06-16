@@ -15,12 +15,12 @@ class ShellSolver(TimedSolver):
          new.append(Timeout(limits.timeout+wait))
       if limits.memory:
          new.append(Memory(limits.memory))
-      TimedSolver.__init__(self, limits.timeout, limit=limit, plugins=plugins+new)
+      TimedSolver.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
       self.cmd = self.decorate(cmd)
 
    @property
    def name(self):
-      return super().name + ":" + self.limit
+      return f"{super().name}:{self.limits.limit}"
 
    def run(self, instance, strategy):
       cmd = self.command(instance, strategy)

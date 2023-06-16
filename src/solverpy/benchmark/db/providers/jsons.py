@@ -11,7 +11,7 @@ NAME = "results"
 class Jsons(CachedProvider):
 
    def __init__(self, bid, sid, limit=None, store_cached=False):
-      CachedProvider.__init__(self, bid, sid, limit, store_cached)
+      CachedProvider.__init__(self, bid, sid, limit, store_cached, compress=True)
 
    def query(self, task):
       if task.problem in self.cache:
@@ -26,7 +26,7 @@ class Jsons(CachedProvider):
    def cachepath(self):
       return os.path.join(
          bids.dbpath(NAME),
-         bids.name(self.bid),
+         bids.name(self.bid, limit=self.limittype()),
          sids.name(self.sid)).rstrip("/") + ".json"
 
    def cacheload(self, fr):
@@ -34,6 +34,9 @@ class Jsons(CachedProvider):
 
    def cachedump(self, fw):
       json.dump(self.cache, fw, indent=3, sort_keys=True)
+
+   def limittype(self):
+      return "".join(sorted(x[0] for x  in self.limit.split("-")))
 
 
 class JsonsStore(Jsons):

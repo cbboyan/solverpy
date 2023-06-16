@@ -3,7 +3,7 @@ def par2score(solver, result):
    if solver.solved(result):
       return result["runtime"]
    else:
-      return 2 * solver.timeout
+      return 2 * solver.limits.timeout
 
 def summary(solver, bid, sid, results, refsolved=None, refpar2=None):
    solved = set()

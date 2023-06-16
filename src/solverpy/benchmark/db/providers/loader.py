@@ -16,13 +16,13 @@ class Loader(Provider):
    def query(self, task):
       self.outputs.solver = task.solver 
       f = self.outputs.path(task.instance, task.strategy)
-      if not os.path.isfile(f):
-         return None
       #logger.debug(f"loading output for task {task} from {f}")
       if os.path.isfile(f+".gz"):
          fr = gzip.open(f+".gz","rb")
-      else:
+      elif os.path.isfile(f):
          fr = open(f,"rb")
+      else:
+         return None
       output = fr.read().decode()
       fr.close()
       result = task.solver.process(output)

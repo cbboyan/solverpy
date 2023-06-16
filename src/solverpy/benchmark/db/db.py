@@ -28,7 +28,7 @@ class DB:
             provider.commit()
 
    def querytask(self, task):
-      self.connect(task.bid, task.sid, task.solver.limit)
+      self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          result = provider.query(task)
@@ -37,13 +37,13 @@ class DB:
       return None
    
    def cachedtask(self, task, result):
-      self.connect(task.bid, task.sid, task.solver.limit)
+      self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.cached(task, result)
 
    def storetask(self, task, result):
-      self.connect(task.bid, task.sid, task.solver.limit)
+      self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.store(task, result)

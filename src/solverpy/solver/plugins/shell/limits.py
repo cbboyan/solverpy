@@ -24,19 +24,18 @@ class Limits(Decorator):
    def __str__(self):
       return self.limit
 
-   @property
-   def key(self):
-      return (self.timeout, self.memory)
-
    def __lt__(self, other):
       if self.limit and not other.limit:
          return None
-      if self.memory and not self.memory:
+      if self.memory and not other.memory:
          return None
-      return self.key < other.key
+      if not self.memory:
+         return (self.timeout < other.timeout) 
+      else:
+         return (self.timeout < other.timeout) or (self.memory < other.memory)
    
-   def __le__(self, other):
-      return (self.key == other.key) or (self < other)
+   #def __le__(self, other):
+   #   return (self.key == other.key) or (self < other)
 
    def decorate(self, cmd):
       return f"{cmd} {self.args}" if self.args else cmd

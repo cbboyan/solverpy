@@ -22,7 +22,7 @@ class Outputs(Decorator):
    
    def path(self, instance, strategy):
       (bid, problem) = instance
-      bs = bids.name(bid, limit=self.solver.limit)
+      bs = bids.name(bid, limit=self.solver.limits.limit)
       if self._flatten:
          slash = "_._" if (self._flatten is True) else self._flatten
          problem = problem.replace("/", slash)

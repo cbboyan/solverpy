@@ -5,7 +5,8 @@ class Reloader(TimedSolver):
 
    def __init__(self, solver, plugins=[]):
       self.solver = solver
-      TimedSolver.__init__(self, solver.timeout, solver.limit, plugins)
+      TimedSolver.__init__(
+            self, solver.limits.timeout, solver.limits.limit, plugins)
       self.outputs = Outputs()
       self.outputs.register(self.solver)
 
