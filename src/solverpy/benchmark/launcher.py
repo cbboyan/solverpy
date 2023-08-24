@@ -11,7 +11,7 @@ from .report import markdown
 
 logger = logging.getLogger(__name__)
 
-def init(run=None):
+def init(setup=None):
    log.init()
    header = ["", ""]
    def fmt(y):
@@ -19,8 +19,8 @@ def init(run=None):
          return "[" + ", ".join(str(a) for a in y ) + "]"
       return str(y)
    report = ""
-   if run:
-      rows = [[str(x),fmt(y)] for (x,y) in run.items()]
+   if setup:
+      rows = [[str(x),fmt(y)] for (x,y) in setup.items()]
       report = markdown.heading("Experiments", level=2)
       report += markdown.heading("Setup", level=3)
       report += markdown.table(header, rows)

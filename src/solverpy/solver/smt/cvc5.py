@@ -29,6 +29,11 @@ CVC5_KEYS = [
 ]
 
 CVC5_TIMEOUT = re.compile(r"cvc5 interrupted by (timeout)")
+# extend with:
+#   GNU MP: Cannot allocate memory
+#   (error "std::bad_alloc")
+#   terminate called after throwing an instance of 'std::bad_alloc'
+#   [LightGBM] [Warning] std::bad_alloc
 
 class Cvc5(SmtSolver):
    
