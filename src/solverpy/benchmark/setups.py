@@ -2,7 +2,7 @@ from . import db
 from . import launcher
 from ..solver.smt import Cvc5
 from ..solver import plugins 
-from ..solver.plugins.trains import Cvc5Trains #, Cvc5TrainsDebug
+from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 
 
 def cvc5(setup, trains=False):
@@ -46,11 +46,12 @@ def cvc5(setup, trains=False):
       trains = Cvc5Trains(setup["dataname"])
    if trains:
       setup["plugins"].append(trains)
+      if "debug-trains" in options:
+         setup["plugins"].append(Cvc5TrainsDebug("flatten" in options))
       setup["trains"] = trains      
 
    solver = Cvc5(setup["limit"], plugins=setup["plugins"], static=setup["static"])
    setup["solver"] = solver
-   setup["flatten"] = "flatten" in options
    return setup
 
 
