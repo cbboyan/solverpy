@@ -77,8 +77,14 @@ def evaluation(setup):
 def launch(setup):
    launcher.init(setup)
    launcher.launch(**setup)
+   
    options = setup["options"]
    if ("trains" in setup) and ("compress" in options) and \
       ("no-compress-trains" not in options):
          setup["trains"].compress()
+
+   builder = setup["builder"] if "builder" in setup else None
+   if builder:
+      builder.build()
+      setup["news"] = builder.strategies
 

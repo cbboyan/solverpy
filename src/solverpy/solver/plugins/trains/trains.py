@@ -29,6 +29,10 @@ class Trains(Decorator):
       "Extract training samples from `output`."
       raise NotImlementedError
    
+   def trainid(self):
+      "Return the train id."
+      return self.file
+   
    def save(self, instance, strategy, samples):
       if not samples:
          return
