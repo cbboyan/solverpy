@@ -26,21 +26,26 @@ def gitlog():
    commits.reverse()
    return commits
 
-commits = gitlog()
-cur = [0, 0, 0]  # [MAJOR, MINOR, PATCH]
-for (hsh, ver, typ, msg) in commits:
-   if ver:
-      cur = ver
-      continue # this commit already has a version tag
-   if typ: # but not ver
-      if typ.endswith("!"):
-         cur = [cur[0]+1, 0, 0] # increase MAJOR
-      elif typ.startswith("feat"):
-         cur = [cur[0], cur[1]+1, 0] # increase MINOR
-      elif typ.startswith("fix"):
-         cur[2] += 1 # increase PATCH
-      else: 
-         continue # this commit needs no version tag
-      tag = f"v{'.'.join(map(str,cur))}"
-      print(f"git tag -a {tag} {hsh}")
+def gittags():
+   commits = gitlog()
+   cur = [0, 0, 0]  # [MAJOR, MINOR, PATCH]
+   for (hsh, ver, typ, msg) in commits:
+      if ver:
+         cur = ver
+         continue # this commit already has a version tag
+      if typ: # but not ver
+         if typ.endswith("!"):
+            cur = [cur[0]+1, 0, 0] # increase MAJOR
+         elif typ.startswith("feat"):
+            cur = [cur[0], cur[1]+1, 0] # increase MINOR
+         elif typ.startswith("fix"):
+            cur[2] += 1 # increase PATCH
+         else: 
+            continue # this commit needs no version tag
+         tag = f"v{'.'.join(map(str,cur))}"
+         cmd = f"git tag -a {tag} {hsh} -m 'Version {tag}'"
+         print(cmd)
+
+if __name__ == "__main__":
+   gittags()
 
