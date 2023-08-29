@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 previous_tag=0
-for current_tag in $(git tag --sort=-creatordate)
+#for current_tag in $(git tag --sort=-creatordate)
+for current_tag in $(git tag --sort=-refname)
 do
 
 if [ "$previous_tag" != 0 ];then

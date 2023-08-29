@@ -56,3 +56,22 @@
 *  setup scripts [View](https://bitbucket.org/projects/test/repos/my-project/commits/6c1123ed9af2106913dfb1ca3a5d0f77213bfab6)
 
 
+## v0.1.1 (2023-05-15)
+
+*  init version [View](https://bitbucket.org/projects/test/repos/my-project/commits/add802e942f0115c7d0f30f561d5ba2dea6a8adb)
+*  structure modules [View](https://bitbucket.org/projects/test/repos/my-project/commits/badce544b6d2a37c67902e6ce00c428d4c03752a)
+*  flushing of provider plugins [View](https://bitbucket.org/projects/test/repos/my-project/commits/2bd23edea0f7592deb867b3f68b5ab26ed07cf76)
+*  cvc5 fixes and multiple evaluation [View](https://bitbucket.org/projects/test/repos/my-project/commits/d1cc0fe51008ee86499ab7505b650867354d9d02)
+*  simplify db plugins [View](https://bitbucket.org/projects/test/repos/my-project/commits/43ed840b2950ceb304820d70dcb0a3af24fe6ef8)
+*  default plugins [View](https://bitbucket.org/projects/test/repos/my-project/commits/81d153a81bc1bff1b1e37a267e33298c21f94508)
+*  refactor paths [View](https://bitbucket.org/projects/test/repos/my-project/commits/287e144b891f65bc293be4b61432f8f06715e8fc)
+*  parametric sids [View](https://bitbucket.org/projects/test/repos/my-project/commits/0c2be10a464963d9b5de93359f8e77758a9c6d38)
+*  remove unspacing from sid [View](https://bitbucket.org/projects/test/repos/my-project/commits/42649bd55f6885ee9aebddda8d6a1d180ebd12b2)
+*  add unspace to ShellSolver [View](https://bitbucket.org/projects/test/repos/my-project/commits/82a56cf9ba5baded23672b54aa4057dc80092bd2)
+*  fix unspacing [View](https://bitbucket.org/projects/test/repos/my-project/commits/0e009663c0367ae38fb0c98293868d70d79a3a7a)
+*  remove yamls from dbdebug [View](https://bitbucket.org/projects/test/repos/my-project/commits/24cd468b267b38cd17535b624858c412c597f4e2)
+*  db refactor [View](https://bitbucket.org/projects/test/repos/my-project/commits/7528ffab1396e8771f214957a9b581a47747360c)
+*  auto versioning with setuptools-git-versioning [View](https://bitbucket.org/projects/test/repos/my-project/commits/1824d2e2afea8b4f48d8942b0d6185abf214a8c9)
+*  gitignore [View](https://bitbucket.org/projects/test/repos/my-project/commits/9dae1052aefcb4cbb665c91d7dad50f6fce0c879)
+
+
