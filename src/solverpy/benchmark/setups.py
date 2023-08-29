@@ -86,6 +86,7 @@ def cvc5tune(trains, devels=None, tuneargs=None):
    trains["builder"] = Cvc5Tune(trains, devels, tuneargs)
    return trains
 
+
 def launch(setup):
    launcher.init(setup)
    launcher.launch(**setup)
@@ -102,4 +103,22 @@ def launch(setup):
       logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
    
    return setup
+
+def loops(trains, devels=None):
+   if devels is None:
+      devels = trains
+
+   tname = trains["dataname"]
+   dname = devels["dataname"]
+   
+   n = 0
+   trains["dataname"] = f"{tname}/loop{n:02d}"
+   devels["dataname"] = f"{dname}/loop{n:02d}"
+
+   launch(devel)
+   launch(trains)
+   
+
+
+
 
