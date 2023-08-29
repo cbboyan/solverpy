@@ -10,3 +10,7 @@
 * to see the current version string
     $ setuptools-git-versioning
 
+* to update the tags
+    $ ./version-tags.py
+  and run the commands outputed
+
