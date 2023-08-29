@@ -1,3 +1,12 @@
+## v1.2.1 (2023-08-30)
+
+*  build: auto update of git version tags [View](https://bitbucket.org/projects/test/repos/my-project/commits/550c3f14e89d78c3120eb54590c71c819753c543)
+*  docs: created CHANGELOG [View](https://bitbucket.org/projects/test/repos/my-project/commits/d0e6b99428cd74e243c2bdf2a156233aa7de2310)
+*  build: CHANGELOG updates [View](https://bitbucket.org/projects/test/repos/my-project/commits/1568647afd263465a5ffe471cde3da9f3f8a48e7)
+*  build: update version control [View](https://bitbucket.org/projects/test/repos/my-project/commits/ad9ed7fd79cb07ee8905cc7f6e58b5acece94cba)
+*  fix: setup for cvc5 model builder [View](https://bitbucket.org/projects/test/repos/my-project/commits/5f101c3b4a80e12ad98a3da9a9b1ab15f935b81d)
+
+
 ## v1.2.0 (2023-08-29)
 
 *  feat: introduce model builders for lgbtune [View](https://bitbucket.org/projects/test/repos/my-project/commits/a40d6a31b44602943f66ddb0800fc83b4c97d6cf)
