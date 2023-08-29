@@ -1,9 +1,13 @@
+import logging
+
 from . import db
 from . import launcher
 from ..solver.smt import Cvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
+from ..builder.cvc5tune import Cvc5Tune
 
+logger = logging.getLogger(__name__)
 
 def cvc5(setup, trains=False):
    def default(key, val):
@@ -74,6 +78,14 @@ def evaluation(setup):
          setup["bidlist"] = f.read().strip().split("\n")
    return setup
 
+def cvc5tune(trains, devels=None, tuneargs=None):
+   if "refs" not in trains:
+      ref = trains["ref"]
+      idx = ref if (type(ref) is int) else 0
+      trains["refs"] = [ trains["sidlist"][idx] ]
+   trains["builder"] = Cvc5Tune(trains, devels, tuneargs)
+   return trains
+
 def launch(setup):
    launcher.init(setup)
    launcher.launch(**setup)
@@ -87,4 +99,7 @@ def launch(setup):
    if builder:
       builder.build()
       setup["news"] = builder.strategies
+      logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
+   
+   return setup
 
