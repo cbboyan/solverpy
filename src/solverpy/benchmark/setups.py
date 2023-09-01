@@ -6,17 +6,21 @@ from ..solver.smt import Cvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 from ..builder.cvc5tune import Cvc5Tune
+from ..trains import svm
 
 logger = logging.getLogger(__name__)
+   
 
 def cvc5(setup, trains=False):
    def default(key, val):
+      nonlocal setup
       if key not in setup:
          setup[key] = val
    def ensure(option):
+      nonlocal options
       if (option not in options) and (f"no-{option}" not in options):
          options.append(option)
-        
+
    default("options", ["flatten", "compress"])
    options = setup["options"]
    ensure("flatten") 
@@ -61,6 +65,7 @@ def cvc5(setup, trains=False):
 
 def evaluation(setup):
    def default(key, val):
+      nonlocal setup
       if key not in setup:
          setup[key] = val
 
@@ -76,6 +81,30 @@ def evaluation(setup):
    if "bidlist" not in setup:
       with open(setup["bidfile"]) as f:
          setup["bidlist"] = f.read().strip().split("\n")
+
+   if "loops" in setup:
+      setup = looping(setup)
+   return setup
+
+def loopinit(setup):
+   base = setup["basedataname"]
+   if "it" not in setup:
+      setup["it"] = 0
+      filename = "train.in"
+   else:
+      setup["it"] += 1
+      setup["previous_trains"] = setup["trains"].path()
+      filename = "addon.in"
+   it = setup["it"]
+   setup["dataname"] = f"{base}/loop{it:02d}"
+   setup["trains"].reset(setup["dataname"], filename)
+   if "builder" in setup:
+      setup["builder"].reset(setup["dataname"])
+   return setup
+
+def looping(setup):
+   setup["basedataname"] = setup["dataname"]
+   setup = loopinit(setup)
    return setup
 
 def cvc5tune(trains, devels=None, tuneargs=None):
@@ -86,39 +115,32 @@ def cvc5tune(trains, devels=None, tuneargs=None):
    trains["builder"] = Cvc5Tune(trains, devels, tuneargs)
    return trains
 
-
-def launch(setup):
-   launcher.init(setup)
+def oneloop(setup):
+   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0}.")
    launcher.launch(**setup)
-   
    options = setup["options"]
    if ("trains" in setup) and ("compress" in options) and \
       ("no-compress-trains" not in options):
          setup["trains"].compress()
-
+   if "previous_trains" in setup:
+      f_out = setup["trains"].path(filename="train.in")
+      svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
+      setup["trains"].reset(filename="train.in")
    builder = setup["builder"] if "builder" in setup else None
    if builder:
       builder.build()
       setup["news"] = builder.strategies
       logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
-   
    return setup
 
-def loops(trains, devels=None):
-   if devels is None:
-      devels = trains
-
-   tname = trains["dataname"]
-   dname = devels["dataname"]
-   
-   n = 0
-   trains["dataname"] = f"{tname}/loop{n:02d}"
-   devels["dataname"] = f"{dname}/loop{n:02d}"
-
-   launch(devel)
-   launch(trains)
-   
-
-
-
+def launch(setup):
+   launcher.init(setup)
+   setup = oneloop(setup)
+   if "loops" not in setup:
+      return setup
+   while setup["it"] < setup["loops"]:
+      setup["sidlist"] = setup["news"]
+      setup = loopinit(setup)
+      setup = oneloop(setup)
+   return setup
 

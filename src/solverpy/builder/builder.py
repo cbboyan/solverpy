@@ -17,6 +17,9 @@ class Builder:
    def path(self):
       return os.path.join(bids.dbpath(NAME), self._dataname)
 
+   def reset(self, dataname):
+      self._dataname = dataname
+
    def build(self):
       "Build the model(s). Return the list of invented strategies."
       raise NotImlementedError()

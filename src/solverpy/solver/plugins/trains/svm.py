@@ -27,11 +27,11 @@ class SvmTrains(Trains):
       self.info.total += count
       self.info.pos += pos
       self.info.neg += neg
-      with open(self.file+"-stats.txt", "a") as infa:
+      with open(self.path()+"-stats.txt", "a") as infa:
          infa.write(f"{instance} {strategy}: {count} ({pos} / {neg})\n")
 
    def compress(self):
       logger.info(f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) ")
-      if os.path.isfile(self.file):
-         svm.compress(self.file)
+      if os.path.isfile(self.path()):
+         svm.compress(self.path())
         

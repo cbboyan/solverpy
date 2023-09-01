@@ -94,7 +94,7 @@ def merge(f_in1=None, f_in2=None, data1=None, data2=None, f_out=None):
    (d2,l2) = data2 if data2 else load(f_in2)
    logger.info(f"Merging data of shapes: {d1.shape[0]}x{d1.shape[1]} and {d2.shape[0]}x{d2.shape[1]}")
    d = scipy.sparse.vstack((d1, d2))
-   logger.info(f"Merging labels of shapes: {l1.shape} and {l2.shape}")
+   logger.info(f"Merging labels of shapes: {l1.shape[0]} and {l2.shape[0]}")
    l = numpy.concatenate((l1, l2))
    if f_out:
       save(d, l, f_out)

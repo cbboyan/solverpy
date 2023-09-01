@@ -38,10 +38,10 @@ class LgbTune(Builder):
 
    def build(self):
       logger.info(f"Building model: {self._dataname}")
-      logger.info(self._trains["trains"].trainid())
+      logger.debug(f'using trains: self._trains["trains"].path()')
   
-      f_train = self._trains["trains"].trainid()
-      f_test = self._devels["trains"].trainid()
+      f_train = self._trains["trains"].path()
+      f_test = self._devels["trains"].path()
       
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
       ret = lgbtune.train(
