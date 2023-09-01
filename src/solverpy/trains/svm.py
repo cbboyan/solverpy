@@ -87,4 +87,16 @@ def decompress(f_in, keep=True):
          os.remove(f)
    logger.info(f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
+def merge(f_in1=None, f_in2=None, data1=None, data2=None, f_out=None):
+   if f_in1 and f_in2:
+      logger.info(f"Merging trains: {f_in1} and {f_in2}")
+   (d1,l1) = data1 if data1 else load(f_in1)
+   (d2,l2) = data2 if data2 else load(f_in2)
+   logger.info(f"Merging data of shapes: {d1.shape[0]}x{d1.shape[1]} and {d2.shape[0]}x{d2.shape[1]}")
+   d = scipy.sparse.vstack((d1, d2))
+   logger.info(f"Merging labels of shapes: {l1.shape} and {l2.shape}")
+   l = numpy.concatenate((l1, l2))
+   if f_out:
+      save(d, l, f_out)
+   return (d,l)
 
