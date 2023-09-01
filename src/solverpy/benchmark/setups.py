@@ -116,7 +116,7 @@ def cvc5tune(trains, devels=None, tuneargs=None):
    return trains
 
 def oneloop(setup):
-   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0}.")
+   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname'] if 'dataname' in setup else ''}.")
    launcher.launch(**setup)
    options = setup["options"]
    if ("trains" in setup) and ("compress" in options) and \
@@ -133,14 +133,20 @@ def oneloop(setup):
       logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
    return setup
 
-def launch(setup):
+def launch(setup, devels=None):
    launcher.init(setup)
-   setup = oneloop(setup)
+   if devels: 
+      oneloop(devels)
+   oneloop(setup)
    if "loops" not in setup:
       return setup
    while setup["it"] < setup["loops"]:
       setup["sidlist"] = setup["news"]
-      setup = loopinit(setup)
-      setup = oneloop(setup)
+      if devels:
+         devels["sidlist"] = setup["news"]
+         loopinit(devels)
+         oneloop(devels)
+      loopinit(setup)
+      oneloop(setup)
    return setup
 
