@@ -1,8 +1,17 @@
+## v1.3.1 (2023-09-01)
+
+*  fix: support multiple evalution loops [View](https://bitbucket.org/projects/test/repos/my-project/commits/c1bf30195dec657291360d8f761cdd4ec7edc94e)
+
+
+## v1.3.0 (2023-09-01)
+
+*  chore: prepeare for looping setup [View](https://bitbucket.org/projects/test/repos/my-project/commits/778624dcf68a7b0d8966ce84eb52179d3f4fe931)
+*  feat: support for merging of trains [View](https://bitbucket.org/projects/test/repos/my-project/commits/c2ae164b87b4a36685b5a6859ca44d20ad55b514)
+
+
 ## v1.2.1 (2023-08-30)
 
 *  build: auto update of git version tags [View](https://bitbucket.org/projects/test/repos/my-project/commits/550c3f14e89d78c3120eb54590c71c819753c543)
-*  docs: created CHANGELOG [View](https://bitbucket.org/projects/test/repos/my-project/commits/d0e6b99428cd74e243c2bdf2a156233aa7de2310)
-*  build: CHANGELOG updates [View](https://bitbucket.org/projects/test/repos/my-project/commits/1568647afd263465a5ffe471cde3da9f3f8a48e7)
 *  build: update version control [View](https://bitbucket.org/projects/test/repos/my-project/commits/ad9ed7fd79cb07ee8905cc7f6e58b5acece94cba)
 *  fix: setup for cvc5 model builder [View](https://bitbucket.org/projects/test/repos/my-project/commits/5f101c3b4a80e12ad98a3da9a9b1ab15f935b81d)
 
