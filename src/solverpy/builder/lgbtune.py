@@ -38,7 +38,7 @@ class LgbTune(Builder):
 
    def build(self):
       logger.info(f"Building model: {self._dataname}")
-      logger.debug(f'using trains: self._trains["trains"].path()')
+      logger.debug(f'using trains: {self._trains["trains"].path()}')
   
       f_train = self._trains["trains"].path()
       f_test = self._devels["trains"].path()

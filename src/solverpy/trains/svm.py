@@ -58,6 +58,7 @@ def save(data, label, f_in):
    logger.debug(f"saving compressed labels to {z_label}")
    numpy.savez_compressed(z_label, label=label)
    logger.debug(f"> | compressed   | {human.humanbytes(size(f_in))} |")
+   logger.info(f"Saved trains: {f_in}")
 
 def compress(f_in, keep=False):
    logger.info(f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")

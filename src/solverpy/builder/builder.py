@@ -10,9 +10,11 @@ logger = logging.getLogger(__name__)
 class Builder:
     
    def __init__(self, dataname):
-      #self._models = []
       self._strats = []
       self._dataname = dataname
+
+   def __repr__(self):
+      return f"{type(self).__name__}({self._dataname})"
 
    def path(self):
       return os.path.join(bids.dbpath(NAME), self._dataname)
@@ -21,17 +23,12 @@ class Builder:
       self._dataname = dataname
 
    def build(self):
-      "Build the model(s). Return the list of invented strategies."
+      "Build the model(s). Save the list of invented strategies `_strats`."
       raise NotImlementedError()
    
    def apply(self, sid, model):
       raise NotImlementedError()
  
-   #@property
-   #def models(self):
-   #   "Return the created model(s)."
-   #   return self._models
-
    @property
    def strategies(self):
       "Return all created strategies."

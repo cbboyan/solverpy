@@ -1,3 +1,8 @@
+## v1.3.2 (2023-09-01)
+
+*  fix: support for looping with development set [View](https://bitbucket.org/projects/test/repos/my-project/commits/5609d20a29688eb2cf412ccf95e061222f795e99)
+
+
 ## v1.3.1 (2023-09-01)
 
 *  fix: support multiple evalution loops [View](https://bitbucket.org/projects/test/repos/my-project/commits/c1bf30195dec657291360d8f761cdd4ec7edc94e)

@@ -116,37 +116,52 @@ def cvc5tune(trains, devels=None, tuneargs=None):
    return trains
 
 def oneloop(setup):
+   def do_compress(setup):
+      options = setup["options"]
+      if ("trains" in setup) and ("compress" in options) and \
+         ("no-compress-trains" not in options):
+            setup["trains"].compress()
+      return setup
+   def do_merge(setup):
+      if "previous_trains" in setup:
+         f_out = setup["trains"].path(filename="train.in")
+         svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
+         setup["trains"].reset(filename="train.in")
+      return setup
+   def do_build(setup):
+      builder = setup["builder"] if "builder" in setup else None
+      if not builder:
+         return
+      if ("loops" not in setup) or (setup["it"] != setup["loops"]):
+         # do not build in the last loop
+         builder.build()
+         setup["news"] = builder.strategies
+         logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
+
    logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname'] if 'dataname' in setup else ''}.")
    launcher.launch(**setup)
-   options = setup["options"]
-   if ("trains" in setup) and ("compress" in options) and \
-      ("no-compress-trains" not in options):
-         setup["trains"].compress()
-   if "previous_trains" in setup:
-      f_out = setup["trains"].path(filename="train.in")
-      svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
-      setup["trains"].reset(filename="train.in")
-   builder = setup["builder"] if "builder" in setup else None
-   if builder:
-      builder.build()
-      setup["news"] = builder.strategies
-      logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
+   do_compress(setup)
+   do_merge(setup)
+   do_build(setup)
    return setup
 
 def launch(setup, devels=None):
+   def do_loop(col):
+      if not col: return
+      oneloop(col)
+   def do_iter(col):
+      if not col: return
+      col["sidlist"] = list(setup["refs"]) if "refs" in setup else []
+      col["sidlist"].extend(setup["news"])
+      loopinit(col)
+      oneloop(col)
+
    launcher.init(setup)
-   if devels: 
-      oneloop(devels)
-   oneloop(setup)
-   if "loops" not in setup:
-      return setup
-   while setup["it"] < setup["loops"]:
-      setup["sidlist"] = setup["news"]
-      if devels:
-         devels["sidlist"] = setup["news"]
-         loopinit(devels)
-         oneloop(devels)
-      loopinit(setup)
-      oneloop(setup)
+   do_loop(devels)
+   do_loop(setup)
+   if "loops" in setup:
+      while setup["it"] < setup["loops"]:
+         do_iter(devels)
+         do_iter(setup)
    return setup
 
