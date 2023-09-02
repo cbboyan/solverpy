@@ -116,33 +116,30 @@ def cvc5tune(trains, devels=None, tuneargs=None):
    return trains
 
 def oneloop(setup):
-   def do_compress(setup):
+   def is_last(setup):
+      return ("loops" in setup) and (setup["it"] == setup["loops"])
+   def trains_compress(setup):
       options = setup["options"]
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
             setup["trains"].compress()
-      return setup
-   def do_merge(setup):
-      if "previous_trains" in setup:
+   def trains_merge(setup):
+      if ("previous_trains" in setup) and not is_last(setup):
          f_out = setup["trains"].path(filename="train.in")
          svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
          setup["trains"].reset(filename="train.in")
-      return setup
-   def do_build(setup):
+   def model_build(setup):
       builder = setup["builder"] if "builder" in setup else None
-      if not builder:
-         return
-      if ("loops" not in setup) or (setup["it"] != setup["loops"]):
-         # do not build in the last loop
+      if builder and not is_last(setup):
          builder.build()
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
    logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname'] if 'dataname' in setup else ''}.")
    launcher.launch(**setup)
-   do_compress(setup)
-   do_merge(setup)
-   do_build(setup)
+   trains_compress(setup)
+   trains_merge(setup)
+   model_build(setup)
    return setup
 
 def launch(setup, devels=None):
