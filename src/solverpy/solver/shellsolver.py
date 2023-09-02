@@ -1,3 +1,4 @@
+import os
 import subprocess
 from .timedsolver import TimedSolver
 from .plugins.shell.limits import Limits
@@ -24,10 +25,13 @@ class ShellSolver(TimedSolver):
 
    def run(self, instance, strategy):
       cmd = self.command(instance, strategy)
+      env0 = dict(os.environ)
+      env0["OMP_NUM_THREADS"] = "1"
+      #env0["CUDA_VISIBLE_DEVICES"] = "-1"
       if self.unspace:
          cmd = sids.unspace(cmd)
       try:
-         output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+         output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, env=env0)
       except subprocess.CalledProcessError as e:
          output = e.output
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()

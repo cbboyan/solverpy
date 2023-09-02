@@ -1,3 +1,13 @@
+## v1.3.4 (2023-09-03)
+
+*  fix: skip merging train in the last loop [View](https://bitbucket.org/projects/test/repos/my-project/commits/a0113680b45662f02f9be407b190447cd251384f)
+
+
+## v1.3.3 (2023-09-03)
+
+*  fix: skip building model in the last loop [View](https://bitbucket.org/projects/test/repos/my-project/commits/1a488524b7c175438690b249926fc0e4f4ecb95b)
+
+
 ## v1.3.2 (2023-09-01)
 
 *  fix: support for looping with development set [View](https://bitbucket.org/projects/test/repos/my-project/commits/5609d20a29688eb2cf412ccf95e061222f795e99)

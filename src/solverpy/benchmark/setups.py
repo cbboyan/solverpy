@@ -83,7 +83,7 @@ def evaluation(setup):
          setup["bidlist"] = f.read().strip().split("\n")
 
    if "loops" in setup:
-      setup = looping(setup)
+      looping(setup)
    return setup
 
 def loopinit(setup):
@@ -104,7 +104,7 @@ def loopinit(setup):
 
 def looping(setup):
    setup["basedataname"] = setup["dataname"]
-   setup = loopinit(setup)
+   loopinit(setup)
    return setup
 
 def cvc5tune(trains, devels=None, tuneargs=None):
