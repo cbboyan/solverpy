@@ -2,7 +2,9 @@ import logging
 
 from . import db
 from . import launcher
-from ..solver.smt import Cvc5
+from ..solver.smt import Cvc5 as SmtCvc5
+from ..solver.smt.cvc5 import CVC5_BINARY # == "cvc5"
+from ..solver.atp import Cvc5 as TptpCvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 from ..builder.cvc5tune import Cvc5Tune
@@ -11,7 +13,7 @@ from ..trains import svm
 logger = logging.getLogger(__name__)
    
 
-def cvc5(setup, trains=False):
+def cvc5(setup, trains=False, tptp=False):
    def default(key, val):
       nonlocal setup
       if key not in setup:
@@ -26,6 +28,7 @@ def cvc5(setup, trains=False):
    ensure("flatten") 
    ensure("compress")
    default("limit", "T1")
+   default("binary", CVC5_BINARY)
 
    if trains:
       static = " ".join([
@@ -58,7 +61,8 @@ def cvc5(setup, trains=False):
          setup["plugins"].append(Cvc5TrainsDebug("flatten" in options))
       setup["trains"] = trains      
 
-   solver = Cvc5(setup["limit"], plugins=setup["plugins"], static=setup["static"])
+   Cvc5 = TptpCvc5 if tptp else SmtCvc5
+   solver = Cvc5(setup["limit"], binary=setup["binary"], plugins=setup["plugins"], static=setup["static"])
    setup["solver"] = solver
    return setup
 

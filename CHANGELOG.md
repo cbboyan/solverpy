@@ -1,3 +1,8 @@
+## v1.3.5 (2023-09-03)
+
+*  fix: set OMP_NUM_THREADS=1 for shell solvers [View](https://bitbucket.org/projects/test/repos/my-project/commits/41e8ffa159007451dd3f4baec411ca5d3f198afc)
+
+
 ## v1.3.4 (2023-09-03)
 
 *  fix: skip merging train in the last loop [View](https://bitbucket.org/projects/test/repos/my-project/commits/a0113680b45662f02f9be407b190447cd251384f)
