@@ -1,3 +1,8 @@
+## v1.4.0 (2023-11-09)
+
+*  feat: support cvc5 as an atp/tptp solver [View](https://bitbucket.org/projects/test/repos/my-project/commits/42d6b47f35d79d4de07c90c5d879f5df34b09e6e)
+
+
 ## v1.3.5 (2023-09-03)
 
 *  fix: set OMP_NUM_THREADS=1 for shell solvers [View](https://bitbucket.org/projects/test/repos/my-project/commits/41e8ffa159007451dd3f4baec411ca5d3f198afc)

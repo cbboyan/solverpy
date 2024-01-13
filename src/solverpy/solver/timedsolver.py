@@ -14,7 +14,7 @@ class TimedSolver(PluginSolver):
    def __repr__(self):
       plgs = super().__repr__()
       plgs = f", plugins=[{plgs}]" if plgs else ""
-      return f"{type(self).__name__}('{self.limit}'{plgs})"
+      return f"{type(self).__name__}('{self.limits}'{plgs})"
 
    @property
    def timeouts(self):
