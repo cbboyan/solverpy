@@ -9,6 +9,7 @@ from ..solver import plugins
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 from ..builder.cvc5tune import Cvc5Tune
 from ..trains import svm
+from ..tools import log
 
 logger = logging.getLogger(__name__)
    
@@ -78,6 +79,7 @@ def evaluation(setup):
    default("bidfile", "bids")
    default("sidfile", "sids")
    default("db", db.default())
+   default("ntfy", None)
 
    if "sidlist" not in setup:
       with open(setup["sidfile"]) as f:
@@ -157,12 +159,15 @@ def launch(setup, devels=None):
       loopinit(col)
       oneloop(col)
 
+   log.ntfy(setup, f"solverpy: init")
    launcher.init(setup)
    do_loop(devels)
    do_loop(setup)
    if "loops" in setup:
       while setup["it"] < setup["loops"]:
+         log.ntfy(setup, f"solverpy: iter #{setup['it']}")
          do_iter(devels)
          do_iter(setup)
+   log.ntfy(setup, f"solverpy: done")
    return setup
 

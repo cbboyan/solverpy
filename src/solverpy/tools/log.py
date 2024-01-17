@@ -1,12 +1,25 @@
 import os, sys, io
 import atexit, traceback
 from datetime import datetime
+import requests
+import socket
 import logging
+
 from ..benchmark.path import bids
 
 logger = logging.getLogger(__name__)
 
 NAME = "logs"
+
+def ntfy(setup, msg):
+   if (not setup) or ("ntfy" not in setup):
+      return
+   channel = setup["ntfy"]
+   try:
+      hostname = socket.gethostname()
+      requests.post(f"https://ntfy.sh/{channel}", data=f"{hostname}: {msg}")
+   except IOError as e:
+      logger.warining(f"> Warning: ntfy I/O error ({e})")
 
 def filename():
    d_logs = bids.dbpath(NAME)
