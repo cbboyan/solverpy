@@ -1,9 +1,7 @@
 import re
 
 from ..tptpsolver import TptpSolver
-from ..plugins.shell.limits import Limits
 from ...tools import patterns, human
-
 
 V_BINARY = "vampire"
 

@@ -1,11 +1,16 @@
 from ..decorator import Decorator
+from ..translator import Translator
 
 def build(fun, arg):
    return fun % arg if isinstance(fun, str) else fun(arg)
 
-class Limits(Decorator):
+class Limits(Decorator, Translator):
+   """
+   This is either a decorator or a translator based on the value
+   of `cmdline`.
+   """
 
-   def __init__(self, limit, builder):
+   def __init__(self, limit, builder, cmdline=True):
       lims = {x[0]:x[1:] for x in limit.split("-") if x}
       self.timeout = int(lims["T"]) if "T" in lims else None
       self.memory = float(lims["M"]) if "M" in lims else None
@@ -15,8 +20,16 @@ class Limits(Decorator):
          print(e)
          raise Exception(f"solverpy: Invalid limit string: {limit}")
 
-      self.args = " ".join(lims)
+      delim = " " if cmdline else ""
+      self.strat = delim.join(lims)
+      self.cmdline = cmdline
+
+      #self.args = " ".join(lims)
       self.limit = limit
+   
+   def register(self, solver):
+      solver.translators.append(self)
+      solver.decorators.append(self)
 
    def __repr__(self):
       return f"{type(self).__name__}({repr(self.limit)})"
@@ -38,5 +51,18 @@ class Limits(Decorator):
    #   return (self.key == other.key) or (self < other)
 
    def decorate(self, cmd):
-      return f"{cmd} {self.args}" if self.args else cmd
+      if self.cmdline:
+         return f"{cmd} {self.strategy}" if self.strategy else cmd
+      else:
+         return cmd
+
+   def translate(self, instance, strategy):
+      if not self.cmdline:
+         return (instance, self.strategy + strategy)
+      else:
+         return (instance, strategy)
+  
+   @property
+   def strategy(self):
+      return self.strat
    
