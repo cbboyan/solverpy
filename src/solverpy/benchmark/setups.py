@@ -10,9 +10,47 @@ from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 from ..builder.cvc5tune import Cvc5Tune
 from ..trains import svm
 from ..tools import log
+from ..solver.atp.eprover import E
+from ..solver.atp.vampire import Vampire
 
 logger = logging.getLogger(__name__)
+
+# generic arguments accepted by solver constructors
+GENERICS = frozenset(["binary", "plugins", "static", "complete"])
+
+def default(setup, key, val):
+   if key not in setup:
+      setup[key] = val
+
+def ensure(options, option):
+   if (option not in options) and (f"no-{option}" not in options):
+      options.append(option)
+
+def solver(setup, mk_solver):
+   default(setup, "options", ["flatten", "compress"])
+   options = setup["options"]
+   ensure(options, "flatten") 
+   ensure(options, "compress")
+   default(setup, "limit", "T1")
    
+   if "plugins" not in setup:
+      if "outputs" not in options:
+         plugs = plugins.db() 
+      else:
+         plugs = plugins.outputs(flatten="flatten" in options, 
+                                 compress="compress" in options)
+      default(setup, "plugins", plugs)
+   
+   kwargs = {x:setup[x] for x in setup if x in GENERICS}
+   solver = mk_solver(setup["limit"], **kwargs)
+   setup["solver"] = solver
+   return setup
+
+def eprover(setup):
+   return solver(setup, E)
+
+def vampire(setup):
+   return solver(setup, Vampire)
 
 def cvc5(setup, trains=False, tptp=False):
    def default(key, val):
