@@ -8,7 +8,8 @@ from ..plugins.shell.time import Time
 P9_BINARY = "prover9"
 
 P9_STATIC = """
-set(prolog_style_variables).
+clear(print_given).
+clear(bell).
 """
 
 P9_BUILDER = {
