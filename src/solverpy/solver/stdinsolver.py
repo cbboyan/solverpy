@@ -40,6 +40,5 @@ class StdinSolver(TimedSolver):
       inputstr += strategy.encode()
       inputstr += b"\n"
       inputstr += open(instance, "rb").read()
-      print("cmd", self.cmd)
       return inputstr
 
