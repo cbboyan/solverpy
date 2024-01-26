@@ -12,6 +12,7 @@ from ..trains import svm
 from ..tools import log
 from ..solver.atp.eprover import E
 from ..solver.atp.vampire import Vampire
+from ..solver.atp.prover9 import Prover9
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,9 @@ def eprover(setup):
 
 def vampire(setup):
    return solver(setup, Vampire)
+
+def prover9(setup):
+   return solver(setup, Prover9)
 
 def cvc5(setup, trains=False, tptp=False):
    def default(key, val):
