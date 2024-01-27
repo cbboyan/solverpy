@@ -1,3 +1,43 @@
+## v1.6.5 (2024-01-27)
+
+*  fix: ensure prover9 terminates [View](https://bitbucket.org/projects/test/repos/my-project/commits/f3b6c92bbc79868d3760aff59fc000f3bb9634b9)
+
+
+## v1.6.4 (2024-01-26)
+
+*  fix: do not print command in StdinSolver [View](https://bitbucket.org/projects/test/repos/my-project/commits/93c3da00325045105596e0c5a29d545fcaf031da)
+
+
+## v1.6.3 (2024-01-26)
+
+*  fix: prover9 solver setup [View](https://bitbucket.org/projects/test/repos/my-project/commits/6c6c48c4bfb2b18d3bb8b89fa6ef16964e68eeb9)
+
+
+## v1.6.2 (2024-01-26)
+
+*  fix: change prover9 static options [View](https://bitbucket.org/projects/test/repos/my-project/commits/d11cb0cd01f2aed3ea5eccc3bcb252d8970adac8)
+
+
+## v1.6.1 (2024-01-24)
+
+*  fix: setup for a general solver [View](https://bitbucket.org/projects/test/repos/my-project/commits/8550265d40e5f7d13784b04a7b930968ef5f8417)
+
+
+## v1.6.0 (2024-01-22)
+
+*  feat: ATP wrapper for Prover9 [View](https://bitbucket.org/projects/test/repos/my-project/commits/59da0f894a7bbbb1f7d6a6ca7bd35cf9ca9b50f0)
+
+
+## v1.5.0 (2024-01-17)
+
+*  feat: basic ntfy support [View](https://bitbucket.org/projects/test/repos/my-project/commits/8da18e4c37adbf3282eb8a815675ee8359f4d416)
+
+
+## v1.4.1 (2024-01-13)
+
+*  fix: timed solver repr string fix [View](https://bitbucket.org/projects/test/repos/my-project/commits/2d46bcae1e2f663bd490d224bfe75660a3c29a3c)
+
+
 ## v1.4.0 (2023-11-09)
 
 *  feat: support cvc5 as an atp/tptp solver [View](https://bitbucket.org/projects/test/repos/my-project/commits/42d6b47f35d79d4de07c90c5d879f5df34b09e6e)
