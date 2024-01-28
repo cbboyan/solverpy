@@ -38,7 +38,7 @@ P9_STATUS = {
 
 class Prover9(StdinSolver):
 
-   def __init__(self, limit, binary=P9_BINARY, static=P9_STATIC, complete=True, plugins=[]):
+   def __init__(self, limit, binary=P9_BINARY, static=P9_STATIC, complete=False, plugins=[]):
       plugins = plugins + [ Time() ] 
       StdinSolver.__init__(self, binary, limit, P9_BUILDER, plugins, 2, static)
       self.complete = complete
