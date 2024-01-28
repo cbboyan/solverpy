@@ -30,10 +30,12 @@ class ShellSolver(TimedSolver):
       #env0["CUDA_VISIBLE_DEVICES"] = "-1"
       if self.unspace:
          cmd = sids.unspace(cmd)
+      self.exitcode = 0
       try:
          output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, env=env0)
       except subprocess.CalledProcessError as e:
          output = e.output
+         self.exitcode = e.returncode
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def command(self, instance, strategy):

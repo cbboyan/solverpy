@@ -7,6 +7,7 @@ class TimedSolver(PluginSolver):
 
    def __init__(self, timeout, limits=None, plugins=[]):
       self.limits = limits
+      self.exitcode = None
       assert(self.limits.limit.startswith("T"))
       new = [Limiter()]
       PluginSolver.__init__(self, plugins=plugins+new)

@@ -30,8 +30,10 @@ class StdinSolver(TimedSolver):
       try:
          output = subprocess.check_output(self.cmd, input=inputstr, 
             shell=True, stderr=subprocess.STDOUT, env=env0)
+         self.exitcode = 0
       except subprocess.CalledProcessError as e:
          output = e.output
+         self.exitcode = e.returncode
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {self.cmd}\n" + output.decode()
 
    def input(self, instance, strategy):
