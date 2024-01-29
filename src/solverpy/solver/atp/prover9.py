@@ -55,8 +55,11 @@ class Prover9(StdinSolver):
       else:
          result = {}
       
-      result["reason"] = reason 
-      result["status"] = P9_STATUS[reason] if (reason in P9_STATUS) else reason
+      result["reason"] = reason
+      if reason in P9_STATUS:
+         result["status"] = P9_STATUS[reason] 
+      elif reason.startswith("max_"): # some limit reached
+         result["status"] = "ResourceOut"
 
       result = patterns.mapval(result, human.numeric)
 
