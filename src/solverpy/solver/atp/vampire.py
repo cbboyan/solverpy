@@ -5,7 +5,7 @@ from ...tools import patterns, human
 
 V_BINARY = "vampire"
 
-V_STATIC = "--proof tptp -stat full --input_syntax tptp"
+V_STATIC = "--proof tptp -stat full --input_syntax tptp --memory_limit 2048"
 
 V_BUILDER = {
    "T": "--time_limit %ss",

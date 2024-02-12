@@ -6,7 +6,7 @@ from ...tools import patterns, human
 
 E_BINARY = "eprover"
 
-E_STATIC = "-s -p -R --print-statistics --tstp-format"
+E_STATIC = "-s -p -R --print-statistics --tstp-format --memory-limit=2048"
 
 E_BUILDER = {
    "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x,int(x)+1),

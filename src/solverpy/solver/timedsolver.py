@@ -31,7 +31,7 @@ class TimedSolver(PluginSolver):
          #if result["runtime"] < self.timeout:
             # recompute since we have more time or/and space
             return None
-      else:
+      elif result["status"] in self.success:
          # the cached result is solved
          if result["runtime"] > self.limits.timeout:
          #if result["runtime"] > self.timeout:
@@ -39,6 +39,10 @@ class TimedSolver(PluginSolver):
             return dict(result, 
                         status="TIMEOUT", 
                         runtime=self.limits.timeout)
+      else:
+         # recompute unknown results (GaveUp, unknown)
+         # TODO: do we want to always recompute?
+         return None
       # the result is applicable without changes
       return result
 
