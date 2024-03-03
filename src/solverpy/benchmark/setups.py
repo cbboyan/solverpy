@@ -3,7 +3,7 @@ import logging
 from . import db
 from . import launcher
 from ..solver.smt import Cvc5 as SmtCvc5
-from ..solver.smt.cvc5 import CVC5_BINARY # == "cvc5"
+from ..solver.smt.cvc5 import CVC5_BINARY, CVC5_STATIC # == "cvc5"
 from ..solver.atp import Cvc5 as TptpCvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
@@ -74,9 +74,7 @@ def cvc5(setup, trains=False, tptp=False):
    default("binary", CVC5_BINARY)
 
    if trains:
-      static = " ".join([
-         "--stats",
-         "--stats-internal",
+      static = CVC5_STATIC + " ".join([
          "--produce-proofs",
          "--produce-models",
          "--dump-instantiations",
@@ -85,7 +83,7 @@ def cvc5(setup, trains=False, tptp=False):
       ])
       default("static", static)
    else:
-      default("static", "--stats --stats-internal")
+      default("static", CVC5_STATIC)
 
    if "plugins" not in setup:
       if "outputs" not in options:
