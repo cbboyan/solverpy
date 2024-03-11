@@ -30,7 +30,11 @@ class Cvc5Tune(LgbTune):
    def mlstrat(self, strat, model):
       adds = "\n".join([
         f"--ml-engine",
-        f"--ml-model={model}"
+        f"--ml-model={model}",
+        f"--ml-usage=@@@usage:1.0@@@",
+        f"--ml-fallback=@@@fallback:0@@@",
+        f"--ml-selector=@@@sel:orig@@@",
+        f"--ml-selector-value=@@@val:0.5@@@",
       ])
       return f"{strat}\n{adds}"
 
