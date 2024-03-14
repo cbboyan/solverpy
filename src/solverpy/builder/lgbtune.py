@@ -39,6 +39,12 @@ class LgbTune(Builder):
    def build(self):
       logger.info(f"Building model: {self._dataname}")
       logger.debug(f'using trains: {self._trains["trains"].path()}')
+
+      f_model = self.path()
+      if os.path.exists(f_model):
+         logger.info(f"Skipped model building; model {self._dataname} exists.")
+         self._strats = self.applies(self._trains["refs"], self._dataname)
+         return
   
       f_train = self._trains["trains"].path()
       f_test = self._devels["trains"].path()
@@ -52,7 +58,6 @@ class LgbTune(Builder):
       )
 
       f_best = ret[2]
-      f_model = self.path()
       shutil.copyfile(f_best, f_model)
       #self._models = [f_model]
       self._strats = self.applies(self._trains["refs"], self._dataname)
