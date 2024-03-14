@@ -65,7 +65,7 @@ def statuses(results, nicks):
    logger.debug(f"creating statuses for {len(results)} results")
    
    def count(status, res):
-      return sum(1 for r in res.values() if "status" in r and r["status"]==status)
+      return sum(1 for r in res.values() if r and ("status" in r) and r["status"]==status)
 
    some = list(results.keys())[0][0]
    def rank(status):
