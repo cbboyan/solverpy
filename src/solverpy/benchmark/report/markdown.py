@@ -63,9 +63,17 @@ def summary(results, nicks, ref=None):
 
 def statuses(results, nicks):
    logger.debug(f"creating statuses for {len(results)} results")
+  
+   def safestat(r):
+      if r is None:
+         return "NONE"
+      elif "status" in r:
+         return r["status"]
+      else:
+         return "MISSING"
    
    def count(status, res):
-      return sum(1 for r in res.values() if r and ("status" in r) and r["status"]==status)
+      return sum(1 for r in res.values() if safestat(r)==status)
 
    some = list(results.keys())[0][0]
    def rank(status):
@@ -76,7 +84,7 @@ def statuses(results, nicks):
       else: 
          return (1, status)
 
-   allstats = frozenset(r["status"] for res in results.values() for r in res.values() if r and "status" in r)
+   allstats = frozenset(safestat(r) for res in results.values() for r in res.values())
    allstats = sorted(allstats, key=rank)
    header = ["name"] + allstats
    rows = []
