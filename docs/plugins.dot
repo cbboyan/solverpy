@@ -1,0 +1,67 @@
+digraph {
+
+rankdir="TB";
+splines=ortho;
+node [ shape=Mrecord; ]
+graph [nodesep=1, ranksep=1];
+edge [ style=dashed ];
+
+
+Translator -> Bid
+Translator -> Sid
+Outputs -> Errors
+Decorator -> Outputs
+Plugin -> Decorator
+Decorator -> Time
+Decorator -> Memory
+Decorator, Translator -> Limits
+Decorator -> Timeout
+Decorator -> Smt
+Decorator -> Tptp
+Decorator -> Limiter
+SvmTrains -> Cvc5Trains
+Outputs -> Cvc5TrainsDebug
+Trains -> SvmTrains
+Decorator -> Trains
+Plugin -> Translator
+
+subgraph cluster_base {
+   label = "base";
+   Plugin;
+   Decorator;
+   Translator;
+}
+
+subgraph cluster_db {
+   label = "DB";
+   Bid;
+   Sid;
+   Outputs;
+   Errors;
+}
+
+subgraph cluster_shell {
+   label = "Shell";
+   Limits;
+   Time;
+   Memory;
+   Timeout;
+}
+
+subgraph cluster_status {
+   label = "Status";
+   Limiter;
+   Smt;
+   Tptp;
+}
+
+subgraph cluster_train {
+   label = "Train";
+   Trains;
+   SvmTrains;
+   Cvc5Trains;
+   Cvc5TrainsDebug;
+}
+
+
+}
