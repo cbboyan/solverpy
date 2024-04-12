@@ -32,6 +32,7 @@ class PluginSolver(Solver):
          plugin.register(self)
    
    # decorators
+   # decorate(self, command, input)
    def decorate(self, cmd):
       for plugin in self.decorators:
          cmd = plugin.decorate(cmd)

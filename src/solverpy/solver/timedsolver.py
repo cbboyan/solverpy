@@ -3,6 +3,10 @@ from .pluginsolver import PluginSolver
 from .plugins.shell.limits import Limits
 from .plugins.status.limiter import Limiter
 
+# class DbSolver(PluginSolver):
+# class BenchmarkSolver(PluginSolver)
+# class SolverPy(PluginSolver)
+
 class TimedSolver(PluginSolver):
 
    def __init__(self, timeout, limits=None, plugins=[]):
@@ -22,6 +26,8 @@ class TimedSolver(PluginSolver):
       "The set of timeout statuses."
       raise NotImlementedError()
    
+   #def recycle(self, result)
+   #def reuse(self, result)
    def simulate(self, result):
       "Simulate run from the past result."
       if result["status"] in self.timeouts:

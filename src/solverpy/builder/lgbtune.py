@@ -22,13 +22,9 @@ class LgbTune(Builder):
    
    def __init__(self, trains, devels=None, tuneargs=None):
       Builder.__init__(self, trains["dataname"])
-      if devels is None:
-         devels = trains
       self._trains = trains
-      self._devels = devels
-      self._tuneargs = dict(TUNEARGS)
-      if tuneargs:
-         self._tuneargs.update(tuneargs)
+      self._devels = devels or trains
+      self._tuneargs = TUNEARGS | (tuneargs or {})
 
    def path(self, modelfile="model.lgb"):
       if modelfile:
