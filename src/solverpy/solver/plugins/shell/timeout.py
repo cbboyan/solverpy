@@ -21,5 +21,5 @@ class Timeout(Decorator):
    def update(self, instance, strategy, output, result):
       # see man(timeout) for timeout exit codes
       if self.solver.exitcode in [124, 137]:
-         result["status"] = "Timeout"
+         result["status"] = "TIMEOUT"
 
