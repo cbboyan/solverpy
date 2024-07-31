@@ -1,3 +1,21 @@
+## v1.7.0 (2024-07-31)
+
+*  fix: set by default the -Lsmt2 flag for cvc5 [View](https://bitbucket.org/projects/test/repos/my-project/commits/2f799e499afea5242a27ac94e45fd60ad85aaac5)
+*  chore: use cvc5 static args in setup [View](https://bitbucket.org/projects/test/repos/my-project/commits/4a9c7368887694bb4332b1803a1713243d204cba)
+*  data: cvc5 strategies from smt-comp [View](https://bitbucket.org/projects/test/repos/my-project/commits/f83707e5c00a23b5448360364f1e474795ab3f6d)
+*  fix: mardown output for failed results [View](https://bitbucket.org/projects/test/repos/my-project/commits/44c91a77d1c8b90aef97e66705166ab0ecb98b81)
+*  fix: status handling in markdown.py [View](https://bitbucket.org/projects/test/repos/my-project/commits/85e470b90e73d55e1ec24d42393392e3896b1ab7)
+*  fix: skip building existing models [View](https://bitbucket.org/projects/test/repos/my-project/commits/820a29bb8c5a393a65998e3eba56162f70ed8a9a)
+*  fix: keep compressed data after decompress [View](https://bitbucket.org/projects/test/repos/my-project/commits/2071e1a75cb4fbbb5daba4ddcef3c1d6d4d56fab)
+*  docs: option description [View](https://bitbucket.org/projects/test/repos/my-project/commits/182c77619a27334e173d964f18066f8050c8c7e1)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/d8325627d477727bec5d31f02c51e084d4bea055)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/e764abeae2092d31da3b83f3ab4de3c8f537c23d)
+*  doc: first pieces of documentation [View](https://bitbucket.org/projects/test/repos/my-project/commits/905012eb322a37b55c195160a531165de7da1bf6)
+*  fix: correct reporting status for timed out runs [View](https://bitbucket.org/projects/test/repos/my-project/commits/b62e7270a264f6319645375f6df4a576ab06e570)
+*  fix: allow restarts [View](https://bitbucket.org/projects/test/repos/my-project/commits/edbd7a5939a0401c764d60af0bffe94253cb22d1)
+*  feat: pip compatible version [View](https://bitbucket.org/projects/test/repos/my-project/commits/2a388432644182282a21930fb9c2aa99278a1026)
+
+
 ## v1.6.9 (2024-02-13)
 
 *  fix: recompute GaveUp's and add memory limit 2GB [View](https://bitbucket.org/projects/test/repos/my-project/commits/7cf17bc76c8666396472c0a2160e4b1289a8ee59)
@@ -49,6 +67,26 @@
 *  fix: status handling in markdown.py [View](https://bitbucket.org/projects/test/repos/my-project/commits/85e470b90e73d55e1ec24d42393392e3896b1ab7)
 *  fix: skip building existing models [View](https://bitbucket.org/projects/test/repos/my-project/commits/820a29bb8c5a393a65998e3eba56162f70ed8a9a)
 *  fix: keep compressed data after decompress [View](https://bitbucket.org/projects/test/repos/my-project/commits/2071e1a75cb4fbbb5daba4ddcef3c1d6d4d56fab)
+*  docs: option description [View](https://bitbucket.org/projects/test/repos/my-project/commits/182c77619a27334e173d964f18066f8050c8c7e1)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/d8325627d477727bec5d31f02c51e084d4bea055)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/e764abeae2092d31da3b83f3ab4de3c8f537c23d)
+*  doc: first pieces of documentation [View](https://bitbucket.org/projects/test/repos/my-project/commits/905012eb322a37b55c195160a531165de7da1bf6)
+*  fix: correct reporting status for timed out runs [View](https://bitbucket.org/projects/test/repos/my-project/commits/b62e7270a264f6319645375f6df4a576ab06e570)
+*  fix: allow restarts [View](https://bitbucket.org/projects/test/repos/my-project/commits/edbd7a5939a0401c764d60af0bffe94253cb22d1)
+
+
+## v1.6.16 (2024-04-18)
+
+*  fix: allow restarts [View](https://bitbucket.org/projects/test/repos/my-project/commits/edbd7a5939a0401c764d60af0bffe94253cb22d1)
+
+
+## v1.6.15 (2024-04-12)
+
+*  docs: option description [View](https://bitbucket.org/projects/test/repos/my-project/commits/182c77619a27334e173d964f18066f8050c8c7e1)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/d8325627d477727bec5d31f02c51e084d4bea055)
+*  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/e764abeae2092d31da3b83f3ab4de3c8f537c23d)
+*  doc: first pieces of documentation [View](https://bitbucket.org/projects/test/repos/my-project/commits/905012eb322a37b55c195160a531165de7da1bf6)
+*  fix: correct reporting status for timed out runs [View](https://bitbucket.org/projects/test/repos/my-project/commits/b62e7270a264f6319645375f6df4a576ab06e570)
 
 
 ## v1.6.14 (2024-03-16)
