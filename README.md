@@ -36,9 +36,9 @@ Then call the `solve` method:
 result = cvc5.solve("myproblem.smt2", "--enum-inst")
 ```
 
-The first argument is the filename, the second is the solver-dependent strategy description (typically command line options as a string).
+The first argument is the problem filename, the second is the solver-dependent strategy description (typically command line options as a string).
 
-The result is a Python `dict` with results and statistics.  The keys and values are solver-specific.  The result, nevertheless, always contains keys `status` (with the value of type `str`) and `runtime` (type `float`).
+The result is a Python `dict` with results and statistics.  The keys and values are solver-specific.  Nevertheless, the result always contains keys `status` (with the value of type `str`) and `runtime` (type `float`).
 
 Hint: Call `cvc5.run(p,s)` instead of `cvc5.solve(p,s)` to get the raw solver output without any processing.  Call `cvc5.command(p,s)` to output the shell command that is going to be executed to launch the solver.
 
@@ -84,7 +84,7 @@ If the path leads to a:
    Directories and hidden files are ignored and no recursive search is performed.
    This variant is useful when you have a set of problem files, all in one directory.
 * `file`: Then the file consists of lines containing paths to corresponding problem files.
-   The paths are relative to the directory of the `bid` file, for example, if  the `bid` is `myproblems/subset1` and this file contains (among others) the line `category1/problem23` then the problem must be placed in `myproblems/category1/problem23` (because the directory of the `bid` file is `myproblems`).
+   The paths are relative to the directory of the `bid` file.  For example, if  the `bid` is `myproblems/subset1` and this file contains (among others) the line `category1/problem23.smt2` then the problem must be placed in `myproblems/category1/problem23.smt2` (because the directory of the `bid` file is `myproblems`).
    This variant is useful when your benchmarks are structured in subdirectories and you don't want to merge them into one directory.
 
 ### Experiments example
