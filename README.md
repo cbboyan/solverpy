@@ -1,4 +1,4 @@
-# `solverpy`: Automated Solver Interface for Python
+# `solverpy`: Python Interface for Automated Solvers
 
 `solverpy` is a Python package implementing a common interface to launch an automated logic solver from Python and process its output.
 Currently supported solvers are:
@@ -88,9 +88,9 @@ If the path leads to a:
 
 ### Experiments example
 
-Suppose you have some SMT2 problems in the directory `myproblems` and that you want to evaluate your cvc5 strategies `buzzard`, `sparrow`, and `chickadee`, which you have placed in the directory `solverpy_db/strats`.  You can download the files for this example [here](docs/example.tar.gz).
+Suppose you have some SMT2 problems in the directory `myproblems` and that you want to evaluate your cvc5 strategies `buzzard`, `sparrow`, and `chickadee`, which you have placed in the directory `solverpy_db/strats`.  You can download the archive with files for this example [here](https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz).
 
-Then you proceed as follows.  First, you create the description of your experiments in `mysetup`.
+You proceed as follows.  First, you create the description of your experiments in `mysetup`.
 
 ```python
 from solverpy.benchmark import setups
@@ -130,7 +130,7 @@ You will see the progress of the experiments on the screen.  Once finished, you 
 | `log` | Console log for each `solverpy` experiment run. |
 | `outputs` | Raw solver output files for each solver run (only if selected). |
 
-Now run the script again and notice that it finished much faster.  It is because the cached results were reused and no solvers were actually launched.  So be careful and always clean the database if you want to force recompute.  Simply delete all the directories in `solverpy_db` except `strats` (see the script `clean_db.sh` in the [example archive](docs/example.tar.gz)).
+Now run the script again and notice that it finished much faster.  It is because the cached results were reused and no solvers were actually launched.  So be careful and always clean the database if you want to force recompute.  Simply delete all the directories in `solverpy_db` except `strats` (see the script `clean_db.sh` in the [example archive](https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz)).
 
 
 
