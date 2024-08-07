@@ -72,12 +72,6 @@
 *  docs: Update options.md [View](https://bitbucket.org/projects/test/repos/my-project/commits/e764abeae2092d31da3b83f3ab4de3c8f537c23d)
 *  doc: first pieces of documentation [View](https://bitbucket.org/projects/test/repos/my-project/commits/905012eb322a37b55c195160a531165de7da1bf6)
 *  fix: correct reporting status for timed out runs [View](https://bitbucket.org/projects/test/repos/my-project/commits/b62e7270a264f6319645375f6df4a576ab06e570)
-*  fix: allow restarts [View](https://bitbucket.org/projects/test/repos/my-project/commits/edbd7a5939a0401c764d60af0bffe94253cb22d1)
-
-
-## v1.6.16 (2024-04-18)
-
-*  fix: allow restarts [View](https://bitbucket.org/projects/test/repos/my-project/commits/edbd7a5939a0401c764d60af0bffe94253cb22d1)
 
 
 ## v1.6.15 (2024-04-12)

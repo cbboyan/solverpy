@@ -11,4 +11,4 @@ if [ "$previous_tag" != 0 ];then
     printf "\n\n"
 fi
 previous_tag=${current_tag}
-done | grep -v CHANGELOG | tee CHANGELOG.md
+done | grep -vi changelog | tee CHANGELOG.md

@@ -34,11 +34,11 @@ def gittags():
          cur = ver
          continue # this commit already has a version tag
       if typ: # but not ver
-         if typ.endswith("!"):
+         if typ.endswith("!!!"):
             cur = [cur[0]+1, 0, 0] # increase MAJOR
-         elif typ.startswith("feat"):
+         elif typ.endswith("!!"):
             cur = [cur[0], cur[1]+1, 0] # increase MINOR
-         elif typ.startswith("fix"):
+         elif typ.endswith("!"):
             cur[2] += 1 # increase PATCH
          else: 
             continue # this commit needs no version tag
