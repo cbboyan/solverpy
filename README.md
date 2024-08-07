@@ -1,6 +1,6 @@
 # `solverpy`: Python Interface for Automated Solvers
 
-`solverpy` is a Python package providing a uniform interface to launch automated logic solvers from Python and process their outputs.  Currently supported solvers are:
+`solverpy` is a Python package providing a uniform interface to launch automated problem solvers from Python and process their outputs.  Currently supported solvers are:
 
 * E Prover (solver.atp.eprover.E)
 * Vampire (solver.atp.vampire.Vampire)
