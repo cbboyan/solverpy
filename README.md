@@ -1,7 +1,6 @@
 # `solverpy`: Python Interface for Automated Solvers
 
-`solverpy` is a Python package implementing a common interface to launch an automated logic solver from Python and process its output.
-Currently supported solvers are:
+`solverpy` is a Python package providing a uniform interface to launch automated logic solvers from Python and process their outputs.  Currently supported solvers are:
 
 * E Prover (solver.atp.eprover.E)
 * Vampire (solver.atp.vampire.Vampire)
@@ -21,7 +20,7 @@ $ pip install solverpy
 
 ## Single problem solving
 
-Simply create a solver object:
+To call the solver on one problem instance, start by creating the solver object.
 
 ```python
 from solverpy.solver.smt.cvc5 import Cvc5
@@ -29,7 +28,7 @@ from solverpy.solver.smt.cvc5 import Cvc5
 cvc5 = Cvc5("T5")  # time limit of 5 seconds
 ```
 
-The argument is a resource limit string, in this case, a time limit `T` in seconds.  All solvers support `T` and additional resource limits might be available depending on the solver.  Multiple resource limits can be used (joint by `-`, like `T10-R50000`).  The limit string must, however, always start with `T`.
+The constructor argument is a resource limit string, in this case, a time limit `T` in seconds.  All solvers support `T` and additional resource limits might be available depending on the solver.  Multiple resource limits can be used (separated by `-`, like `T10-R50000`).  The limit string must, however, always start with `T`.
 
 Then call the `solve` method:
 
@@ -40,6 +39,8 @@ result = cvc5.solve("myproblem.smt2", "--enum-inst")
 The first argument is the filename, the second is the solver-dependent strategy description (typically command line options as a string).
 
 The result is a Python `dict` with results and statistics.  The keys and values are solver-specific.  The result, nevertheless, always contains keys `status` (with the value of type `str`) and `runtime` (type `float`).
+
+Hint: Call `cvc5.run(p,s)` instead of `cvc5.solve(p,s)` to get the raw solver output without any processing.  Call `cvc5.command(p,s)` to output the shell command that is going to be executed to launch the solver.
 
 ## Parallel benchmark evaluation
 
@@ -53,7 +54,7 @@ mysetup = ...
 setups.launch(mysetup)
 ```
 
-The experiment setup (`mysetup`) must have specific keys.  The subpackage `benchmark.setups` contains methods to fill in the required keys and values.
+The experiment setup (`mysetup`) must have specific keys.  The module `solverpy.benchmark.setups` contains methods to fill in the required keys and values.
 
 You must specify at least the following:
 
