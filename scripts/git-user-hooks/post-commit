@@ -6,6 +6,7 @@ import os
 import gittools
 
 LOCKFILE = ".skip-post-commit-hook"
+PUSHTAGS = ".push-tags-needed"
 
 if os.path.isfile(LOCKFILE):
    sys.exit(0)
@@ -16,11 +17,23 @@ commits = gittools.gitlog()
 
 # set version tags
 
+tags = gittools.gittags(commits)
+if tags:
+   for (hsh, ver) in tags:
+      tag = gitversion(ver)
+      cmd = f"git tag -a {tag} {hsh} -m 'Version {tag}'"
+      print(cmd)
+      os.system(cmd)
+   print("new tags set")
+   open(PUSHTAGS, "w").close()
+
 # update change log
 
 changelog = gittools.changelog(commits)
 with open("CHANGELOG.md", "w") as f:
    f.write(changelog)
+
+# update the commit with the latest changes
 
 open(LOCKFILE, "w").close()
 os.system("git add CHANGELOG.md")
