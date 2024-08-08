@@ -5,6 +5,11 @@ import os
 
 import gittools
 
+LOCKFILE = ".skip-post-commit-hook"
+
+if os.path.isfile(LOCKFILE):
+   sys.exit(0)
+
 print("post-commit: Updating version tags and CHANGELOG.md")
 
 commits = gittools.gitlog()
@@ -17,6 +22,8 @@ changelog = gittools.changelog(commits)
 with open("CHANGELOG.md", "w") as f:
    f.write(changelog)
 
+open(LOCKFILE, "w").close()
 os.system("git add CHANGELOG.md")
-os.system("git commit --amend --no-edit --no-verify")
+os.system("git commit --amend --no-edit")
+os.remove(LOCKFILE)
 
