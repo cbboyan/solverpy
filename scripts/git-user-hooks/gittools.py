@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import subprocess
 
 def gitlog():
@@ -26,8 +24,13 @@ def gitlog():
    commits.reverse()
    return commits
 
+def gitversion(ver):
+   tag = f"v{'.'.join(map(str,ver))}"
+   return tag
+
 def gittags(commits):
    cur = [0, 0, 0]  # [MAJOR, MINOR, PATCH]
+   tags = []
    for (hsh, ver, typ, msg) in commits:
       if ver:
          cur = ver
@@ -41,11 +44,18 @@ def gittags(commits):
             cur = [cur[0], cur[1], cur[2]+1] # increase PATCH
          else: 
             continue # this commit needs no version tag
-         tag = f"v{'.'.join(map(str,cur))}"
-         cmd = f"git tag -a {tag} {hsh} -m 'Version {tag}'"
-         print(cmd)
+         tags.append((hsh, cur))
+   return tags
 
 if __name__ == "__main__":
    commits = gitlog()
-   gittags(commits)
+   tags = gittags(commits)
+   if tags:
+      print("Run the following commands (and then `git push --tags`):")
+   else:
+      print("Version tags are up-to-date.")
+   for (hsh, ver) in tags:
+      tag = gitversion(ver)
+      cmd = f"git tag -a {tag} {hsh} -m 'Version {tag}'"
+      print(cmd)
 
