@@ -5,6 +5,8 @@ import os
 
 import gittools
 
+print("post-commit: Updating version tags and CHANGELOG.md")
+
 commits = gittools.gitlog()
 
 # set version tags
@@ -16,5 +18,5 @@ with open("CHANGELOG.md", "w") as f:
    f.write(changelog)
 
 os.system("git add CHANGELOG.md")
-os.system("git commit --amend --no-edit")
+os.system("git commit --amend --no-edit --no-verify")
 
