@@ -1,4 +1,12 @@
+#!/usr/bin/env python
+
 import subprocess
+
+# commits with the following types are skiped in the change log
+SKIP_TYPE = ["chore"]
+
+# skip all commits with one of these keywords in the change log
+SKIP_MSG = ["README", "CHANGELOG", "changelog"]
 
 def gitlog():
    commits = []
@@ -46,6 +54,44 @@ def gittags(commits):
             continue # this commit needs no version tag
          tags.append((hsh, cur))
    return tags
+
+def gitchanges(commits):
+   changes = []
+   cur = []
+   for (hsh, ver, typ, msg) in commits:
+      if (typ in SKIP_TYPE) or any((skip in msg) for skip in SKIP_MSG):
+         continue # skip this commit in the change log
+      cur.append((hsh, typ, msg))
+      if ver:
+         cur.reverse()
+         changes.append((gitversion(ver), cur))
+         cur = []
+   if cur:
+      cur.reverse()
+      changes.append(("Unreleased changes", cur))
+   changes.reverse()
+   return changes
+
+def gitdate(hsh):
+   cmd = f"git log -1 --pretty=format:'%ad' --date=short {hsh}"
+   return subprocess.check_output(cmd, shell=True).decode()
+
+def changelog(commits):
+   changes = gitchanges(commits)
+   lines = []
+   for (ver, coms) in changes:
+      date = gitdate(coms[0][0])
+      lines.append(f"## {ver} ({date})")
+      lines.append("")
+      for (hsh, typ, msg) in coms:
+         typ = f"{typ}: " if typ else ""
+         url = f"https://github.com/cbboyan/solverpy/commit/{hsh}"
+         lines.append(f"* {typ}{msg} [View]({url})")
+      lines.append("")
+   return "\n".join(lines)
+   
+#commits = gitlog()
+#print(changelog(commits))
 
 if __name__ == "__main__":
    commits = gitlog()
