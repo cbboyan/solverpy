@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ "$1" == "committed" ]; then
-   echo "Pushing tags"
-   git push --tags
-fi
-
-exit 0
-

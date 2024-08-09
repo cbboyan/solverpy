@@ -1,5 +1,6 @@
-## Unreleased changes (2024-08-08)
+## v1.7.1 (2024-08-09)
 
+* feat!: use git hooks for auto versioning [View](https://github.com/cbboyan/solverpy/commit/)
 * docs: Update options.md [View](https://github.com/cbboyan/solverpy/commit/249e817)
 * docs: added example archive [View](https://github.com/cbboyan/solverpy/commit/6c9ba77)
 
@@ -196,3 +197,4 @@
 ## v0.0.0 (2023-04-24)
 
 * Initial commit [View](https://github.com/cbboyan/solverpy/commit/fdb12ea)
+
