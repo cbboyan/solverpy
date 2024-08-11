@@ -40,3 +40,13 @@ git commit --amend --no-edit
 
 + git hooks: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
 
+
++ automatically push tags for this repo
+   
+   $ git config push.followTags true
+
+  or for all the repos globally:
+
+   $ git config --global push.followTags true
+
+
