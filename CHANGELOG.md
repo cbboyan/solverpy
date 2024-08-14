@@ -2,9 +2,8 @@
 
 ## Unreleased changes (2024-08-15)
 
-* merge: Merge branch 'main' of github.com:cbboyan/solverpy [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* merge: Merge branch 'main' of github.com:cbboyan/solverpy [[details](https://github.com/cbboyan/solverpy/commit/1e6becc) | [browse](https://github.com/cbboyan/solverpy/tree/1e6becc)]
 * feat: Use git hooks from git-auto-version. [[details](https://github.com/cbboyan/solverpy/commit/e7f908e) | [browse](https://github.com/cbboyan/solverpy/tree/e7f908e)]
-* aaa [[details](https://github.com/cbboyan/solverpy/commit/5ec5e54) | [browse](https://github.com/cbboyan/solverpy/tree/5ec5e54)]
 
 ## v1.7.1 (2024-08-09)
 

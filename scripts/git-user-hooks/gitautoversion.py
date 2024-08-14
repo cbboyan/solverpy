@@ -11,7 +11,7 @@ GIT_PROJECT = "solverpy"
 SKIP_TYPE = ["chore"]
 
 # skip all commits with one of these keywords in the change log
-SKIP_MSG = ["README", "ChangeLog", "CHANGELOG", "changelog"]
+SKIP_MSG = ["README", "ChangeLog", "CHANGELOG", "changelog", "aaa"]
 
 def gitlog(last_hash=True):
    commits = []
