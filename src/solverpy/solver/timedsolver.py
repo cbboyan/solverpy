@@ -31,6 +31,7 @@ class TimedSolver(PluginSolver):
    def simulate(self, result):
       "Simulate run from the past result."
       if result["status"] in self.timeouts:
+      #if result["status"] not in self.success: # we might want this?
          oldlimits = Limits(result["limit"], {})
          # the cached result is timeout
          if oldlimits < self.limits:
