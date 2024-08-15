@@ -8,10 +8,10 @@ GIT_USER = "cbboyan"
 GIT_PROJECT = "solverpy"
 
 # commits with the following types are skiped in the change log
-SKIP_TYPE = ["chore"]
+SKIP_TYPE = ["chore", "merge"]
 
 # skip all commits with one of these keywords in the change log
-SKIP_MSG = ["README", "ChangeLog", "CHANGELOG", "changelog", "aaa"]
+SKIP_MSG = ["README", "ChangeLog", "CHANGELOG", "changelog", "aaa", "Merge branch"]
 
 def gitlog(last_hash=True):
    commits = []

@@ -2,8 +2,7 @@
 
 ## Unreleased changes (2024-08-15)
 
-* feat: Trains extractor for ENIGMA [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
-* merge: Merge branch 'main' of github.com:cbboyan/solverpy [[details](https://github.com/cbboyan/solverpy/commit/1e6becc) | [browse](https://github.com/cbboyan/solverpy/tree/1e6becc)]
+* feat: Trains extractor for ENIGMA [[details](https://github.com/cbboyan/solverpy/commit/8f7ca16) | [browse](https://github.com/cbboyan/solverpy/tree/8f7ca16)]
 * feat: Use git hooks from git-auto-version. [[details](https://github.com/cbboyan/solverpy/commit/e7f908e) | [browse](https://github.com/cbboyan/solverpy/tree/e7f908e)]
 
 ## v1.7.1 (2024-08-09)
@@ -20,7 +19,6 @@
 ## v1.6.15 (2024-04-12)
 
 * fix: correct reporting status for timed out runs [[details](https://github.com/cbboyan/solverpy/commit/b62e727) | [browse](https://github.com/cbboyan/solverpy/tree/b62e727)]
-* Merge branch 'main' of github.com:cbboyan/solverpy [[details](https://github.com/cbboyan/solverpy/commit/858b4d3) | [browse](https://github.com/cbboyan/solverpy/tree/858b4d3)]
 * doc: first pieces of documentation [[details](https://github.com/cbboyan/solverpy/commit/905012e) | [browse](https://github.com/cbboyan/solverpy/tree/905012e)]
 * docs: Update options.md [[details](https://github.com/cbboyan/solverpy/commit/e764abe) | [browse](https://github.com/cbboyan/solverpy/tree/e764abe)]
 * docs: Update options.md [[details](https://github.com/cbboyan/solverpy/commit/d832562) | [browse](https://github.com/cbboyan/solverpy/tree/d832562)]
