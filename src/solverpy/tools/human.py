@@ -57,7 +57,13 @@ def humanloss(xy):
    (x, y) = xy
    return "%.2f [iter %s]" % (x, y)
 
+def humanacc(xyz):
+   if len(xyz) != 3: return str(xyz)
+   (acc, pos, neg) = xyz
+   return "%.2f%% (%.2f%% / %.2f%%)" % (100*acc, 100*pos, 100*neg)
+
 UNITS = {
+   "acc": humanacc,
    "count": humanint,
    "loss": humanloss,
    "time": humantime,
