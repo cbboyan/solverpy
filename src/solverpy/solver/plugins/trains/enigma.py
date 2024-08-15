@@ -41,7 +41,7 @@ class EnigmaTrainsDebug(Outputs):
 
    def __init__(self, features, flatten=True):
       Outputs.__init__(self, flatten)
-      self._path = os.path.join(bids.dbpath(NAME), featurepath(features))
+      self._path = os.path.join(bids.dbpath(NAME), "debug", "sel_"+featurepath(features))
    
    def path(self, instance, strategy, ext=".in"):
       return super().path(instance, strategy) + ext
@@ -49,6 +49,7 @@ class EnigmaTrainsDebug(Outputs):
    def decorate(self, cmd, instance, strategy):
       enimap = self.path(instance, strategy, ".map")
       buckets = self.path(instance, strategy, ".buckets")
+      os.makedirs(os.path.dirname(buckets), exist_ok=True)
       return f"{cmd} --enigmatic-output-map={enimap} --enigmatic-output-buckets={buckets}"
 
    def finished(self, instance, strategy, output, result):
