@@ -21,8 +21,8 @@ class Trains(Decorator):
       self._filename = filename
 
    def path(self, dataname=None, filename=None):
-      if not dataname: dataname = self._dataname
-      if not filename: filename = self._filename
+      dataname = dataname or self._dataname
+      filename = filename or self._filename
       return os.path.join(bids.dbpath(NAME), dataname, filename)
 
    def register(self, solver):

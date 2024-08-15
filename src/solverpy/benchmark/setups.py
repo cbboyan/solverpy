@@ -65,7 +65,7 @@ def eprover(setup, trains=False):
       plugs = setup["plugins"]
       plugs.append(trains)
       if "debug-trains" in setup["options"]:
-         plugs.append(EnigmaTrainsDebug("flatten" in setup["options"]))
+         plugs.append(EnigmaTrainsDebug( setup["sel_features"], "flatten" in setup["options"]))
       setup["trains"] = trains
    return solver(setup, E)
 
