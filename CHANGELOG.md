@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2024-08-15)
+## Unreleased changes (2024-08-16)
 
+* feat: Hyperparameter tuner for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * fix: Directory creation for debug train files [[details](https://github.com/cbboyan/solverpy/commit/ec4249b) | [browse](https://github.com/cbboyan/solverpy/tree/ec4249b)]
 * fix: Use features inside train paths [[details](https://github.com/cbboyan/solverpy/commit/2e6d83a) | [browse](https://github.com/cbboyan/solverpy/tree/2e6d83a)]
 * feat: Trains debugging mode for ENIGMA [[details](https://github.com/cbboyan/solverpy/commit/4167a2a) | [browse](https://github.com/cbboyan/solverpy/tree/4167a2a)]
