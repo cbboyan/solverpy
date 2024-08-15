@@ -4,9 +4,11 @@ from . import db
 from . import launcher
 from ..solver.smt import Cvc5 as SmtCvc5
 from ..solver.smt.cvc5 import CVC5_BINARY, CVC5_STATIC # == "cvc5"
+from ..solver.atp.eprover import E_STATIC # == "cvc5"
 from ..solver.atp import Cvc5 as TptpCvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
+from ..solver.plugins.trains import EnigmaTrains, EnigmaTrainsDebug
 from ..trains import svm
 from ..tools import log
 from ..solver.atp.eprover import E
@@ -26,7 +28,7 @@ def ensure(options, option):
    if (option not in options) and (f"no-{option}" not in options):
       options.append(option)
 
-def solver(setup, mk_solver):
+def init(setup):
    default(setup, "options", ["flatten", "compress"])
    options = setup["options"]
    ensure(options, "flatten") 
@@ -40,19 +42,39 @@ def solver(setup, mk_solver):
          plugs = plugins.outputs(flatten="flatten" in options, 
                                  compress="compress" in options)
       default(setup, "plugins", plugs)
-   
+   return setup
+
+def solver(setup, mk_solver):
    kwargs = {x:setup[x] for x in setup if x in GENERICS}
    solver = mk_solver(setup["limit"], **kwargs)
    setup["solver"] = solver
    return setup
 
-def eprover(setup):
+def eprover(setup, trains=False):
+   init(setup)   
+   if trains:
+      default(setup, "sel_features", "C(l,v,h,s,c,d,a)")
+      default(setup, "e_training_examples", "11")
+      default(setup, "static", E_STATIC)
+      setup["static"] += " ".join(["", # make a space
+         f"--training-examples={setup['e_training_examples']}",
+         f"--enigmatic-sel-features=\"{setup['sel_features']}\"",
+      ])
+      default(setup, "dataname", "data/model")
+      trains = EnigmaTrains(setup["dataname"], setup["sel_features"])
+      plugs = setup["plugins"]
+      plugs.append(trains)
+      if "debug-trains" in setup["options"]:
+         plugs.append(EnigmaTrainsDebug("flatten" in setup["options"]))
+      setup["trains"] = trains
    return solver(setup, E)
 
 def vampire(setup):
+   init(setup)   
    return solver(setup, Vampire)
 
 def prover9(setup):
+   init(setup)   
    return solver(setup, Prover9)
 
 def cvc5(setup, trains=False, tptp=False):

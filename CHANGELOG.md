@@ -2,6 +2,7 @@
 
 ## Unreleased changes (2024-08-15)
 
+* feat: Trains extractor for ENIGMA [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * merge: Merge branch 'main' of github.com:cbboyan/solverpy [[details](https://github.com/cbboyan/solverpy/commit/1e6becc) | [browse](https://github.com/cbboyan/solverpy/tree/1e6becc)]
 * feat: Use git hooks from git-auto-version. [[details](https://github.com/cbboyan/solverpy/commit/e7f908e) | [browse](https://github.com/cbboyan/solverpy/tree/e7f908e)]
 
