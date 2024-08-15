@@ -1,0 +1,7 @@
+lightgbm
+numpy
+optuna
+Requests
+scikit_learn
+scipy
+tqdm

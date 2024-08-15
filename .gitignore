@@ -161,7 +161,6 @@ cython_debug/
 
 Pipfile
 Pipfile.lock
-requirements.txt
 _dust/
 tags
 
