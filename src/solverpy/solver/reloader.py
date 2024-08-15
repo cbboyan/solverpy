@@ -21,8 +21,8 @@ class Reloader(TimedSolver):
    def valid(self, result):
       return self.solver.valid(result)
    
-   def decorate(self, cmd):
-      return self.solver.decorate(cmd)
+   def decorate(self, cmd, instance, strategy):
+      return self.solver.decorate(cmd, instance, strategy)
    
    def update(self, instance, strategy, output, result):
       return self.solver.update(instance, strategy, output, result)

@@ -33,9 +33,9 @@ class PluginSolver(Solver):
    
    # decorators
    # decorate(self, command, input)
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       for plugin in self.decorators:
-         cmd = plugin.decorate(cmd)
+         cmd = plugin.decorate(cmd, instance, strategy)
       return cmd
    
    def update(self, instance, strategy, output, result):

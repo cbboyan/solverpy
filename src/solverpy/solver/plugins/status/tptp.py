@@ -10,7 +10,7 @@ class Tptp(Decorator):
    def __init__(self):
       pass
 
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       return cmd
 
    def update(self, instance, strategy, output, result):

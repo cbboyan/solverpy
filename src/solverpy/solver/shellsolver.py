@@ -17,7 +17,7 @@ class ShellSolver(TimedSolver):
       if limits.memory:
          new.append(Memory(limits.memory))
       TimedSolver.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
-      self.cmd = self.decorate(cmd)
+      self._cmd = cmd
 
    @property
    def name(self):
@@ -39,6 +39,7 @@ class ShellSolver(TimedSolver):
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def command(self, instance, strategy):
+      cmd = self.decorate(self._cmd, instance, strategy)
       (instance, strategy) = self.translate(instance, strategy)
-      return f"{self.cmd} {strategy} {instance}"
+      return f"{cmd} {strategy} {instance}"
 

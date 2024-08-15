@@ -16,7 +16,7 @@ class StdinSolver(TimedSolver):
          new.append(Memory(limits.memory))
       TimedSolver.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
       self.static = static
-      self.cmd = self.decorate(cmd)
+      self._cmd = cmd
 
    @property
    def name(self):
@@ -27,14 +27,15 @@ class StdinSolver(TimedSolver):
       env0 = dict(os.environ)
       env0["OMP_NUM_THREADS"] = "1"
       #env0["CUDA_VISIBLE_DEVICES"] = "-1"
+      cmd = self.decorate(self._cmd, instance, strategy)
       try:
-         output = subprocess.check_output(self.cmd, input=inputstr, 
+         output = subprocess.check_output(cmd, input=inputstr, 
             shell=True, stderr=subprocess.STDOUT, env=env0)
          self.exitcode = 0
       except subprocess.CalledProcessError as e:
          output = e.output
          self.exitcode = e.returncode
-      return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {self.cmd}\n" + output.decode()
+      return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def input(self, instance, strategy):
       (instance, strategy) = self.translate(instance, strategy)

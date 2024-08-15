@@ -22,7 +22,7 @@ class Time(Decorator):
    def __init__(self):
       self.prefix = TIME_CMD
 
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       return f"{self.prefix} {cmd}"
 
    def update(self, instance, strategy, output, result):

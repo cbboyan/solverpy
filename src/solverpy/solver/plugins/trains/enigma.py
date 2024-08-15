@@ -32,11 +32,10 @@ class EnigmaTrainsDebug(Outputs):
    def path(self, instance, strategy, ext=".in"):
       return super().path(instance, strategy) + ext
 
-   def decorate(self, cmd):
-      #enimap = self.path(instance, strategy, ".map")
-      #buckets = self.path(instance, strategy, ".buckets")
-      #return f"{cmd} --enigmatic-output-map={enimap} --enigmatic-output-buckets={buckets}"
-      return cmd
+   def decorate(self, cmd, instance, strategy):
+      enimap = self.path(instance, strategy, ".map")
+      buckets = self.path(instance, strategy, ".buckets")
+      return f"{cmd} --enigmatic-output-map={enimap} --enigmatic-output-buckets={buckets}"
 
    def finished(self, instance, strategy, output, result):
       if not (output and self.solver.solved(result)):

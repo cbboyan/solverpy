@@ -5,7 +5,7 @@ class Decorator(Plugin):
    def register(self, solver):
       solver.decorators.append(self)
    
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       return cmd
 
    def update(self, instance, strategy, output, result):

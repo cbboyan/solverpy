@@ -15,7 +15,7 @@ class Timeout(Decorator):
       self.solver = solver
       solver.decorators.insert(0, self)
 
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       return f"{self.prefix} {cmd}"
 
    def update(self, instance, strategy, output, result):

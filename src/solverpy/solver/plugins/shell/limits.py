@@ -50,7 +50,7 @@ class Limits(Decorator, Translator):
    #def __le__(self, other):
    #   return (self.key == other.key) or (self < other)
 
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       if self.cmdline:
          return f"{cmd} {self.strategy}" if self.strategy else cmd
       else:

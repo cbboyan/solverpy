@@ -7,7 +7,7 @@ class Memory(Decorator):
    def __init__(self, giga=4):
       self.prefix = ULIMIT_CMD % int(giga * 1000000)
    
-   def decorate(self, cmd):
+   def decorate(self, cmd, instance, strategy):
       return f"{self.prefix} && {cmd}"
 
    def update(self, instance, strategy, output, result):
