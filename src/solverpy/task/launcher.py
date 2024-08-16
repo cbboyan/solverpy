@@ -22,7 +22,7 @@ def run(tasks, cores=4, chunksize=1):
       pool.close()
       pool.join()
       return results
-   except KeyboardInterrupt as e:
+   except (Exception, KeyboardInterrupt) as e:
       pool.terminate()
       raise e
 

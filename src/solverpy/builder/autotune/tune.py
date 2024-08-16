@@ -1,16 +1,14 @@
 import os
 import math
-import logging
 import optuna
 
 from . import check
 
-logger = logging.getLogger(__name__)
-
-def tune(check_fun, nick, iters, timeout, d_tmp, sampler=None, **args):
+def tune(check_fun, nick, iters, timeout, d_tmp, queue=None, sampler=None, **args):
    d_tmp = os.path.join(d_tmp, nick)
+   if queue: queue.put(("TRIALS", (nick, iters, timeout)))
    study = optuna.create_study(direction='maximize', sampler=sampler)
-   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, **args)
+   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, queue=queue, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
    best = tuple(study.best_trial.user_attrs[x] for x in ["score", "acc", "model", "time"])
    return (best, study.best_trial.params)

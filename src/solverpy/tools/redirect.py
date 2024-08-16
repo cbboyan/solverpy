@@ -17,6 +17,16 @@ elif platform == "win32":
    c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')
    c_stderr = ctypes.c_void_p.in_dll(libc, 'stderr')
 
+class Redirector(object):
+   def __init__(self, f_log): 
+      self._f_log = f_log
+   
+   def __enter__(self): 
+      self._redir = start(self._f_log)
+   
+   def __exit__(self, *args):
+      finish(*self._redir)
+
 def redirect(std, fd):
    libc.fflush(c_stdout)
    libc.fflush(c_stderr)
@@ -39,8 +49,9 @@ def finish(s_log, dup_out, dup_err):
    s_log.close()
 
 def call(target, f_log, *args, **kwargs):
-   redir = start(f_log)
-   ret = target(*args, **kwargs)
-   finish(*redir)
-   return ret
+   try:
+      with Redirector(f_log):
+         return target(*args, **kwargs)
+   except (Exception, KeyboardInterrupt) as e:
+      raise(e) # propagate exception to the parent
 

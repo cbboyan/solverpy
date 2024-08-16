@@ -5,10 +5,10 @@ import time
 import logging
 import lightgbm as lgb
 import multiprocessing
-from contextlib import redirect_stdout, redirect_stderr
 
 from ...tools import human, redirect
 from ...trains import svm
+from ...task.bar import BuilderBar
 from . import tune, build
 
 logger = logging.getLogger(__name__)
@@ -44,14 +44,17 @@ def tuner(
    iters=100, 
    timeout=None, 
    init_params=None, 
-   usebar=True, 
    min_leaves=16, 
    max_leaves=2048,
    queue=None,
 ):
+   if queue: queue.put(("TUNING", time.time()))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys)
-   testd = smv.load(f_test) if f_test != f_train else (xs, ys)
+   (xs0, ys0) = svm.load(f_test) if f_test != f_train else (xs, ys)
+   dtest = lgb.Dataset(xs0, label=ys0, free_raw_data=False)
+   dtest.construct()
+
    os.makedirs(d_tmp, exist_ok=True)
    
    params = dict(DEFAULTS)
@@ -67,18 +70,18 @@ def tuner(
    iters = iters // len(phases) if iters else None
    args = dict(
       dtrain=dtrain, 
-      testd=testd, 
+      dtest=dtest, 
       d_tmp=d_tmp, 
       iters=iters, 
       timeout=timeout, 
-      usebar=usebar, 
+      queue=queue,
       min_leaves=min_leaves, 
       max_leaves=max_leaves,
    )
 
    if init_params is not None:
       f_mod = os.path.join(d_tmp, "init", "model.lgb")
-      (score, acc, dur) = build.model(params, dtrain, testd, f_mod, "[init]" if usebar else None)
+      (score, acc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
       best = (score, acc, f_mod, dur)
       logger.debug("- initial model: %s" % human.humanacc(acc)) 
    else:
@@ -90,20 +93,73 @@ def tuner(
          best = best0 
          params.update(params0)
    
+   if queue: queue.put(("TUNED", time.time()))
    ret = best + (params, pos, neg)
    if queue: 
-      queue.put(ret)
+      queue.put(("RESULT", ret))
    else:
       return ret
 
 def prettytuner(*args, **kwargs):
+   
+   bar = None
+   desc = "trial"
+   iters = ""
+   t_start = 0
+   t_end = 0
+
+   def handle(msg):
+      nonlocal bar, desc, iters, t_start, t_end
+      (key, val) = msg
+      if key == "RESULT":
+         return val
+      elif key == "BUILD":
+         (f_mod, total) = val
+         logger.debug(f"building model: {f_mod}")
+         bar = BuilderBar(total, desc)
+      elif key == "ITER":
+         (n, total, loss) = val
+         bar.done(loss)
+      elif key == "BUILT":
+         bar.close()
+         logger.info(f"Trail score: {val:.4f}")
+      elif key == "TRIALS":
+         (nick, iters, timeout) = val
+         iters = f"/{iters}" if iters else ""
+      elif key == "TRY":
+         (nick, it, values) = val
+         desc = f"{nick}[{it+1}{iters}]"
+         values = ", ".join("%.4f"%v if type(v) is float else str(v) for v in values)
+         logger.info(f"Starting trial: {desc}: ({values})")
+      elif key == "TRIED":
+         logger.info(f"Trial accuracy: {human.humanacc(val)}")
+      elif key == "TUNING":
+         t_start = val
+      elif key == "TUNED":
+         t_end = val
+      else:
+         print(msg)
+      return None
+
    queue = multiprocessing.Queue()
    kwargs["queue"] = queue
    kwargs["f_log"] = "autotune.log"
    kwargs["target"] = tuner
    p = multiprocessing.Process(target=redirect.call, args=args, kwargs=kwargs)
-   p.start()
-   p.join()
-   return queue.get()
+
+   try:
+      p.start()
+      while True:
+         msg = queue.get()
+         result = handle(msg)
+         if result: 
+            break
+   except (Exception, KeyboardInterrupt) as e:
+      p.terminate()
+      raise e
+   finally:
+      p.join()
+
+   return result
 
 
