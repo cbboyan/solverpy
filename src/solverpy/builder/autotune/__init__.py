@@ -1,4 +1,4 @@
-from .autotune import train
+from .autotune import tuner, prettytuner
 
-__all__ = [train]
+__all__ = [tuner, prettytuner]
 

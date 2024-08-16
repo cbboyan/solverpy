@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2024-08-16)
 
-* fix: Updated Python package requirements. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Added ouput redirecting tools. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Updated Python package requirements. [[details](https://github.com/cbboyan/solverpy/commit/19c25c9) | [browse](https://github.com/cbboyan/solverpy/tree/19c25c9)]
 * feat: Hyperparameter tuner for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/fb21718) | [browse](https://github.com/cbboyan/solverpy/tree/fb21718)]
 * fix: Directory creation for debug train files [[details](https://github.com/cbboyan/solverpy/commit/ec4249b) | [browse](https://github.com/cbboyan/solverpy/tree/ec4249b)]
 * fix: Use features inside train paths [[details](https://github.com/cbboyan/solverpy/commit/2e6d83a) | [browse](https://github.com/cbboyan/solverpy/tree/2e6d83a)]

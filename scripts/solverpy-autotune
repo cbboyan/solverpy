@@ -30,7 +30,7 @@ def main(args):
    from solverpy.builder import autotune
    from solverpy.tools import human
 
-   best = autotune.train(
+   best = autotune.prettytuner(
       f_train=args.train, 
       f_test=args.test,
       phases=args.phases,
@@ -40,13 +40,14 @@ def main(args):
       max_leaves=args.max_leaves,
    )
 
-   print(f"Best model score: {best[0]}\n" 
-         f"Best model accuracy: {human.humanacc(best[1])}\n"
-         f"Best model file: {best[2]}\n"
-         f"Best model training time: {human.humantime(best[3])}\n"
-         f"Positive training samples: {best[5]:.0f}\n"
-         f"Negative training samples: {best[6]:.0f}\n"
-         f"Best model training parameters: {json.dumps(best[4],indent=2,sort_keys=True)}\n"
+   print(
+      f"Best model score: {best[0]}\n" 
+      f"Best model accuracy: {human.humanacc(best[1])}\n"
+      f"Best model file: {best[2]}\n"
+      f"Best model training time: {human.humantime(best[3])}\n"
+      f"Positive training samples: {best[5]:.0f}\n"
+      f"Negative training samples: {best[6]:.0f}\n"
+      f"Best model training parameters: {json.dumps(best[4],indent=2,sort_keys=True)}\n"
    )
 
 if __name__ == "__main__":

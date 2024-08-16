@@ -4,11 +4,12 @@ import os
 import time
 import logging
 import lightgbm as lgb
+import multiprocessing
+from contextlib import redirect_stdout, redirect_stderr
 
-from ...tools import human
+from ...tools import human, redirect
 from ...trains import svm
-from . import tune
-from . import build
+from . import tune, build
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ DEFAULTS = {
    'lambda_l2': 0.0,
 }
 
-def train(
+def tuner(
    f_train,
    f_test, 
    d_tmp="optuna-tmp", 
@@ -46,6 +47,7 @@ def train(
    usebar=True, 
    min_leaves=16, 
    max_leaves=2048,
+   queue=None,
 ):
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys)
@@ -88,5 +90,20 @@ def train(
          best = best0 
          params.update(params0)
    
-   return best + (params, pos, neg)
+   ret = best + (params, pos, neg)
+   if queue: 
+      queue.put(ret)
+   else:
+      return ret
+
+def prettytuner(*args, **kwargs):
+   queue = multiprocessing.Queue()
+   kwargs["queue"] = queue
+   kwargs["f_log"] = "autotune.log"
+   kwargs["target"] = tuner
+   p = multiprocessing.Process(target=redirect.call, args=args, kwargs=kwargs)
+   p.start()
+   p.join()
+   return queue.get()
+
 
