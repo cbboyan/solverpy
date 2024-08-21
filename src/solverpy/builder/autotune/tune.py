@@ -6,12 +6,12 @@ from . import check
 
 def tune(check_fun, nick, iters, timeout, d_tmp, queue=None, sampler=None, **args):
    d_tmp = os.path.join(d_tmp, nick)
-   if queue: queue.put(("TRIALS", (nick, iters, timeout)))
+   if queue: queue.put(("trials", (nick, iters, timeout)))
    study = optuna.create_study(direction='maximize', sampler=sampler)
    objective = lambda trial: check_fun(trial, d_tmp=d_tmp, queue=queue, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
    best = tuple(study.best_trial.user_attrs[x] for x in ["score", "acc", "model", "time"])
-   if queue: queue.put(("TRIALED", nick))
+   if queue: queue.put(("trialed", nick))
    return (best, study.best_trial.params)
 
 def leaves_grid(min_leaves, max_leaves, **args):

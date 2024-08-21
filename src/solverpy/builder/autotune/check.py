@@ -10,7 +10,7 @@ def check(trial, params, dtrain, dtest, d_tmp, queue, **args):
    trial.set_user_attr(key="score", value=score)
    trial.set_user_attr(key="acc", value=acc)
    trial.set_user_attr(key="time", value=dur)
-   if queue: queue.put(("TRIED", (score, acc, dur)))
+   if queue: queue.put(("tried", (score, acc, dur)))
    return score
 
 def leaves(trial, params, min_leaves, max_leaves, queue, **args):
@@ -18,7 +18,7 @@ def leaves(trial, params, min_leaves, max_leaves, queue, **args):
    #num_leaves_base = trial.suggest_int('num_leaves_base', 16, 31)
    #num_leaves = round(2**(num_leaves_base/2))
    num_leaves = trial.suggest_int('num_leaves', min_leaves, max_leaves)
-   if queue: queue.put(("TRY", ("leaves", trial.number, (num_leaves,))))
+   if queue: queue.put(("trying", ("leaves", trial.number, (num_leaves,))))
    params = dict(params, num_leaves=num_leaves)
    score = check(trial, params, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
@@ -27,7 +27,7 @@ def leaves(trial, params, min_leaves, max_leaves, queue, **args):
 def bagging(trial, params, queue, **args):
    bagging_freq = trial.suggest_int("bagging_freq", 1, 7)
    bagging_fraction = min(trial.suggest_float("bagging_fraction", 0.4, 1.0+1e-12), 1.0)
-   if queue: queue.put(("TRY", ("bagging", trial.number, (bagging_freq, bagging_fraction))))
+   if queue: queue.put(("trying", ("bagging", trial.number, (bagging_freq, bagging_fraction))))
    params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
@@ -35,7 +35,7 @@ def bagging(trial, params, queue, **args):
 
 def min_data(trial, params, queue, **args):
    min_data = trial.suggest_int("min_data", 5, 10000)
-   if queue: queue.put(("TRY", ("min_data", trial.number, (min_data,))))
+   if queue: queue.put(("trying", ("min_data", trial.number, (min_data,))))
    params = dict(params, min_data=min_data)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
@@ -44,7 +44,7 @@ def min_data(trial, params, queue, **args):
 def regular(trial, params, queue, **args):
    lambda_l1 = trial.suggest_float("lambda_l1", 1e-8, 10.0)
    lambda_l2 = trial.suggest_float("lambda_l2", 1e-8, 10.0)
-   if queue: queue.put(("TRY", ("regular", trial.number, (lambda_l1, lambda_l2))))
+   if queue: queue.put(("trying", ("regular", trial.number, (lambda_l1, lambda_l2))))
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])

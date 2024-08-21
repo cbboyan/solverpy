@@ -29,12 +29,12 @@ def model(params, dtrain, dtest, f_mod, queue):
    def callback(env):
       results = env.evaluation_result_list
       loss = [r[2] for r in results]
-      queue.put(("ITER", (env.iteration, env.end_iteration, loss)))
+      queue.put(("iteration", (env.iteration, env.end_iteration, loss)))
 
    d_mod = os.path.dirname(f_mod)
    os.makedirs(d_mod, exist_ok=True)
    f_log = f_mod + ".log"
-   if queue: queue.put(("BUILD", (f_mod, params["num_round"])))
+   if queue: queue.put(("building", (f_mod, params["num_round"])))
    
    # build the model
    begin = time.time()
@@ -59,6 +59,6 @@ def model(params, dtrain, dtest, f_mod, queue):
 
    # compute the score of this model
    score = POS_ACC_WEIGHT*acc[1] + acc[2]
-   if queue: queue.put(("BUILT", score))
+   if queue: queue.put(("built", score))
    return (score, acc, end-begin)
    

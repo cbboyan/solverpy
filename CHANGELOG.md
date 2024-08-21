@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2024-08-21)
 
-* feat: Show trial statistics in autotune. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Show trial statistics in autotune. [[details](https://github.com/cbboyan/solverpy/commit/9bc9999) | [browse](https://github.com/cbboyan/solverpy/tree/9bc9999)]
 * feat: Model pretty tuner with progress bars [[details](https://github.com/cbboyan/solverpy/commit/ee35eef) | [browse](https://github.com/cbboyan/solverpy/tree/ee35eef)]
 * feat: Added ouput redirecting tools. [[details](https://github.com/cbboyan/solverpy/commit/19faa95) | [browse](https://github.com/cbboyan/solverpy/tree/19faa95)]
 * fix: Updated Python package requirements. [[details](https://github.com/cbboyan/solverpy/commit/19c25c9) | [browse](https://github.com/cbboyan/solverpy/tree/19c25c9)]
