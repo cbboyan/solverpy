@@ -17,7 +17,7 @@ class Listener:
       try:
          handler = getattr(self, key)
       except AttributeError:
-         print(f"Unknown listener message: {key} (content: {content})")
+         logger.warning(f"Unknown listener message: {key} (content: {content})")
          return None
       return handler(*content)
 
