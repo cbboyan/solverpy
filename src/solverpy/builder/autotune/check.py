@@ -10,6 +10,7 @@ def check(trial, params, dtrain, dtest, d_tmp, queue, **args):
    trial.set_user_attr(key="score", value=score)
    trial.set_user_attr(key="acc", value=acc)
    trial.set_user_attr(key="time", value=dur)
+   if queue: queue.put(("TRIED", (score, acc, dur)))
    return score
 
 def leaves(trial, params, min_leaves, max_leaves, queue, **args):
@@ -21,7 +22,6 @@ def leaves(trial, params, min_leaves, max_leaves, queue, **args):
    params = dict(params, num_leaves=num_leaves)
    score = check(trial, params, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
-   if queue: queue.put(("TRIED", trial.user_attrs["acc"]))
    return score
 
 def bagging(trial, params, queue, **args):
@@ -31,7 +31,6 @@ def bagging(trial, params, queue, **args):
    params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
-   if queue: queue.put(("TRIED", trial.user_attrs["acc"]))
    return score
 
 def min_data(trial, params, queue, **args):
@@ -40,7 +39,6 @@ def min_data(trial, params, queue, **args):
    params = dict(params, min_data=min_data)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
-   if queue: queue.put(("TRIED", trial.user_attrs["acc"]))
    return score
 
 def regular(trial, params, queue, **args):
@@ -50,6 +48,5 @@ def regular(trial, params, queue, **args):
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, queue=queue, **args)
    acc = human.humanacc(trial.user_attrs["acc"])
-   if queue: queue.put(("TRIED", trial.user_attrs["acc"]))
    return score
 

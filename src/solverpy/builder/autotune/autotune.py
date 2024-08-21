@@ -10,6 +10,7 @@ from ...tools import human, redirect
 from ...trains import svm
 from ...task.bar import BuilderBar
 from . import tune, build
+from ...benchmark.report import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -107,9 +108,15 @@ def prettytuner(*args, **kwargs):
    iters = ""
    t_start = 0
    t_end = 0
+   f_mod = None
+   nick = None
+   it = None
+   values = None
+   table = None
+   header = None
 
    def handle(msg):
-      nonlocal bar, desc, iters, t_start, t_end
+      nonlocal bar, desc, iters, t_start, t_end, f_mod, nick, it, values, table, header
       (key, val) = msg
       if key == "RESULT":
          return val
@@ -117,22 +124,30 @@ def prettytuner(*args, **kwargs):
          (f_mod, total) = val
          logger.debug(f"building model: {f_mod}")
          bar = BuilderBar(total, desc)
+      elif key == "BUILT":
+         bar.close()
+         logger.debug(f"model {f_mod} built: score={val:.4f}")
       elif key == "ITER":
          (n, total, loss) = val
          bar.done(loss)
-      elif key == "BUILT":
-         bar.close()
-         logger.info(f"Trail score: {val:.4f}")
       elif key == "TRIALS":
          (nick, iters, timeout) = val
+         logger.info(f"Running tuning phase: {nick}")
          iters = f"/{iters}" if iters else ""
+         header = ["it", nick, "score", "acc", "time"]
+         table = []
       elif key == "TRY":
          (nick, it, values) = val
          desc = f"{nick}[{it+1}{iters}]"
          values = ", ".join("%.4f"%v if type(v) is float else str(v) for v in values)
-         logger.info(f"Starting trial: {desc}: ({values})")
+         desc = f"[{it+1}{iters}] {values:8s}"
+         #logger.info(f"Starting trial: {desc}: ({values})")
       elif key == "TRIED":
-         logger.info(f"Trial accuracy: {human.humanacc(val)}")
+         table.append((it, values, f"{val[0]:.4f}", human.humanacc(val[1]), human.humantime(val[2])))
+         #logger.info(f"Trial result: {val[0]:.4f} ; {human.humanacc(val[1])} ; {human.humantime(val[2])}")
+      elif key == "TRIALED":
+         table = [""] + markdown.table(header, table) + [""]
+         logger.info(markdown.dump(table, prefix="> "))
       elif key == "TUNING":
          t_start = val
       elif key == "TUNED":
