@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2024-08-22)
 
-* feature: Model builder for cvc5. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: Unify solver setups for evaluation. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feature: Model builder for cvc5. [[details](https://github.com/cbboyan/solverpy/commit/9ff94be) | [browse](https://github.com/cbboyan/solverpy/tree/9ff94be)]
 * feat: Show trial statistics in autotune. [[details](https://github.com/cbboyan/solverpy/commit/9bc9999) | [browse](https://github.com/cbboyan/solverpy/tree/9bc9999)]
 * feat: Model pretty tuner with progress bars [[details](https://github.com/cbboyan/solverpy/commit/ee35eef) | [browse](https://github.com/cbboyan/solverpy/tree/ee35eef)]
 * feat: Added ouput redirecting tools. [[details](https://github.com/cbboyan/solverpy/commit/19faa95) | [browse](https://github.com/cbboyan/solverpy/tree/19faa95)]

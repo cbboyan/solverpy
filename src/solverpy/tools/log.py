@@ -19,7 +19,7 @@ def ntfy(setup, msg):
       hostname = socket.gethostname()
       requests.post(f"https://ntfy.sh/{channel}", data=f"{hostname}: {msg}")
    except IOError as e:
-      logger.warining(f"> Warning: ntfy I/O error ({e})")
+      logger.warning(f"> Warning: ntfy I/O error ({e})")
 
 def filename():
    d_logs = bids.dbpath(NAME)

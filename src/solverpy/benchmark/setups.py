@@ -3,10 +3,10 @@ import logging
 from . import db
 from . import launcher
 from ..builder.cvc5tune import Cvc5Tune
-from ..solver.smt import Cvc5 as SmtCvc5
+from ..solver.smt import Cvc5
 from ..solver.smt.cvc5 import CVC5_BINARY, CVC5_STATIC # == "cvc5"
-from ..solver.atp.eprover import E_STATIC # == "cvc5"
-from ..solver.atp import Cvc5 as TptpCvc5
+from ..solver.atp.eprover import E_STATIC 
+#from ..solver.atp import Cvc5 as TptpCvc5
 from ..solver import plugins 
 from ..solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug
 from ..solver.plugins.trains import EnigmaTrains, EnigmaTrainsDebug
@@ -67,7 +67,8 @@ def eprover(setup, trains=False):
       plugs = setup["plugins"]
       plugs.append(trains)
       if "debug-trains" in setup["options"]:
-         plugs.append(EnigmaTrainsDebug( setup["sel_features"], "flatten" in setup["options"]))
+         plugs.append(EnigmaTrainsDebug( 
+            setup["sel_features"], "flatten" in setup["options"]))
       setup["trains"] = trains
    return solver(setup, E)
 
@@ -79,23 +80,8 @@ def prover9(setup):
    init(setup)   
    return solver(setup, Prover9)
 
-def cvc5(setup, trains=False, tptp=False):
-   def default(key, val):
-      nonlocal setup
-      if key not in setup:
-         setup[key] = val
-   def ensure(option):
-      nonlocal options
-      if (option not in options) and (f"no-{option}" not in options):
-         options.append(option)
-
-   default("options", ["flatten", "compress"])
-   options = setup["options"]
-   ensure("flatten") 
-   ensure("compress")
-   default("limit", "T1")
-   default("binary", CVC5_BINARY)
-
+def cvc5(setup, trains=False):
+   init(setup)
    if trains:
       static = CVC5_STATIC + " ".join([
          "--produce-proofs",
@@ -104,31 +90,16 @@ def cvc5(setup, trains=False, tptp=False):
          "--print-inst-full",
          "--ml-engine",
       ])
-      default("static", static)
-   else:
-      default("static", CVC5_STATIC)
-
-   if "plugins" not in setup:
-      if "outputs" not in options:
-         plugs = plugins.db() 
-      else:
-         plugs = plugins.outputs(flatten="flatten" in options, 
-                                 compress="compress" in options)
-      default("plugins", plugs)
-
-   if trains is True:
-      default("dataname", "data/model")
+      default(setup, "static", static)
+      default(setup, "dataname", "data/model")
       trains = Cvc5Trains(setup["dataname"])
-   if trains:
-      setup["plugins"].append(trains)
+      plugs = setup["plugins"]
+      plugs.append(trains)
+      options = setup["options"]
       if "debug-trains" in options:
-         setup["plugins"].append(Cvc5TrainsDebug("flatten" in options))
+         plugs.append(Cvc5TrainsDebug("flatten" in options))
       setup["trains"] = trains      
-
-   Cvc5 = TptpCvc5 if tptp else SmtCvc5
-   solver = Cvc5(setup["limit"], binary=setup["binary"], plugins=setup["plugins"], static=setup["static"])
-   setup["solver"] = solver
-   return setup
+   return solver(setup, Cvc5)
 
 
 def evaluation(setup):
@@ -176,13 +147,16 @@ def looping(setup):
    loopinit(setup)
    return setup
 
-def cvc5tune(trains, devels=None, tuneargs=None):
+def autotuner(trains, devels, tuneargs, mk_builder):
    if "refs" not in trains:
       ref = trains["ref"] 
       idx = ref if (type(ref) is int) else 0
       trains["refs"] = [ trains["sidlist"][idx] ]
-   trains["builder"] = Cvc5Tune(trains, devels, tuneargs)
+   trains["builder"] = mk_builder(trains, devels, tuneargs)
    return trains
+
+def cvc5tune(trains, devels=None, tuneargs=None):
+   return autotuner(trains, devels, tuneargs, Cvc5Tune)
 
 def oneloop(setup):
    def is_last(setup):
