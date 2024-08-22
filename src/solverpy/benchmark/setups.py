@@ -2,6 +2,7 @@ import logging
 
 from . import db
 from . import launcher
+from ..builder.cvc5tune import Cvc5Tune
 from ..solver.smt import Cvc5 as SmtCvc5
 from ..solver.smt.cvc5 import CVC5_BINARY, CVC5_STATIC # == "cvc5"
 from ..solver.atp.eprover import E_STATIC # == "cvc5"
@@ -25,7 +26,8 @@ def default(setup, key, val):
       setup[key] = val
 
 def ensure(options, option):
-   if (option not in options) and (f"no-{option}" not in options):
+   baseopt = option if not option.startswith("no-") else option[3:]
+   if (baseopt not in options) and (f"no-{baseopt}" not in options):
       options.append(option)
 
 def init(setup):
@@ -173,6 +175,14 @@ def looping(setup):
    setup["basedataname"] = setup["dataname"]
    loopinit(setup)
    return setup
+
+def cvc5tune(trains, devels=None, tuneargs=None):
+   if "refs" not in trains:
+      ref = trains["ref"] 
+      idx = ref if (type(ref) is int) else 0
+      trains["refs"] = [ trains["sidlist"][idx] ]
+   trains["builder"] = Cvc5Tune(trains, devels, tuneargs)
+   return trains
 
 def oneloop(setup):
    def is_last(setup):
