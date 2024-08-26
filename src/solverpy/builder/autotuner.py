@@ -4,7 +4,7 @@ import os
 import shutil
 import logging
 
-from .builder import Builder, NAME
+from .builder import Builder
 from .autotune import autotune
 
 logger = logging.getLogger(__name__)

@@ -9,7 +9,7 @@ from ..benchmark.path import sids, bids
 
 logger = logging.getLogger(__name__)
 
-class Cvc5Tune(AutoTuner):
+class Cvc5ML(AutoTuner):
    
    def __init__(self, trains, devels=None, tuneargs=None):
       AutoTuner.__init__(self, trains, devels, tuneargs)
