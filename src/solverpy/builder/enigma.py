@@ -7,6 +7,7 @@ import logging
 from .builder import NAME
 from .autotuner import AutoTuner
 from ..benchmark.path import sids, bids
+from ..solver.plugins.trains import enigma 
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,14 @@ class Enigma(AutoTuner):
    
    def __init__(self, trains, devels=None, tuneargs=None):
       AutoTuner.__init__(self, trains, devels, tuneargs)
+      self.reset(self._dataname)
+   
+   def featurepath(self):
+      return enigma.featurepath(self._trains["sel_features"])
+
+   def reset(self, dataname):
+      dataname = os.path.join(dataname, self.featurepath())
+      super().reset(dataname)
 
    def template(self, sid, name, mk_strat):
       sidml = f"{sid}-{name}"
@@ -61,4 +70,10 @@ class Enigma(AutoTuner):
       news = [ sidsolo, sidcoop ]
       logger.debug(f"new strategies: {news}")
       return news
+
+   def build(self):
+      super().build()
+      f_map = self.path("enigma.map")
+      features = self._trains["sel_features"]
+      open(f_map, "w").write(f'features("{features}").\n')
 
