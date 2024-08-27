@@ -24,18 +24,22 @@ class CachedProvider(Provider):
       if self.cache is None:
          logger.warning("empty cache commit")
          return
-      f = self.cachepath() + (".gz" if self.compress else "")
+      ext = ".gz" if self.compress else ""
+      f = f"{self.cachepath()}{ext}"
       logger.debug(f"cache {self} writing {f}")
       os.makedirs(os.path.dirname(f), exist_ok=True)
-      with (gzip.open if self.compress else open)(f, "wt") as fw:
+      ouropen = gzip.open if self.compress else open
+      with ouropen(f, "wt") as fw:
          self.cachedump(fw)
       logger.debug(f"cache {self} saved {len(self.cache)} entries")
    
    def load(self):
-      f = self.cachepath() + (".gz" if self.compress else "")
+      ext = ".gz" if self.compress else ""
+      f = f"{self.cachepath()}{ext}"
       logger.debug(f"cache {self} loading {f}")
       if os.path.isfile(f):
-         with (gzip.open if self.compress else open)(f, "rt") as fr:
+         ouropen = gzip.open if self.compress else open
+         with ouropen(f, "rt") as fr:
             self.cacheload(fr)
          logger.debug(f"cache {self} loaded {len(self.cache)} entries")
       else:

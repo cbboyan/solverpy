@@ -2,8 +2,8 @@ import os
 import logging
 import multiprocessing
 
-from ..decorator import Decorator
-from ....benchmark.path import bids
+from ...solver.plugins.decorator import Decorator
+from ...benchmark.path import bids
 
 NAME = "trains"
 

@@ -7,7 +7,7 @@ import logging
 from .builder import NAME
 from .autotuner import AutoTuner
 from ..benchmark.path import sids, bids
-from ..solver.plugins.trains import enigma 
+from .plugins import enigma 
 
 logger = logging.getLogger(__name__)
 

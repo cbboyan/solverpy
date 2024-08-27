@@ -2,10 +2,9 @@ import os
 import logging
 import multiprocessing
 
-from ..decorator import Decorator
-from ....benchmark.path import bids
-from ....trains import svm
-
+from ...solver.plugins.decorator import Decorator
+from ...benchmark.path import bids
+from .. import svm
 from .trains import Trains
 
 logger = logging.getLogger(__name__)

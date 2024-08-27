@@ -2,7 +2,7 @@ import logging
 
 from .. import launcher, db
 from ...tools import log
-from ...trains import svm
+from ...builder import svm
 from .common import default
 
 logger = logging.getLogger(__name__)

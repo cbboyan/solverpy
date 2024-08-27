@@ -6,7 +6,7 @@ import logging
 import lightgbm as lgb
 
 from ...tools import human
-from ...trains import svm
+from ...builder import svm
 from . import tune
 
 POS_ACC_WEIGHT = 2.0

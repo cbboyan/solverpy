@@ -3,7 +3,7 @@ import logging
 from ...solver.atp.eprover import E_STATIC, E
 from ...solver.atp.prover9 import Prover9
 from ...solver.atp.vampire import Vampire
-from ...solver.plugins.trains import Cvc5Trains, Cvc5TrainsDebug, EnigmaTrains, EnigmaTrainsDebug
+from ...builder.plugins import Cvc5Trains, Cvc5TrainsDebug, EnigmaTrains, EnigmaTrainsDebug
 from ...solver.smt import Cvc5
 from ...solver.smt.cvc5 import CVC5_STATIC
 from .common import default, init, solver

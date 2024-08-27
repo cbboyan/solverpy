@@ -7,7 +7,7 @@ import lightgbm as lgb
 import multiprocessing
 
 from ...tools import human, redirect
-from ...trains import svm
+from ...builder import svm
 from . import tune, build
 from .listener import AutotuneListener
 

@@ -2,8 +2,8 @@ import os
 import re
 
 from .svm import SvmTrains
-from ..db.outputs import Outputs
-from ....benchmark.path import bids
+from ...solver.plugins.db.outputs import Outputs
+from ...benchmark.path import bids
 
 NAME = "trains"
 

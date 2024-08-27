@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2024-08-22)
+## Unreleased changes (2024-08-27)
 
+* refactor: Moved svm and train plugins to builder. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * refactor: Split `benchmark.setups` module. [[details](https://github.com/cbboyan/solverpy/commit/3dbea27) | [browse](https://github.com/cbboyan/solverpy/tree/3dbea27)]
 * refactor: Unify solver setups for evaluation. [[details](https://github.com/cbboyan/solverpy/commit/9f6b502) | [browse](https://github.com/cbboyan/solverpy/tree/9f6b502)]
 * feature: Model builder for cvc5. [[details](https://github.com/cbboyan/solverpy/commit/9ff94be) | [browse](https://github.com/cbboyan/solverpy/tree/9ff94be)]
