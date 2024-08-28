@@ -7,6 +7,6 @@ from .providers.loader import Loader, SlashLoader
 def default():
    return DB([Jsons, Solved, Status])
 
-__all__ = [DB, Jsons, JsonsStore, Solved, Status, Loader, 
-           SlashLoader, default]
+__all__ = ["DB", "Jsons", "JsonsStore", "Solved", "Status", "Loader", 
+           "SlashLoader", "default"]
 

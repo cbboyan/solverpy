@@ -17,5 +17,5 @@ def outputs(flatten=True, compress=True):
       Errors(flatten, compress),
    ]
 
-__all__ = [db, outputs]
+__all__ = ["db", "outputs"]
 
