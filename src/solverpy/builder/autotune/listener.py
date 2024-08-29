@@ -51,7 +51,7 @@ class AutotuneListener(Listener):
       self.bar.done(loss)
 
    def trials(self, nick, iters, timeout):
-      logger.info(f"Running tuning phase: {nick}")
+      logger.info(f"Running tuning phase: {nick}\n> \n> ### Tuning `{nick}` ###\n> ")
       self.iters = f"/{iters}" if iters else ""
       self.header = ["it", nick, "score", "test.acc", "train.acc", "time"]
       self.table = []
@@ -75,9 +75,9 @@ class AutotuneListener(Listener):
    def trialed(self, nick):
       lines = []
       lines.append("")
-      lines.extend(markdown.table(self.header, self.table))
+      lines.extend(markdown.table(self.header, self.table, key=lambda x: float(x[2])))
       lines.append("")
-      logger.info(markdown.dump(lines, prefix="> "))
+      logger.info("\n"+markdown.dump(lines, prefix="> "))
 
    def tuning(self, t_start):
       self.t_start = t_start

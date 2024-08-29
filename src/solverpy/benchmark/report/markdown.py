@@ -26,10 +26,11 @@ def heading(title, level=1):
    return [ f"{level} {title}", "" ]
 
 def table(header, rows, key=None):
-   logger.debug(f"making table with {len(rows)} rows and {len(header)} columns")
+   logger.debug(f"making table with {len(rows)} rows and {len(rows[0])} columns")
    width = widths(rows, header=header)
    lines = []
-   lines.append(join(header, width))
+   if header:
+      lines.append(join(header, width))
    delims = [ "-"*(w+2) for w in width ]
    lines.append(join(delims, width, padding=""))
    if key is not None:

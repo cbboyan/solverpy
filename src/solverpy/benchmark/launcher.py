@@ -25,8 +25,8 @@ def init(setup=None):
       report += markdown.heading("Setup", level=3)
       report += markdown.table(header, rows)
       report += markdown.newline()
-      report = "\n" + markdown.dump(report, prefix="> ")
-   logger.info(f"Experiments running.{report}")
+      report = markdown.dump(report, prefix="> ")
+   logger.info(f"Experiments running.\n{report}")
 
 
 def jobname(solver, bid, sid):
