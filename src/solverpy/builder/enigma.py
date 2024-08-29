@@ -113,10 +113,12 @@ class Enigma(EnigmaModel):
       AutoTuner.__init__(self, trains, devels, tuneargs)
       sel = trains["sel_features"]
       gen = trains["gen_features"]
+      trains0 = trains
       if sel and gen:
          # split the multi train data if it is the case
          trains0 = dict(trains, trains=trains["trains"]._sel)
       self._sel = EnigmaSel(trains0, devels, tuneargs) if sel else None
+      trains0 = trains
       if sel and gen:
          trains0 = dict(trains, trains=trains["trains"]._gen)
       self._gen = EnigmaGen(trains0, devels, tuneargs) if gen else None
