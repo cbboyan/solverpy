@@ -50,7 +50,8 @@ def tuner(
 ):
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)
-   dtrain = lgb.Dataset(xs, label=ys)
+   dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
+   dtrain.construct()
    (xs0, ys0) = svm.load(f_test) if f_test != f_train else (xs, ys)
    dtest = lgb.Dataset(xs0, label=ys0, free_raw_data=False)
    dtest.construct()
@@ -104,9 +105,11 @@ def prettytuner(*args, **kwargs):
 
    listener = AutotuneListener()
 
+   d_tmp = kwargs["d_tmp"]
+   os.makedirs(d_tmp, exist_ok=True)
    queue = multiprocessing.Queue()
    kwargs["queue"] = queue
-   kwargs["f_log"] = "autotune.log"
+   kwargs["f_log"] = os.path.join(d_tmp, "autotune.log")
    kwargs["target"] = tuner
    p = multiprocessing.Process(target=redirect.call, args=args, kwargs=kwargs)
 

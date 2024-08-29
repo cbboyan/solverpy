@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2024-08-29)
 
-* fix: Training Enigma sel models without gens. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Support training with devels. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Training Enigma sel models without gens. [[details](https://github.com/cbboyan/solverpy/commit/07d023f) | [browse](https://github.com/cbboyan/solverpy/tree/07d023f)]
 * feat: Support models for generated filtering. [[details](https://github.com/cbboyan/solverpy/commit/61919ff) | [browse](https://github.com/cbboyan/solverpy/tree/61919ff)]
 * refactor: Moved svm and train plugins to builder. [[details](https://github.com/cbboyan/solverpy/commit/2b10896) | [browse](https://github.com/cbboyan/solverpy/tree/2b10896)]
 * refactor: Split `benchmark.setups` module. [[details](https://github.com/cbboyan/solverpy/commit/3dbea27) | [browse](https://github.com/cbboyan/solverpy/tree/3dbea27)]

@@ -51,14 +51,13 @@ def model(params, dtrain, dtest, f_mod, queue):
 
    # compute the accuracy on the testing data
    #(xs0, ys0) = testd
-   xs0 = dtest.get_data()
-   ys0 = dtest.get_label()
-   acc = accuracy(bst, xs0, ys0)
+   acc = accuracy(bst, dtest.get_data(), dtest.get_label())
+   trainacc = accuracy(bst, dtrain.get_data(), dtrain.get_label())
    bst.free_dataset()
    bst.free_network()
 
    # compute the score of this model
    score = POS_ACC_WEIGHT*acc[1] + acc[2]
    if queue: queue.put(("built", score))
-   return (score, acc, end-begin)
+   return (score, acc, trainacc, end-begin)
    

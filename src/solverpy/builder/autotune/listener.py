@@ -53,7 +53,7 @@ class AutotuneListener(Listener):
    def trials(self, nick, iters, timeout):
       logger.info(f"Running tuning phase: {nick}")
       self.iters = f"/{iters}" if iters else ""
-      self.header = ["it", nick, "score", "acc", "time"]
+      self.header = ["it", nick, "score", "test.acc", "train.acc", "time"]
       self.table = []
    
    def trying(self, nick, it, values):
@@ -62,12 +62,13 @@ class AutotuneListener(Listener):
       self.values = ", ".join("%.4f"%v if type(v) is float else str(v) for v in values)
       self.desc = f"[{it+1}{self.iters}] {self.values:8s}"
 
-   def tried(self, score, acc, duration):
+   def tried(self, score, acc, trainacc, duration):
       self.table.append((
          self.it, 
          self.values, 
          f"{score:.4f}", 
          human.humanacc(acc), 
+         human.humanacc(trainacc),
          human.humantime(duration)
       ))
    
