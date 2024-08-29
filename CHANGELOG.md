@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2024-08-29)
 
-* fix: Fix tuning with devels and init_params. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fix tuning with devels and init_params. [[details](https://github.com/cbboyan/solverpy/commit/6c55599) | [browse](https://github.com/cbboyan/solverpy/tree/6c55599)]
 * fix: Support training with devels. [[details](https://github.com/cbboyan/solverpy/commit/294c1e8) | [browse](https://github.com/cbboyan/solverpy/tree/294c1e8)]
 * fix: Training Enigma sel models without gens. [[details](https://github.com/cbboyan/solverpy/commit/07d023f) | [browse](https://github.com/cbboyan/solverpy/tree/07d023f)]
 * feat: Support models for generated filtering. [[details](https://github.com/cbboyan/solverpy/commit/61919ff) | [browse](https://github.com/cbboyan/solverpy/tree/61919ff)]
