@@ -67,6 +67,7 @@ def oneloop(setup):
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
    logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname'] if 'dataname' in setup else ''}.")
+   logger.info(f"\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
    launcher.launch(**setup)
    trains_compress(setup)
    trains_merge(setup)

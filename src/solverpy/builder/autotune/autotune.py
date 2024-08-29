@@ -82,7 +82,7 @@ def tuner(
 
    if init_params is not None:
       f_mod = os.path.join(d_tmp, "init", "model.lgb")
-      (score, acc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
+      (score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
       best = (score, acc, f_mod, dur)
       logger.debug("- initial model: %s" % human.humanacc(acc)) 
    else:
