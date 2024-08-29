@@ -55,8 +55,9 @@ def oneloop(setup):
             setup["trains"].compress()
    def trains_merge(setup):
       if ("previous_trains" in setup) and not is_last(setup):
-         f_out = setup["trains"].path(filename="train.in")
-         svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
+         setup["trains"].merge(setup["previous_trains"], "train.in")
+         #f_out = setup["trains"].path(filename="train.in")
+         #svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
          setup["trains"].reset(filename="train.in")
    def model_build(setup):
       builder = setup["builder"] if "builder" in setup else None

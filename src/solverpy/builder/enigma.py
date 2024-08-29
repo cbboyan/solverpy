@@ -15,9 +15,9 @@ def cef(freq, model, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold
    dbpath = bids.dbpath(NAME)
    freq = f"@@@freq:{freq}@@@"
    prio = f"@@@prio:{prio}@@@"
-   model = f"{dbpath}/@@@model:{model}@@@"
+   model = f"{dbpath}/@@@sel:{model}@@@"
    weigths = f"@@@weigths:{weigths}@@@"
-   threshold = f"@@@threshold:{threshold}@@@"
+   threshold = f"@@@thrsel:{threshold}@@@"
    return f'{freq}*{efun}({prio},"{model}",{weigths},{threshold})'
 
 def solo(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
@@ -39,7 +39,7 @@ def coop(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPri
    strat = strat.replace("-H'(", f"-H'({eni},")
    return strat
 
-def gen(sid, model="default", threshold=0.5):
+def gen(sid, model="default", threshold=0.1):
    strat = sids.load(sid)
    assert strat.count("-H'") == 1
    dbpath = bids.dbpath(NAME)
@@ -52,11 +52,13 @@ class EnigmaModel(AutoTuner):
    
    def __init__(self, trains, devels, tuneargs, variant):
       AutoTuner.__init__(self, trains, devels, tuneargs)
+      self._variant = variant
       self._fkey = f"{variant}_features"
       self.reset(self._dataname)
    
    def featurepath(self):
-      return enigma.featurepath(self._trains[self._fkey])
+      fpath = enigma.featurepath(self._trains[self._fkey])
+      return f"{self._variant}_{fpath}"
 
    def reset(self, dataname):
       dataname = os.path.join(dataname, self.featurepath())
@@ -86,9 +88,9 @@ class EnigmaSel(EnigmaModel):
 
    def apply(self, sid, model):
       sidsolo = self.template(sid, "solo", solo)
-      sidsolo = f"{sidsolo}@model={model}"
+      sidsolo = f"{sidsolo}@sel={model}"
       sidcoop = self.template(sid, "coop", coop)
-      sidcoop = f"{sidcoop}@model={model}"
+      sidcoop = f"{sidcoop}@sel={model}"
       news = [ sidsolo, sidcoop ]
       logger.debug(f"new strategies: {news}")
       return news
@@ -124,7 +126,7 @@ class Enigma(EnigmaModel):
          self._sel.reset(dataname)
       if self._gen:
          self._gen.reset(dataname)
-      super().reset(dataname)
+      Builder.reset(self, dataname)
 
    def build(self):
       self._strats = []
@@ -143,8 +145,8 @@ class Enigma(EnigmaModel):
       sidcoop = f"{sid}-coop"
       sidsologen = self.template(sidsolo, "gen", gen)
       sidcoopgen = self.template(sidcoop, "gen", gen)
-      sidsologen = f"{sidsologen}@model={self._sel._dataname}:gen={self._gen._dataname}"
-      sidcoopgen = f"{sidcoopgen}@model={self._sel._dataname}:gen={self._gen._dataname}"
+      sidsologen = f"{sidsologen}@sel={self._sel._dataname}:gen={self._gen._dataname}"
+      sidcoopgen = f"{sidcoopgen}@sel={self._sel._dataname}:gen={self._gen._dataname}"
       news = [ sidsologen, sidcoopgen ]
       logger.debug(f"new strategies: {news}")
       return news

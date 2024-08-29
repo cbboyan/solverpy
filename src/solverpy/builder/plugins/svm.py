@@ -33,4 +33,11 @@ class SvmTrains(Trains):
       logger.info(f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) ")
       if os.path.isfile(self.path()):
          svm.compress(self.path())
+
+   def merge(self, previous, outfilename):
+      assert self._filename != outfilename
+      f_out = self.path(filename=outfilename)
+      svm.merge(previous, self.path(), f_out=f_out)
+      #self.reset(filename=outfilename)
+
         

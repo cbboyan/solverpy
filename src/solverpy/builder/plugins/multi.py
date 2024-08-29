@@ -28,6 +28,9 @@ class MultiTrains(Trains):
          self._dataname = dataname
       self.apply(lambda x: x.reset(dataname=dataname, filename=filename))
 
+   def path(self, dataname=None, filename=None):
+      return tuple(t.path(dataname,filename) for t in self._trains)
+
    def finished(self, *args, **kwargs):
       self.apply(lambda x: x.finished(*args, **kwargs))
 
@@ -42,4 +45,10 @@ class MultiTrains(Trains):
 
    def compress(self, *args, **kwargs):
       self.apply(lambda x: x.compress(*args, **kwargs))
+
+   def merge(self, previous, outfilename):
+      assert type(previous) is tuple 
+      assert len(previous) == len(self._trains)
+      for (t0,p0) in zip(self._trains, previous):
+         t0.merge(p0, outfilename) 
 

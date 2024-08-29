@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2024-08-27)
+## Unreleased changes (2024-08-29)
 
+* feat: Support models for generated filtering. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * refactor: Moved svm and train plugins to builder. [[details](https://github.com/cbboyan/solverpy/commit/2b10896) | [browse](https://github.com/cbboyan/solverpy/tree/2b10896)]
 * refactor: Split `benchmark.setups` module. [[details](https://github.com/cbboyan/solverpy/commit/3dbea27) | [browse](https://github.com/cbboyan/solverpy/tree/3dbea27)]
 * refactor: Unify solver setups for evaluation. [[details](https://github.com/cbboyan/solverpy/commit/9f6b502) | [browse](https://github.com/cbboyan/solverpy/tree/9f6b502)]
