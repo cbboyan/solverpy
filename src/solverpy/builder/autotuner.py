@@ -75,7 +75,7 @@ class AutoTuner(Builder):
          ["score", f"{score:0.3f}"],
       ])
       report += markdown.newline()
-      report += markdown.heading("Best model parameters", level=4)
+      report += markdown.heading("Best model training parameters", level=4)
       report += markdown.table(
             ["param","value"], 
             [[x, f"{y:.5f}" if type(y) is float else str(y)] for (x,y) in params.items()])
