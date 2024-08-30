@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2024-08-30)
 
-* fix: Remove prefer-initial-clauses in Enigmas [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Remove prefer-initial-clauses in Enigmas [[details](https://github.com/cbboyan/solverpy/commit/a5bcded) | [browse](https://github.com/cbboyan/solverpy/tree/a5bcded)]
 * fix: Fix tuning with devels and init_params. [[details](https://github.com/cbboyan/solverpy/commit/6c55599) | [browse](https://github.com/cbboyan/solverpy/tree/6c55599)]
 * fix: Support training with devels. [[details](https://github.com/cbboyan/solverpy/commit/294c1e8) | [browse](https://github.com/cbboyan/solverpy/tree/294c1e8)]
 * fix: Training Enigma sel models without gens. [[details](https://github.com/cbboyan/solverpy/commit/07d023f) | [browse](https://github.com/cbboyan/solverpy/tree/07d023f)]

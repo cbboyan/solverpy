@@ -24,7 +24,7 @@ def solo(sid, model="default", noinit=True, efun="EnigmaticLgb", prio="ConstPrio
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
-      strat = strat.eplace("--prefer-initial-clauses", "")
+      strat = strat.replace("--prefer-initial-clauses", "")
    base = strat[:strat.index("-H'")]
    eni = cef(1, model, efun, prio, weigths, threshold)
    return f"{base}-H'{eni}'"
@@ -33,7 +33,7 @@ def coop(sid, model="default", noinit=True, efun="EnigmaticLgb", prio="ConstPrio
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
-      strat = strat.eplace("--prefer-initial-clauses", "")
+      strat = strat.replace("--prefer-initial-clauses", "")
    freq = sum(map(int,re.findall(r"(\d*)\*", strat)))
    eni = cef(freq, model, efun, prio, weigths, threshold)
    strat = strat.replace("-H'(", f"-H'({eni},")
