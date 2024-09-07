@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2024-09-07)
 
-* fix: Corrected option syntax of solo strategies. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Corrected option syntax of solo strategies. [[details](https://github.com/cbboyan/solverpy/commit/d6fad4a) | [browse](https://github.com/cbboyan/solverpy/tree/d6fad4a)]
 
 ## v1.8.0 (2024-08-30)
 

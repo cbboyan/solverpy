@@ -20,7 +20,7 @@ def cef(freq, model, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold
    threshold = f"@@@thrsel:{threshold}@@@"
    return f'{freq}*{efun}({prio},"{model}",{weigths},{threshold})'
 
-def solo(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
+def solo(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
@@ -29,7 +29,7 @@ def solo(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPri
    eni = cef(1, model, efun, prio, weigths, threshold)
    return f"{base}-H'({eni})'"
 
-def coop(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
+def coop(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
@@ -39,7 +39,13 @@ def coop(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPri
    strat = strat.replace("-H'(", f"-H'({eni},")
    return strat
 
-def gen(sid, model="default", threshold=0.1):
+def solo0(sid, **kwargs):
+   return solo(sid, **dict(kwargs, noinit=True))
+
+def coop0(sid, **kwargs):
+   return coop(sid, **dict(kwargs, noinit=True))
+
+def gen(sid, *, model="default", threshold=0.1):
    strat = sids.load(sid)
    assert strat.count("-H'") == 1
    dbpath = bids.dbpath(NAME)
