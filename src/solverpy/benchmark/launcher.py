@@ -7,7 +7,7 @@ from ..tools import human, log
 from ..task.solvertask import SolverTask
 from ..task.bar import SolvingBar, RunningBar
 from ..task import launcher 
-from .report import markdown
+from .reports import markdown
 
 logger = logging.getLogger(__name__)
 

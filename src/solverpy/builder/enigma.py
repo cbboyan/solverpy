@@ -27,7 +27,7 @@ def solo(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPri
       strat = strat.replace("--prefer-initial-clauses", "")
    base = strat[:strat.index("-H'")]
    eni = cef(1, model, efun, prio, weigths, threshold)
-   return f"{base}-H'{eni}'"
+   return f"{base}-H'({eni})'"
 
 def coop(sid, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
    strat = sids.load(sid)

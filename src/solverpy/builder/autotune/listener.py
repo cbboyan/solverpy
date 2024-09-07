@@ -4,7 +4,7 @@ import logging
 
 from ...tools import human
 from ...task.bar import BuilderBar
-from ...benchmark.report import markdown
+from ...benchmark.reports import markdown
 
 logger = logging.getLogger(__name__)
 

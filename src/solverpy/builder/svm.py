@@ -6,6 +6,7 @@ import scipy
 from sklearn.datasets import load_svmlight_file, dump_svmlight_file
 
 from ..tools import human
+from ..benchmark.reports import progress
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +51,10 @@ def load(f_in):
 
 def save(data, label, f_in):
    (z_data, z_label) = datafiles(f_in)
-   logger.debug(f"saving compressed data to {f_in}")
-   logger.debug(f"> | shape        | {data.shape[0]}x{data.shape[1]} |")
-   logger.debug(f"> | values       | {data.nnz} | ")
-   logger.debug(f"> | format       | {data.format} |")
+   logger.debug(f"saving compressed data to {z_data}")
    scipy.sparse.save_npz(z_data, data, compressed=True)
    logger.debug(f"saving compressed labels to {z_label}")
    numpy.savez_compressed(z_label, label=label)
-   logger.debug(f"> | compressed   | {human.humanbytes(size(f_in))} |")
    logger.info(f"Saved trains: {f_in}")
 
 def compress(f_in, keep=False):
@@ -65,13 +62,14 @@ def compress(f_in, keep=False):
    if iscompressed(f_in):
       logger.warning(f"Trains {f_in} are already compressed.  Skipped.")
       return
-   logger.debug(f"> | uncompressed | {human.humanbytes(size(f_in))} |")
+   size_in = size(f_in) # size before compression
    (data, label) = load_svmlight_file(f_in, zero_based=True)
    save(data, label, f_in)
+   report = progress.compress(f_in, size_in, size(f_in), data, label)
    if iscompressed(f_in) and not keep:
       logger.debug(f"deleting the uncompressed file")
       os.remove(f_in)
-   logger.info(f"Trains compressed to {human.humanbytes(size(f_in))}.")
+   logger.info(f"Trains compressed to {human.humanbytes(size(f_in))}.\n{report}")
 
 def decompress(f_in, keep=True):
    logger.info(f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")

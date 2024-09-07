@@ -6,7 +6,7 @@ import logging
 
 from .builder import Builder
 from .autotune import autotune
-from ..benchmark.report import markdown
+from ..benchmark.reports import progress
 from ..tools import human
 
 logger = logging.getLogger(__name__)
@@ -62,25 +62,6 @@ class AutoTuner(Builder):
       #self._models = [f_model]
       self._strats = self.applies(self._trains["refs"], self._dataname)
 
-      report = []
-      report += markdown.newline()
-      report += markdown.heading(f"Model `{self._dataname}`", level=3)
-      report += markdown.heading("Best model statistics", level=4)
-      report += [f"Best model: `{f_best}`", ""]
-      report += markdown.table([" ", " "], [
-         ["trains", f"{pos+neg} ({pos} / {neg})"],
-         ["acc / train", human.humanacc(trainacc)],
-         ["acc / devel", human.humanacc(acc)],
-         ["duration", human.humantime(dur)],
-         ["score", f"{score:0.3f}"],
-      ])
-      report += markdown.newline()
-      report += markdown.heading("Best model training parameters", level=4)
-      report += markdown.table(
-            ["param","value"], 
-            [[x, f"{y:.5f}" if type(y) is float else str(y)] for (x,y) in params.items()])
-      report += markdown.newline()
-      report = markdown.dump(report, prefix="> ")
-
+      report = progress.build(self._dataname, *ret)
       logger.info(f"Model {self._dataname} built.\n{report}")
 
