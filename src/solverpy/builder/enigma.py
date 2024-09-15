@@ -11,31 +11,31 @@ from .plugins import enigma
 
 logger = logging.getLogger(__name__)
 
-def cef(freq, model, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
+def cef(freq, model, efun="EnigmaticLgb", prio="ConstPrio", weights=1, threshold=0.5):
    dbpath = bids.dbpath(NAME)
    freq = f"@@@freq:{freq}@@@"
    prio = f"@@@prio:{prio}@@@"
    model = f"{dbpath}/@@@sel:{model}@@@"
-   weigths = f"@@@weigths:{weigths}@@@"
+   weights = f"@@@weights:{weights}@@@"
    threshold = f"@@@thrsel:{threshold}@@@"
-   return f'{freq}*{efun}({prio},"{model}",{weigths},{threshold})'
+   return f'{freq}*{efun}({prio},"{model}",{weights},{threshold})'
 
-def solo(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
+def solo(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weights=1, threshold=0.5):
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
       strat = strat.replace("--prefer-initial-clauses", "")
    base = strat[:strat.index("-H'")]
-   eni = cef(1, model, efun, prio, weigths, threshold)
+   eni = cef(1, model, efun, prio, weights, threshold)
    return f"{base}-H'({eni})'"
 
-def coop(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weigths=1, threshold=0.5):
+def coop(sid, *, model="default", noinit=False, efun="EnigmaticLgb", prio="ConstPrio", weights=1, threshold=0.5):
    strat = sids.load(sid)
    assert strat.find("-H'") >= 0
    if noinit:
       strat = strat.replace("--prefer-initial-clauses", "")
    freq = sum(map(int,re.findall(r"(\d*)\*", strat)))
-   eni = cef(freq, model, efun, prio, weigths, threshold)
+   eni = cef(freq, model, efun, prio, weights, threshold)
    strat = strat.replace("-H'(", f"-H'({eni},")
    return strat
 
