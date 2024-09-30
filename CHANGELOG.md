@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2024-09-30)
 
-* feat: Allow looping from parametric sids. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Optimized provider commits [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Allow looping from parametric sids. [[details](https://github.com/cbboyan/solverpy/commit/f8c08ab) | [browse](https://github.com/cbboyan/solverpy/tree/f8c08ab)]
 * fix: fix type in `weigths` [[details](https://github.com/cbboyan/solverpy/commit/3e19738) | [browse](https://github.com/cbboyan/solverpy/tree/3e19738)]
 * fix: Corrected option syntax of solo strategies. [[details](https://github.com/cbboyan/solverpy/commit/d6fad4a) | [browse](https://github.com/cbboyan/solverpy/tree/d6fad4a)]
 

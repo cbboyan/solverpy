@@ -24,6 +24,9 @@ class CachedProvider(Provider):
       if self.cache is None:
          logger.warning("empty cache commit")
          return
+      if self._uptodate:
+         logger.debug(f"commit skipped; cache {self} is up-to-date")
+         return
       ext = ".gz" if self.compress else ""
       f = f"{self.cachepath()}{ext}"
       logger.debug(f"cache {self} writing {f}")
@@ -32,8 +35,12 @@ class CachedProvider(Provider):
       with ouropen(f, "wt") as fw:
          self.cachedump(fw)
       logger.debug(f"cache {self} saved {len(self.cache)} entries")
+      self._uptodate = True
    
    def load(self):
+      if self._uptodate:
+         logger.debug(f"loading skipped; cache {self} is up-to-date")
+         return
       ext = ".gz" if self.compress else ""
       f = f"{self.cachepath()}{ext}"
       logger.debug(f"cache {self} loading {f}")
@@ -45,6 +52,7 @@ class CachedProvider(Provider):
       else:
          self.cache = {}
          logger.debug(f"cache {self} not found {f}")
+      self._uptodate = True
 
    def cachepath(self):
       raise NotImlementedError()

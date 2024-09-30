@@ -7,6 +7,7 @@ class Provider:
       self.sid = sid
       self.limit = limit
       self.store_cached = store_cached
+      self._uptodate = False
       "call store for cached results."
 
    def query(self, task):

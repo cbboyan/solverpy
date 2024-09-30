@@ -22,6 +22,7 @@ class Jsons(CachedProvider):
    def store(self, task, result):
       if task.solver.valid(result):
          self.cache[task.problem] = result
+         self._uptodate = False
 
    def cachepath(self):
       return os.path.join(

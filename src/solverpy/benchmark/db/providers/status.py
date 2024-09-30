@@ -17,7 +17,10 @@ class Status(CachedProvider):
 
    def store(self, task, result):
       if task.solver.valid(result):
-         self.cache[task.problem] = result["status"]
+         val = result["status"]
+         if (task.problem not in self.cache) or (self.cache[task.problem] != val):
+            self.cache[task.problem] = val
+            self._uptodate = False
    
    def cachepath(self):
       return os.path.join(

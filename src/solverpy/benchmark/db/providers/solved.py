@@ -15,11 +15,10 @@ class Solved(CachedProvider):
 
    def store(self, task, result):
       if task.solver.solved(result):
-         self.cache.add(task.problem)
+         if task.problem not in self.cache:
+            self.cache.add(task.problem)
+            self._uptodate = False
 
-   def cached(self, task, result):
-      self.store(task, result)
-   
    def load(self):
       super().load()
       if not self.cache:

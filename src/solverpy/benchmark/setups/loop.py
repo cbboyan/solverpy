@@ -79,7 +79,7 @@ def launch(setup, devels=None):
       oneloop(col)
    def do_iter(col):
       if not col: return
-      col["sidlist"] = list(setup["refs"]) if "refs" in setup else []
+      #col["sidlist"] = list(setup["refs"]) if "refs" in setup else []
       col["sidlist"].extend(setup["news"] if "news" in setup else [])
       loopinit(col)
       oneloop(col)
