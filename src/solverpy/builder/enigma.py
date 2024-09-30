@@ -93,10 +93,11 @@ class EnigmaSel(EnigmaModel):
       EnigmaModel.__init__(self, trains, devels, tuneargs, "sel")
 
    def apply(self, sid, model):
-      sidsolo = self.template(sid, "solo", solo)
-      sidsolo = f"{sidsolo}@sel={model}"
-      sidcoop = self.template(sid, "coop", coop)
-      sidcoop = f"{sidcoop}@sel={model}"
+      (base, args) = sids.split(sid)
+      sidsolo = self.template(base, "solo", solo)
+      sidsolo = sids.fmt(sidsolo, dict(args, sel=model))
+      sidcoop = self.template(base, "coop", coop)
+      sidcoop = sids.fmt(sidcoop, dict(args, sel=model))
       news = [ sidsolo, sidcoop ]
       logger.debug(f"new strategies: {news}")
       return news
@@ -107,8 +108,9 @@ class EnigmaGen(EnigmaModel):
       EnigmaModel.__init__(self, trains, devels, tuneargs, "gen")
 
    def apply(self, sid, model):
-      sidgen = self.template(sid, "gen", gen)
-      sidgen = f"{sidgen}@gen={model}"
+      (base, args) = sids.split(sid)
+      sidgen = self.template(base, "gen", gen)
+      sidgen = sids.fmt(sidgen, dict(args, gen=model))
       news = [ sidgen ]
       logger.debug(f"new strategies: {news}")
       return news
@@ -149,12 +151,14 @@ class Enigma(EnigmaModel):
          self._strats.extend(self.applies(refs, self._dataname))
          
    def apply(self, sid, model):
-      sidsolo = f"{sid}-solo"
-      sidcoop = f"{sid}-coop"
+      (base, args) = sids.split(sid)
+      sidsolo = f"{base}-solo"
+      sidcoop = f"{base}-coop"
       sidsologen = self.template(sidsolo, "gen", gen)
       sidcoopgen = self.template(sidcoop, "gen", gen)
-      sidsologen = f"{sidsologen}@sel={self._sel._dataname}:gen={self._gen._dataname}"
-      sidcoopgen = f"{sidcoopgen}@sel={self._sel._dataname}:gen={self._gen._dataname}"
+      args = dict(args, sel=self._sel._dataname, gen=self._gen.dataname)
+      sidsologen = sids.fmt(sidsologen, args)
+      sidcoopgen = sids.fmt(sidcoopgen, args)
       news = [ sidsologen, sidcoopgen ]
       logger.debug(f"new strategies: {news}")
       return news

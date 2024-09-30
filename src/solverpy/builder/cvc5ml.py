@@ -39,8 +39,9 @@ class Cvc5ML(AutoTuner):
       return f"{strat}\n{adds}"
 
    def apply(self, sid, model):
-      tpl = self.template(sid)
-      sidml = f"{tpl}@model={model}"
+      (base, args) = sids.split(sid)
+      tpl = self.template(base)
+      sidml = sids.fmt(tpl, dict(args, model=model))
       logger.debug(f"new strategy: {sidml}")
       return [sidml]
 

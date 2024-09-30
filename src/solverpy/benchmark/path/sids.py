@@ -45,11 +45,14 @@ def defaults(strategy):
    ret = {x.strip():y.strip() for (x,y) in ret}
    return ret
 
+def fmt(base, args):
+   args = ":".join(f"{x}={args[x]}" for x in sorted(args))
+   return f"{base}@{args}"
+
 def normalize(sid):
    strategy = load(sid)
    defs = defaults(strategy)
    (sid, args) = split(sid)
    args = {x:y for (x,y) in args.items() if y != defs[x]}
-   args = ":".join(f"{x}={args[x]}" for x in sorted(args))
-   return "%s@%s" % (sid, args)
+   return fmt(sid, args)
    
