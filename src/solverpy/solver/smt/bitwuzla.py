@@ -7,7 +7,7 @@ BWZ_BINARY = "bitwuzla"
 BWZ_STATIC = "-v"
 
 BWZ_BUILDER = {
-   "T": lambda n: f"-t={float(n)*1000}",
+   "T": lambda n: f"-t={int(n)*1000}",
 }
 
 BWZ_TABLE = {

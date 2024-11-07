@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2024-11-07)
 
-* fix: Bitwuzla wrapper timeout and setup. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Bitwuzla wrapper timeout and setup. [[details](https://github.com/cbboyan/solverpy/commit/54b140d) | [browse](https://github.com/cbboyan/solverpy/tree/54b140d)]
 * fix: Optimized provider commits [[details](https://github.com/cbboyan/solverpy/commit/34eee12) | [browse](https://github.com/cbboyan/solverpy/tree/34eee12)]
 * feat: Allow looping from parametric sids. [[details](https://github.com/cbboyan/solverpy/commit/f8c08ab) | [browse](https://github.com/cbboyan/solverpy/tree/f8c08ab)]
 * fix: fix type in `weigths` [[details](https://github.com/cbboyan/solverpy/commit/3e19738) | [browse](https://github.com/cbboyan/solverpy/tree/3e19738)]
