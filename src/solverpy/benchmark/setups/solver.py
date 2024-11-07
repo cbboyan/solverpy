@@ -5,6 +5,7 @@ from ...solver.atp.prover9 import Prover9
 from ...solver.atp.vampire import Vampire
 from ...builder.plugins import *
 from ...solver.smt import Cvc5
+from ...solver.smt import Bitwuzla
 from ...solver.smt.cvc5 import CVC5_STATIC
 from .common import default, init, solver
 
@@ -66,6 +67,10 @@ def vampire(setup):
 def prover9(setup):
    init(setup)   
    return solver(setup, Prover9)
+
+def bitwuzla(setup):
+   init(setup)   
+   return solver(setup, Bitwuzla)
 
 def cvc5(setup, trains=False):
    init(setup)
