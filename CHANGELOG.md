@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2024-12-04)
 
-* fix: Missing module init of `solverpy.lang`. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Added antlr4 runtime requirment. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Missing module init of `solverpy.lang`. [[details](https://github.com/cbboyan/solverpy/commit/aa4de97) | [browse](https://github.com/cbboyan/solverpy/tree/aa4de97)]
 
 ## v1.8.1 (2024-12-04)
 
