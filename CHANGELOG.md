@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2024-12-04)
+
+* fix: Missing module init of `solverpy.lang`. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v1.8.1 (2024-12-04)
 
-* feat!: Basic TPTP parsering into Python objects. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!: Basic TPTP parsering into Python objects. [[details](https://github.com/cbboyan/solverpy/commit/6545648) | [browse](https://github.com/cbboyan/solverpy/tree/6545648)]
 * fix: Bitwuzla wrapper timeout and setup. [[details](https://github.com/cbboyan/solverpy/commit/54b140d) | [browse](https://github.com/cbboyan/solverpy/tree/54b140d)]
 * fix: Optimized provider commits [[details](https://github.com/cbboyan/solverpy/commit/34eee12) | [browse](https://github.com/cbboyan/solverpy/tree/34eee12)]
 * feat: Allow looping from parametric sids. [[details](https://github.com/cbboyan/solverpy/commit/f8c08ab) | [browse](https://github.com/cbboyan/solverpy/tree/f8c08ab)]
