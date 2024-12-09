@@ -32,7 +32,18 @@ class TptpVisitor(TptpDefaultVisitor):
          ret = [childVisit(ch) for ch in ctx.children]
          ret = [x for x in ret if x is not None]
       return ret 
-    
+  
+   def visitChild(self, ctx, i):
+      return self.visit(ctx.getChild(i))
+
+   def visitChildrenEven(self, ctx):
+      cnt = ctx.getChildCount()
+      return [self.visitChild(ctx,i) for i in range(0,cnt,2)]
+
+   def visitChildrenOdd(self, ctx):
+      cnt = ctx.getChildCount()
+      return [self.visitChild(ctx,i) for i in range(1,cnt,2)]
+
    def visitFof_plain_term(self, ctx:TptpParser.Fof_plain_termContext):
       """
       fof_plain_term           : constant
@@ -48,13 +59,7 @@ class TptpVisitor(TptpDefaultVisitor):
       """
       fof_arguments           : fof_term (',' fof_term)*;
       """
-      cnt = ctx.getChildCount()
-      i = 0
-      ret = []
-      while i < cnt:
-         ret.append(self.visit(ctx.getChild(i)))
-         i += 2
-      return tuple(ret)
+      return tuple(self.visitChildrenEven(ctx))
    
    def visitAnnotated_formula(self, ctx:TptpParser.Annotated_formulaContext):
       "Strips `(` from `cnf(` or `fof(`, etc. and removes postfix `).`"

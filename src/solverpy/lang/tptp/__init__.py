@@ -1,4 +1,4 @@
-from .parse import problem, formula
+from . import pretty, parse
 
-__all__ = ["problem", "formula"]
+__all__ = ["pretty", "parse"]
 
