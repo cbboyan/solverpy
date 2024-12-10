@@ -17,39 +17,7 @@ class TptpSetVisitor(TptpVisitor):
    def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
       self._subst = {}
-
-   def visitCnf_literal(self, ctx:TptpParser.Cnf_literalContext):
-      """
-      cnf_literal             : fof_atomic_formula | Not fof_atomic_formula
-                              | fof_infix_unary;
-      """
-      if ctx.getChildCount() == 2:
-         # negated atom
-         return ("~", self.visit(ctx.getChild(1)))
-      ret = self.defaultVisit(ctx)
-      if (len(ret) == 3) and (ret[1] in ["=", "!="]):
-         # equality and inequality
-         return (ret[1], frozenset([ret[0], ret[2]]))
-      return (ret,) if type(ret)==str else ret
-    
-   def visitCnf_disjunction(self, ctx:TptpParser.Cnf_disjunctionContext):
-      """
-      cnf_disjunction         : cnf_literal | cnf_disjunction Or cnf_literal;
-      """
-      if ctx.getChildCount() == 1:
-         # single literal
-         return frozenset([self.visit(ctx.getChild(0))])
-      # multi-literal
-      disjunction = self.visit(ctx.getChild(0))
-      literal = self.visit(ctx.getChild(2))
-      if type(literal) != frozenset:
-         literal = frozenset([literal])
-      return disjunction | literal
-    
-   def visitAnnotated_formula(self, ctx:TptpParser.Annotated_formulaContext):
-      self._subst.clear()
-      return super().visitAnnotated_formula(ctx)
-    
+   
    def visitCnf_formula(self, ctx:TptpParser.Cnf_formulaContext):
       """
       cnf_formula             : cnf_disjunction | '(' cnf_disjunction ')';
@@ -58,6 +26,47 @@ class TptpSetVisitor(TptpVisitor):
          return self.visit(ctx.getChild(0))
       else:
          return self.visit(ctx.getChild(1))
+
+   def visitCnf_disjunction(self, ctx:TptpParser.Cnf_disjunctionContext):
+      """
+      cnf_disjunction         : cnf_literal | cnf_disjunction Or cnf_literal;
+      """
+      if ctx.getChildCount() == 1:
+         return self.visit(ctx.getChild(0))
+      (dispos, disneg) = self.visit(ctx.getChild(0))
+      (litpos, litneg) = self.visit(ctx.getChild(2))
+      return (dispos | litpos, disneg | litneg)
+    
+   def visitCnf_literal(self, ctx:TptpParser.Cnf_literalContext):
+      """
+      cnf_literal             : fof_atomic_formula | Not fof_atomic_formula
+                              | fof_infix_unary;
+
+      fof_atomic_formula          : fof_plain_atomic_formula | ...
+      fof_plain_atomic_formula    : fof_plain_term;
+      """
+      neg = (ctx.getChildCount() == 2)
+      term = self.visit(ctx.getChild(1 if neg else 0))
+      if (len(term) == 3) and (term[1] in ["=", "!="]):
+         assert not neg
+         neg = (term[1] == "!=")
+         term = ("=", frozenset([term[0], term[2]]))
+      one = frozenset([term])
+      two = frozenset()
+      return (one, two) if not neg else (two, one)
+
+      #if ctx.getChildCount() == 2:
+      #   # negated atom
+      #   return ("~", self.visit(ctx.getChild(1)))
+      #ret = self.defaultVisit(ctx)
+      #if (len(ret) == 3) and (ret[1] in ["=", "!="]):
+      #   # equality and inequality
+      #   return (ret[1], frozenset([ret[0], ret[2]]))
+      #return (ret,) if type(ret)==str else ret
+    
+   def visitAnnotated_formula(self, ctx:TptpParser.Annotated_formulaContext):
+      self._subst.clear()
+      return super().visitAnnotated_formula(ctx)
     
    def visitVariable(self, ctx:TptpParser.VariableContext):
       """
