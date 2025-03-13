@@ -71,3 +71,7 @@ UNITS = {
    "size": humanbytes
 }
 
+def test(x, y, stat=[]):
+   print("Python: ", x, y, stat)
+   stat.append(10)
+

@@ -22,6 +22,7 @@ def init(setup):
    ensure(options, "flatten") 
    ensure(options, "compress")
    default(setup, "limit", "T1")
+   default(setup, "dataname", "noname")
    
    if "plugins" not in setup:
       if "outputs" not in options:

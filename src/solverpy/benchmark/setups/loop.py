@@ -66,7 +66,7 @@ def oneloop(setup):
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
-   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname'] if 'dataname' in setup else ''}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
+   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
    launcher.launch(**setup)
    trains_compress(setup)
    trains_merge(setup)
@@ -92,6 +92,9 @@ def launch(setup, devels=None):
       while setup["it"] < setup["loops"]:
          log.ntfy(setup, f"solverpy: iter #{setup['it']}")
          do_iter(devels)
+         if devels and (setup['it']+1 == setup["loops"]):
+            # skip evaluation on trains in the last loop if devel is used
+            break
          do_iter(setup)
    log.ntfy(setup, "solverpy: done")
    return setup
