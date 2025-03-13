@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-03-13)
 
-* fix: skip evaluation on trains in the last iter [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Restricted evaluation by `solvedby` strategy. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: skip evaluation on trains in the last iter [[details](https://github.com/cbboyan/solverpy/commit/1babecb) | [browse](https://github.com/cbboyan/solverpy/tree/1babecb)]
 * fix: Improved TPTP parsing. [[details](https://github.com/cbboyan/solverpy/commit/a2501dc) | [browse](https://github.com/cbboyan/solverpy/tree/a2501dc)]
 * fix: Improved TPTP parsing and parents extraction. [[details](https://github.com/cbboyan/solverpy/commit/cffc446) | [browse](https://github.com/cbboyan/solverpy/tree/cffc446)]
 * fix: Added antlr4 runtime requirment. [[details](https://github.com/cbboyan/solverpy/commit/0052fd2) | [browse](https://github.com/cbboyan/solverpy/tree/0052fd2)]
