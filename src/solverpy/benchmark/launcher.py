@@ -38,12 +38,28 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=Tr
    desc = desc if desc else jobname(solver, bid, sid)
    logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
    # prepare the tasks to be evaluated
-   solvable = None
+   ps = bids.problems(bid)
+   skipped = {}
    if solvedby and (it == 0):
       solvable = Solved(bid, solvedby, solver.limits.limit).cache
       if solvable:
+         simulate = dict(status="TIMEOUT", runtime=solver.limits.timeout, limit=solver.limits.limit)
+         skipped = {p:dict(simulate) for p in (set(ps) - solvable)}
+         if taskdone:
+            for (p,res) in skipped.items():
+               taskdone(solver.solved(res))
+         if db:
+            tasks = [SolverTask(solver,bid,sid,p) for p in skipped]
+            results = [simulate]*len(tasks)
+            db.store(tasks, results)
+         ps = solvable
          logger.debug(f"evaluation: restricted to {len(solvable)} problems solvable by {solvedby}")
-   ps = solvable if solvable else bids.problems(bid) 
+   #solvable = None
+   #if solvedby and (it == 0):
+   #   solvable = Solved(bid, solvedby, solver.limits.limit).cache
+   #   if solvable:
+   #      logger.debug(f"evaluation: restricted to {len(solvable)} problems solvable by {solvedby}")
+   #ps = solvable if solvable else bids.problems(bid) 
    tasks = [SolverTask(solver,bid,sid,p) for p in ps]
    logger.debug(f"evaluation: {len(tasks)} tasks scheduled")
    # check for the (cached) results in the database
@@ -73,6 +89,7 @@ def run(solver, bid, sid, desc=None, taskdone=None, db=None, cores=4, shuffle=Tr
       # compose the cached and new results
       results = {t.problem:res for (t,res) in zip(todo, results)}
       results.update(done)
+      results.update(skipped)
       logger.debug(f"evaluation done: +{bar._solved} -{bar._unsolved} !{bar._errors}")
    else:
       logger.debug("evaluation skipped: already done")
