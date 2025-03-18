@@ -2,7 +2,9 @@
 
 ## Unreleased changes (2025-03-18)
 
-* feat: Support early stopping for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Support early stopping for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/757bb2f) | [browse](https://github.com/cbboyan/solverpy/tree/757bb2f)]
+* fix: Fix result update for skipped tasks. [[details](https://github.com/cbboyan/solverpy/commit/31e8655) | [browse](https://github.com/cbboyan/solverpy/tree/31e8655)]
+* feat: Restricted evaluation by `solvedby` strategy. [[details](https://github.com/cbboyan/solverpy/commit/1fae006) | [browse](https://github.com/cbboyan/solverpy/tree/1fae006)]
 * fix: skip evaluation on trains in the last iter [[details](https://github.com/cbboyan/solverpy/commit/1babecb) | [browse](https://github.com/cbboyan/solverpy/tree/1babecb)]
 * fix: Improved TPTP parsing. [[details](https://github.com/cbboyan/solverpy/commit/a2501dc) | [browse](https://github.com/cbboyan/solverpy/tree/a2501dc)]
 * fix: Improved TPTP parsing and parents extraction. [[details](https://github.com/cbboyan/solverpy/commit/cffc446) | [browse](https://github.com/cbboyan/solverpy/tree/cffc446)]
