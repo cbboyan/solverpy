@@ -31,7 +31,6 @@ def bagging(trial, params, queue, **args):
    if queue: queue.put(("trying", ("bagging", trial.number, (bagging_freq, bagging_fraction))))
    params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
    score = check(trial, params, queue=queue, **args)
-   #acc = human.humanacc(trial.user_attrs["acc"])
    return score
 
 def min_data(trial, params, queue, **args):
@@ -39,7 +38,6 @@ def min_data(trial, params, queue, **args):
    if queue: queue.put(("trying", ("min_data", trial.number, (min_data,))))
    params = dict(params, min_data=min_data)
    score = check(trial, params, queue=queue, **args)
-   #acc = human.humanacc(trial.user_attrs["acc"])
    return score
 
 def regular(trial, params, queue, **args):
@@ -48,6 +46,12 @@ def regular(trial, params, queue, **args):
    if queue: queue.put(("trying", ("regular", trial.number, (lambda_l1, lambda_l2))))
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, queue=queue, **args)
-   #acc = human.humanacc(trial.user_attrs["acc"])
+   return score
+
+def depth(trial, params, queue, **args):
+   max_depth = trial.suggest_int("max_depth", 3, 50)
+   if queue: queue.put(("trying", ("depth", trial.number, (max_depth,))))
+   params = dict(params, max_depth=max_depth)
+   score = check(trial, params, queue=queue, **args)
    return score
 

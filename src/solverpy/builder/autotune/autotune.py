@@ -18,6 +18,7 @@ PHASES = {
    "b": tune.bagging,
    "r": tune.regular,
    "m": tune.min_data,
+   "d": tune.depth,
 }
 
 DEFAULTS = {

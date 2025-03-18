@@ -33,3 +33,7 @@ def min_data(**args):
 def regular(**args):
    return tune(check.regular, "regular", **args)
 
+def depth(**args):
+   return tune(check.depth, "depth", **args)
+
+
