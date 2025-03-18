@@ -17,7 +17,10 @@ def accuracy(bst, xs, ys):
       if not pairs: return 0
       return sum([1 for (x,y) in pairs if int(x>0.5)==y]) / len(pairs)
 
-   preds = bst.predict(xs)
+   if hasattr(bst, "best_iteration"):
+      preds = bst.predict(xs, num_iteration=bst.best_iteration)
+   else:
+      preds = bst.predict(xs)
    preds = list(zip(preds, ys))
    acc = getacc(preds)
    posacc = getacc([(x,y) for (x,y) in preds if y==1])
@@ -38,12 +41,13 @@ def model(params, dtrain, dtest, f_mod, queue):
    
    # build the model
    begin = time.time()
-   callbacks = [lgb.log_evaluation(1)] 
+   callbacks = [lgb.log_evaluation(1), lgb.early_stopping(10, verbose=True)] 
    if queue: callbacks.append(callback)
    bst = lgb.train(
       params,
       dtrain, 
-      valid_sets=[dtrain, dtest],
+      #valid_sets=[dtrain, dtest],
+      valid_sets=[dtest],
       callbacks=callbacks
    )
    end = time.time()
