@@ -41,7 +41,19 @@ def model(params, dtrain, dtest, f_mod, queue):
    
    # build the model
    begin = time.time()
-   callbacks = [lgb.log_evaluation(1), lgb.early_stopping(10, verbose=True)] 
+   callbacks = [lgb.log_evaluation(1)] 
+   if "early_stopping" in params:
+      rounds = params["early_stopping"]
+      match rounds:
+         case True:
+            rounds = 10
+         case False:
+            pass
+         case _:
+            rounds = int(rounds)
+      if rounds:
+         callbacks.append(lgb.early_stopping(rounds, verbose=True))
+      params = {x:y for (x,y) in params.items() if x != "early_stopping"}
    if queue: callbacks.append(callback)
    bst = lgb.train(
       params,
