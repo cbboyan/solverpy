@@ -21,7 +21,7 @@ def path(bid, problem=None, flatten=False):
    return os.path.join(p_bid, problem).rstrip("/")
 
 def name(bid, limit=None):
-   bid = bid.replace("/", "-")
+   bid = bid.replace("/", "--")
    if limit:
       bid = f"{bid}--{limit}"
    return bid

@@ -20,7 +20,7 @@ def save(sid, strategy):
    open(f_sid, "w").write(strategy.strip())
 
 def name(sid):
-   return sid.replace("/", "-")
+   return sid.replace("/", "--")
 
 def unspace(strategy):
    return " ".join(x for x in strategy.split() if x)

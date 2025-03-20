@@ -25,10 +25,10 @@ def filename():
    d_logs = bids.dbpath(NAME)
    os.makedirs(d_logs, exist_ok=True)
    script = sys.argv[0]
-   script = script.lstrip("./").replace("/","-")
+   script = script.lstrip("./").replace("/","--")
    now = datetime.now()
    now = now.strftime("%y-%m-%d__%H:%M:%S")
-   f_log = f"{script}__{now}.log"
+   f_log = f"{now}__{script}.log"
    return os.path.join(d_logs, f_log)
 
 def init():

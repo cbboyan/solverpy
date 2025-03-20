@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2025-03-20)
 
-* fix: Correct validation set names in model builder. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Correct validation set names in model builder. [[details](https://github.com/cbboyan/solverpy/commit/d2e749e) | [browse](https://github.com/cbboyan/solverpy/tree/d2e749e)]
 * refactor: model bulder autotune [[details](https://github.com/cbboyan/solverpy/commit/fee8968) | [browse](https://github.com/cbboyan/solverpy/tree/fee8968)]
 * feat: Support early stopping for model training. [[details](https://github.com/cbboyan/solverpy/commit/c68eb65) | [browse](https://github.com/cbboyan/solverpy/tree/c68eb65)]
 * feat: Support early stopping for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/757bb2f) | [browse](https://github.com/cbboyan/solverpy/tree/757bb2f)]

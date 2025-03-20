@@ -12,7 +12,11 @@ class Listener:
 
    def listen(self, message):
       logger.debug(f"listening: {message}")
-      (key, content) = message
+      try:
+         (key, content) = message
+      except (TypeError, ValueError):
+         logger.exception(f"Incorect message: '{message}'")
+         return None
       if not (isinstance(content, tuple) or isinstance(content, list)):
          content = (content,)
       try:
