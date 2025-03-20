@@ -21,6 +21,7 @@ def accuracy(bst, xs, ys):
       preds = bst.predict(xs, num_iteration=bst.best_iteration)
    else:
       preds = bst.predict(xs)
+      
    preds = list(zip(preds, ys))
    acc = getacc(preds)
    posacc = getacc([(x,y) for (x,y) in preds if y==1])
@@ -28,52 +29,71 @@ def accuracy(bst, xs, ys):
    return (acc, posacc, negacc)
 
 def model(params, dtrain, dtest, f_mod, queue):
+   callbacks = bst = begin = end = score = acc = trainacc = None
+   
+   def report(key, *content):
+      if queue:
+         queue.put((key,content))
 
-   def callback(env):
+   def queue_callback(env):
       results = env.evaluation_result_list
       loss = [r[2] for r in results]
-      queue.put(("iteration", (env.iteration, env.end_iteration, loss)))
+      report("iteration", env.iteration, env.end_iteration, loss)
 
-   d_mod = os.path.dirname(f_mod)
-   os.makedirs(d_mod, exist_ok=True)
-   f_log = f_mod + ".log"
-   if queue: queue.put(("building", (f_mod, params["num_round"])))
+   def setup_dirs():
+      d_mod = os.path.dirname(f_mod)
+      os.makedirs(d_mod, exist_ok=True)
+      # f_log = f_mod + ".log"
+
+   def setup_callbacks():
+      nonlocal callbacks, params
+      callbacks = []
+      callbacks.append(lgb.log_evaluation(1))
+      if "early_stopping" in params:
+         # rounds = params["early_stopping"] 
+         params = dict(params)
+         rounds = params.pop("early_stopping") # this also removes it
+         # rounds can be `bool` or `int` (or int-convertable)
+         rounds = 10 if (rounds is True) else int(rounds) # True => 10; False => 0
+         if rounds:
+            report("debug", f"activating early stopping: stopping_rounds={rounds}")
+            callbacks.append(lgb.early_stopping(rounds, verbose=True))
+      if queue: 
+         callbacks.append(queue_callback)
    
-   # build the model
-   begin = time.time()
-   callbacks = [lgb.log_evaluation(1)] 
-   if "early_stopping" in params:
-      rounds = params["early_stopping"]
-      match rounds:
-         case True:
-            rounds = 10
-         case False:
-            pass
-         case _:
-            rounds = int(rounds)
-      if rounds:
-         callbacks.append(lgb.early_stopping(rounds, verbose=True))
-      params = {x:y for (x,y) in params.items() if x != "early_stopping"}
-   if queue: callbacks.append(callback)
-   bst = lgb.train(
-      params,
-      dtrain, 
-      #valid_sets=[dtrain, dtest],
-      valid_sets=[dtest],
-      callbacks=callbacks
-   )
-   end = time.time()
-   bst.save_model(f_mod)
+   def build_model():
+      nonlocal bst, begin, end, params, callbacks
+      # build the model
+      report("building", f_mod, params["num_round"])
+      begin = time.time()
+      bst = lgb.train(
+         params,
+         dtrain, 
+         valid_sets=[dtrain, dtest],
+         # valid_sets=[dtest],
+         callbacks=callbacks
+      )
+      end = time.time()
+      if hasattr(bst, "best_iteration"):
+         report("debug", f"early stopping: best_iteration={bst.best_iteration}")
+      bst.save_model(f_mod)
 
-   # compute the accuracy on the testing data
-   #(xs0, ys0) = testd
-   acc = accuracy(bst, dtest.get_data(), dtest.get_label())
-   trainacc = accuracy(bst, dtrain.get_data(), dtrain.get_label())
-   bst.free_dataset()
-   bst.free_network()
+   def check_model():
+      nonlocal score, acc, trainacc
+      # compute the accuracy on the testing data
+      # (xs0, ys0) = testd
+      acc = accuracy(bst, dtest.get_data(), dtest.get_label())
+      trainacc = accuracy(bst, dtrain.get_data(), dtrain.get_label())
+      bst.free_dataset()
+      bst.free_network()
+      # compute the score of this model
+      score = POS_ACC_WEIGHT*acc[1] + acc[2]
+      report("built", score)
 
-   # compute the score of this model
-   score = POS_ACC_WEIGHT*acc[1] + acc[2]
-   if queue: queue.put(("built", score))
+   setup_dirs()
+   setup_callbacks()
+   build_model()
+   check_model()
+
    return (score, acc, trainacc, end-begin)
    

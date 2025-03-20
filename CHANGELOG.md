@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2025-03-19)
+## Unreleased changes (2025-03-20)
 
-* feat: Support early stopping for model training. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: model bulder autotune [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Support early stopping for model training. [[details](https://github.com/cbboyan/solverpy/commit/c68eb65) | [browse](https://github.com/cbboyan/solverpy/tree/c68eb65)]
 * feat: Support early stopping for LightGBM. [[details](https://github.com/cbboyan/solverpy/commit/757bb2f) | [browse](https://github.com/cbboyan/solverpy/tree/757bb2f)]
 * fix: Fix result update for skipped tasks. [[details](https://github.com/cbboyan/solverpy/commit/31e8655) | [browse](https://github.com/cbboyan/solverpy/tree/31e8655)]
 * feat: Restricted evaluation by `solvedby` strategy. [[details](https://github.com/cbboyan/solverpy/commit/1fae006) | [browse](https://github.com/cbboyan/solverpy/tree/1fae006)]

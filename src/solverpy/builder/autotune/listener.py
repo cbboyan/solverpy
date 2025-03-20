@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class Listener:
 
    def listen(self, message):
+      logger.debug(f"listening: {message}")
       (key, content) = message
       if not (isinstance(content, tuple) or isinstance(content, list)):
          content = (content,)
@@ -84,4 +85,10 @@ class AutotuneListener(Listener):
 
    def tuned(self, t_end):
       self.t_end = t_end
+
+   def info(self, msg):
+      logger.info(msg)
+
+   def debug(self, msg):
+      logger.debug(msg)
 
