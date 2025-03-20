@@ -70,6 +70,7 @@ def model(params, dtrain, dtest, f_mod, queue):
          params,
          dtrain, 
          valid_sets=[dtrain, dtest],
+         valid_names=["train", "valid"],
          # valid_sets=[dtest],
          callbacks=callbacks
       )
