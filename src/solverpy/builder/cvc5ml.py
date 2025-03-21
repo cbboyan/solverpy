@@ -15,6 +15,10 @@ class Cvc5ML(AutoTuner):
       AutoTuner.__init__(self, trains, devels, tuneargs)
 
    def template(self, sid):
+      "`sid` must be base strategy without parameters"
+      if sid.endswith("-ml"):
+         logger.debug(f"strategy {sid} already ml-enhanced")
+         return sid
       sidml = f"{sid}-ml"
       if os.path.exists(sids.path(sidml)):
          logger.debug(f"ml strategy {sidml} already exists")
