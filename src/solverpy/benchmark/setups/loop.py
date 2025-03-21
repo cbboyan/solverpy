@@ -66,10 +66,15 @@ def oneloop(setup):
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
-   logger.info(f"Running evaluation loop {setup['it'] if 'it' in setup else 0} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
-   launcher.launch(**setup)
-   trains_compress(setup)
-   trains_merge(setup)
+   it = setup['it'] if 'it' in setup else 0
+   logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
+   if (it > 0) or ("start_dataname" not in setup):
+      launcher.launch(**setup)
+      trains_compress(setup)
+      trains_merge(setup)
+   else:
+      logger.info(f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
+      setup["trains"].reset(setup["start_dataname"])
    model_build(setup)
    return setup
 

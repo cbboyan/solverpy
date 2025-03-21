@@ -28,6 +28,7 @@ class TimedSolver(PluginSolver):
    
    #def recycle(self, result)
    #def reuse(self, result)
+   #def determine(self, result) !!!
    def simulate(self, result):
       "Simulate run from the past result."
       if result["status"] in self.timeouts:
