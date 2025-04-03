@@ -17,7 +17,7 @@ class Status(CachedProvider):
 
    def store(self, task, result):
       if task.solver.valid(result):
-         val = result["status"]
+         val = (result["status"], f'{result["runtime"]:0.3f}')
          if (task.problem not in self.cache) or (self.cache[task.problem] != val):
             self.cache[task.problem] = val
             self._uptodate = False
@@ -29,13 +29,15 @@ class Status(CachedProvider):
          sids.name(self.sid)).rstrip("/") 
 
    def cacheload(self, fr):
-      def split(line):
-         i = line.rindex(DELIM)
-         return (line[:i], line[i+len(DELIM):])
+      def entry(line):
+          line = line.split(DELIM)
+          return (line[0], DELIM.join(line[1:]))
       lines = fr.read().strip().split("\n")
-      self.cache = dict(split(line) for line in lines if line)
+      self.cahce = dict(entry(l) for l in lines if l)
 
    def cachedump(self, fw):
+      def entry(problem):
+         return DELIM.join(self.cache[problem])
       if self.cache:
-         fw.write("\n".join(f"{p}{DELIM}{self.cache[p]}" for p in sorted(self.cache))+"\n")
+         fw.write("\n".join(f"{p}{DELIM}{entry(p)}" for p in sorted(self.cache))+"\n")
 
