@@ -67,14 +67,15 @@ class AutotuneListener(Listener):
       self.values = ", ".join("%.4f"%v if type(v) is float else str(v) for v in values)
       self.desc = f"[{it+1}{self.iters}] {self.values:8s}"
 
-   def tried(self, score, acc, trainacc, duration):
+   #def tried(self, score, acc, trainacc, duration):
+   def tried(self, stats):
       self.table.append((
          self.it, 
          self.values, 
-         f"{score:.4f}", 
-         human.humanacc(acc), 
-         human.humanacc(trainacc),
-         human.humantime(duration)
+         f"{stats['score']:.4f}", 
+         human.humanacc(stats["valid_acc"]), 
+         human.humanacc(stats["train_acc"]),
+         human.humantime(stats["duration"]),
       ))
    
    def trialed(self, nick):

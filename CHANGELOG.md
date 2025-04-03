@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-04-03)
 
-* feat: Added runtime to the Status plugin. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: Make model builder to return booster. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Added runtime to the Status plugin. [[details](https://github.com/cbboyan/solverpy/commit/e01d355) | [browse](https://github.com/cbboyan/solverpy/tree/e01d355)]
 * feat: Support looping with custum training data. [[details](https://github.com/cbboyan/solverpy/commit/3aea6dd) | [browse](https://github.com/cbboyan/solverpy/tree/3aea6dd)]
 * Fix: Repeated ML strategy creation for cvc5. [[details](https://github.com/cbboyan/solverpy/commit/809d2a1) | [browse](https://github.com/cbboyan/solverpy/tree/809d2a1)]
 * fix: Correct validation set names in model builder. [[details](https://github.com/cbboyan/solverpy/commit/d2e749e) | [browse](https://github.com/cbboyan/solverpy/tree/d2e749e)]

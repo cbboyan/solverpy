@@ -72,7 +72,7 @@ def oneloop(setup):
       launcher.launch(**setup)
       trains_compress(setup)
       trains_merge(setup)
-   else:
+   elif "trains" in setup: 
       logger.info(f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
       setup["trains"].reset(setup["start_dataname"])
    model_build(setup)

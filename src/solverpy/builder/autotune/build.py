@@ -96,5 +96,13 @@ def model(params, dtrain, dtest, f_mod, queue):
    build_model()
    check_model()
 
-   return (score, acc, trainacc, end-begin)
+   stats = dict(
+      score=score,
+      valid_acc=acc,
+      train_acc=trainacc,
+      duration=end-begin,
+   )
+   
+   #return (score, acc, trainacc, end-begin)
+   return (bst, stats)
    
