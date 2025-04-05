@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+def deconflict(xs, ys):
+   "Find conflicting positive and negative samples and remove the negative ones."
+
+   dups = defaultdict(list)
+   for i in range(xs.shape[0]):
+        row = xs.getrow(i)
+        key = (tuple(row.indices), tuple(row.data))
+        dups[key].append(i)
+
+   # find conflicting indices to be deleted
+   todel = set()
+   for ids in dups.values():
+      if len(ids) < 2:
+         continue
+      td = []
+      onepos = False
+      for i in ids:
+         if ys[i] == 0:
+            # mark negatives to be removed
+            td.append(i)
+         else:
+            # there is at least one positive
+            onepos = True
+      if onepos:
+         todel.update(td)
+
+   keep = [i for i in range(xs.shape[0]) if i not in todel]
+   xs0 = xs[keep]
+   ys0 = ys[keep]
+   return (xs0, ys0)
+
+def main(f_in, f_out):
+   from collections import defaultdict
+   from solverpy.builder import svm
+
+   print(f"loading data {f_in} ...")
+   (xs, ys) = svm.load(f_in)
+   print("looking up conflicting samples ...")
+   (xs0, ys0) = deconflict(xs, ys)
+   print(f"saving data {f_out} ...")
+   svm.save(xs0, ys0, "deconflict.in")
+   print("data shape difference:")
+   print(f"\t{xs.shape} --> {xs0.shape}")
+   print(f"\t{ys.shape} --> {ys0.shape}")
+
+if __name__ == "__main__":
+   import argparse
+   parser = argparse.ArgumentParser(description="Process input and optional output file.")
+   parser.add_argument("input", metavar="input.in", help="Path to input file")
+   parser.add_argument("output", metavar="output.in", nargs='?', default="deconflicted.in", help="Path to output file (default: deconflicted.in)")
+   args = parser.parse_args()
+   main(args.input, args.output)
+
