@@ -1,6 +1,6 @@
 from ..decorator import Decorator
 
-TIMEOUT_CMD = "timeout --kill-after=1 --foreground %s"
+TIMEOUT_CMD = "timeout --kill-after=15 --foreground %s"
 
 class Timeout(Decorator):
    
