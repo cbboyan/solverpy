@@ -1,5 +1,6 @@
 import os
 import logging
+from collections import defaultdict
 
 import numpy
 import scipy
@@ -98,4 +99,47 @@ def merge(f_in1=None, f_in2=None, data1=None, data2=None, f_out=None):
    if f_out:
       save(d, l, f_out)
    return (d,l)
+
+def deconflict(xs, ys):
+   "Find conflicting positive and negative samples and remove the negative ones."
+
+   assert isinstance(xs, scipy.sparse.csr_matrix)
+   assert isinstance(ys, numpy.ndarray)
+
+   logger.info("Looking up conflicting samples.")
+   logger.debug("building samples map")
+   dups = defaultdict(list)
+   for i in range(xs.shape[0]):
+        row = xs.getrow(i)
+        key = (tuple(row.indices), tuple(row.data))
+        dups[key].append(i)
+ 
+   logger.debug("marking conflicting negative samples")
+   todel = set()
+   for ids in dups.values():
+      if len(ids) < 2:
+         continue
+      td = []
+      onepos = False
+      for i in ids:
+         if ys[i] == 0:
+            # mark negatives to be removed
+            td.append(i)
+         else:
+            # there is at least one positive
+            onepos = True
+      if onepos:
+         todel.update(td)
+
+   logger.debug("deleting marked rows")
+   keep = [i for i in range(xs.shape[0]) if i not in todel]
+   xs0 = xs[keep]
+   ys0 = ys[keep]
+   logger.info(f"Data shape difference:\n"       \
+                f"\t{xs.shape} --> {xs0.shape}\n" \
+                f"\t{ys.shape} --> {ys0.shape}")
+
+   return (xs0, ys0)
+
+
 

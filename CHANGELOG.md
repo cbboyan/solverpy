@@ -1,8 +1,10 @@
 # Change Log
 
-## Unreleased changes (2025-04-03)
+## Unreleased changes (2025-04-06)
 
-* refactor: Make model builder to return booster. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Add verbosity level for `deconflict` script. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Tool to remove conflicting pos/neg samples. [[details](https://github.com/cbboyan/solverpy/commit/b04a115) | [browse](https://github.com/cbboyan/solverpy/tree/b04a115)]
+* refactor: Make model builder to return booster. [[details](https://github.com/cbboyan/solverpy/commit/960005e) | [browse](https://github.com/cbboyan/solverpy/tree/960005e)]
 * feat: Added runtime to the Status plugin. [[details](https://github.com/cbboyan/solverpy/commit/e01d355) | [browse](https://github.com/cbboyan/solverpy/tree/e01d355)]
 * feat: Support looping with custum training data. [[details](https://github.com/cbboyan/solverpy/commit/3aea6dd) | [browse](https://github.com/cbboyan/solverpy/tree/3aea6dd)]
 * Fix: Repeated ML strategy creation for cvc5. [[details](https://github.com/cbboyan/solverpy/commit/809d2a1) | [browse](https://github.com/cbboyan/solverpy/tree/809d2a1)]

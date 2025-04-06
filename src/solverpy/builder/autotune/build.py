@@ -37,6 +37,7 @@ def model(params, dtrain, dtest, f_mod, queue):
 
    def queue_callback(env):
       results = env.evaluation_result_list
+      report("debug", str(results))
       loss = [r[2] for r in results]
       report("iteration", env.iteration, env.end_iteration, loss)
 
@@ -57,7 +58,7 @@ def model(params, dtrain, dtest, f_mod, queue):
          rounds = 10 if (rounds is True) else int(rounds) # True => 10; False => 0
          if rounds:
             report("debug", f"activating early stopping: stopping_rounds={rounds}")
-            callbacks.append(lgb.early_stopping(rounds, verbose=True))
+            callbacks.append(lgb.early_stopping(rounds, first_metric_only=True, verbose=True))
       if queue: 
          callbacks.append(queue_callback)
    
