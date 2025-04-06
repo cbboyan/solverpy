@@ -1,7 +1,20 @@
 #!/usr/bin/env python
+ 
+import logging
+logger = logging.getLogger(__name__)
+
+def arguments():
+   import argparse
+   parser = argparse.ArgumentParser(description="Process input and optional output file.")
+   parser.add_argument("input", metavar="input.in", help="Path to input file")
+   parser.add_argument("output", metavar="output.in", nargs='?', default="deconflicted.in", help="Path to output file (default: deconflicted.in)")
+   args = parser.parse_args()
+   return args
 
 def deconflict(xs, ys):
    "Find conflicting positive and negative samples and remove the negative ones."
+   
+   from collections import defaultdict
 
    dups = defaultdict(list)
    for i in range(xs.shape[0]):
@@ -32,24 +45,20 @@ def deconflict(xs, ys):
    return (xs0, ys0)
 
 def main(f_in, f_out):
-   from collections import defaultdict
    from solverpy.builder import svm
 
-   print(f"loading data {f_in} ...")
+   logger.info(f"Loading data {f_in} ...")
    (xs, ys) = svm.load(f_in)
-   print("looking up conflicting samples ...")
+   logger.info("Looking up conflicting samples ...")
    (xs0, ys0) = deconflict(xs, ys)
-   print(f"saving data {f_out} ...")
-   svm.save(xs0, ys0, "deconflict.in")
-   print("data shape difference:")
-   print(f"\t{xs.shape} --> {xs0.shape}")
-   print(f"\t{ys.shape} --> {ys0.shape}")
+   logger.info(f"Saving data {f_out} ...")
+   svm.save(xs0, ys0, f_out)
+   logger.info("Data shape difference:")
+   logger.info(f"\t{xs.shape} --> {xs0.shape}")
+   logger.info(f"\t{ys.shape} --> {ys0.shape}")
 
 if __name__ == "__main__":
-   import argparse
-   parser = argparse.ArgumentParser(description="Process input and optional output file.")
-   parser.add_argument("input", metavar="input.in", help="Path to input file")
-   parser.add_argument("output", metavar="output.in", nargs='?', default="deconflicted.in", help="Path to output file (default: deconflicted.in)")
-   args = parser.parse_args()
+   logging.basicConfig(level=logging.INFO, format="%(message)s")
+   args = arguments()
    main(args.input, args.output)
 

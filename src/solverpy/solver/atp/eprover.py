@@ -9,7 +9,7 @@ E_BINARY = "eprover"
 E_STATIC = "-s -p -R --print-statistics --tstp-format --memory-limit=2048"
 
 E_BUILDER = {
-   "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x,int(x)+1),
+   "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x,int(x)+10),
    "P": "--processed-set-limit=%s",
    "C": "--processed-clauses-limit=%s",
    "G": "--generated-limit=%s"
@@ -35,7 +35,7 @@ class E(TptpSolver):
 
    def __init__(self, limit, binary=E_BINARY, static=E_STATIC, complete=True, plugins=[]):
       cmd = f"{binary} {static}"
-      TptpSolver.__init__(self, cmd, limit, E_BUILDER, plugins, 2, complete)
+      TptpSolver.__init__(self, cmd, limit, E_BUILDER, plugins, 15, complete)
 
    def process(self, output):
       result = patterns.keyval(E_PAT, output, E_TABLE)

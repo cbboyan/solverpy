@@ -1,7 +1,9 @@
 
 def par2score(solver, result):
-   if solver.solved(result):
-      return result["runtime"]
+   if result and ("runtime" in result) and solver.solved(result):
+      # NOTE: timeouts after solving when dumping proof happen
+      #       (then "runtime" might not be filled)
+      return result["runtime"] 
    else:
       return 2 * solver.limits.timeout
 
