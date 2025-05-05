@@ -33,7 +33,7 @@ class Status(CachedProvider):
           line = line.split(DELIM)
           return (line[0], DELIM.join(line[1:]))
       lines = fr.read().strip().split("\n")
-      self.cahce = dict(entry(l) for l in lines if l)
+      self.cache = dict(entry(l) for l in lines if l)
 
    def cachedump(self, fw):
       def entry(problem):
