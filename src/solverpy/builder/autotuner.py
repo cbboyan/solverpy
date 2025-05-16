@@ -21,7 +21,7 @@ TUNEARGS = dict(
 )
 
 class AutoTuner(Builder):
-   
+
    def __init__(self, trains, devels=None, tuneargs=None):
       Builder.__init__(self, trains["dataname"])
       self._trains = trains
@@ -43,7 +43,7 @@ class AutoTuner(Builder):
          logger.info(f"Skipped model building; model {self._dataname} exists.")
          self._strats = self.applies(self._trains["refs"], self._dataname)
          return
-  
+
       f_train = self._trains["trains"].path()
       f_test = self._devels["trains"].path()
       

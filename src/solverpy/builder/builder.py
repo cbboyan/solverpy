@@ -30,7 +30,7 @@ class Builder:
       """Build the model(s). Save the list of new strategies `self._strats`."""
       raise NotImlementedError()
    
-   def apply(self, sid, model):
+   def apply(self, sid, model) -> list[str]:
       """Combine the `model` with strategy `sid`."""
       raise NotImlementedError()
  

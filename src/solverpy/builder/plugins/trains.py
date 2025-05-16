@@ -37,7 +37,7 @@ class Trains(Decorator):
 
    def extract(self, instance, strategy, output, result):
       "Extract training samples from `output`."
-      raise NotImlementedError
+      raise NotImlementedError()
    
    def save(self, instance, strategy, samples):
       if not samples:

@@ -4,8 +4,8 @@ from .providers.solved import Solved
 from .providers.status import Status
 from .providers.loader import Loader, SlashLoader
 
-def default():
-   return DB([Jsons, Solved, Status])
+def default(delfix=None):
+   return DB([Jsons, Solved.Maker(delfix), Status.Maker(delfix)])
 
 __all__ = ["DB", "Jsons", "JsonsStore", "Solved", "Status", "Loader", 
            "SlashLoader", "default"]

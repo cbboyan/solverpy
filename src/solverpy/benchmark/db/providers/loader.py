@@ -1,4 +1,5 @@
 import os
+import gzip
 import logging
 
 from ..provider import Provider

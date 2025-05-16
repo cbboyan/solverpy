@@ -23,7 +23,7 @@ def init(setup):
    ensure(options, "compress")
    default(setup, "limit", "T1")
    default(setup, "dataname", "noname")
-   
+
    if "plugins" not in setup:
       if "outputs" not in options:
          plugs = plugins.db() 

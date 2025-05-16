@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "solverpy"
 description = "Python inteface for Automated Reasoning (AR) solvers, provers, and checkers."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

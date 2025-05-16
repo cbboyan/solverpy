@@ -13,7 +13,6 @@ def summary(solver, bid, sid, results, refsolved=None, refpar2=None):
    unsolved = 0
    timeouts = 0
    par2 = 0
-   solves = set()
    for (problem,res) in results.items():
       par2 += par2score(solver, res)
       if solver.solved(res): 
@@ -30,6 +29,7 @@ def summary(solver, bid, sid, results, refsolved=None, refpar2=None):
       par2 = f"{par2:0.2f}"
       return (len(solved), par2, unsolved, timeouts, errors)
    else:
+      assert refpar2 != None
       par2plus = (refpar2 - par2) / (refpar2 / 100.0)
       par2plus = f"{par2plus:+0.2f}%"
       par2 = f"{par2:0.2f}"

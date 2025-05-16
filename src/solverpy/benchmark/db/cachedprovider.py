@@ -54,12 +54,12 @@ class CachedProvider(Provider):
          logger.debug(f"cache {self} not found {f}")
       self._uptodate = True
 
-   def cachepath(self):
+   def cachepath(self) -> str:
       raise NotImlementedError()
 
-   def cachedump(self, fw):
+   def cachedump(self, fw) -> None:
       raise NotImlementedError()
 
-   def cacheload(self, fr):
+   def cacheload(self, fr) -> None:
       raise NotImlementedError()
 

@@ -33,7 +33,8 @@ def evaluation(setup):
    default(setup, "ref", True)
    default(setup, "bidfile", "bids")
    default(setup, "sidfile", "sids")
-   default(setup, "db", db.default())
+   default(setup, "delfix", None)
+   default(setup, "db", db.default(delfix=setup["delfix"]))
    default(setup, "ntfy", None)
    if "sidlist" not in setup:
       with open(setup["sidfile"]) as f:

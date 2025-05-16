@@ -3,6 +3,7 @@ import logging
 
 from ..cachedprovider import CachedProvider
 from ...path import bids, sids
+from .solved import delfix
 
 logger = logging.getLogger(__name__)
 
@@ -12,14 +13,22 @@ DELIM = "\t"
 
 class Status(CachedProvider):
 
-   def __init__(self, bid, sid, limit, store_cached=True):
+   def __init__(self, bid, sid, limit, store_cached=True, delfix=None):
       CachedProvider.__init__(self, bid, sid, limit, store_cached)
+      self._delfix = delfix
+   
+   @staticmethod
+   def Maker(delfix):
+      def maker(bid, sid, limit): 
+         return Status(bid, sid, limit, delfix=delfix)
+      return maker
 
    def store(self, task, result):
       if task.solver.valid(result):
+         problem = delfix(task.problem, self._delfix)
          val = (result["status"], f'{result["runtime"]:0.3f}')
-         if (task.problem not in self.cache) or (self.cache[task.problem] != val):
-            self.cache[task.problem] = val
+         if (problem not in self.cache) or (self.cache[problem] != val):
+            self.cache[problem] = val
             self._uptodate = False
    
    def cachepath(self):
@@ -33,7 +42,7 @@ class Status(CachedProvider):
           line = line.split(DELIM)
           return (line[0], DELIM.join(line[1:]))
       lines = fr.read().strip().split("\n")
-      self.cahce = dict(entry(l) for l in lines if l)
+      self.cache = dict(entry(l) for l in lines if l)
 
    def cachedump(self, fw):
       def entry(problem):

@@ -1,4 +1,4 @@
-from .parse import is_clause, is_equality, split4
+from .parse import is_clause, split4
 
 def term(t, sgn=True):
    snot = "" if sgn else "~"
