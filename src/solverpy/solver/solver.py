@@ -1,23 +1,16 @@
+from typing import Any
+from .object import SolverPyObj
 
-class Instance:
-   pass
-
-class Strategy:
-   pass
-
-class Solver:
+class Solver(SolverPyObj):
    
    def __str__(self) -> str:
       return self.name
 
-   def __repr__(self) -> str:
-      return f"{type(self).__name__}()"
-   
    @property
    def name(self) -> str:
-      return type(self).__name__
+      return self.__class__.__name__
   
-   def solve(self, instance : Instance, strategy : Strategy) -> tuple[str, dict]:
+   def solve(self, instance : Any, strategy : Any) -> Any:
       output = self.run(instance, strategy)
       result = self.process(output)
       return (output, result)
@@ -30,7 +23,7 @@ class Solver:
       """Is the result solved?"""
       return bool(result) and ("status" in result) and (result["status"] in self.success)
 
-   def run(self, instance : Instance, strategy : Strategy) -> tuple[str, dict]:
+   def run(self, instance : Any, strategy : Any) -> str:
       "Run the solver with the strategy on the instatance. Return the output."
       raise NotImlementedError()
 

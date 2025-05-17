@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-05-16)
 
-* feat: Support `delfix` to remove prefix of problem names. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Support `delfix` to remove prefix of problem names. [[details](https://github.com/cbboyan/solverpy/commit/c9dda59) | [browse](https://github.com/cbboyan/solverpy/tree/c9dda59)]
+* fix: Typo in status provider. [[details](https://github.com/cbboyan/solverpy/commit/fba7102) | [browse](https://github.com/cbboyan/solverpy/tree/fba7102)]
 * fix: Add verbosity level for `deconflict` script. [[details](https://github.com/cbboyan/solverpy/commit/d991e59) | [browse](https://github.com/cbboyan/solverpy/tree/d991e59)]
 * feat: Tool to remove conflicting pos/neg samples. [[details](https://github.com/cbboyan/solverpy/commit/b04a115) | [browse](https://github.com/cbboyan/solverpy/tree/b04a115)]
 * refactor: Make model builder to return booster. [[details](https://github.com/cbboyan/solverpy/commit/960005e) | [browse](https://github.com/cbboyan/solverpy/tree/960005e)]

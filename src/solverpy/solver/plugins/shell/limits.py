@@ -11,6 +11,7 @@ class Limits(Decorator, Translator):
    """
 
    def __init__(self, limit, builder, cmdline=True):
+      Decorator.__init__(self, limit=limit)
       lims = {x[0]:x[1:] for x in limit.split("-") if x}
       self.timeout = int(lims["T"]) if "T" in lims else None
       self.memory = float(lims["M"]) if "M" in lims else None
@@ -30,9 +31,6 @@ class Limits(Decorator, Translator):
    def register(self, solver):
       solver.translators.append(self)
       solver.decorators.append(self)
-
-   def __repr__(self):
-      return f"{type(self).__name__}({repr(self.limit)})"
 
    def __str__(self):
       return self.limit

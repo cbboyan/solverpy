@@ -7,8 +7,8 @@ TPTP_STATUS = re.compile(r"^[#%] SZS status (\S*)", re.MULTILINE)
 
 class Tptp(Decorator):
 
-   def __init__(self):
-      pass
+   def __init__(self, **kwargs):
+      Decorator.__init__(self, **kwargs)
 
    def decorate(self, cmd, instance, strategy):
       return cmd

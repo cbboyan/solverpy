@@ -1,3 +1,5 @@
+from typing import Any
+import yaml as pyyaml
 import logging
 
 from . import data
@@ -28,6 +30,17 @@ def heading(title, level=1):
 
 def text(txt):
    return txt
+
+def yaml(obj : Any) -> list[str]:
+   if type(obj) is str:
+      txt = obj
+   else:
+      txt = pyyaml.dump(obj, default_flow_style=False)
+   lines = []
+   lines.append("```yaml")
+   lines.extend(txt.strip().split("\n"))
+   lines.append("```")
+   return lines
 
 def table(header, rows, key=None):
    logger.debug(f"making table with {len(rows)} rows and {len(rows[0])} columns")

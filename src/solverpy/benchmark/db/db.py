@@ -1,15 +1,22 @@
 import logging
 
+from ...solver.object import SolverPyObj
+from ...benchmark.path import bids
+
 logger = logging.getLogger(__name__)
 
-class DB:
+class DB(SolverPyObj):
 
    def __init__(self, providers):
+      SolverPyObj.__init__(self)
       self._providers = providers
       self.loaded = {}
 
-   def __repr__(self):
-      return "DB[%s]" % ",".join(p.__name__ for p in self._providers)
+   def represent(self):
+      return dict(
+         path=bids.dbpath(),
+         providers=self._providers
+      ) 
 
    def connect(self, bid, sid, limit):
       if (bid,sid) not in self.loaded:

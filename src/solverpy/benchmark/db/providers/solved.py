@@ -17,19 +17,14 @@ def delfix(problem : str, fix : (str|int|None)) -> str:
    if (type(fix) is int) and problem.count("/") >= fix:
       parts = problem.split("/")
       return "/".join(parts[fix:])
-   raise Exception(f"Uknown delfix value type {type(fix)} of '{fix}'")
+   logger.warning(f"Uknown delfix value type {type(fix)} of '{fix}'")
+   return problem
       
 class Solved(CachedProvider):
 
    def __init__(self, bid, sid, limit, store_cached=True, delfix=None):
       CachedProvider.__init__(self, bid, sid, limit, store_cached)
       self._delfix = delfix
-
-   @staticmethod
-   def Maker(delfix):
-      def maker(bid, sid, limit): 
-         return Solved(bid, sid, limit, delfix=delfix)
-      return maker
 
    def store(self, task, result):
       if task.solver.solved(result):

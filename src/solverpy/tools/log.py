@@ -4,8 +4,10 @@ from datetime import datetime
 import requests
 import socket
 import logging
+import yaml
 
 from ..benchmark.path import bids
+from ..solver.object import SolverPyObj
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,19 @@ def filename():
    f_log = f"{now}__{script}.log"
    return os.path.join(d_logs, f_log)
 
+def init_yaml():
+   def representer(dumper, obj : SolverPyObj):
+      r = obj.represent()
+      if type(r) is str: 
+         return dumper.represent_str(r)
+      elif type(r) is list: 
+         return dumper.represent_list(r)
+      elif type(r) is dict: 
+         return dumper.represent_dict(r)
+      else:
+         return dumper.represent_str(str(r))
+   yaml.add_multi_representer(SolverPyObj, representer)
+
 def init():
    # set up logging to file
    logging.basicConfig(
@@ -53,6 +68,7 @@ def init():
    logging.getLogger("").addHandler(console)
    logger.info("Logger running.")
    atexit.register(terminating)
+   init_yaml()
 
 def terminating():
    logger.info("Logger terminated.")

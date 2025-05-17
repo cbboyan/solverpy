@@ -19,7 +19,8 @@ TIME_TABLE = {
 
 class Time(Decorator):
 
-   def __init__(self):
+   def __init__(self, **kwargs):
+      Decorator.__init__(self, **kwargs)
       self.prefix = TIME_CMD
 
    def decorate(self, cmd, instance, strategy):

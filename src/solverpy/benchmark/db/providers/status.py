@@ -17,12 +17,6 @@ class Status(CachedProvider):
       CachedProvider.__init__(self, bid, sid, limit, store_cached)
       self._delfix = delfix
    
-   @staticmethod
-   def Maker(delfix):
-      def maker(bid, sid, limit): 
-         return Status(bid, sid, limit, delfix=delfix)
-      return maker
-
    def store(self, task, result):
       if task.solver.valid(result):
          problem = delfix(task.problem, self._delfix)

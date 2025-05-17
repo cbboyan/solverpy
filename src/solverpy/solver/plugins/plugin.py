@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING
 
-class Plugin:
+from ..object import SolverPyObj
+if TYPE_CHECKING:
+   from ..timedsolver import TimedSolver
 
-   def __repr__(self):
-      return f"{type(self).__name__}()"
+class Plugin(SolverPyObj):
 
-   def register(self, solver):
+   def __init__(self, **kwargs):
+      SolverPyObj.__init__(self, **kwargs)
+
+   def register(self, solver: "TimedSolver") -> None:
       raise NotImlementedError()
 

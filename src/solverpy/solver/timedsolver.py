@@ -1,4 +1,3 @@
-import subprocess
 from .pluginsolver import PluginSolver
 from .plugins.shell.limits import Limits
 from .plugins.status.limiter import Limiter
@@ -9,7 +8,7 @@ from .plugins.status.limiter import Limiter
 
 class TimedSolver(PluginSolver):
 
-   def __init__(self, timeout, limits=None, plugins=[]):
+   def __init__(self, timeout, limits: Limits, plugins=[]):
       self.limits = limits
       self.exitcode = None
       assert(self.limits.limit.startswith("T"))

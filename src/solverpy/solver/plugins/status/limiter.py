@@ -2,6 +2,9 @@ from ..decorator import Decorator
 
 class Limiter(Decorator):
 
+   def __init__(self, **kwargs):
+      Decorator.__init__(self, **kwargs)
+
    def register(self, solver):
       super().register(solver)
       self.timeouts = solver.timeouts

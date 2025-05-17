@@ -1,9 +1,9 @@
-import os
+import yaml
 import random
 import logging
 
 from .path import bids
-from ..tools import human, log
+from ..tools import log
 from ..task.solvertask import SolverTask
 from ..task.bar import SolvingBar, RunningBar
 from ..task import launcher 
@@ -14,21 +14,16 @@ logger = logging.getLogger(__name__)
 
 def init(setup=None):
    log.init()
-   header = ["", ""]
-   def fmt(y):
-      if isinstance(y, list):
-         return "[" + ", ".join(str(a) for a in y ) + "]"
-      return str(y)
-   report = ""
    if setup:
-      rows = [[str(x),fmt(y)] for (x,y) in setup.items()]
-      report = markdown.heading("Experiments", level=2)
-      report += markdown.heading("Setup", level=3)
-      report += markdown.table(header, rows)
-      report += markdown.newline()
+      report = []
+      report.extend(markdown.heading("Experiments", level=2))
+      report.extend(markdown.heading("Setup", level=3))
+      report.extend(markdown.yaml(setup))
+      report.extend(markdown.newline())
       report = markdown.dump(report, prefix="> ")
+   else:
+      report = ""
    logger.info(f"Experiments running.\n{report}")
-
 
 def jobname(solver, bid, sid):
    return f"{solver}:{sid} @ {bid}"
