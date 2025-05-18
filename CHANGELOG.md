@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2025-05-16)
+## Unreleased changes (2025-05-18)
 
+* refactor: typing solvers and providers [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * feat: Support `delfix` to remove prefix of problem names. [[details](https://github.com/cbboyan/solverpy/commit/c9dda59) | [browse](https://github.com/cbboyan/solverpy/tree/c9dda59)]
 * fix: Typo in status provider. [[details](https://github.com/cbboyan/solverpy/commit/fba7102) | [browse](https://github.com/cbboyan/solverpy/tree/fba7102)]
 * fix: Add verbosity level for `deconflict` script. [[details](https://github.com/cbboyan/solverpy/commit/d991e59) | [browse](https://github.com/cbboyan/solverpy/tree/d991e59)]

@@ -1,4 +1,9 @@
+from typing import Any, TYPE_CHECKING
 import logging
+
+if TYPE_CHECKING:
+   from .task import Task
+   from .bar import DefaultBar
 
 from multiprocessing import Pool, Manager
 from .task import runtask, setqueue
@@ -6,9 +11,14 @@ from .bar import DefaultBar
 
 logger = logging.getLogger(__name__)
 
-WAIT = 365*24*60*60 # a year
+WAIT = 365 * 24 * 60 * 60  # a year
 
-def run(tasks, cores=4, chunksize=1):
+
+def run(
+   tasks: "list[Task]", 
+   cores: int = 4, 
+   chunksize: int = 1,
+) -> Any:
    """Launch `tasks` in parallel on multiple cores and return results.
 
    :param tasks:  list of task to be executed (instances of Task)
@@ -26,7 +36,16 @@ def run(tasks, cores=4, chunksize=1):
       pool.terminate()
       raise e
 
-def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running", **others):
+
+def launch(
+   tasks: "list[Task]",
+   cores: int = 4,
+   chunksize: int = 1,
+   taskdone: Any = None,
+   bar: "DefaultBar | None" = None,
+   desc: str = "running",
+   **others: Any,
+) -> Any:
    """Launch `tasks` in parallel on multiple cores, communicate status over the
    queue, and show progress bar.
    
@@ -38,6 +57,7 @@ def launch(tasks, cores=4, chunksize=1, taskdone=None, bar=None, desc="running",
    :param desc:  (Default value = "running")
    :param **others: 
    """
+   del others
    todo = len(tasks)
    pool = Pool(cores)
    m = Manager()

@@ -1,40 +1,50 @@
+from typing import Any, TYPE_CHECKING
 import logging
 
 from ...solver.object import SolverPyObj
 from ...benchmark.path import bids
 
+if TYPE_CHECKING:
+   from .provider import ProviderMaker
+   from .provider import Provider
+   from ...task.solvertask import SolverTask
+
 logger = logging.getLogger(__name__)
+
 
 class DB(SolverPyObj):
 
-   def __init__(self, providers):
+   def __init__(self, providers: list["ProviderMaker"]):
       SolverPyObj.__init__(self)
       self._providers = providers
-      self.loaded = {}
+      self.loaded: dict[tuple[str, str], list["Provider"]] = {}
 
-   def represent(self):
+   def represent(self) -> dict[str, Any]:
       return dict(
          path=bids.dbpath(),
-         providers=self._providers
-      ) 
+         providers=self._providers,
+      )
 
-   def connect(self, bid, sid, limit):
-      if (bid,sid) not in self.loaded:
+   def connect(self, bid: str, sid: str, limit: str) -> None:
+      if (bid, sid) not in self.loaded:
          logger.debug(f"connecting providers for {sid} @ {bid}")
-         insts = [maker(bid,sid,limit) for maker in self._providers]
-         self.loaded[(bid,sid)] = insts
+         insts = [maker(bid, sid, limit) for maker in self._providers]
+         self.loaded[(bid, sid)] = insts
          logger.debug(f"connected to {len(insts)} providers")
 
-   def providers(self, task):
-      return self.loaded[(task.bid,task.sid)]
+   def providers(self, task: "SolverTask") -> list["Provider"]:
+      return self.loaded[(task.bid, task.sid)]
 
-   def commit(self):
+   def commit(self) -> None:
       for key in self.loaded:
          logger.debug(f"db commit: {key}")
          for provider in self.loaded[key]:
             provider.commit()
 
-   def querytask(self, task):
+   def querytask(
+      self,
+      task: "SolverTask",
+   ) -> dict[str, Any] | None:
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
@@ -42,20 +52,31 @@ class DB(SolverPyObj):
          if result:
             return result
       return None
-   
-   def cachedtask(self, task, result):
+
+   def cachedtask(
+      self,
+      task: "SolverTask",
+      result: dict[str, Any],
+   ) -> None:
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.cached(task, result)
 
-   def storetask(self, task, result):
+   def storetask(
+      self,
+      task: "SolverTask",
+      result: dict[str, Any],
+   ) -> None:
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.store(task, result)
 
-   def query(self, tasks):
+   def query(
+      self,
+      tasks: list["SolverTask"],
+   ) -> dict["SolverTask", dict[str, Any]]:
       logger.debug(f"db query on {len(tasks)} tasks")
       results = {}
       for task in tasks:
@@ -68,7 +89,11 @@ class DB(SolverPyObj):
       logger.debug(f"db query done: {len(results)} tasks already done")
       return results
 
-   def store(self, tasks, results):
+   def store(
+      self,
+      tasks: list["SolverTask"],
+      results: list[dict[str, Any]],
+   ) -> None:
       logger.debug(f"db store on {len(tasks)} tasks")
       count = 0
       for (task, result) in zip(tasks, results):

@@ -11,10 +11,21 @@ class Smt(Decorator):
    def __init__(self, **kwargs):
       Decorator.__init__(self, **kwargs)
 
-   def decorate(self, cmd : str, instance : Any, strategy : Any) -> str:
+   def decorate(
+      self, 
+      cmd: str, 
+      instance: Any, 
+      strategy: Any
+   ) -> str:
       return cmd
 
-   def update(self, instance : Any, strategy : Any, output : str, result : dict) -> None:
+   def update(
+      self, 
+      instance: Any, 
+      strategy: Any, 
+      output: str, 
+      result: dict
+   ) -> None:
       status = patterns.single(SMT_STATUS, output, None)
       if status:
          result["status"] = status

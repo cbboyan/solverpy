@@ -1,5 +1,11 @@
+from typing import Any, TYPE_CHECKING
+
+from ..plugin import Plugin
 from ..decorator import Decorator
 from ..translator import Translator
+
+if TYPE_CHECKING:
+   from ...timedsolver import TimedSolver
 
 def build(fun, arg):
    return fun % arg if isinstance(fun, str) else fun(arg)
@@ -10,10 +16,16 @@ class Limits(Decorator, Translator):
    of `cmdline`.
    """
 
-   def __init__(self, limit, builder, cmdline=True):
-      Decorator.__init__(self, limit=limit)
+   def __init__(
+      self, 
+      limit: str, 
+      builder: dict[str, Any],
+      cmdline: bool = True
+   ):
+      Plugin.__init__(self, limit=limit, cmdline=cmdline)
       lims = {x[0]:x[1:] for x in limit.split("-") if x}
-      self.timeout = int(lims["T"]) if "T" in lims else None
+      assert "T" in lims
+      self.timeout = int(lims["T"])
       self.memory = float(lims["M"]) if "M" in lims else None
       try:
          lims = [build(builder[x],y) for (x,y) in lims.items() if x in builder]
@@ -28,7 +40,7 @@ class Limits(Decorator, Translator):
       #self.args = " ".join(lims)
       self.limit = limit
    
-   def register(self, solver):
+   def register(self, solver: "TimedSolver") -> None:
       solver.translators.append(self)
       solver.decorators.append(self)
 
@@ -48,19 +60,29 @@ class Limits(Decorator, Translator):
    #def __le__(self, other):
    #   return (self.key == other.key) or (self < other)
 
-   def decorate(self, cmd, instance, strategy):
+   def decorate(
+      self,
+      cmd: str,
+      instance: Any,
+      strategy: Any
+   ) -> str:
+      del instance, strategy # unused arguments
       if self.cmdline:
          return f"{cmd} {self.strategy}" if self.strategy else cmd
       else:
          return cmd
 
-   def translate(self, instance, strategy):
+   def translate(
+      self, 
+      instance: Any, 
+      strategy: str
+   ) -> tuple[Any, str]:
       if not self.cmdline:
          return (instance, self.strategy + strategy)
       else:
          return (instance, strategy)
   
    @property
-   def strategy(self):
+   def strategy(self) -> str:
       return self.strat
    

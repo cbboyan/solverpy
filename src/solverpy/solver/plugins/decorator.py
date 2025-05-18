@@ -12,12 +12,29 @@ class Decorator(Plugin):
    def register(self, solver: "TimedSolver") -> None:
       solver.decorators.append(self)
    
-   def decorate(self, cmd: str, instance: Any, strategy: Any) -> str:
+   def decorate(
+      self, 
+      cmd: str, 
+      instance: Any, 
+      strategy: Any
+   ) -> str:
       return cmd
 
-   def update(self, instance: Any, strategy: Any, output: str, result: dict) -> None:
+   def update(
+      self, 
+      instance: Any, 
+      strategy: Any, 
+      output: str, 
+      result: dict
+   ) -> None:
       return 
 
-   def finished(self, instance: Any, strategy: Any, output: str, result: dict) -> None:
+   def finished(
+      self, 
+      instance: Any, 
+      strategy: Any,
+      output: str,
+      result: dict
+   ) -> None:
       return
 

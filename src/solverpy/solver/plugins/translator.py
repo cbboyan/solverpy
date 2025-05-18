@@ -12,5 +12,9 @@ class Translator(Plugin):
    def register(self, solver: "TimedSolver") -> None:
       solver.translators.append(self)
 
-   def translate(self, instance: Any, strategy: Any) -> Any:
+   def translate(
+      self, 
+      instance: Any, 
+      strategy: Any
+   ) -> tuple[Any, Any]:
       return (instance, strategy)

@@ -8,7 +8,7 @@ class ShellTask(Task):
    def __init__(self, cmd):
       self.cmd = cmd
 
-   def run(self):
+   def run(self) -> bytes:
       try:
          output = subprocess.check_output(self.cmd, shell=True,
             stderr=subprocess.STDOUT)

@@ -1,3 +1,4 @@
+from typing import TextIO 
 import os
 import gzip
 import logging
@@ -6,21 +7,29 @@ from .provider import Provider
 
 logger = logging.getLogger(__name__)
 
+
 class CachedProvider(Provider):
 
-   def __init__(self, bid, sid, limit=None, store_cache=False, compress=False):
+   def __init__(
+      self,
+      bid: str,
+      sid: str,
+      limit: (str | None) = None,
+      store_cache: bool = False,
+      compress: bool = False,
+   ):
       Provider.__init__(self, bid, sid, limit, store_cache)
       self.compress = compress
       logger.debug(f"creating provider {self} for {sid} @ {bid}")
       self.load()
 
-   def __repr__(self):
+   def __repr__(self) -> str:
       if self.limit:
          return f"{type(self).__name__}({self.bid},{self.sid},{self.limit})"
       else:
          return f"{type(self).__name__}({self.bid},{self.sid})"
 
-   def commit(self):
+   def commit(self) -> None:
       if self.cache is None:
          logger.warning("empty cache commit")
          return
@@ -36,8 +45,8 @@ class CachedProvider(Provider):
          self.cachedump(fw)
       logger.debug(f"cache {self} saved {len(self.cache)} entries")
       self._uptodate = True
-   
-   def load(self):
+
+   def load(self) -> None:
       if self._uptodate:
          logger.debug(f"loading skipped; cache {self} is up-to-date")
          return
@@ -55,11 +64,13 @@ class CachedProvider(Provider):
       self._uptodate = True
 
    def cachepath(self) -> str:
-      raise NotImlementedError()
+      raise NotImplementedError()
 
-   def cachedump(self, fw) -> None:
-      raise NotImlementedError()
+   def cachedump(self, fw: TextIO) -> None:
+      del fw
+      raise NotImplementedError()
 
-   def cacheload(self, fr) -> None:
-      raise NotImlementedError()
+   def cacheload(self, fr: TextIO) -> None:
+      del fr
+      raise NotImplementedError()
 

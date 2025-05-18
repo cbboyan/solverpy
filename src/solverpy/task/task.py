@@ -1,6 +1,11 @@
+from typing import Any, TYPE_CHECKING
 import logging
 
+if TYPE_CHECKING:
+   from queue import Queue
+
 logger = logging.getLogger(__name__)
+
 
 class Task:
    """A generic executable task/job.
@@ -25,7 +30,10 @@ class Task:
    `None` for failed tasks.
    """
 
-   def __init__(self, queue=None):
+   def __init__(
+      self,
+      queue: "Queue[Any] | None" = None,
+   ):
       """Init the task.
 
       :param queue: communication queue (optional) 
@@ -33,8 +41,8 @@ class Task:
       """
       self._queue = queue
 
-   def run(self):
-      """Run the task and return the result.""" 
+   def run(self) -> Any:
+      """Run the task and return the result."""
       raise NotImplementedError("Task.run: abstract method not implemented.")
 
    @property
@@ -43,7 +51,7 @@ class Task:
       return self._queue
 
    @queue.setter
-   def queue(self, q):
+   def queue(self, q: "Queue[Any]"):
       """Set the queue.
 
       :param q: the queue
@@ -51,8 +59,12 @@ class Task:
       """
       self._queue = q
 
-   def status(self, result):
-      """Translate the result to (typically smaller) status to send it over the queue."
+   def status(
+      self,
+      result: Any,
+   ) -> Any:
+      """Translate the result to (typically smaller) status to send it over the
+      queue."
 
       :param result: the result
 
@@ -60,7 +72,7 @@ class Task:
       return (result is not None)
 
    @staticmethod
-   def runtask(task):
+   def runtask(task: "Task"):
       """Run the task andd announce the result over the queue.
 
       :param task: the task to be ran
@@ -80,10 +92,12 @@ class Task:
          return None
       if status is None:
          logger.debug(f"failed task: {task}")
-      task.queue.put(status)
+      if task.queue is not None:
+         task.queue.put(status)
       return res
 
-def runtask(task):
+
+def runtask(task: Task) -> Any:
    """Run task and return the result.
 
    :param task: 
@@ -91,7 +105,8 @@ def runtask(task):
    """
    return task.runtask(task)
 
-def setqueue(queue, tasks):
+
+def setqueue(queue: "Queue[Any]", tasks: list[Task]) -> None:
    """Set the queue for a list of tasks.
 
    :param queue: the queue to set
