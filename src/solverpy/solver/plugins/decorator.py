@@ -2,14 +2,14 @@ from typing import Any, TYPE_CHECKING
 from .plugin import Plugin
 
 if TYPE_CHECKING:
-   from ..timedsolver import TimedSolver
+   from ..solverpy import SolverPy
 
 class Decorator(Plugin):
 
    def __init__(self, **kwargs):
       Plugin.__init__(self, **kwargs)
 
-   def register(self, solver: "TimedSolver") -> None:
+   def register(self, solver: "SolverPy") -> None:
       solver.decorators.append(self)
    
    def decorate(

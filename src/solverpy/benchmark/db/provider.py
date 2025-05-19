@@ -32,7 +32,7 @@ class Provider(SolverPyObj):
          def __init__(self):
             SolverPyObj.__init__(
                self,
-               myname=cls.__name__,
+               cls_name = cls.__name__,
                **kwargs,
             )
 

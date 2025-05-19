@@ -5,7 +5,7 @@ from ..decorator import Decorator
 from ..translator import Translator
 
 if TYPE_CHECKING:
-   from ...timedsolver import TimedSolver
+   from ...solverpy import SolverPy
 
 def build(fun, arg):
    return fun % arg if isinstance(fun, str) else fun(arg)
@@ -40,7 +40,7 @@ class Limits(Decorator, Translator):
       #self.args = " ".join(lims)
       self.limit = limit
    
-   def register(self, solver: "TimedSolver") -> None:
+   def register(self, solver: "SolverPy") -> None:
       solver.translators.append(self)
       solver.decorators.append(self)
 

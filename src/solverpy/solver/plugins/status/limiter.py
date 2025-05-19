@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING, Any
 from ..decorator import Decorator
 
 if TYPE_CHECKING:
-   from ...timedsolver import TimedSolver
+   from ...solverpy import SolverPy
 
 class Limiter(Decorator):
 
    def __init__(self, **kwargs):
       Decorator.__init__(self, **kwargs)
 
-   def register(self, solver : "TimedSolver") -> None: 
+   def register(self, solver : "SolverPy") -> None: 
       super().register(solver)
       self.timeouts = solver.timeouts
       self.timeout = solver.limits.timeout

@@ -3,7 +3,7 @@ from typing import TypedDict, TYPE_CHECKING
 if TYPE_CHECKING:
    from ..db import DB
    from ...builder.builder import Builder
-   from ...solver.timedsolver import TimedSolver
+   from ...solver.solverpy import SolverPy
    from ...solver.plugins.plugin import Plugin
    from ...builder.plugins.trains import Trains
 
@@ -28,7 +28,7 @@ class Setup(TypedDict, total=False):
 
    db: "DB"
    builder: "Builder"
-   solver: "TimedSolver"
+   solver: "SolverPy"
    trains: "Trains"
    plugins: list["Plugin"]
 

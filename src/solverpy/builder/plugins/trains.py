@@ -7,7 +7,7 @@ from ...solver.plugins.decorator import Decorator
 from ...benchmark.path import bids
 
 if TYPE_CHECKING:
-   from ...solver.timedsolver import TimedSolver
+   from ...solver.solverpy import SolverPy
 
 NAME = "trains"
 
@@ -38,7 +38,7 @@ class Trains(Decorator):
       filename = filename or self._filename
       return os.path.join(bids.dbpath(NAME), dataname, filename)
 
-   def register(self, solver: "TimedSolver") -> None:
+   def register(self, solver: "SolverPy") -> None:
       super().register(solver)
       self._solver = solver
 

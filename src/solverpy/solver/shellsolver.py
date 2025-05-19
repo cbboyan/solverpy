@@ -1,12 +1,12 @@
 import os
 import subprocess
-from .timedsolver import TimedSolver
+from .solverpy import SolverPy
 from .plugins.shell.limits import Limits
 from .plugins.shell.timeout import Timeout
 from .plugins.shell.memory import Memory
 from ..benchmark.path import sids
 
-class ShellSolver(TimedSolver):
+class ShellSolver(SolverPy):
 
    def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True):
       self.unspace = unspace
@@ -16,7 +16,7 @@ class ShellSolver(TimedSolver):
          new.append(Timeout(limits.timeout+wait))
       if limits.memory:
          new.append(Memory(limits.memory))
-      TimedSolver.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
+      SolverPy.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
       self._cmd = cmd
 
    @property

@@ -6,7 +6,7 @@ from ..decorator import Decorator
 from ....benchmark.path import bids, sids
 
 if TYPE_CHECKING:
-   from ...timedsolver import TimedSolver
+   from ...solverpy import SolverPy
 
 NAME = "outputs"
 
@@ -22,7 +22,7 @@ class Outputs(Decorator):
       self._flatten = flatten
       self._compress = compress
    
-   def register(self, solver : "TimedSolver") -> None:
+   def register(self, solver : "SolverPy") -> None:
       solver.decorators.append(self)
       self.solver = solver
    

@@ -4,7 +4,7 @@ import logging
 from .trains import Trains
 
 if TYPE_CHECKING:
-   from ...solver.timedsolver import TimedSolver
+   from ...solver.solverpy import SolverPy
    from .svm import SvmTrains
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class MultiTrains(Trains):
       for t in self._trains:
          function(t)
 
-   def register(self, solver: "TimedSolver") -> None:
+   def register(self, solver: "SolverPy") -> None:
       super().register(solver)
       self._solver = solver
       for t in self._trains:

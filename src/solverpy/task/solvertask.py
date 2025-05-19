@@ -4,14 +4,14 @@ from typing import Any, TYPE_CHECKING
 from .task import Task
 
 if TYPE_CHECKING:
-   from ..solver.timedsolver import TimedSolver
+   from ..solver.solverpy import SolverPy
 
 
 class SolverTask(Task):
 
    def __init__(
       self,
-      solver: "TimedSolver",
+      solver: "SolverPy",
       bid: str,
       sid: str,
       problem: str,
