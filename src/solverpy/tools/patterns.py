@@ -4,7 +4,7 @@ def single(pattern, output, default):
    mo = re.search(pattern, output)
    return mo.group(1) if mo else default
    
-def keyval(pattern, output, table=None):
+def keyval(pattern, output, table=None) -> dict[str, str]:
    res = dict(re.findall(pattern, output))
    if table:
       res = {table[x]:res[x] for x in table if x in res}

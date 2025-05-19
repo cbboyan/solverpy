@@ -10,7 +10,7 @@ def lindent(string, size):
 def rindent(string, size):
    return indent(string, size, left=False)
 
-def numeric(strval):
+def numeric(strval: str) -> int | float | str:
    if strval.isdigit():
       return int(strval)
    elif strval.replace('.','',1).isdigit():
@@ -21,7 +21,7 @@ def format(key, val):
    unit = key[key.rfind(".")+1:]
    return UNITS[unit](val) if unit in UNITS else str(val)
 
-def humanbytes(b):
+def humanbytes(b: float) -> str:
    units = {0 : 'Bytes', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB', 5: 'PB'}
    power = 1024
    n = 0
