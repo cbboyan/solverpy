@@ -1,10 +1,14 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import re
 
 from ..decorator import Decorator
 from ....tools import patterns
 
+if TYPE_CHECKING:
+   from ....tools.typing import Result
+
 TPTP_STATUS = re.compile(r"^[#%] SZS status (\S*)", re.MULTILINE)
+
 
 class Tptp(Decorator):
 
@@ -12,20 +16,22 @@ class Tptp(Decorator):
       Decorator.__init__(self, **kwargs)
 
    def decorate(
-      self, 
-      cmd : str, 
-      instance: Any, 
-      strategy: Any
+      self,
+      cmd: str,
+      instance: Any,
+      strategy: Any,
    ) -> str:
+      del instance, strategy
       return cmd
 
    def update(
-      self, 
-      instance: Any, 
-      strategy: Any, 
-      output: str, 
-      result: dict
+      self,
+      instance: Any,
+      strategy: Any,
+      output: str,
+      result: "Result",
    ) -> None:
+      del instance, strategy
       status = patterns.single(TPTP_STATUS, output, None)
       if status:
          result["status"] = status

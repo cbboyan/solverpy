@@ -18,3 +18,4 @@ class Translator(Plugin):
       strategy: Any
    ) -> tuple[Any, Any]:
       return (instance, strategy)
+

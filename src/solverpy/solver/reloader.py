@@ -6,7 +6,7 @@ class Reloader(SolverPy):
    def __init__(self, solver, plugins=[]):
       self.solver = solver
       SolverPy.__init__(
-            self, solver.limits.timeout, solver.limits.limit, plugins)
+            self, solver.limits, plugins)
       self.outputs = Outputs()
       self.outputs.register(self.solver)
 

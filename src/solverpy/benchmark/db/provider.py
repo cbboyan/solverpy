@@ -3,9 +3,7 @@ from ...solver.object import SolverPyObj
 
 if TYPE_CHECKING:
    from ...task.solvertask import SolverTask
-
-ProviderMaker = Callable[[str, str, str], "Provider"]
-
+   from ...tools.typing import ProviderMaker
 
 class Provider(SolverPyObj):
    """A data provider that stores and/or queries results of tasks."""
@@ -25,7 +23,7 @@ class Provider(SolverPyObj):
       "call store for cached results."
 
    @classmethod
-   def Maker(cls, **kwargs) -> ProviderMaker:
+   def Maker(cls, **kwargs) -> "ProviderMaker":
 
       class MakerMaker(SolverPyObj):
 

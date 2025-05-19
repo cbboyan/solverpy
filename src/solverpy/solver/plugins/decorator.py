@@ -3,6 +3,8 @@ from .plugin import Plugin
 
 if TYPE_CHECKING:
    from ..solverpy import SolverPy
+   from ...tools.typing import Result
+
 
 class Decorator(Plugin):
 
@@ -11,30 +13,33 @@ class Decorator(Plugin):
 
    def register(self, solver: "SolverPy") -> None:
       solver.decorators.append(self)
-   
+
    def decorate(
-      self, 
-      cmd: str, 
-      instance: Any, 
-      strategy: Any
+      self,
+      cmd: str,
+      instance: Any,
+      strategy: Any,
    ) -> str:
+      del instance, strategy  # unused arguments
       return cmd
 
    def update(
-      self, 
-      instance: Any, 
-      strategy: Any, 
-      output: str, 
-      result: dict
-   ) -> None:
-      return 
-
-   def finished(
-      self, 
-      instance: Any, 
+      self,
+      instance: Any,
       strategy: Any,
       output: str,
-      result: dict
+      result: "Result",
    ) -> None:
+      del instance, strategy, output, result  # unused arguments
+      return
+
+   def finished(
+      self,
+      instance: Any,
+      strategy: Any,
+      output: str,
+      result: "Result",
+   ) -> None:
+      del instance, strategy, output, result  # unused arguments
       return
 

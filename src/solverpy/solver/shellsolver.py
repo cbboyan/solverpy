@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import os
 import subprocess
 from .solverpy import SolverPy
@@ -6,17 +7,20 @@ from .plugins.shell.timeout import Timeout
 from .plugins.shell.memory import Memory
 from ..benchmark.path import sids
 
+if TYPE_CHECKING:
+   from .plugins.plugin import Plugin
+
 class ShellSolver(SolverPy):
 
    def __init__(self, cmd, limit, builder={}, plugins=[], wait=None, unspace=True):
       self.unspace = unspace
       limits = Limits(limit, builder)
-      new = [limits]
+      new : list["Plugin"] = [limits]
       if wait is not None:
          new.append(Timeout(limits.timeout+wait))
       if limits.memory:
          new.append(Memory(limits.memory))
-      SolverPy.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
+      SolverPy.__init__(self, limits=limits, plugins=plugins+new)
       self._cmd = cmd
 
    @property

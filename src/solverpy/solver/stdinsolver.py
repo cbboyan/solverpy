@@ -14,7 +14,7 @@ class StdinSolver(SolverPy):
          new.append(Timeout(limits.timeout+wait))
       if limits.memory:
          new.append(Memory(limits.memory))
-      SolverPy.__init__(self, limits.timeout, limits=limits, plugins=plugins+new)
+      SolverPy.__init__(self, limits=limits, plugins=plugins+new)
       self.static = static
       self._cmd = cmd
 
