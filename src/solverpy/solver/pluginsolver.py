@@ -1,19 +1,22 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import logging
 
 from .solver import Solver
-from .plugins.plugin import Plugin
-from .plugins.decorator import Decorator
-from .plugins.translator import Translator
+
+if TYPE_CHECKING:
+   from .plugins.plugin import Plugin
+   from .plugins.decorator import Decorator
+   from .plugins.translator import Translator
+   from ..tools.typing import Result
 
 logger = logging.getLogger(__name__)
 
 
 class PluginSolver(Solver):
 
-   def __init__(self, plugins: list[Plugin] = []):
-      self.decorators: list[Decorator] = []
-      self.translators: list[Translator] = []
+   def __init__(self, plugins: list["Plugin"] = []):
+      self.decorators: list["Decorator"] = []
+      self.translators: list["Translator"] = []
       self.init(plugins)
 
    def represent(self):
@@ -23,7 +26,7 @@ class PluginSolver(Solver):
          translators=[repr(x) for x in self.translators],
       )
 
-   def solve(self, instance: Any, strategy: Any) -> dict[str, Any]:
+   def solve(self, instance: Any, strategy: Any) -> "Result":
       (output, result) = super().solve(instance, strategy)
       self.update(instance, strategy, output, result)
       if not self.valid(result):
@@ -38,13 +41,16 @@ class PluginSolver(Solver):
       return result
 
    # plugins initization
-   def init(self, plugins: list[Plugin]) -> None:
+   def init(self, plugins: list["Plugin"]) -> None:
       for plugin in plugins:
          plugin.register(self)
 
-   # decorators
-   # decorate(self, command, input)
-   def decorate(self, cmd: str, instance: Any, strategy: Any) -> str:
+   def decorate(
+      self,
+      cmd: str,
+      instance: Any,
+      strategy: Any,
+   ) -> str:
       for plugin in self.decorators:
          cmd = plugin.decorate(cmd, instance, strategy)
       return cmd
@@ -54,15 +60,18 @@ class PluginSolver(Solver):
       instance: Any,
       strategy: Any,
       output: str,
-      result: dict[str, Any],
-   ):
+      result: "Result",
+   ) -> None:
       for plugin in self.decorators:
          plugin.update(instance, strategy, output, result)
       for plugin in self.decorators:
          plugin.finished(instance, strategy, output, result)
 
-   # translators
-   def translate(self, instance: Any, strategy: Any) -> tuple[Any, Any]:
+   def translate(
+      self,
+      instance: Any,
+      strategy: Any,
+   ) -> tuple[Any, Any]:
       for plugin in self.translators:
          (instance, strategy) = plugin.translate(instance, strategy)
       return (instance, strategy)

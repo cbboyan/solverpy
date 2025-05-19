@@ -25,7 +25,11 @@ class Limits(Decorator, Translator):
       builder: "Builder",
       cmdline: bool = True,
    ):
-      Plugin.__init__(self, limit=limit, cmdline=cmdline)
+      Plugin.__init__(
+         self,
+         limit=limit,
+         cmdline=cmdline,
+      )
       lims = {x[0]: x[1:] for x in limit.split("-") if x}
       assert "T" in lims
       self.timeout = int(lims["T"])
@@ -92,4 +96,3 @@ class Limits(Decorator, Translator):
    @property
    def strategy(self) -> str:
       return self.strat
-

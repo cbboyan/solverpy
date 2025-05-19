@@ -22,7 +22,7 @@ def save(sid, strategy):
 def name(sid):
    return sid.replace("/", "--")
 
-def unspace(strategy):
+def unspace(strategy: str) -> str:
    return " ".join(x for x in strategy.split() if x)
 
 def split(sid):

@@ -1,15 +1,13 @@
-from typing import TYPE_CHECKING
+from typing import Any
 
 from ..object import SolverPyObj
-if TYPE_CHECKING:
-   from ..solverpy import SolverPy
 
 class Plugin(SolverPyObj):
 
-   def __init__(self, **kwargs):
+   def __init__(self, **kwargs: Any):
       SolverPyObj.__init__(self, **kwargs)
 
-   def register(self, solver: "SolverPy") -> None:
+   def register(self, solver: Any) -> None:
       del solver # unused argument
       raise NotImplementedError()
 

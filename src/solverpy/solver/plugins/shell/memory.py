@@ -7,7 +7,7 @@ ULIMIT_CMD = "ulimit -Sv %d"
 
 class Memory(Decorator):
 
-   def __init__(self, giga: int = 4):
+   def __init__(self, giga: float = 4):
       Decorator.__init__(self, giga=giga)
       self.prefix = ULIMIT_CMD % int(giga * 1000000)
 
