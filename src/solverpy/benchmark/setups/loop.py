@@ -3,13 +3,15 @@ import logging
 from .. import launcher, db
 from ...tools import log
 from .common import default
-
 from ...builder.builder import Builder
+from .setup import Setup
 
 logger = logging.getLogger(__name__)
 
 
-def loopinit(setup):
+def loopinit(setup: Setup) -> Setup:
+   assert "basedataname" in setup
+   assert "trains" in setup
    base = setup["basedataname"]
    if "it" not in setup:
       setup["it"] = 0
@@ -22,23 +24,27 @@ def loopinit(setup):
    setup["dataname"] = f"{base}/loop{it:02d}"
    setup["trains"].reset(setup["dataname"], filename)
    if "builder" in setup:
-      builder : Builder = setup["builder"]
+      builder: Builder = setup["builder"]
       builder.reset(setup["dataname"])
    return setup
 
 
-def looping(setup):
+def looping(setup: Setup) -> Setup:
+   assert "dataname" in setup
    setup["basedataname"] = setup["dataname"]
    loopinit(setup)
    return setup
 
 
-def evaluation(setup):
+def evaluation(setup: Setup) -> Setup:
    default(setup, "cores", 4)
    default(setup, "ref", True)
    default(setup, "bidfile", "bids")
+   assert "bidfile" in setup
    default(setup, "sidfile", "sids")
+   assert "sidfile" in setup
    default(setup, "delfix", None)
+   assert "delfix" in setup
    default(setup, "db", db.default(delfix=setup["delfix"]))
    default(setup, "ntfy", None)
    if "sidlist" not in setup:
@@ -52,12 +58,13 @@ def evaluation(setup):
    return setup
 
 
-def oneloop(setup):
+def oneloop(setup: Setup) -> Setup:
 
    def is_last(setup):
       return ("loops" in setup) and (setup["it"] == setup["loops"])
 
-   def trains_compress(setup):
+   def trains_compress(setup: Setup):
+      assert "options" in setup
       options = setup["options"]
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
@@ -79,6 +86,7 @@ def oneloop(setup):
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
+   assert "dataname" in setup
    it = setup['it'] if 'it' in setup else 0
    logger.info(
       f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> "
@@ -95,7 +103,7 @@ def oneloop(setup):
    return setup
 
 
-def launch(setup, devels=None):
+def launch(setup: Setup, devels: Setup | None = None) -> Setup:
 
    def do_loop(col):
       if not col: return
@@ -113,6 +121,7 @@ def launch(setup, devels=None):
    do_loop(devels)
    do_loop(setup)
    if "loops" in setup:
+      assert "it" in setup
       while setup["it"] < setup["loops"]:
          log.ntfy(setup, f"solverpy: iter #{setup['it']}")
          do_iter(devels)

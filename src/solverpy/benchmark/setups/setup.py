@@ -5,11 +5,14 @@ if TYPE_CHECKING:
    from ...builder.builder import Builder
    from ...solver.solverpy import SolverPy
    from ...solver.plugins.plugin import Plugin
-   from ...builder.plugins.trains import Trains
+   from ...builder.plugins.svm import SvmTrains
+
 
 class Setup(TypedDict, total=False):
+
+   limit: str
    cores: int
-   ref: (bool | int | str)
+   ref: (bool | int | str | None)
    bidfile: str
    sidfile: str
    bidlist: list[str]
@@ -21,21 +24,19 @@ class Setup(TypedDict, total=False):
    news: list[str]
    refs: list[str]
    options: list[str]
-   dataname: str
    static: str
-   basedataname: str
-   e_training_examples: str
 
+   dataname: str
+   start_dataname: str
+   basedataname: str
    db: "DB"
    builder: "Builder"
    solver: "SolverPy"
-   trains: "Trains"
+   trains: "SvmTrains"
+   previous_trains: str
    plugins: list["Plugin"]
 
-   # gen_features
-   # limit
-   # previous_trains
-   # sel_features
-   # start_dataname
-
+   e_training_examples: str
+   gen_features: str
+   sel_features: str
 

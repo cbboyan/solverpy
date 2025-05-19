@@ -3,6 +3,7 @@ import logging
 
 if TYPE_CHECKING:
    from .task import Task
+   from .solvertask import SolverTask
    from .bar import DefaultBar
 
 from multiprocessing import Pool, Manager
@@ -38,7 +39,7 @@ def run(
 
 
 def launch(
-   tasks: "list[Task]",
+   tasks: "list[Task | SolverTask]",
    cores: int = 4,
    chunksize: int = 1,
    taskdone: Any = None,

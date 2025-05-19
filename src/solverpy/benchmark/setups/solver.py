@@ -8,17 +8,26 @@ from ...solver.smt import Cvc5
 from ...solver.smt import Bitwuzla
 from ...solver.smt.cvc5 import CVC5_STATIC
 from .common import default, init, solver
+from .setup import Setup
 
 logger = logging.getLogger(__name__)
 
-def eprover(setup, trains=False):
-   init(setup)   
-   if trains:
+
+def eprover(setup: Setup, training: bool = False) -> Setup:
+   init(setup)
+   assert "plugins" in setup
+   assert "options" in setup
+   if training:
       default(setup, "dataname", "data/model")
+      assert "dataname" in setup
       default(setup, "e_training_examples", "11")
+      assert "e_training_examples" in setup
       default(setup, "static", E_STATIC)
+      assert "static" in setup
       default(setup, "sel_features", None)
+      assert "sel_features" in setup
       default(setup, "gen_features", None)
+      assert "gen_features" in setup
       sel = setup["sel_features"]
       gen = setup["gen_features"]
       dataname = setup["dataname"]
@@ -34,7 +43,9 @@ def eprover(setup, trains=False):
       elif gen:
          trains = EnigmaTrains(dataname, gen, "gen")
       else:
-         raise ValueError("`sel_features` or `gen_features` must be provided in setup to generate trains.")
+         raise ValueError(
+            "`sel_features` or `gen_features` must be provided in setup to generate trains."
+         )
       setup["trains"] = trains
       plugs = setup["plugins"]
       plugs.append(trains)
@@ -55,26 +66,32 @@ def eprover(setup, trains=False):
       ###plugs = setup["plugins"]
       ###plugs.append(trains)
       ###if "debug-trains" in setup["options"]:
-      ###   plugs.append(EnigmaTrainsDebug( 
+      ###   plugs.append(EnigmaTrainsDebug(
       ###      setup["sel_features"], "flatten" in setup["options"]))
       ###setup["trains"] = trains
    return solver(setup, E)
 
-def vampire(setup):
-   init(setup)   
+
+def vampire(setup: Setup) -> Setup:
+   init(setup)
    return solver(setup, Vampire)
 
-def prover9(setup):
-   init(setup)   
+
+def prover9(setup: Setup) -> Setup:
+   init(setup)
    return solver(setup, Prover9)
 
-def bitwuzla(setup):
-   init(setup)   
+
+def bitwuzla(setup: Setup) -> Setup:
+   init(setup)
    return solver(setup, Bitwuzla)
 
-def cvc5(setup, trains=False):
+
+def cvc5(setup: Setup, training: bool = False) -> Setup:
    init(setup)
-   if trains:
+   assert "plugins" in setup
+   assert "options" in setup
+   if training:
       static = CVC5_STATIC + " ".join([
          "--produce-proofs",
          "--produce-models",
@@ -84,12 +101,13 @@ def cvc5(setup, trains=False):
       ])
       default(setup, "static", static)
       default(setup, "dataname", "data/model")
+      assert "dataname" in setup
       trains = Cvc5Trains(setup["dataname"])
       plugs = setup["plugins"]
       plugs.append(trains)
       options = setup["options"]
       if "debug-trains" in options:
          plugs.append(Cvc5TrainsDebug("flatten" in options))
-      setup["trains"] = trains      
+      setup["trains"] = trains
    return solver(setup, Cvc5)
 
