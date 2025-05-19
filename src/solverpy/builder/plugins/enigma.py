@@ -1,3 +1,4 @@
+from typing import Any
 import os
 import re
 
@@ -13,40 +14,40 @@ GEN = re.compile(r"^#GEN# .*$", flags=re.MULTILINE)
 
 TRANS = str.maketrans("", "", "[(:,)]=")
 
-def samples(output, variant):
-   assert variant in ["sel", "gen"]
-   pattern = SEL if variant == "sel" else GEN
-   vectors = pattern.findall(output)
-   vectors = [x[7:] for x in vectors] # NOTE: this also removes the sign [+-]
-   if vectors: vectors.append("") # new line at the end
-   return "\n".join(vectors) if vectors else ""
-
-def featurepath(features):
-   return features.translate(TRANS)
 
 class EnigmaTrains(SvmTrains):
-   
-   def __init__(self, dataname, features, variant):
+
+   def __init__(self, dataname: str, features: str, variant: str):
       self._features = features
       self._variant = variant
       SvmTrains.__init__(self, dataname)
 
-   def featurepath(self):
+   def featurepath(self) -> str:
       return f"{self._variant}_{featurepath(self._features)}"
 
-   def reset(self, dataname=None, filename="train.in"):
+   def reset(
+      self,
+      dataname: (str | None) = None,
+      filename: str = "train.in",
+   ) -> None:
       if dataname:
          dataname = os.path.join(dataname, self.featurepath())
       super().reset(dataname, filename)
 
-   def extract(self, instance, strategy, output, result):
+   def extract(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+      output: str,
+      result: dict[str, Any],
+   ) -> str:
+      del instance, strategy, result  # unused arguments
       return samples(output, self._variant)
-
 
 
 class EnigmaMultiTrains(MultiTrains):
 
-   def __init__(self, dataname, sel, gen):
+   def __init__(self, dataname: str, sel: str, gen: str):
       MultiTrains.__init__(self, dataname)
       self._sel = EnigmaTrains(dataname, sel, "sel")
       self._gen = EnigmaTrains(dataname, gen, "gen")
@@ -56,15 +57,29 @@ class EnigmaMultiTrains(MultiTrains):
 
 class EnigmaTrainsDebug(Outputs):
 
-   def __init__(self, features, variant, flatten=True):
+   def __init__(self, features: str, variant: str, flatten: bool = True):
       Outputs.__init__(self, flatten)
-      self._path = os.path.join(bids.dbpath(NAME), "debug", f"{variant}_{featurepath(features)}")
+      self._path = os.path.join(
+         bids.dbpath(NAME),
+         "debug",
+         f"{variant}_{featurepath(features)}",
+      )
       self._variant = variant
-   
-   def path(self, instance, strategy, ext=".in"):
+
+   def path(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+      ext: str = ".in",
+   ) -> str:
       return super().path(instance, strategy) + ext
 
-   def decorate(self, cmd, instance, strategy):
+   def decorate(
+      self,
+      cmd: str,
+      instance: tuple[str, str],
+      strategy: str,
+   ) -> str:
       if self._variant != "sel":
          return cmd
       enimap = self.path(instance, strategy, ".map")
@@ -72,10 +87,29 @@ class EnigmaTrainsDebug(Outputs):
       os.makedirs(os.path.dirname(buckets), exist_ok=True)
       return f"{cmd} --enigmatic-output-map={enimap} --enigmatic-output-buckets={buckets}"
 
-   def finished(self, instance, strategy, output, result):
+   def finished(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+      output: str,
+      result: dict[str, Any],
+   ) -> None:
       if not (output and self.solver.solved(result)):
          return
       vectors = samples(output, self._variant)
       if samples:
          self.write(instance, strategy, vectors)
+
+
+def samples(output: str, variant: str) -> str:
+   assert variant in ["sel", "gen"]
+   pattern = SEL if variant == "sel" else GEN
+   vectors = pattern.findall(output)
+   vectors = [x[7:] for x in vectors]  # NOTE: this also removes the sign [+-]
+   if vectors: vectors.append("")  # new line at the end
+   return "\n".join(vectors) if vectors else ""
+
+
+def featurepath(features: str) -> str:
+   return features.translate(TRANS)
 

@@ -10,5 +10,5 @@ class Plugin(SolverPyObj):
       SolverPyObj.__init__(self, **kwargs)
 
    def register(self, solver: "TimedSolver") -> None:
-      raise NotImlementedError()
+      raise NotImplementedError()
 

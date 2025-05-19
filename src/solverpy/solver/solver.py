@@ -25,14 +25,16 @@ class Solver(SolverPyObj):
 
    def run(self, instance : Any, strategy : Any) -> str:
       "Run the solver with the strategy on the instatance. Return the output."
-      raise NotImlementedError()
+      del instance, strategy
+      raise NotImplementedError()
 
    def process(self, output : str) -> dict:
       "Process the solver output and create the result."
-      raise NotImlementedError()
+      del output
+      raise NotImplementedError()
    
    @property
    def success(self) -> set[str]:
       "The set of successful statuses."
-      raise NotImlementedError()
+      raise NotImplementedError()
   

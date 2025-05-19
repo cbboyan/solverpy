@@ -2,10 +2,12 @@ import logging
 
 from .. import launcher, db
 from ...tools import log
-from ...builder import svm
 from .common import default
 
+from ...builder.builder import Builder
+
 logger = logging.getLogger(__name__)
+
 
 def loopinit(setup):
    base = setup["basedataname"]
@@ -20,13 +22,16 @@ def loopinit(setup):
    setup["dataname"] = f"{base}/loop{it:02d}"
    setup["trains"].reset(setup["dataname"], filename)
    if "builder" in setup:
-      setup["builder"].reset(setup["dataname"])
+      builder : Builder = setup["builder"]
+      builder.reset(setup["dataname"])
    return setup
+
 
 def looping(setup):
    setup["basedataname"] = setup["dataname"]
    loopinit(setup)
    return setup
+
 
 def evaluation(setup):
    default(setup, "cores", 4)
@@ -46,43 +51,56 @@ def evaluation(setup):
       looping(setup)
    return setup
 
+
 def oneloop(setup):
+
    def is_last(setup):
       return ("loops" in setup) and (setup["it"] == setup["loops"])
+
    def trains_compress(setup):
       options = setup["options"]
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
-            setup["trains"].compress()
+         setup["trains"].compress()
+
    def trains_merge(setup):
       if ("previous_trains" in setup) and not is_last(setup):
          setup["trains"].merge(setup["previous_trains"], "train.in")
          #f_out = setup["trains"].path(filename="train.in")
          #svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
          setup["trains"].reset(filename="train.in")
+
    def model_build(setup):
-      builder = setup["builder"] if "builder" in setup else None
+      if "builder" not in setup: 
+         return
+      builder : Builder = setup["builder"]
       if builder and not is_last(setup):
          builder.build()
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
    it = setup['it'] if 'it' in setup else 0
-   logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> ")
+   logger.info(
+      f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> "
+   )
    if (it > 0) or ("start_dataname" not in setup):
       launcher.launch(**setup)
       trains_compress(setup)
       trains_merge(setup)
-   elif "trains" in setup: 
-      logger.info(f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
+   elif "trains" in setup:
+      logger.info(
+         f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
       setup["trains"].reset(setup["start_dataname"])
    model_build(setup)
    return setup
 
+
 def launch(setup, devels=None):
+
    def do_loop(col):
       if not col: return
       oneloop(col)
+
    def do_iter(col):
       if not col: return
       #col["sidlist"] = list(setup["refs"]) if "refs" in setup else []
@@ -98,7 +116,7 @@ def launch(setup, devels=None):
       while setup["it"] < setup["loops"]:
          log.ntfy(setup, f"solverpy: iter #{setup['it']}")
          do_iter(devels)
-         if devels and (setup['it']+1 == setup["loops"]):
+         if devels and (setup['it'] + 1 == setup["loops"]):
             # skip evaluation on trains in the last loop if devel is used
             break
          do_iter(setup)

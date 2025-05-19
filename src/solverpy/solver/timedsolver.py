@@ -23,7 +23,7 @@ class TimedSolver(PluginSolver):
    @property
    def timeouts(self):
       "The set of timeout statuses."
-      raise NotImlementedError()
+      raise NotImplementedError()
    
    #def recycle(self, result)
    #def reuse(self, result)
