@@ -1,4 +1,4 @@
-from typing import Any, Sequence, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import random
 import logging
 
@@ -12,7 +12,6 @@ from .db.providers.solved import Solved
 from .setups.setup import Setup
 
 if TYPE_CHECKING:
-   from ..task.task import Task
    from .db.db import DB
    from ..solver.solverpy import SolverPy
 
@@ -43,7 +42,7 @@ def run(
    sid: str,
    desc: str | None = None,
    taskdone: Any = None,
-   db: "DB | None" =None,
+   db: "DB | None" = None,
    cores: int = 4,
    shuffle: bool = True,
    force: bool = False,
@@ -81,10 +80,9 @@ def run(
    #   if solvable:
    #      logger.debug(f"evaluation: restricted to {len(solvable)} problems solvable by {solvedby}")
    #ps = solvable if solvable else bids.problems(bid)
-   tasks: Sequence["SolverTask"] = [SolverTask(solver, bid, sid, p) for p in ps]
+   tasks = [SolverTask(solver, bid, sid, p) for p in ps]
    logger.debug(f"evaluation: {len(tasks)} tasks scheduled")
    # check for the (cached) results in the database
-   todo: Sequence["SolverTask"]
    if db and not force:
       done = db.query(tasks)
       todo = [t for t in tasks if t not in done]
@@ -128,22 +126,25 @@ def run(
    return results
 
 
-def launch(solver,
-           bidlist,
-           sidlist,
-           ref=None,
-           sidnames=True,
-           cores=4,
-           **others):
+def launch(
+   solver: "SolverPy",
+   bidlist: list[str],
+   sidlist: list[str],
+   ref: (bool | int | str | None) = None,
+   sidnames: bool = True,
+   cores: int = 4,
+   **others: Any,
+):
    # initialize jobs and compute label width
    logger.debug("evaluation started")
+   refjob = None
    if ref is True:
-      ref = (solver, bidlist[0], sidlist[0])
+      refjob = (solver, bidlist[0], sidlist[0])
    elif type(ref) is int:
-      ref = (solver, bidlist[0], sidlist[ref])
+      refjob = (solver, bidlist[0], sidlist[ref])
    jobs = [(solver, bid, sid) for bid in bidlist for sid in sidlist]
-   total = sum(len(bids.problems(bid)) for (s, bid, sid) in jobs)
-   (nicks, totaldesc, report) = legend(jobs, ref, sidnames=sidnames)
+   total = sum(len(bids.problems(bid)) for (s, bid, _sid) in jobs)
+   (nicks, totaldesc, report) = legend(jobs, refjob, sidnames=sidnames)
    logger.info(
       f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
    totbar = RunningBar(total, totaldesc, miniters=1)
@@ -151,11 +152,13 @@ def launch(solver,
    allres = {}
    try:
       for job in jobs:
-         result1 = run(*job,
-                       taskdone=totbar.status,
-                       desc=nicks[job],
-                       cores=cores,
-                       **others)
+         result1 = run(
+            *job,
+            taskdone=totbar.status,
+            desc=nicks[job],
+            cores=cores,
+            **others,
+         )
          allres[job] = result1  # (bid,sid) should be a primary key
       totbar.close()
       if totbar._errors:
@@ -216,3 +219,4 @@ def summary(allres, nicks, ref=None):
    report += markdown.newline()
 
    return markdown.dump(report, prefix="> ")
+

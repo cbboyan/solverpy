@@ -39,7 +39,7 @@ def run(
 
 
 def launch(
-   tasks: "list[Task | SolverTask]",
+   tasks: "list[SolverTask]",
    cores: int = 4,
    chunksize: int = 1,
    taskdone: Any = None,

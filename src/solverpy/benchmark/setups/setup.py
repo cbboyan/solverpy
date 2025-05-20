@@ -26,6 +26,9 @@ class Setup(TypedDict, total=False):
    options: list[str]
    static: str
 
+   force: bool
+   shuffle: bool
+
    dataname: str
    start_dataname: str
    basedataname: str
