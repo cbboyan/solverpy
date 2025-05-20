@@ -61,7 +61,6 @@ class MultiTrains(Trains):
       self.apply(lambda x: x.compress(*args, **kwargs))
 
    def merge(self, previous: tuple[str, ...], outfilename: str) -> None:
-      assert type(previous) is tuple
       assert len(previous) == len(self._trains)
       for (t0, p0) in zip(self._trains, previous):
          t0.merge(p0, outfilename)

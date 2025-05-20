@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2025-05-20)
+## Unreleased changes (2025-05-21)
 
-* refactor: typing setups [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: typing various modules [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: typing setups [[details](https://github.com/cbboyan/solverpy/commit/4e20305) | [browse](https://github.com/cbboyan/solverpy/tree/4e20305)]
 * refactor: typing setups [[details](https://github.com/cbboyan/solverpy/commit/8e92c54) | [browse](https://github.com/cbboyan/solverpy/tree/8e92c54)]
 * refactor: typing solvers [[details](https://github.com/cbboyan/solverpy/commit/fa201b3) | [browse](https://github.com/cbboyan/solverpy/tree/fa201b3)]
 * refactor: typing solvers [[details](https://github.com/cbboyan/solverpy/commit/e827768) | [browse](https://github.com/cbboyan/solverpy/tree/e827768)]

@@ -173,7 +173,11 @@ def launch(
    return allres
 
 
-def legend(jobs, ref=None, sidnames=False):
+def legend(
+   jobs: list[tuple["SolverPy", str, str]],
+   ref: (tuple["SolverPy", str, str] | None) = None,
+   sidnames: bool = False,
+):
    nicks = {}
    if sidnames:
       header = ["name", "solver", "benchmark", "problems"]
@@ -199,16 +203,22 @@ def legend(jobs, ref=None, sidnames=False):
    totaldesc = f"{totaldesc:{width}}"
    nicks = {x: f"{y:{width}}" for (x, y) in nicks.items()}
 
+   from ..tools.typing import Report
+   report : "Report" 
    report = markdown.newline()
    report += markdown.heading("Legend", level=3)
    report += markdown.table(header, rows)
    report += markdown.newline()
-   report = markdown.dump(report, prefix="> ")
+   report0 = markdown.dump(report, prefix="> ")
 
-   return (nicks, totaldesc, report)
+   return (nicks, totaldesc, report0)
 
 
-def summary(allres, nicks, ref=None):
+def summary(
+   allres: dict[tuple["SolverPy", str, str], Any],
+   nicks,
+   ref=None,
+):
    report = markdown.newline()
    report += markdown.heading("Summary", level=3)
    report += markdown.summary(allres, nicks, ref=ref)
@@ -219,4 +229,3 @@ def summary(allres, nicks, ref=None):
    report += markdown.newline()
 
    return markdown.dump(report, prefix="> ")
-

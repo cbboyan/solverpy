@@ -10,7 +10,10 @@ StrMaker = str | Callable[[Any], str]
 
 SolverMaker = Callable[..., "SolverPy"]
 
-Builder = dict[str, StrMaker] # TODO: rename to LimitBuilder
+Builder = dict[str, StrMaker]  # TODO: rename to LimitBuilder
 
 Result = dict[str, Any]
 
+Report = list["str | Report"]
+
+SolverTask = tuple["SolverPy", str, str]

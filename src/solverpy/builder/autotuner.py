@@ -18,6 +18,7 @@ TUNEARGS = dict(
    #init_params=dict(num_round=1000),
 )
 
+
 class AutoTuner(Builder):
 
    def __init__(
@@ -29,9 +30,9 @@ class AutoTuner(Builder):
       Builder.__init__(self, trains["dataname"])
       self._trains = trains
       self._devels = devels or trains
-      self._tuneargs : dict[str, Any] = TUNEARGS | (tuneargs or {})
+      self._tuneargs: dict[str, Any] = TUNEARGS | (tuneargs or {})
 
-   def path(self, modelfile: str = "model.lgb"):
+   def path(self, modelfile: str = "model.lgb") -> str:
       if modelfile:
          return os.path.join(super().path(), modelfile)
       else:

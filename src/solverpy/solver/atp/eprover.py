@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 import re
 
 from ..tptpsolver import TptpSolver
-from ..plugins.shell.limits import Limits
 from ...tools import patterns, human
 
 if TYPE_CHECKING:

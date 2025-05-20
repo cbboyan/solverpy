@@ -16,8 +16,8 @@ WAIT = 365 * 24 * 60 * 60  # a year
 
 
 def run(
-   tasks: "list[Task]", 
-   cores: int = 4, 
+   tasks: list["Task"],
+   cores: int = 4,
    chunksize: int = 1,
 ) -> Any:
    """Launch `tasks` in parallel on multiple cores and return results.
@@ -39,7 +39,7 @@ def run(
 
 
 def launch(
-   tasks: "list[SolverTask]",
+   tasks: list["SolverTask"],
    cores: int = 4,
    chunksize: int = 1,
    taskdone: Any = None,
@@ -85,4 +85,3 @@ def launch(
       logger.debug("pool terminated (keyboard interupt)")
       pool.terminate()
       raise e
-
