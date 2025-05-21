@@ -82,7 +82,7 @@ def table(
 
 
 def summary(
-   results: dict["SolverJob", dict[str, Any]],
+   results: dict["SolverJob", "Result"],
    nicks: dict["SolverJob", str],
    ref: "SolverJob | None" = None,
 ) -> "Report":
@@ -111,7 +111,7 @@ def summary(
 
 
 def statuses(
-   results: dict["SolverJob", dict[str, Any]],
+   results: dict["SolverJob", "Result"],
    nicks: dict["SolverJob", str],
 ) -> "Report":
    logger.debug(f"creating statuses for {len(results)} results")

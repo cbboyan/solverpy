@@ -8,6 +8,7 @@ if TYPE_CHECKING:
    from .provider import ProviderMaker
    from .provider import Provider
    from ...task.solvertask import SolverTask
+   from ...tools.typing import Result
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class DB(SolverPyObj):
    def querytask(
       self,
       task: "SolverTask",
-   ) -> dict[str, Any] | None:
+   ) -> "Result | None":
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
          provider.check(task)
@@ -56,7 +57,7 @@ class DB(SolverPyObj):
    def cachedtask(
       self,
       task: "SolverTask",
-      result: dict[str, Any],
+      result: "Result",
    ) -> None:
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
@@ -66,7 +67,7 @@ class DB(SolverPyObj):
    def storetask(
       self,
       task: "SolverTask",
-      result: dict[str, Any],
+      result: "Result",
    ) -> None:
       self.connect(task.bid, task.sid, task.solver.limits.limit)
       for provider in self.providers(task):
@@ -92,7 +93,7 @@ class DB(SolverPyObj):
    def store(
       self,
       tasks: list["SolverTask"],
-      results: list[dict[str, Any]],
+      results: list["Result"],
    ) -> None:
       logger.debug(f"db store on {len(tasks)} tasks")
       count = 0
