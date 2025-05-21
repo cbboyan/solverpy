@@ -5,7 +5,7 @@ import logging
 from . import data
 
 if TYPE_CHECKING:
-   from ...tools.typing import Report, SolverTask, Result
+   from ...tools.typing import Report, SolverJob, Result
    from ...solver.solverpy import SolverPy
 
 logger = logging.getLogger(__name__)
@@ -82,9 +82,9 @@ def table(
 
 
 def summary(
-   results: dict["SolverTask", dict[str, Any]],
-   nicks: dict["SolverTask", str],
-   ref: "SolverTask | None" = None,
+   results: dict["SolverJob", dict[str, Any]],
+   nicks: dict["SolverJob", str],
+   ref: "SolverJob | None" = None,
 ) -> "Report":
    logger.debug(f"creating summary for {len(results)} results")
    if ref is None:
@@ -111,8 +111,8 @@ def summary(
 
 
 def statuses(
-   results: dict["SolverTask", dict[str, Any]],
-   nicks: dict["SolverTask", str],
+   results: dict["SolverJob", dict[str, Any]],
+   nicks: dict["SolverJob", str],
 ) -> "Report":
    logger.debug(f"creating statuses for {len(results)} results")
 

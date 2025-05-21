@@ -39,7 +39,7 @@ def run(
 
 
 def launch(
-   tasks: list["SolverTask"],
+   tasks: list[SolverTask],
    cores: int = 4,
    chunksize: int = 1,
    taskdone: Any = None,
@@ -58,7 +58,7 @@ def launch(
    :param desc:  (Default value = "running")
    :param **others: 
    """
-   del others
+   del others # unused argument
    todo = len(tasks)
    pool = Pool(cores)
    m = Manager()
@@ -69,7 +69,7 @@ def launch(
    try:
       runner = pool.map_async(runtask, tasks, chunksize=chunksize)
       while todo:
-         status = queue.get(WAIT)
+         status = queue.get(WAIT) # type: ignore
          bar.status(status)
          if taskdone:
             taskdone(status)

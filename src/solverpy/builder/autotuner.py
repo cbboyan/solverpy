@@ -6,6 +6,7 @@ import logging
 from .builder import Builder
 from .autotune import autotune
 from ..benchmark.reports import progress
+from ..benchmark.setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,11 @@ class AutoTuner(Builder):
 
    def __init__(
       self,
-      trains: dict[str, Any],
-      devels: (dict[str, Any] | None) = None,
+      trains: Setup,
+      devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
    ):
+      assert "dataname" in trains
       Builder.__init__(self, trains["dataname"])
       self._trains = trains
       self._devels = devels or trains
@@ -39,6 +41,9 @@ class AutoTuner(Builder):
          return super().path()
 
    def build(self) -> None:
+      assert "trains" in self._trains
+      assert "trains" in self._devels
+      assert "refs" in self._trains
       logger.info(
          f"Building model: {self._dataname}\n> \n> ## Building model `{self._dataname}` ##\n> "
       )

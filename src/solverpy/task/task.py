@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import Any, Sequence, TYPE_CHECKING
 import logging
 
 if TYPE_CHECKING:
@@ -106,7 +106,7 @@ def runtask(task: Task) -> Any:
    return task.runtask(task)
 
 
-def setqueue(queue: "Queue[Any]", tasks: list[Task]) -> None:
+def setqueue(queue: "Queue[Any]", tasks: Sequence[Task]) -> None:
    """Set the queue for a list of tasks.
 
    :param queue: the queue to set

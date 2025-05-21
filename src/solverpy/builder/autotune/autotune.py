@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+from typing import Any, Callable, TYPE_CHECKING
 import os
 import time
 import logging
@@ -11,9 +10,13 @@ from ...builder import svm
 from . import tune, build
 from .listener import AutotuneListener
 
+if TYPE_CHECKING:
+   from queue import Queue
+   from .tune import TuneResult
+
 logger = logging.getLogger(__name__)
 
-PHASES = {
+PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "l": tune.leaves_grid,
    "b": tune.bagging,
    "r": tune.regular,
@@ -21,7 +24,7 @@ PHASES = {
    "d": tune.depth,
 }
 
-DEFAULTS = {
+DEFAULTS: dict[str, Any] = {
    'learning_rate': 0.15,
    'objective': 'binary',
    'num_round': 200,
@@ -37,18 +40,19 @@ DEFAULTS = {
    'lambda_l2': 0.0,
 }
 
+
 def tuner(
-   f_train,
-   f_test, 
-   d_tmp="optuna-tmp", 
-   phases="l:b:m:r", 
-   iters=100, 
-   timeout=None, 
-   init_params=None, 
-   min_leaves=16, 
-   max_leaves=2048,
-   queue=None,
-):
+   f_train: str,
+   f_test: str,
+   d_tmp: str = "optuna-tmp",
+   phases: str = "l:b:m:r",
+   iters: int = 100,
+   timeout: (int | None) = None,
+   init_params: (dict[str, Any] | None) = None,
+   min_leaves: int = 16,
+   max_leaves: int = 2048,
+   queue: Queue[Any] | None = None,
+) -> tuple[Any, ...] | None:
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
@@ -58,26 +62,26 @@ def tuner(
    dtest.construct()
 
    os.makedirs(d_tmp, exist_ok=True)
-   
+
    params = dict(DEFAULTS)
    if init_params: params.update(init_params)
    pos = sum(ys)
    neg = len(ys) - pos
    #params["scale_pos_weight"] = neg / pos
    params["is_unbalance"] = "true" if neg != pos else "false"
-   phases = phases.split(":")
+   phases0 = phases.split(":")
    if "m" in phases:
-      params["feature_pre_filter"] = "false" 
-   timeout = timeout / len(phases) if timeout else None
-   iters = iters // len(phases) if iters else None
+      params["feature_pre_filter"] = "false"
+   timeout0 = timeout / len(phases0) if timeout else None
+   iters0 = iters // len(phases0) if iters else None
    args = dict(
-      dtrain=dtrain, 
-      dtest=dtest, 
-      d_tmp=d_tmp, 
-      iters=iters, 
-      timeout=timeout, 
+      dtrain=dtrain,
+      dtest=dtest,
+      d_tmp=d_tmp,
+      iters=iters0,
+      timeout=timeout0,
       queue=queue,
-      min_leaves=min_leaves, 
+      min_leaves=min_leaves,
       max_leaves=max_leaves,
    )
 
@@ -86,25 +90,27 @@ def tuner(
       #(score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
       (_, stats) = build.model(params, dtrain, dtest, f_mod, queue)
       acc = stats["valid_acc"]
-      best = (stats["score"], acc, stats["train_acc"], f_mod, stats["duration"])
-      logger.debug("- initial model: %s" % human.humanacc(acc)) 
+      best = (stats["score"], acc, stats["train_acc"], f_mod,
+              stats["duration"])
+      logger.debug("- initial model: %s" % human.humanacc(acc))
    else:
       best = (-1, None, None, None, None)
 
-   for phase in phases:
+   for phase in phases0:
       (best0, params0) = PHASES[phase](params=params, **args)
       if best0[0] > best[0]:
-         best = best0 
+         best = best0
          params.update(params0)
-   
+
    if queue: queue.put(("tuned", time.time()))
    ret = best + (params, pos, neg)
-   if queue: 
-      queue.put(("result", (ret,)))
+   if queue:
+      queue.put(("result", (ret, )))
    else:
       return ret
 
-def prettytuner(*args, **kwargs):
+
+def prettytuner(*args, **kwargs) -> Any:
 
    listener = AutotuneListener()
 
@@ -121,7 +127,7 @@ def prettytuner(*args, **kwargs):
       while True:
          msg = queue.get()
          result = listener.listen(msg)
-         if result: 
+         if result:
             break
    except (Exception, KeyboardInterrupt) as e:
       p.terminate()
@@ -130,5 +136,3 @@ def prettytuner(*args, **kwargs):
       p.join()
 
    return result
-
-

@@ -167,6 +167,5 @@ def deconflict(xs: "spmatrix", ys: "ndarray") -> tuple["spmatrix", "ndarray"]:
       "Data shape difference:",
       f"\t{xs.shape} --> {xs0.shape}",
       f"\t{ys.shape} --> {ys0.shape}",
-   ])) 
+   ]))
    return (xs0, ys0)
-

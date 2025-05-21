@@ -14,6 +14,7 @@ from .setups.setup import Setup
 if TYPE_CHECKING:
    from .db.db import DB
    from ..solver.solverpy import SolverPy
+   from ..tools.typing import Result, SolverJob
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ def run(
    solvedby: str | None = None,
    it: int | None = None,
    **others: Any,
-) -> dict[str, Any]:
+) -> "Result":
    others = dict(others, force=force, it=it, solvedby=solvedby)
    desc = desc if desc else jobname(solver, bid, sid)
    logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
@@ -134,7 +135,7 @@ def launch(
    sidnames: bool = True,
    cores: int = 4,
    **others: Any,
-):
+) -> dict["SolverJob", "Result"]:
    # initialize jobs and compute label width
    logger.debug("evaluation started")
    refjob = None
@@ -149,7 +150,7 @@ def launch(
       f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
    totbar = RunningBar(total, totaldesc, miniters=1)
    # run the jobs one by one
-   allres = {}
+   allres: dict["SolverJob", "Result"] = {}
    try:
       for job in jobs:
          result1 = run(
@@ -174,10 +175,10 @@ def launch(
 
 
 def legend(
-   jobs: list[tuple["SolverPy", str, str]],
-   ref: (tuple["SolverPy", str, str] | None) = None,
+   jobs: list["SolverJob"],
+   ref: "SolverJob | None" = None,
    sidnames: bool = False,
-):
+) -> tuple[dict["SolverJob", str], str, str]: 
    nicks = {}
    if sidnames:
       header = ["name", "solver", "benchmark", "problems"]
@@ -215,7 +216,7 @@ def legend(
 
 
 def summary(
-   allres: dict[tuple["SolverPy", str, str], Any],
+   allres: dict["SolverJob", Any],
    nicks,
    ref=None,
 ):

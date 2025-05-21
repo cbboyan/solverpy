@@ -1,8 +1,7 @@
+from typing import Any, TextIO, BinaryIO, Callable, TypeVar
 import sys
 import os
-import io
 import ctypes
-import logging
 from sys import platform
 
 libc = ctypes.CDLL(None)
@@ -17,23 +16,28 @@ elif platform == "win32":
    c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')
    c_stderr = ctypes.c_void_p.in_dll(libc, 'stderr')
 
+
 class Redirector(object):
-   def __init__(self, f_log): 
+
+   def __init__(self, f_log: str) -> None:
       self._f_log = f_log
-   
-   def __enter__(self): 
+
+   def __enter__(self) -> None:
       self._redir = start(self._f_log)
-   
-   def __exit__(self, *args):
+
+   def __exit__(self, *args: Any) -> None:
+      del args
       finish(*self._redir)
 
-def redirect(std, fd):
+
+def redirect(std: TextIO, fd: int) -> None:
    libc.fflush(c_stdout)
    libc.fflush(c_stderr)
-   std_fd = std.fileno() # note that std stays open
+   std_fd = std.fileno()  # note that std stays open
    os.dup2(fd, std_fd)
 
-def start(f_log):
+
+def start(f_log: str) -> tuple[BinaryIO, int, int]:
    s_log = open(f_log, mode="wb")
    dup_out = os.dup(sys.stdout.fileno())
    dup_err = os.dup(sys.stderr.fileno())
@@ -41,17 +45,25 @@ def start(f_log):
    redirect(sys.stderr, s_log.fileno())
    return (s_log, dup_out, dup_err)
 
-def finish(s_log, dup_out, dup_err):
+
+def finish(s_log: BinaryIO, dup_out: int, dup_err: int) -> None:
    redirect(sys.stdout, dup_out)
    redirect(sys.stderr, dup_err)
    os.close(dup_out)
    os.close(dup_err)
    s_log.close()
 
-def call(target, f_log, *args, **kwargs):
+
+R = TypeVar("R")
+
+def call(
+   target: Callable[..., R],
+   f_log: str,
+   *args: Any,
+   **kwargs: Any,
+) -> R:
    try:
       with Redirector(f_log):
          return target(*args, **kwargs)
    except (Exception, KeyboardInterrupt) as e:
-      raise(e) # propagate exception to the parent
-
+      raise (e)  # propagate exception to the parent

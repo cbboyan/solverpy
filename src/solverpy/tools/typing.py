@@ -16,4 +16,4 @@ Result = dict[str, Any]
 
 Report = list["str | Report"]
 
-SolverTask = tuple["SolverPy", str, str]
+SolverJob = tuple["SolverPy", str, str]

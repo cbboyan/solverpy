@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 import os
 import re
 import logging
@@ -7,6 +7,7 @@ from .builder import Builder, NAME
 from .autotuner import AutoTuner
 from ..benchmark.path import sids, bids
 from .plugins import enigma
+from ..benchmark.setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,8 @@ class EnigmaModel(AutoTuner):
 
    def __init__(
          self,
-         trains: dict[str, Any],
-         devels: (dict[str, Any] | None),
+         trains: Setup,
+         devels: (Setup | None),
          tuneargs: (dict[str, Any] | None),
          variant: str,
    ):
@@ -61,8 +62,8 @@ class EnigmaSel(EnigmaModel):
 
    def __init__(
       self,
-      trains: dict[str, Any],
-      devels: (dict[str, Any] | None) = None,
+      trains: Setup,
+      devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
    ):
       EnigmaModel.__init__(
@@ -88,8 +89,8 @@ class EnigmaGen(EnigmaModel):
 
    def __init__(
       self,
-      trains: dict[str, Any],
-      devels: (dict[str, Any] | None) = None,
+      trains: Setup,
+      devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
    ):
       EnigmaModel.__init__(
@@ -113,8 +114,8 @@ class Enigma(EnigmaModel):
 
    def __init__(
       self,
-      trains: dict[str, Any],
-      devels: (dict[str, Any] | None) = None,
+      trains: Setup,
+      devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
    ):
       AutoTuner.__init__(
@@ -123,16 +124,21 @@ class Enigma(EnigmaModel):
          devels,
          tuneargs,
       )
+      assert "trains" in trains
+      assert "sel_features" in trains
+      assert "gen_features" in trains
       sel = trains["sel_features"]
       gen = trains["gen_features"]
       trains0 = trains
       if sel and gen:
          # split the multi train data if it is the case
-         trains0 = dict(trains, trains=trains["trains"]._sel)
+         assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
+         trains0 = Setup(trains, trains=trains["trains"]._sel)
       self._sel = EnigmaSel(trains0, devels, tuneargs) if sel else None
       trains0 = trains
       if sel and gen:
-         trains0 = dict(trains, trains=trains["trains"]._gen)
+         assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
+         trains0 = Setup(trains, trains=trains["trains"]._gen)
       self._gen = EnigmaGen(trains0, devels, tuneargs) if gen else None
 
    def reset(self, dataname: str) -> None:
@@ -151,6 +157,7 @@ class Enigma(EnigmaModel):
          self._gen.build()
          self._strats.extend(self._gen.strategies)
       if self._sel and self._gen:
+         assert "refs" in self._trains
          refs = self._trains["refs"]
          self._strats.extend(self.applies(refs, self._dataname))
 

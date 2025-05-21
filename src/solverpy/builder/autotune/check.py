@@ -1,9 +1,24 @@
+from typing import Any, TYPE_CHECKING
 import os
 
-from ...tools import human
 from . import build
 
-def check(trial, params, dtrain, dtest, d_tmp, queue, **args):
+if TYPE_CHECKING:
+   from optuna import Trial
+   from lightgbm import Dataset
+   from .build import Talker
+
+
+def check(
+   trial: "Trial",
+   params: dict[str, Any],
+   dtrain: "Dataset",
+   dtest: "Dataset",
+   d_tmp: str,
+   queue: "Talker | None" = None,
+   **args: Any,
+) -> float:
+   del args  # unused argument
    f_mod = os.path.join(d_tmp, "model%04d" % trial.number, "model.lgb")
    #(score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
    (_, stats) = build.model(params, dtrain, dtest, f_mod, queue)
@@ -14,47 +29,84 @@ def check(trial, params, dtrain, dtest, d_tmp, queue, **args):
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])
    trial.set_user_attr(key="time", value=stats["duration"])
    #if queue: queue.put(("tried", (score, acc, trainacc, dur)))
-   if queue: queue.put(("tried", (stats,)))
+   if queue: queue.put(("tried", (stats, )))
    return stats["score"]
 
-def leaves(trial, params, min_leaves, max_leaves, queue, **args):
+
+def leaves(
+   trial: "Trial",
+   params: dict[str, Any],
+   min_leaves: int,
+   max_leaves: int,
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
    args = dict(args, queue=queue)
    #num_leaves_base = trial.suggest_int('num_leaves_base', 16, 31)
    #num_leaves = round(2**(num_leaves_base/2))
    num_leaves = trial.suggest_int('num_leaves', min_leaves, max_leaves)
-   if queue: queue.put(("trying", ("leaves", trial.number, (num_leaves,))))
+   if queue: queue.put(("trying", ("leaves", trial.number, (num_leaves, ))))
    params = dict(params, num_leaves=num_leaves)
    score = check(trial, params, **args)
    #acc = human.humanacc(trial.user_attrs["acc"])
    return score
 
-def bagging(trial, params, queue, **args):
+
+def bagging(
+   trial: "Trial",
+   params: dict[str, Any],
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
    bagging_freq = trial.suggest_int("bagging_freq", 1, 7)
-   bagging_fraction = min(trial.suggest_float("bagging_fraction", 0.4, 1.0+1e-12), 1.0)
-   if queue: queue.put(("trying", ("bagging", trial.number, (bagging_freq, bagging_fraction))))
-   params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
+   bagging_fraction = min(
+      trial.suggest_float("bagging_fraction", 0.4, 1.0 + 1e-12), 1.0)
+   if queue:
+      queue.put(("trying", ("bagging", trial.number, (bagging_freq,
+                                                      bagging_fraction))))
+   params = dict(params,
+                 bagging_freq=bagging_freq,
+                 bagging_fraction=bagging_fraction)
    score = check(trial, params, queue=queue, **args)
    return score
 
-def min_data(trial, params, queue, **args):
+
+def min_data(
+   trial: "Trial",
+   params: dict[str, Any],
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
    min_data = trial.suggest_int("min_data", 5, 10000)
-   if queue: queue.put(("trying", ("min_data", trial.number, (min_data,))))
+   if queue: queue.put(("trying", ("min_data", trial.number, (min_data, ))))
    params = dict(params, min_data=min_data)
    score = check(trial, params, queue=queue, **args)
    return score
 
-def regular(trial, params, queue, **args):
+
+def regular(
+   trial: "Trial",
+   params: dict[str, Any],
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
    lambda_l1 = trial.suggest_float("lambda_l1", 1e-8, 10.0)
    lambda_l2 = trial.suggest_float("lambda_l2", 1e-8, 10.0)
-   if queue: queue.put(("trying", ("regular", trial.number, (lambda_l1, lambda_l2))))
+   if queue:
+      queue.put(("trying", ("regular", trial.number, (lambda_l1, lambda_l2))))
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, queue=queue, **args)
    return score
 
-def depth(trial, params, queue, **args):
+
+def depth(
+   trial: "Trial",
+   params: dict[str, Any],
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
    max_depth = trial.suggest_int("max_depth", 3, 50)
-   if queue: queue.put(("trying", ("depth", trial.number, (max_depth,))))
+   if queue: queue.put(("trying", ("depth", trial.number, (max_depth, ))))
    params = dict(params, max_depth=max_depth)
    score = check(trial, params, queue=queue, **args)
    return score
-

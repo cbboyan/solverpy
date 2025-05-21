@@ -5,6 +5,7 @@ import logging
 from .builder import NAME
 from .autotuner import AutoTuner
 from ..benchmark.path import sids, bids
+from ..benchmark.setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,8 @@ class Cvc5ML(AutoTuner):
 
    def __init__(
       self,
-      trains: dict[str, Any],
-      devels: (dict[str, Any] | None) = None,
+      trains: Setup,
+      devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
    ):
       AutoTuner.__init__(
