@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 CVC5_BINARY = "cvc5"
 
-CVC5_STATIC = "-Lsmt2 --stats --stats-internal"
+CVC5_STATIC: str = "-Lsmt2 --stats --stats-internal"
 
 CVC5_BUILDER: "Builder" = {
    "T": lambda x: "--tlimit=%s" % (1000 * int(x)),
@@ -77,7 +77,7 @@ class Cvc5(SmtSolver):
 
       result = patterns.keyval(self.pattern, output)
       result = patterns.mapval(result, parseval)
-      timeouted = patterns.single(CVC5_TIMEOUT, output, None)
+      timeouted = patterns.single(CVC5_TIMEOUT, output, "")
       if timeouted:
          result["status"] = timeouted  # timeouted == "timeout"
       return result

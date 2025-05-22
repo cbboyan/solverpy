@@ -51,7 +51,7 @@ def tuner(
    init_params: (dict[str, Any] | None) = None,
    min_leaves: int = 16,
    max_leaves: int = 2048,
-   queue: Queue[Any] | None = None,
+   queue: "Queue[Any] | None" = None,
 ) -> tuple[Any, ...] | None:
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)

@@ -32,7 +32,7 @@ class Tptp(Decorator):
       result: "Result",
    ) -> None:
       del instance, strategy
-      status = patterns.single(TPTP_STATUS, output, None)
+      status = patterns.single(TPTP_STATUS, output, "")
       if status:
          result["status"] = status
       elif "status" not in result:

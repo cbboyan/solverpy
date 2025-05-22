@@ -32,7 +32,7 @@ class Smt(Decorator):
       result: "Result",
    ) -> None:
       del instance, strategy # unused arguments
-      status = patterns.single(SMT_STATUS, output, None)
+      status = patterns.single(SMT_STATUS, output, "")
       if status:
          result["status"] = status
       elif "status" not in result:

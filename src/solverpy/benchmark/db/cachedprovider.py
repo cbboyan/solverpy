@@ -1,4 +1,4 @@
-from typing import TextIO 
+from typing import TextIO
 import os
 import gzip
 import logging
@@ -18,7 +18,13 @@ class CachedProvider(Provider):
       store_cache: bool = False,
       compress: bool = False,
    ):
-      Provider.__init__(self, bid, sid, limit, store_cache)
+      Provider.__init__(
+         self,
+         bid,
+         sid,
+         limit,
+         store_cache,
+      )
       self.compress = compress
       logger.debug(f"creating provider {self} for {sid} @ {bid}")
       self.load()
@@ -73,4 +79,3 @@ class CachedProvider(Provider):
    def cacheload(self, fr: TextIO) -> None:
       del fr
       raise NotImplementedError()
-

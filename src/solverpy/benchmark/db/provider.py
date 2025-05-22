@@ -13,12 +13,12 @@ class Provider(SolverPyObj):
       bid: str,
       sid: str,
       limit: (str | None) = None,
-      store_cached: bool = False,
+      caching: bool = False,
    ):
       self.bid = bid
       self.sid = sid
       self.limit = limit
-      self.store_cached = store_cached
+      self.caching = caching
       self._uptodate = False
       "call store for cached results."
 
@@ -67,7 +67,7 @@ class Provider(SolverPyObj):
       result: dict[str, Any],
    ):
       """Announcement that the cached `result` for `task` was found."""
-      if self.store_cached:
+      if self.caching:
          self.store(task, result)
 
    def commit(self) -> None:

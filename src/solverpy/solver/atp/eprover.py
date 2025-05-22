@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 E_BINARY = "eprover"
 
-E_STATIC = "-s -p -R --print-statistics --tstp-format --memory-limit=2048"
+E_STATIC: str = "-s -p -R --print-statistics --tstp-format --memory-limit=2048"
 
 E_BUILDER: "Builder" = {
    "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x, int(x) + 10),

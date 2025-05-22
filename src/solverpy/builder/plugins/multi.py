@@ -1,16 +1,15 @@
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable, override, TYPE_CHECKING, overload
 import logging
 
-from .trains import Trains
+from .svm import SvmTrains
 
 if TYPE_CHECKING:
    from ...solver.solverpy import SolverPy
-   from .svm import SvmTrains
 
 logger = logging.getLogger(__name__)
 
 
-class MultiTrains(Trains):
+class MultiTrains(SvmTrains):
 
    def __init__(self, dataname: str):
       self._trains: list["SvmTrains"] = []
@@ -60,8 +59,12 @@ class MultiTrains(Trains):
    def compress(self, *args: Any, **kwargs: Any) -> None:
       self.apply(lambda x: x.compress(*args, **kwargs))
 
-   def merge(self, previous: tuple[str, ...], outfilename: str) -> None:
+   def merge(
+      self,
+      previous: str | tuple[str, ...],
+      outfilename: str,
+   ) -> None:
       assert len(previous) == len(self._trains)
+      assert type(previous) is tuple
       for (t0, p0) in zip(self._trains, previous):
          t0.merge(p0, outfilename)
-

@@ -169,7 +169,7 @@ def launch(
       totbar.close()
       raise e
 
-   report = summary(allres, nicks, ref)
+   report = summary(allres, nicks, refjob)
    logger.info(f"Evaluation done:\n{report}")
    return allres
 
@@ -217,9 +217,9 @@ def legend(
 
 def summary(
    allres: dict["SolverJob", Any],
-   nicks,
-   ref=None,
-):
+   nicks: dict["SolverJob", str],
+   ref: "SolverJob | None" = None,
+) -> str:
    report = markdown.newline()
    report += markdown.heading("Summary", level=3)
    report += markdown.summary(allres, nicks, ref=ref)

@@ -17,14 +17,16 @@ class Setup(TypedDict, total=False):
    sidfile: str
    bidlist: list[str]
    sidlist: list[str]
-   delfix: (int | str | None)
+   binary: str
+   static: list[str]
    ntfy: str
    it: int
    loops: int
    news: list[str]
    refs: list[str]
    options: list[str]
-   static: str
+   delfix: (int | str | None)
+
 
    force: bool
    shuffle: bool

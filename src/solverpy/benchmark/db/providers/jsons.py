@@ -20,14 +20,14 @@ class Jsons(CachedProvider):
       bid: str,
       sid: str,
       limit: (str | None) = None,  # TODO: make just `str` here?
-      store_cached: bool = False,
+      caching: bool = False,
    ):
       CachedProvider.__init__(
          self,
          bid,
          sid,
          limit,
-         store_cached,  # TODO: rename `caching`
+         caching,
          compress=True,
       )
 
@@ -82,6 +82,6 @@ class JsonsStore(Jsons):
          bid,
          sid,
          limit,
-         store_cached=True,
+         caching=True,
       )
 

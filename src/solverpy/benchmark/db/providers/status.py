@@ -23,7 +23,7 @@ class Status(CachedProvider):
       bid: str,
       sid: str,
       limit: (str | None) = None,
-      store_cached: bool = True,
+      caching: bool = True,
       delfix: (str | int | None) = None,
    ):
       CachedProvider.__init__(
@@ -31,7 +31,7 @@ class Status(CachedProvider):
          bid,
          sid,
          limit,
-         store_cached,
+         caching,
       )
       self._delfix = delfix
 

@@ -17,7 +17,8 @@ class SvmTrains(Trains):
       self.info.pos = 0
       self.info.neg = 0
 
-   def stats(self, instance: tuple[str, str], strategy: str, samples: str) -> None:
+   def stats(self, instance: tuple[str, str], strategy: str,
+             samples: str) -> None:
       count = samples.count("\n")
       s0 = samples[0]
       pos = samples.count("\n1 ") + (1 if s0 == "1" else 0)
@@ -35,9 +36,13 @@ class SvmTrains(Trains):
       if os.path.isfile(self.path()):
          svm.compress(self.path())
 
-   def merge(self, previous: str, outfilename: str) -> None:
+   def merge(
+      self,
+      previous: str | tuple[str, ...],
+      outfilename: str,
+   ) -> None:
       assert self._filename != outfilename
+      assert type(previous) is str
       f_out = self.path(filename=outfilename)
       svm.merge(previous, self.path(), f_out=f_out)
       #self.reset(filename=outfilename)
-
