@@ -9,7 +9,7 @@ class Memory(Decorator):
 
    def __init__(self, giga: float = 4):
       Decorator.__init__(self, giga=giga)
-      self.prefix = ULIMIT_CMD % int(giga * 1000000)
+      self.prefix = ULIMIT_CMD % int(giga * 1024 * 1024)
 
    def decorate(
       self,
@@ -19,4 +19,3 @@ class Memory(Decorator):
    ) -> str:
       del instance, strategy
       return f"{self.prefix} && {cmd}"
-
