@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2025-05-23)
 
-* fix: Fixed Z3 solver wrapper. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fixed Z3 solver wrapper. [[details](https://github.com/cbboyan/solverpy/commit/d717896) | [browse](https://github.com/cbboyan/solverpy/tree/d717896)]
 * refactor: typing and renames [[details](https://github.com/cbboyan/solverpy/commit/8ba1680) | [browse](https://github.com/cbboyan/solverpy/tree/8ba1680)]
 * refactor: typing results [[details](https://github.com/cbboyan/solverpy/commit/d581c68) | [browse](https://github.com/cbboyan/solverpy/tree/d581c68)]
 * refactor: typing tuners [[details](https://github.com/cbboyan/solverpy/commit/5bd6c1c) | [browse](https://github.com/cbboyan/solverpy/tree/5bd6c1c)]
