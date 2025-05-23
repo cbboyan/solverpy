@@ -14,7 +14,7 @@ Z3_STATIC: str = "-smt2 -st"
 
 Z3_BUILDER: "Builder" = {
    "T": "-T:%s",
-   "M": lambda x: f"-memory:{1024*x}",
+   "M": lambda x: f"-memory:{1024*int(x)}",
 }
 
 Z3_PAT: Pattern = re.compile(
