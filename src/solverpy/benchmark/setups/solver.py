@@ -5,9 +5,9 @@ from ...solver.atp.eprover import E_STATIC, E
 from ...solver.atp.prover9 import Prover9
 from ...solver.atp.vampire import Vampire
 from ...builder.plugins import *
-from ...solver.smt import Cvc5
-from ...solver.smt import Bitwuzla
+from ...solver.smt import Cvc5, Z3, Bitwuzla
 from ...solver.smt.cvc5 import CVC5_STATIC
+from ...solver.smt.z3 import Z3_STATIC
 from .common import default, init, solver
 from .setup import Setup
 
@@ -90,6 +90,12 @@ def prover9(setup: Setup) -> Setup:
 def bitwuzla(setup: Setup) -> Setup:
    init(setup)
    return solver(setup, Bitwuzla)
+
+
+def z3(setup: Setup) -> Setup:
+   default(setup, "static", Z3_STATIC.split())
+   init(setup)
+   return solver(setup, Z3)
 
 
 def cvc5(setup: Setup, training: bool = False) -> Setup:

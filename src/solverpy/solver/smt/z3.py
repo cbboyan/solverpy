@@ -10,11 +10,11 @@ if TYPE_CHECKING:
 
 Z3_BINARY = "z3"
 
-Z3_STATIC = "-smt2 -st"
+Z3_STATIC: str = "-smt2 -st"
 
 Z3_BUILDER: "Builder" = {
    "T": "-T:%s",
-   "M": "-memory:%s",
+   "M": lambda x: f"-memory:{1024*x}",
 }
 
 Z3_PAT: Pattern = re.compile(
