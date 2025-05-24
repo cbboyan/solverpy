@@ -14,11 +14,16 @@ Z3_STATIC: str = "-smt2 -st"
 
 Z3_BUILDER: "Builder" = {
    "T": "-T:%s",
-   "M": lambda x: f"-memory:{1024*int(x)}",
+   "M": lambda x: f"-memory:{int(1024*float(x))}",
 }
 
 Z3_PAT: Pattern = re.compile(
    r"^.:([a-z-]*)\s*([0-9.]*)",
+   flags=re.MULTILINE,
+)
+
+Z3_MEMOUT: Pattern = re.compile(
+   r'error "out of memory"',
    flags=re.MULTILINE,
 )
 
@@ -45,5 +50,6 @@ class Z3(SmtSolver):
    def process(self, output: str) -> "Result":
       result = patterns.keyval(Z3_PAT, output)
       result = patterns.mapval(result, human.numeric)
+      if re.search(Z3_MEMOUT, output):
+         result["status"] = "memout"
       return result
-

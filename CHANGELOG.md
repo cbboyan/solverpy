@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2025-05-23)
+## Unreleased changes (2025-05-24)
 
+* fix: Fixed "out of memory" detection for Z3. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * fix: Fixed ulimit memory limit value. [[details](https://github.com/cbboyan/solverpy/commit/a05ca40) | [browse](https://github.com/cbboyan/solverpy/tree/a05ca40)]
 * fix: Fixed Z3 memory limit option. [[details](https://github.com/cbboyan/solverpy/commit/1a6eadb) | [browse](https://github.com/cbboyan/solverpy/tree/1a6eadb)]
 * fix: Fixed Z3 solver wrapper. [[details](https://github.com/cbboyan/solverpy/commit/d717896) | [browse](https://github.com/cbboyan/solverpy/tree/d717896)]

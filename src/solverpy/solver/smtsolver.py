@@ -19,6 +19,7 @@ SMT_FAILED = frozenset([
 
 SMT_TIMEOUT = frozenset([
    'timeout',
+   'memout',
    'TIMEOUT',  # simulated timeout
 ])
 
