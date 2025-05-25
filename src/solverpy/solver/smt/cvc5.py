@@ -7,13 +7,13 @@ from ...tools import patterns, human
 if TYPE_CHECKING:
    from typing import Pattern
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder, Result
+   from ...tools.typing import LimitBuilder, Result
 
 CVC5_BINARY = "cvc5"
 
 CVC5_STATIC: str = "-Lsmt2 --stats --stats-internal"
 
-CVC5_BUILDER: "Builder" = {
+CVC5_BUILDER: "LimitBuilder" = {
    "T": lambda x: "--tlimit=%s" % (1000 * int(x)),
    "R": lambda x: "--rlimit=%s" % x
 }

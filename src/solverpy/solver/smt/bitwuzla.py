@@ -6,13 +6,13 @@ from ...tools import patterns, human
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder, Result
+   from ...tools.typing import LimitBuilder, Result
 
 BWZ_BINARY = "bitwuzla"
 
 BWZ_STATIC = "-v"
 
-BWZ_BUILDER: "Builder" = {
+BWZ_BUILDER: "LimitBuilder" = {
    "T": lambda n: f"-t={int(n)*1000}",
 }
 

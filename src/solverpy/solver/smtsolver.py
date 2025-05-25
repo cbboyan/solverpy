@@ -6,7 +6,7 @@ from .plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from .plugins.plugin import Plugin
-   from ..tools.typing import Builder, Result
+   from ..tools.typing import LimitBuilder, Result
 
 SMT_OK = frozenset([
    'sat',
@@ -32,7 +32,7 @@ class SmtSolver(ShellSolver):
       self,
       cmd: str,
       limit: str,
-      builder: "Builder" = {},
+      builder: "LimitBuilder" = {},
       plugins: list["Plugin"] = [],
       wait: (int | None) = None,
    ):

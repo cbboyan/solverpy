@@ -6,7 +6,7 @@ from ..translator import Translator
 
 if TYPE_CHECKING:
    from ...solverpy import SolverPy
-   from ....tools.typing import StrMaker, Builder
+   from ....tools.typing import StrMaker, LimitBuilder
 
 
 def build(fun: "StrMaker", arg: Any) -> str:
@@ -22,8 +22,9 @@ class Limits(Decorator, Translator):
    def __init__(
       self,
       limit: str,
-      builder: "Builder",
+      builder: "LimitBuilder",
       cmdline: bool = True,
+      inputfile: bool = False,
    ):
       Plugin.__init__(
          self,
@@ -48,6 +49,7 @@ class Limits(Decorator, Translator):
 
       #self.args = " ".join(lims)
       self.limit = limit
+      self._inputfile = inputfile
 
    def register(self, solver: "SolverPy") -> None:
       if self.cmdline:
@@ -79,7 +81,8 @@ class Limits(Decorator, Translator):
    ) -> str:
       del instance, strategy  # unused arguments
       if self.cmdline:
-         return f"{cmd} {self.strategy}" if self.strategy else cmd
+         input = " /dev/stdin" if self._inputfile else ""
+         return f"{cmd} {self.strategy}{input}" if self.strategy else cmd
       else:
          return cmd
 

@@ -80,7 +80,7 @@ def oneloop(setup: Setup) -> Setup:
    def model_build(setup):
       if "builder" not in setup: 
          return
-      builder : Builder = setup["builder"]
+      builder = setup["builder"]
       if builder and not is_last(setup):
          builder.build()
          setup["news"] = builder.strategies

@@ -3,11 +3,11 @@ import os
 import time
 import lightgbm as lgb
 from numpy import ndarray
+from scipy.sparse import csr_matrix
 
 if TYPE_CHECKING:
    from queue import Queue
    from lightgbm import Booster, Dataset
-   from scipy.sparse import spmatrix
    Talker = Queue[tuple[str, tuple[Any, ...]]]
 
 POS_ACC_WEIGHT = 2.0
@@ -15,7 +15,7 @@ POS_ACC_WEIGHT = 2.0
 
 def accuracy(
    bst: "Booster",
-   xs: "spmatrix",
+   xs: "csr_matrix",
    ys: "ndarray",
 ) -> tuple[float, float, float]:
 
@@ -104,11 +104,11 @@ def model(
       assert bst
       # compute the accuracy on the testing data
       (axs, ays) = (dtest.get_data(), dtest.get_label())
-      assert type(axs) is spmatrix
+      assert type(axs) is csr_matrix
       assert type(ays) is ndarray
       acc = accuracy(bst, axs, ays)
       (taxs, tays) = (dtrain.get_data(), dtrain.get_label())
-      assert type(taxs) is spmatrix
+      assert type(taxs) is csr_matrix
       assert type(tays) is ndarray
       trainacc = accuracy(bst, taxs, tays)
       bst.free_dataset()

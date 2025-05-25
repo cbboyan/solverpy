@@ -15,8 +15,8 @@ class Limiter(Decorator):
    def register(self, solver: "SolverPy") -> None:
       super().register(solver)
       self.timeouts = solver.timeouts
-      self.timeout = solver.limits.timeout
-      self.limit = solver.limits.limit
+      self.timeout = solver._limits.timeout
+      self.limit = solver._limits.limit
 
    def update(
       self,

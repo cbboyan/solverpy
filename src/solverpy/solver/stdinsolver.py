@@ -9,7 +9,7 @@ from .plugins.shell.memory import Memory
 
 if TYPE_CHECKING:
    from .plugins.plugin import Plugin
-   from ..tools.typing import Builder
+   from ..tools.typing import LimitBuilder
 
 
 class StdinSolver(SolverPy):
@@ -18,12 +18,14 @@ class StdinSolver(SolverPy):
       self,
       cmd: str,
       limit: str,
-      builder: "Builder" = {},
+      builder: "LimitBuilder" = {},
       plugins: list["Plugin"] = [],
       wait: (int | None) = None,
-      static: str = "",
+      static: str = "", # TODO: rename to `prefix`
+      cmdline: bool = False, # set limits using command line arguments?
+      inputfile: bool = False,
    ):
-      limits = Limits(limit, builder, cmdline=False)
+      limits = Limits(limit, builder, cmdline=cmdline, inputfile=inputfile)
       new: list["Plugin"] = [limits]
       if wait is not None:
          new.append(Timeout(limits.timeout + wait))
@@ -34,12 +36,12 @@ class StdinSolver(SolverPy):
          limits=limits,
          plugins=plugins + new,
       )
-      self.static = static
+      self._static = static # TODO: rename to `prefix`
       self._cmd = cmd
 
    @property
    def name(self) -> str:
-      return f"{super().name}:{self.limits.limit}"
+      return f"{super().name}:{self._limits.limit}"
 
    def run(self, instance: Any, strategy: Any) -> str:
       inputstr = self.input(instance, strategy)
@@ -55,15 +57,15 @@ class StdinSolver(SolverPy):
             stderr=subprocess.STDOUT,
             env=env0,
          )
-         self.exitcode = 0
+         self._exitcode = 0
       except subprocess.CalledProcessError as e:
          output = e.output
-         self.exitcode = e.returncode
+         self._exitcode = e.returncode
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def input(self, instance: Any, strategy: Any) -> bytes:
       (instance, strategy) = self.translate(instance, strategy)
-      inputstr = self.static.encode()
+      inputstr = self._static.encode()
       inputstr += strategy.encode()
       inputstr += b"\n"
       inputstr += open(instance, "rb").read()

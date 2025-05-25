@@ -17,8 +17,8 @@ class SolverPy(PluginSolver):
       plugins: list["Plugin"] = [],
    ):
       assert limits.limit.startswith("T")
-      self.limits: Limits = limits
-      self.exitcode: int = 0
+      self._limits: Limits = limits
+      self._exitcode: int = -1
       new = [Limiter()]
       PluginSolver.__init__(self, plugins=plugins + new)
 
@@ -34,19 +34,19 @@ class SolverPy(PluginSolver):
          #if result["status"] not in self.success: # we might want this?
          oldlimits = Limits(result["limit"], {})
          # the cached result is timeout
-         if oldlimits < self.limits:
+         if oldlimits < self._limits:
             #if result["runtime"] < self.timeout:
             # recompute since we have more time or/and space
             return None
       elif result["status"] in self.success:
          # the cached result is solved
-         if result["runtime"] > self.limits.timeout:
+         if result["runtime"] > self._limits.timeout:
             #if result["runtime"] > self.timeout:
             # simulated timeout
             return dict(
                result,
                status="TIMEOUT",
-               runtime=self.limits.timeout,
+               runtime=self._limits.timeout,
             )
       else:
          # recompute unknown results (GaveUp, unknown)

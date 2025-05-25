@@ -6,7 +6,7 @@ from .plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from .plugins.plugin import Plugin
-   from ..tools.typing import Builder, Result
+   from ..tools.typing import LimitBuilder, Result
 
 TPTP_OK = frozenset([
    'Satisfiable',
@@ -42,7 +42,7 @@ class TptpSolver(ShellSolver):
       self,
       cmd: str,
       limit: str,
-      builder: "Builder" = {},
+      builder: "LimitBuilder" = {},
       plugins: list["Plugin"] = [],
       wait: (int | None) = None,
       complete: bool = True,
@@ -56,14 +56,14 @@ class TptpSolver(ShellSolver):
          plugins,
          wait,
       )
-      self.complete = complete
+      self._complete = complete
 
    def valid(self, result: "Result") -> bool:
       return super().valid(result) and result["status"] in TPTP_ALL
 
    @property
    def success(self) -> frozenset[str]:
-      return TPTP_OK if self.complete else INC_OK
+      return TPTP_OK if self._complete else INC_OK
 
    @property
    def timeouts(self) -> frozenset[str]:

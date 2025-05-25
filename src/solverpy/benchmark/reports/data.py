@@ -14,7 +14,7 @@ def par2score(
       #       (then "runtime" might not be filled)
       return result["runtime"]
    else:
-      return 2 * solver.limits.timeout
+      return 2 * solver._limits.timeout
 
 
 def summary(

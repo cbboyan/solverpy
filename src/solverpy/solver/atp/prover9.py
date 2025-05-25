@@ -8,7 +8,7 @@ from ..plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder, Result
+   from ...tools.typing import LimitBuilder, Result
 
 P9_BINARY = "prover9"
 
@@ -17,7 +17,7 @@ clear(print_given).
 clear(bell).
 """
 
-P9_BUILDER: "Builder" = {
+P9_BUILDER: "LimitBuilder" = {
    "T": "assign(max_seconds, %s).\n",
    "M": lambda x: f"assign(max_megs, {int(x)*1000}).\n",
 }
@@ -66,7 +66,7 @@ class Prover9(StdinSolver):
          1,
          static,
       )
-      self.complete = complete
+      self._complete = complete
 
    def process(self, output: str) -> "Result":
       reason = P9_REASON.search(output)
@@ -98,7 +98,7 @@ class Prover9(StdinSolver):
 
    @property
    def success(self) -> frozenset[str]:
-      return TPTP_OK if self.complete else INC_OK
+      return TPTP_OK if self._complete else INC_OK
 
    @property
    def timeouts(self) -> frozenset[str]:

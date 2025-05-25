@@ -6,13 +6,13 @@ from ...tools import patterns, human
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder, Result
+   from ...tools.typing import LimitBuilder, Result
 
 V_BINARY = "vampire"
 
 V_STATIC = "--proof tptp -stat full --input_syntax tptp --memory_limit 2048"
 
-V_BUILDER: "Builder" = {
+V_BUILDER: "LimitBuilder" = {
    "T": "--time_limit %ss",
    "M": "--memory_limit %s",
 }

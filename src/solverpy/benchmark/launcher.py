@@ -58,11 +58,11 @@ def run(
    ps = bids.problems(bid)
    skipped = {}
    if solvedby and (it == 0):
-      solvable = Solved(bid, solvedby, solver.limits.limit).cache
+      solvable = Solved(bid, solvedby, solver._limits.limit).cache
       if solvable:
          simulate = dict(status="TIMEOUT",
-                         runtime=solver.limits.timeout,
-                         limit=solver.limits.limit)
+                         runtime=solver._limits.timeout,
+                         limit=solver._limits.limit)
          skipped = {p: dict(simulate) for p in (set(ps) - solvable)}
          if taskdone:
             for (_p, res) in skipped.items():
@@ -204,8 +204,6 @@ def legend(
    totaldesc = f"{totaldesc:{width}}"
    nicks = {x: f"{y:{width}}" for (x, y) in nicks.items()}
 
-   from ..tools.typing import Report
-   report : "Report" 
    report = markdown.newline()
    report += markdown.heading("Legend", level=3)
    report += markdown.table(header, rows)

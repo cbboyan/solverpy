@@ -18,7 +18,7 @@ class Reloader(SolverPy):
       self.solver = solver
       SolverPy.__init__(
          self,
-         solver.limits,
+         solver._limits,
          plugins,
       )
       self.outputs = Outputs()

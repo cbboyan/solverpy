@@ -6,13 +6,13 @@ from ...tools import patterns, human
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder, Result
+   from ...tools.typing import LimitBuilder, Result
 
 E_BINARY = "eprover"
 
 E_STATIC: str = "-s -p -R --print-statistics --tstp-format --memory-limit=2048"
 
-E_BUILDER: "Builder" = {
+E_BUILDER: "LimitBuilder" = {
    "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x, int(x) + 10),
    "P": "--processed-set-limit=%s",
    "C": "--processed-clauses-limit=%s",

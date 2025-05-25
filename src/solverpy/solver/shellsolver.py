@@ -10,7 +10,7 @@ from ..benchmark.path import sids
 
 if TYPE_CHECKING:
    from .plugins.plugin import Plugin
-   from ..tools.typing import Builder
+   from ..tools.typing import LimitBuilder
 
 
 class ShellSolver(SolverPy):
@@ -19,12 +19,12 @@ class ShellSolver(SolverPy):
       self,
       cmd: str,
       limit: str,
-      builder: "Builder" = {},
+      builder: "LimitBuilder" = {},
       plugins: list["Plugin"] = [],
       wait: (int | None) = None,
       unspace: bool = True,
    ):
-      self.unspace = unspace
+      self._unspace = unspace
       limits = Limits(limit, builder)
       new: list["Plugin"] = [limits]
       if wait is not None:
@@ -40,16 +40,16 @@ class ShellSolver(SolverPy):
 
    @property
    def name(self) -> str:
-      return f"{super().name}:{self.limits.limit}"
+      return f"{super().name}:{self._limits.limit}"
 
    def run(self, instance: Any, strategy: Any) -> str:
       cmd = self.command(instance, strategy)
       env0 = dict(os.environ)
       env0["OMP_NUM_THREADS"] = "1"
       #env0["CUDA_VISIBLE_DEVICES"] = "-1"
-      if self.unspace:
+      if self._unspace:
          cmd = sids.unspace(cmd)
-      self.exitcode = 0
+      self._exitcode = 0
       try:
          output = subprocess.check_output(
             cmd,
@@ -59,7 +59,7 @@ class ShellSolver(SolverPy):
          )
       except subprocess.CalledProcessError as e:
          output = e.output
-         self.exitcode = e.returncode
+         self._exitcode = e.returncode
       return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
 
    def command(self, instance: Any, strategy: Any) -> str:

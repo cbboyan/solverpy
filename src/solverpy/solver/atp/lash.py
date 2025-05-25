@@ -6,7 +6,7 @@ from ...tools import patterns, human
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import Builder
+   from ...tools.typing import LimitBuilder
 
 L_BINARY = "lash"
 
@@ -15,7 +15,7 @@ L_STATIC = "-p tstp"
 
 L_PAT = re.compile(r"^% (Steps|Mode): (\S*)$", flags=re.MULTILINE)
 
-L_BUILDER: "Builder" = {
+L_BUILDER: "LimitBuilder" = {
    "T": "",
 }
 

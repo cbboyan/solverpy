@@ -46,7 +46,7 @@ class DB(SolverPyObj):
       self,
       task: "SolverTask",
    ) -> "Result | None":
-      self.connect(task.bid, task.sid, task.solver.limits.limit)
+      self.connect(task.bid, task.sid, task.solver._limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          result = provider.query(task)
@@ -59,7 +59,7 @@ class DB(SolverPyObj):
       task: "SolverTask",
       result: "Result",
    ) -> None:
-      self.connect(task.bid, task.sid, task.solver.limits.limit)
+      self.connect(task.bid, task.sid, task.solver._limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.cached(task, result)
@@ -69,7 +69,7 @@ class DB(SolverPyObj):
       task: "SolverTask",
       result: "Result",
    ) -> None:
-      self.connect(task.bid, task.sid, task.solver.limits.limit)
+      self.connect(task.bid, task.sid, task.solver._limits.limit)
       for provider in self.providers(task):
          provider.check(task)
          provider.store(task, result)

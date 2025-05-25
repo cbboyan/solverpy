@@ -33,7 +33,7 @@ class Outputs(Decorator):
       strategy: str,
    ) -> str:
       (bid, problem) = instance
-      bs = bids.name(bid, limit=self.solver.limits.limit)
+      bs = bids.name(bid, limit=self.solver._limits.limit)
       if self._flatten:
          slash = "_._" if (self._flatten is True) else self._flatten
          problem = problem.replace("/", slash)
