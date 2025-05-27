@@ -69,5 +69,6 @@ class StdinSolver(SolverPy):
       inputstr += strategy.encode()
       inputstr += b"\n"
       inputstr += open(instance, "rb").read()
+      #open(f"/home/yan/tmp.smt2", "wb").write(inputstr)
       return inputstr
 
