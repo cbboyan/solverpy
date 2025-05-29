@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 class PluginSolver(Solver):
 
-   def __init__(self, plugins: list["Plugin"] = []):
+   def __init__(self, plugins: list["Plugin"] = [], **kwargs: Any):
+      Solver.__init__(self, **kwargs)
       self.decorators: list["Decorator"] = []
       self.translators: list["Translator"] = []
       self.init(plugins)
@@ -27,6 +28,11 @@ class PluginSolver(Solver):
       )
 
    def solve(self, instance: Any, strategy: Any) -> "Result":
+      """
+      Run the solver with the strategy on the instatance. Update the 
+      solver result and announce the final version. Return the updated
+      result.
+      """
       (output, result) = super().solve(instance, strategy)
       self.update(instance, strategy, output, result)
       if not self.valid(result):
@@ -40,8 +46,8 @@ class PluginSolver(Solver):
          )
       return result
 
-   # plugins initization
    def init(self, plugins: list["Plugin"]) -> None:
+      """Plugins initialization."""
       for plugin in plugins:
          plugin.register(self)
 
@@ -51,6 +57,7 @@ class PluginSolver(Solver):
       instance: Any,
       strategy: Any,
    ) -> str:
+      """Decorate the command for the solver."""
       for plugin in self.decorators:
          cmd = plugin.decorate(cmd, instance, strategy)
       return cmd
@@ -62,6 +69,7 @@ class PluginSolver(Solver):
       output: str,
       result: "Result",
    ) -> None:
+      """Update the solver result and announce the final version."""
       for plugin in self.decorators:
          plugin.update(instance, strategy, output, result)
       for plugin in self.decorators:
@@ -72,7 +80,7 @@ class PluginSolver(Solver):
       instance: Any,
       strategy: Any,
    ) -> tuple[Any, Any]:
+      """Translate the instance and strategy for the solver."""
       for plugin in self.translators:
          (instance, strategy) = plugin.translate(instance, strategy)
       return (instance, strategy)
-

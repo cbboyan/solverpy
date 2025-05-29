@@ -1,0 +1,24 @@
+site_name: SolverPy
+site_url: https://cbboyan.github.io/solverpy/
+
+theme: 
+  name: material
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+  - autorefs: {}
+
+nav:
+  - Home: index.md
+  - Options: options.md
+  - Reference: reference.md
+
