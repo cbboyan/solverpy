@@ -20,5 +20,6 @@ plugins:
 nav:
   - Home: index.md
   - Options: options.md
-  - Reference: reference.md
+  - Documentation: api/reference.md
+
 

@@ -1,8 +1,8 @@
-# `solverpy`: Python Interface for Automated Solvers
+# Python Interface for Automated Solvers
 
 `solverpy` is a Python package providing a uniform interface to launch automated problem solvers from Python and process their outputs.  Currently supported solvers are:
 
-* E Prover [`E`](reference.md#solverpy.solver.solver)
+* E Prover [`E`][solverpy.solver.solver]
 * Vampire (solver.atp.vampire.Vampire)
 * Prover9 (solver.atp.prover9.Prover9)
 * Lash (solver.atp.lash.Lash)
@@ -43,11 +43,10 @@ The first argument is the problem filename, the second is the solver-dependent s
 
 The result is a Python `dict` with results and statistics.  The keys and values are solver-specific.  Nevertheless, the result always contains keys `status` (with the value of type `str`) and `runtime` (type `float`).
 
-> 💡 **Hint**: 
->
-> * Call `cvc5.run(p,s)` instead of `cvc5.solve(p,s)` to get the raw solver output without any processing.  
-> * Call `cvc5.command(p,s)` to output the shell command that is going to be executed to launch the solver.
->
+💡 Call `cvc5.run(p,s)` instead of `cvc5.solve(p,s)` to get the raw solver output without any processing.  
+
+💡 Call `cvc5.command(p,s)` to output the shell command that is going to be executed to launch the solver.
+
 
 ## Parallel benchmark evaluation
 

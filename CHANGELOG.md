@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2025-05-29)
+## Unreleased changes (2025-05-30)
 
+* docs: Documentation tools. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * docs: First version of web pages. [[details](https://github.com/cbboyan/solverpy/commit/e7f3244) | [browse](https://github.com/cbboyan/solverpy/tree/e7f3244)]
 * feat: Support for Z3 strategies. [[details](https://github.com/cbboyan/solverpy/commit/cfb929c) | [browse](https://github.com/cbboyan/solverpy/tree/cfb929c)]
 * fix: Fixed "out of memory" detection for Z3. [[details](https://github.com/cbboyan/solverpy/commit/966ab61) | [browse](https://github.com/cbboyan/solverpy/tree/966ab61)]
