@@ -93,7 +93,7 @@ def bitwuzla(setup: Setup) -> Setup:
 
 
 def z3(setup: Setup) -> Setup:
-   default(setup, "static", Z3_STATIC.split())
+   default(setup, "static", "")
    init(setup)
    return solver(setup, Z3)
 
