@@ -1,0 +1,612 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://cbboyan.github.io/solverpy/">
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>SolverPy</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#solverpy-python-interface-for-automated-solvers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="SolverPy" class="md-header__button md-logo" aria-label="SolverPy" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SolverPy
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="SolverPy" class="md-nav__button md-logo" aria-label="SolverPy" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SolverPy
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        Home
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-problem-solving" class="md-nav__link">
+    Single problem solving
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-benchmark-evaluation" class="md-nav__link">
+    Parallel benchmark evaluation
+  </a>
+  
+    <nav class="md-nav" aria-label="Parallel benchmark evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategies-and-strategy-ids" class="md-nav__link">
+    Strategies and strategy id's
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problems-and-benchmark-ids" class="md-nav__link">
+    Problems and benchmark id's
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experiments-example" class="md-nav__link">
+    Experiments example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="options/" class="md-nav__link">
+        Options
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-problem-solving" class="md-nav__link">
+    Single problem solving
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-benchmark-evaluation" class="md-nav__link">
+    Parallel benchmark evaluation
+  </a>
+  
+    <nav class="md-nav" aria-label="Parallel benchmark evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategies-and-strategy-ids" class="md-nav__link">
+    Strategies and strategy id's
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problems-and-benchmark-ids" class="md-nav__link">
+    Problems and benchmark id's
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experiments-example" class="md-nav__link">
+    Experiments example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="solverpy-python-interface-for-automated-solvers"><code>solverpy</code>: Python Interface for Automated Solvers</h1>
+<p><code>solverpy</code> is a Python package providing a uniform interface to launch automated problem solvers from Python and process their outputs.  Currently supported solvers are:</p>
+<ul>
+<li>E Prover <a href="reference/#solverpy.solver.solver"><code>E</code></a></li>
+<li>Vampire (solver.atp.vampire.Vampire)</li>
+<li>Prover9 (solver.atp.prover9.Prover9)</li>
+<li>Lash (solver.atp.lash.Lash)</li>
+<li>cvc5 (solver.smt.cvc5.Cvc5)</li>
+<li>Z3 (solver.smt.z3.Z3)</li>
+<li>Bitwuzla (solver.smt.bitwuzla.Bitwuzla)</li>
+</ul>
+<blockquote>
+<p>🗒️ <strong>Note</strong>: The solver binaries/libraries are not part of this Python
+package and must be installed separately.  The binaries must be (by default)
+in <code>PATH</code> or specified using <code>bin</code> parameter, if you wish to use them from
+<code>solverpy</code>.</p>
+</blockquote>
+<h2 id="installation">Installation</h2>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>solverpy
+</code></pre></div>
+<h2 id="single-problem-solving">Single problem solving</h2>
+<p>To call the solver on one problem instance, start by creating the solver object.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">solverpy.solver.smt.cvc5</span> <span class="kn">import</span> <span class="n">Cvc5</span>
+
+<span class="n">cvc5</span> <span class="o">=</span> <span class="n">Cvc5</span><span class="p">(</span><span class="s2">&quot;T5&quot;</span><span class="p">)</span>  <span class="c1"># time limit of 5 seconds</span>
+</code></pre></div>
+<p>The constructor argument is a resource limit string, in this case, a time limit <code>T</code> in seconds.  All solvers support <code>T</code> and additional resource limits might be available depending on the solver.  Multiple resource limits can be used (separated by <code>-</code>, like <code>T10-R50000</code>).  The limit string must, however, always start with <code>T</code>.</p>
+<p>Then call the <code>solve</code> method:</p>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">cvc5</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="s2">&quot;myproblem.smt2&quot;</span><span class="p">,</span> <span class="s2">&quot;--enum-inst&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The first argument is the problem filename, the second is the solver-dependent strategy description (typically command line options as a string).</p>
+<p>The result is a Python <code>dict</code> with results and statistics.  The keys and values are solver-specific.  Nevertheless, the result always contains keys <code>status</code> (with the value of type <code>str</code>) and <code>runtime</code> (type <code>float</code>).</p>
+<blockquote>
+<p>💡 <strong>Hint</strong>: </p>
+<ul>
+<li>Call <code>cvc5.run(p,s)</code> instead of <code>cvc5.solve(p,s)</code> to get the raw solver output without any processing.  </li>
+<li>Call <code>cvc5.command(p,s)</code> to output the shell command that is going to be executed to launch the solver.
+</li>
+</ul>
+</blockquote>
+<h2 id="parallel-benchmark-evaluation">Parallel benchmark evaluation</h2>
+<p>To evaluate a set of strategies on a set of benchmark problems, you just need to provide your experiment description as a Python <code>dict</code> and launch the experiments.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">solverpy.benchmark</span> <span class="kn">import</span> <span class="n">setups</span>
+
+<span class="n">mysetup</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">setups</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">mysetup</span><span class="p">)</span>
+</code></pre></div>
+<p>The experiment setup (<code>mysetup</code>) must have specific keys.  The module <code>solverpy.benchmark.setups</code> contains methods to fill in the required keys and values.</p>
+<p>You must specify at least the following:</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cores</code></td>
+<td><code>int</code></td>
+<td>number of CPU cores to use for parallel evaluation</td>
+</tr>
+<tr>
+<td><code>sidlist</code></td>
+<td><code>[str]</code></td>
+<td>list of strategies to evaluate</td>
+</tr>
+<tr>
+<td><code>bidlist</code></td>
+<td><code>[str]</code></td>
+<td>list of problems to evaluate on</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td><code>str</code></td>
+<td>the resource limit for a single solver run</td>
+</tr>
+</tbody>
+</table>
+<h3 id="strategies-and-strategy-ids">Strategies and <em>strategy id's</em></h3>
+<p>Strategies are stored in files in the directory <code>solverpy_db/strats</code> which must exist in the current working directory (the directory is adjustable by the <code>SOLVERPY_DB</code> environment variable).
+The filename of each strategy is used to reference the strategy in <code>sidlist</code> and it is called the <em>strategy id</em> (<code>sid</code>).</p>
+<p>Hence, for every <code>sid</code> in <code>sidlist</code> in <code>mysetup</code>, there must be the file <code>solverpy_db/strats/sid</code> in the current working directory.
+This file contains the strategy definition (typically command line options) to pass to the <code>solver.solve</code> method.</p>
+<h3 id="problems-and-benchmark-ids">Problems and <em>benchmark id's</em></h3>
+<p>Benchmark problem sets are represented by <em>benchark id's</em> (<code>bid</code>).  The <em>benchmark id</em> is a file path relative to the current working directory (adjustable by the <code>SOLVERPY_BENCHMARKS</code> environment variable)
+pointing either to a file or to a directory.</p>
+<p>If the path leads to a:</p>
+<ul>
+<li><code>directory</code>: Then every regular file <em>directly</em> in this directory is considered a benchmark problem.
+   Directories and hidden files are ignored and no recursive search is performed.
+   This variant is useful when you have a set of problem files, all in one directory.</li>
+<li><code>file</code>: Then the file consists of lines containing paths to corresponding problem files.
+   The paths are relative to the directory of the <code>bid</code> file.  For example, if  the <code>bid</code> is <code>myproblems/subset1</code> and this file contains (among others) the line <code>category1/problem23.smt2</code> then the problem must be placed in <code>myproblems/category1/problem23.smt2</code> (because the directory of the <code>bid</code> file is <code>myproblems</code>).
+   This variant is useful when your benchmarks are structured in subdirectories and you don't want to merge them into one directory.</li>
+</ul>
+<h3 id="experiments-example">Experiments example</h3>
+<p>Suppose you have some SMT problems in the directory <code>myproblems</code> and that you want to evaluate your cvc5 strategies <code>buzzard</code>, <code>sparrow</code>, and <code>chickadee</code>, which you have placed in the directory <code>solverpy_db/strats</code>.  You can download the archive with files for this example <a href="https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz">here</a>.</p>
+<p>You proceed as follows.  First, you create the description of your experiments in <code>mysetup</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">solverpy.benchmark</span> <span class="kn">import</span> <span class="n">setups</span>
+
+<span class="n">mysetup</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cores&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="s2">&quot;T10&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bidlist&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;myproblems&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;sidlist&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;buzzard&quot;</span><span class="p">,</span> <span class="s2">&quot;sparrow&quot;</span><span class="p">,</span> <span class="s2">&quot;chickadee&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Hint: Add <code>mysetup["options"] = ["outputs"]</code> if you want to keep raw solver output files from all solver runs.  </p>
+<p>Hint: Options are slightly more described <a href="options/">here</a>.</p>
+<p>Then you specify that you want to use cvc5 and that you wish to launch an evaluation.  These methods update <code>mysetup</code> and fill in some keys required by <code>setups.launch()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">setups</span><span class="o">.</span><span class="n">cvc5</span><span class="p">(</span><span class="n">mysetup</span><span class="p">)</span>
+<span class="n">setups</span><span class="o">.</span><span class="n">evaluation</span><span class="p">(</span><span class="n">mysetup</span><span class="p">)</span>
+</code></pre></div>
+<p>Finally, you launch the experiments.</p>
+<div class="highlight"><pre><span></span><code><span class="n">setups</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">mysetup</span><span class="p">)</span>
+</code></pre></div>
+<p>You will see the progress of the experiments on the screen.  Once finished, you will find the following subdirectories inside <code>solverpy_db</code>:</p>
+<table>
+<thead>
+<tr>
+<th>directory</th>
+<th>content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results</code></td>
+<td>Results by each strategy (<code>sid</code>) for each <code>bid</code>.  The result for each <code>sid</code> and <code>bid</code> is a JSON file (gzip-ed) with a Python dictionary <code>{problem: result}</code>.</td>
+</tr>
+<tr>
+<td><code>solved</code></td>
+<td>List of solved problem names by each strategy for each <code>bid</code>.  One per line, easy to <code>grep</code> and <code>cat</code>.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Statuses of all problems by each strategy for each <code>bid</code>.  Problem name and status at one line, TAB separated.  Easy to <code>cut</code>.</td>
+</tr>
+<tr>
+<td><code>log</code></td>
+<td>Console log for each <code>solverpy</code> experiment run.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td>Raw solver output files for each solver run (only if selected).</td>
+</tr>
+</tbody>
+</table>
+<p>Now run the script again and notice that it finished much faster.  It is because the cached results were reused and no solvers were actually launched.  So be careful and always clean the database if you want to force recompute.  Simply delete all the directories in <code>solverpy_db</code> except <code>strats</code> (see the script <code>clean_db.sh</code> in the <a href="https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz">example archive</a>).</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+      
+        
+        <a href="options/" class="md-footer__link md-footer__link--next" aria-label="Next: Options" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Options
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>
