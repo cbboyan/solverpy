@@ -19,13 +19,13 @@ class SolverPy(PluginSolver):
       assert limits.limit.startswith("T")
       self._limits: Limits = limits
       self._exitcode: int = -1
-      new = [Limiter()]
-      PluginSolver.__init__(self, plugins=plugins + new)
-
-   @property
-   def timeouts(self) -> frozenset[str]:
-      "The set of timeout statuses."
-      raise NotImplementedError()
+      self._timeouts = frozenset()
+      self._success = frozenset()
+      self._statuses = frozenset()
+      plugins = plugins + [
+         Limiter(),
+      ]
+      PluginSolver.__init__(self, plugins=plugins)
 
    #def determine(self, result) # TODO: rename
    def simulate(self, result: "Result") -> "Result | None":
@@ -55,17 +55,14 @@ class SolverPy(PluginSolver):
       # the result is applicable without changes
       return result
 
-   #def simulate(self, result):
-   #   "Simulate run from the past result."
-   #   if result["status"] in self.timeouts:
-   #      # the cached result is timeout
-   #         # recompute since we have more time
-   #         return None
-   #   else:
-   #      # the cached result is solved
-   #         # simulated timeout
-   #         return dict(result,
-   #                     status="TIMEOUT",
-   #                     runtime=self.timeout)
-   #   # the result is applicable without changes
-   #   return result
+   @property
+   def timeouts(self) -> frozenset[str]:
+      return self._timeouts
+
+   @property
+   def success(self) -> frozenset[str]:
+      return self._success
+
+   @property
+   def statuses(self) -> frozenset[str]:
+      return self._statuses

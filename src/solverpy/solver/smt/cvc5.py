@@ -1,7 +1,9 @@
 from typing import Any, TYPE_CHECKING
 import re
 
-from ..smtsolver import SmtSolver
+from ..shellsolver import ShellSolver
+from ..plugins.status.smt import Smt
+from ..plugins.shell.time import Time
 from ...tools import patterns, human
 
 if TYPE_CHECKING:
@@ -41,7 +43,7 @@ CVC5_KEYS = [
 CVC5_TIMEOUT = re.compile(r"cvc5 interrupted by (timeout)")
 
 
-class Cvc5(SmtSolver):
+class Cvc5(ShellSolver):
 
    def __init__(
       self,
@@ -50,9 +52,14 @@ class Cvc5(SmtSolver):
       static: str = CVC5_STATIC,
       plugins: list["Plugin"] = [],
       keys: list[str] = CVC5_KEYS,
+      complete: bool = True,
    ):
       cmd = f"{binary} {static}"
-      SmtSolver.__init__(
+      plugins = plugins + [
+         Time(),
+         Smt(complete=complete),
+      ]
+      ShellSolver.__init__(
          self,
          cmd,
          limit,
@@ -81,4 +88,3 @@ class Cvc5(SmtSolver):
       if timeouted:
          result["status"] = timeouted  # timeouted == "timeout"
       return result
-

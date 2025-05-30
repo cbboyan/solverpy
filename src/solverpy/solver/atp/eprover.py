@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING
 import re
 
-from ..tptpsolver import TptpSolver
+from ..shellsolver import ShellSolver
 from ...tools import patterns, human
+from ..plugins.status.tptp import Tptp
+from ..plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
@@ -36,7 +38,7 @@ E_TABLE = {
 }
 
 
-class E(TptpSolver):
+class E(ShellSolver):
 
    def __init__(
       self,
@@ -47,7 +49,11 @@ class E(TptpSolver):
       plugins: list["Plugin"] = [],
    ):
       cmd = f"{binary} {static}"
-      TptpSolver.__init__(
+      plugins = plugins + [
+         Time(),
+         Tptp(complete=complete),
+      ]
+      ShellSolver.__init__(
          self,
          cmd,
          limit,

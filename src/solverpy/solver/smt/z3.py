@@ -2,7 +2,6 @@ from typing import Pattern, TYPE_CHECKING
 import re
 
 from ..stdinsolver import StdinSolver
-from ..smtsolver import SMT_ALL, SMT_OK, SMT_TIMEOUT
 from ..plugins.status.smt import Smt
 from ..plugins.shell.time import Time
 from ...tools import patterns, human
@@ -17,7 +16,7 @@ Z3_STATIC: str = "-smt2 -st"
 
 Z3_BUILDER: "LimitBuilder" = {
    "T": "-T:%s",
-   "M": lambda x: f"-memory:{int(1024*float(x))}",
+   "M": lambda giga: f"-memory:{int(1024*float(giga))}",
 }
 
 Z3_PAT: Pattern = re.compile(
@@ -39,9 +38,13 @@ class Z3(StdinSolver):
       binary: str = Z3_BINARY,
       static: str = "",
       plugins: list["Plugin"] = [],
+      complete: bool = True,
    ):
       cmd = f"{binary} {Z3_STATIC}"
-      plugins = plugins + [Time(), Smt()]
+      plugins = plugins + [
+         Time(),
+         Smt(complete=complete),
+      ]
       StdinSolver.__init__(
          self,
          cmd,
@@ -51,7 +54,7 @@ class Z3(StdinSolver):
          1,
          static,
          True,
-         True
+         True,
       )
 
    def process(self, output: str) -> "Result":
@@ -60,15 +63,4 @@ class Z3(StdinSolver):
       if re.search(Z3_MEMOUT, output):
          result["status"] = "memout"
       return result
-   
-   def valid(self, result: "Result") -> bool:
-      return super().valid(result) and result["status"] in SMT_ALL
-
-   @property
-   def success(self) -> frozenset[str]:
-      return SMT_OK
-
-   @property
-   def timeouts(self) -> frozenset[str]:
-      return SMT_TIMEOUT
 

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 import re
 
 from ..stdinsolver import StdinSolver
-from ..tptpsolver import TPTP_OK, INC_OK, TPTP_ALL, TPTP_TIMEOUT
+from ..plugins.status.tptp import TPTP_OK, TPTP_INC_OK, TPTP_ALL, TPTP_TIMEOUT
 from ...tools import patterns, human
 from ..plugins.shell.time import Time
 
@@ -98,7 +98,7 @@ class Prover9(StdinSolver):
 
    @property
    def success(self) -> frozenset[str]:
-      return TPTP_OK if self._complete else INC_OK
+      return TPTP_OK if self._complete else TPTP_INC_OK
 
    @property
    def timeouts(self) -> frozenset[str]:

@@ -1,8 +1,10 @@
 from typing import Pattern, TYPE_CHECKING
 import re
 
-from ..smtsolver import SmtSolver
+from ..shellsolver import ShellSolver
 from ...tools import patterns, human
+from ..plugins.status.smt import Smt
+from ..plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
@@ -40,7 +42,7 @@ BWZ_PAT: Pattern = re.compile(
 )
 
 
-class Bitwuzla(SmtSolver):
+class Bitwuzla(ShellSolver):
 
    def __init__(
       self,
@@ -48,9 +50,14 @@ class Bitwuzla(SmtSolver):
       binary: str = BWZ_BINARY,
       static: str = BWZ_STATIC,
       plugins: list["Plugin"] = [],
+      complete: bool = True,
    ):
       cmd = f"{binary} {static}"
-      SmtSolver.__init__(
+      plugins = plugins + [
+         Time(),
+         Smt(complete=complete),
+      ]
+      ShellSolver.__init__(
          self,
          cmd,
          limit,
