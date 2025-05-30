@@ -36,7 +36,7 @@ SMT_INC_OK = SMT_OK - SMT_INCOMPLETE
 class Smt(Decorator):
 
    def __init__(self, complete=True, **kwargs):
-      Decorator.__init__(self, **kwargs)
+      Decorator.__init__(self, complete=complete, **kwargs)
       self._complete = complete
 
    def register(self, solver: "SolverPy"):

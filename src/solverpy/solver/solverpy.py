@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from .pluginsolver import PluginSolver
 from .plugins.shell.limits import Limits
@@ -15,6 +15,7 @@ class SolverPy(PluginSolver):
       self,
       limits: Limits,
       plugins: list["Plugin"] = [],
+      **kwargs: Any,
    ):
       assert limits.limit.startswith("T")
       self._limits: Limits = limits
@@ -25,10 +26,9 @@ class SolverPy(PluginSolver):
       plugins = plugins + [
          Limiter(),
       ]
-      PluginSolver.__init__(self, plugins=plugins)
+      PluginSolver.__init__(self, plugins=plugins, **kwargs)
 
-   #def determine(self, result) # TODO: rename
-   def simulate(self, result: "Result") -> "Result | None":
+   def determine(self, result: "Result") -> "Result | None":
       "Simulate run from the past result."
       if result["status"] in self.timeouts:
          #if result["status"] not in self.success: # we might want this?

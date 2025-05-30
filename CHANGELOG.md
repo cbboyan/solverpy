@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-05-30)
 
-* refactor: Removed SmtSolver and TptpSolver. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: Result simulation [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: Removed SmtSolver and TptpSolver. [[details](https://github.com/cbboyan/solverpy/commit/d971ef5) | [browse](https://github.com/cbboyan/solverpy/tree/d971ef5)]
 * docs: Documentation tools. [[details](https://github.com/cbboyan/solverpy/commit/86142ef) | [browse](https://github.com/cbboyan/solverpy/tree/86142ef)]
 * docs: First version of web pages. [[details](https://github.com/cbboyan/solverpy/commit/e7f3244) | [browse](https://github.com/cbboyan/solverpy/tree/e7f3244)]
 * feat: Support for Z3 strategies. [[details](https://github.com/cbboyan/solverpy/commit/cfb929c) | [browse](https://github.com/cbboyan/solverpy/tree/cfb929c)]
