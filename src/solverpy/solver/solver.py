@@ -52,11 +52,12 @@ class Solver(SolverPyObj):
               pair, or custom). 
           strategy: solver strategy (filename, sid, or custom).
 
-      Returns: output and result
+      Returns: the result
       """
       output = self.run(instance, strategy)
+      self._output = output
       result = self.process(output)
-      return (output, result)
+      return result
 
    def valid(self, result: "Result") -> bool:
       """

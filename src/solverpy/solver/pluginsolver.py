@@ -33,7 +33,8 @@ class PluginSolver(Solver):
       solver result and announce the final version. Return the updated
       result.
       """
-      (output, result) = super().solve(instance, strategy)
+      result = Solver.solve(self, instance, strategy)
+      output = self._output
       self.update(instance, strategy, output, result)
       if not self.valid(result):
          lines = output.split("\n")
