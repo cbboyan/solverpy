@@ -1,5 +1,6 @@
-from typing import Pattern, TYPE_CHECKING
+from typing import Any, Pattern, TYPE_CHECKING
 import re
+import logging
 
 from ..stdinsolver import StdinSolver
 from ..plugins.status.smt import Smt
@@ -9,6 +10,8 @@ from ...tools import patterns, human
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
    from ...tools.typing import LimitBuilder, Result
+
+logger = logging.getLogger(__name__)
 
 Z3_BINARY = "z3"
 
@@ -26,6 +29,16 @@ Z3_PAT: Pattern = re.compile(
 
 Z3_MEMOUT: Pattern = re.compile(
    r'error "out of memory"',
+   flags=re.MULTILINE,
+)
+
+Z3_CHECKSAT = re.compile(
+   r"\(check-sat.*$",
+   flags=re.MULTILINE,
+)
+
+Z3_USING = re.compile(
+   r"^;USING: (.*)$",
    flags=re.MULTILINE,
 )
 
@@ -64,3 +77,20 @@ class Z3(StdinSolver):
          result["status"] = "memout"
       return result
 
+   def input(self, instance: Any, strategy: Any) -> bytes:
+      (instance, strategy) = self.translate(instance, strategy)
+      inputstr = self._static.encode()
+      inputstr += strategy.encode()
+      inputstr += b"\n"
+      mo = Z3_USING.search(strategy)
+      if mo:
+         check = f"(check-sat-using {mo.group(1)})"
+         in0 = open(instance, "r").read()
+         (in0, count) = Z3_CHECKSAT.subn(check, in0)
+         if count != 1:
+            logger.warning(f"Unexpected number ({count}) of 'check-sat' patterns in instance '{instance}' for strategy 'strategy'.")
+         inputstr += in0.encode()
+      else:
+         inputstr += open(instance, "rb").read()
+      #open(f"/home/yan/tmp.smt2", "wb").write(inputstr)
+      return inputstr
