@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2025-08-22)
 
-* fix: Fixed model building with `gen` features. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fixed model building with `gen` features. [[details](https://github.com/cbboyan/solverpy/commit/6118bdc) | [browse](https://github.com/cbboyan/solverpy/tree/6118bdc)]
 * feat: Support of tacticals for Z3 strategies. [[details](https://github.com/cbboyan/solverpy/commit/b14db3d) | [browse](https://github.com/cbboyan/solverpy/tree/b14db3d)]
 * refactor: save raw output solver [[details](https://github.com/cbboyan/solverpy/commit/caa8da5) | [browse](https://github.com/cbboyan/solverpy/tree/caa8da5)]
 * refactor: Result simulation [[details](https://github.com/cbboyan/solverpy/commit/45fd08c) | [browse](https://github.com/cbboyan/solverpy/tree/45fd08c)]

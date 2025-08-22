@@ -32,7 +32,6 @@ def exists(f_in: str) -> bool:
 
 
 def size(f_in: str) -> int:
-   logger.info(f"XXX: {f_in}")
    if iscompressed(f_in):
       return sum(os.path.getsize(f) for f in datafiles(f_in))
    else:
