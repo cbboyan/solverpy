@@ -80,7 +80,7 @@ class AutotuneListener(Listener):
 
    #def tried(self, score, acc, trainacc, duration):
    def tried(self, stats: dict[str, Any]) -> None:
-      assert self.table
+      assert self.table is not None
       self.table.append((
          self.it,
          self.values,

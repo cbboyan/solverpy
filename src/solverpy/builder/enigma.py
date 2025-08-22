@@ -130,16 +130,27 @@ class Enigma(EnigmaModel):
       sel = trains["sel_features"]
       gen = trains["gen_features"]
       trains0 = trains
+      devels0 = devels
       if sel and gen:
          # split the multi train data if it is the case
          assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
          trains0 = Setup(trains, trains=trains["trains"]._sel)
-      self._sel = EnigmaSel(trains0, devels, tuneargs) if sel else None
+         if devels:
+            assert "trains" in devels
+            assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
+            devels0 = Setup(trains, trains=devels["trains"]._sel)
+      self._sel = EnigmaSel(trains0, devels0, tuneargs) if sel else None
+
       trains0 = trains
+      devels0 = devels
       if sel and gen:
          assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
          trains0 = Setup(trains, trains=trains["trains"]._gen)
-      self._gen = EnigmaGen(trains0, devels, tuneargs) if gen else None
+         if devels:
+            assert "trains" in devels
+            assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
+            devels0 = Setup(trains, trains=devels["trains"]._gen)
+      self._gen = EnigmaGen(trains0, devels0, tuneargs) if gen else None
 
    def reset(self, dataname: str) -> None:
       if self._sel:
