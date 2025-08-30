@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-08-30)
 
-* fix: Fix memory leaks by running external process. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Allow separate tuning params for gen-filter. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fix memory leaks by running external process. [[details](https://github.com/cbboyan/solverpy/commit/c8e6630) | [browse](https://github.com/cbboyan/solverpy/tree/c8e6630)]
 * fix: Fixed model building with `gen` features. [[details](https://github.com/cbboyan/solverpy/commit/6118bdc) | [browse](https://github.com/cbboyan/solverpy/tree/6118bdc)]
 * feat: Support of tacticals for Z3 strategies. [[details](https://github.com/cbboyan/solverpy/commit/b14db3d) | [browse](https://github.com/cbboyan/solverpy/tree/b14db3d)]
 * refactor: save raw output solver [[details](https://github.com/cbboyan/solverpy/commit/caa8da5) | [browse](https://github.com/cbboyan/solverpy/tree/caa8da5)]

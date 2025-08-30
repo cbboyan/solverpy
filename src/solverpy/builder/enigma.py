@@ -116,13 +116,14 @@ class Enigma(EnigmaModel):
       self,
       trains: Setup,
       devels: (Setup | None) = None,
-      tuneargs: (dict[str, Any] | None) = None,
+      tunesel: (dict[str, Any] | None) = None,
+      tunegen: (dict[str, Any] | None) = None,
    ):
       AutoTuner.__init__(
          self,
          trains,
          devels,
-         tuneargs,
+         tunesel,
       )
       assert "trains" in trains
       assert "sel_features" in trains
@@ -139,7 +140,7 @@ class Enigma(EnigmaModel):
             assert "trains" in devels
             assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
             devels0 = Setup(trains, trains=devels["trains"]._sel)
-      self._sel = EnigmaSel(trains0, devels0, tuneargs) if sel else None
+      self._sel = EnigmaSel(trains0, devels0, tunesel) if sel else None
 
       trains0 = trains
       devels0 = devels
@@ -150,7 +151,7 @@ class Enigma(EnigmaModel):
             assert "trains" in devels
             assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
             devels0 = Setup(trains, trains=devels["trains"]._gen)
-      self._gen = EnigmaGen(trains0, devels0, tuneargs) if gen else None
+      self._gen = EnigmaGen(trains0, devels0, tunegen) if gen else None
 
    def reset(self, dataname: str) -> None:
       if self._sel:
