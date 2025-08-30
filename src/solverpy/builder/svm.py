@@ -8,6 +8,7 @@ import scipy
 from sklearn.datasets import load_svmlight_file, dump_svmlight_file
 
 from ..tools import human
+from ..tools.extprocess import extprocess
 from ..benchmark.reports import progress
 
 if TYPE_CHECKING:
@@ -72,6 +73,7 @@ def save(data: "spmatrix", label: "ndarray", f_in: str) -> None:
    logger.info(f"Saved trains: {f_in}")
 
 
+@extprocess
 def compress(f_in: str, keep: bool = False) -> None:
    logger.info(
       f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
@@ -89,7 +91,7 @@ def compress(f_in: str, keep: bool = False) -> None:
    logger.info(
       f"Trains compressed to {human.humanbytes(size(f_in))}.\n{report}")
 
-
+@extprocess
 def decompress(f_in: str, keep: bool = True) -> None:
    logger.info(
       f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
@@ -110,14 +112,14 @@ def decompress(f_in: str, keep: bool = True) -> None:
    logger.info(
       f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
-
+@extprocess
 def merge(
    f_in1: (str | None) = None,
    f_in2: (str | None) = None,
    data1: (tuple["spmatrix", "ndarray"] | None) = None,
    data2: (tuple["spmatrix", "ndarray"] | None) = None,
    f_out: (str | None) = None,
-) -> tuple["spmatrix", "ndarray"]:
+) -> tuple["spmatrix", "ndarray"] | None:
    assert data1 or f_in1
    assert data2 or f_in2
    if f_in1 and f_in2:
@@ -132,6 +134,7 @@ def merge(
    l = numpy.concatenate((l1, l2))
    if f_out:
       save(d, l, f_out)
+      return None
    return (d, l)
 
 

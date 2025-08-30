@@ -1,4 +1,5 @@
 import logging
+import gc
 
 from .. import launcher, db
 from ...tools import log
@@ -123,6 +124,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup:
    if "loops" in setup:
       assert "it" in setup
       while setup["it"] < setup["loops"]:
+         gc.collect()
          log.ntfy(setup, f"solverpy: iter #{setup['it']}")
          do_iter(devels)
          if devels and (setup['it'] + 1 == setup["loops"]):

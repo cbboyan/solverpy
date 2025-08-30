@@ -97,7 +97,7 @@ class EnigmaTrainsDebug(Outputs):
       if not (output and self.solver.solved(result)):
          return
       vectors = samples(output, self._variant)
-      if samples:
+      if vectors:
          self.write(instance, strategy, vectors)
 
 
