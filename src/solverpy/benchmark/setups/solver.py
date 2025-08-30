@@ -31,9 +31,12 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
       assert "sel_features" in setup
       default(setup, "gen_features", None)
       assert "gen_features" in setup
+      default(setup, "posneg_ratio", 0)
+      assert "posneg_ratio" in setup
       sel = setup["sel_features"]
       gen = setup["gen_features"]
       dataname = setup["dataname"]
+      ratio = setup["posneg_ratio"]
       static.append(f"--training-examples={setup['e_training_examples']}")
       trains: "SvmTrains"
       if sel:
@@ -41,11 +44,11 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
       if gen:
          static.append(f'--enigmatic-gen-features="{gen}"')
       if sel and gen:
-         trains = EnigmaMultiTrains(dataname, sel, gen)
+         trains = EnigmaMultiTrains(dataname, sel, gen, ratio)
       elif sel:
-         trains = EnigmaTrains(dataname, sel, "sel")
+         trains = EnigmaTrains(dataname, sel, "sel", ratio)
       elif gen:
-         trains = EnigmaTrains(dataname, gen, "gen")
+         trains = EnigmaTrains(dataname, gen, "gen", ratio)
       else:
          raise ValueError(
             "`sel_features` or `gen_features` must be provided in setup to generate trains."
@@ -56,9 +59,9 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
       flatten = "flatten" in setup["options"]
       if "debug-trains" in setup["options"]:
          if sel:
-            plugs.append(EnigmaTrainsDebug(sel, "sel", flatten))
+            plugs.append(EnigmaTrainsDebug(sel, "sel", flatten, ratio))
          if gen:
-            plugs.append(EnigmaTrainsDebug(gen, "gen", flatten))
+            plugs.append(EnigmaTrainsDebug(gen, "gen", flatten, ratio))
    default(setup, "static", static)
    return solver(setup, E)
 

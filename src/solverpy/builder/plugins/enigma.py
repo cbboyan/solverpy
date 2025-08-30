@@ -1,6 +1,7 @@
 from typing import Any
 import os
 import re
+import random
 
 from .svm import SvmTrains
 from .multi import MultiTrains
@@ -17,9 +18,16 @@ TRANS = str.maketrans("", "", "[(:,)]=")
 
 class EnigmaTrains(SvmTrains):
 
-   def __init__(self, dataname: str, features: str, variant: str):
+   def __init__(
+      self,
+      dataname: str,
+      features: str,
+      variant: str,
+      ratio: float = 0,
+   ):
       self._features = features
       self._variant = variant
+      self._ratio = ratio
       SvmTrains.__init__(self, dataname)
 
    def featurepath(self) -> str:
@@ -42,22 +50,34 @@ class EnigmaTrains(SvmTrains):
       result: dict[str, Any],
    ) -> str:
       del instance, strategy, result  # unused arguments
-      return samples(output, self._variant)
+      return samples(output, self._variant, self._ratio)
 
 
 class EnigmaMultiTrains(MultiTrains):
 
-   def __init__(self, dataname: str, sel: str, gen: str):
+   def __init__(
+      self,
+      dataname: str,
+      sel: str,
+      gen: str,
+      ratio: float = 0,
+   ):
       MultiTrains.__init__(self, dataname)
-      self._sel = EnigmaTrains(dataname, sel, "sel")
-      self._gen = EnigmaTrains(dataname, gen, "gen")
+      self._sel = EnigmaTrains(dataname, sel, "sel", ratio)
+      self._gen = EnigmaTrains(dataname, gen, "gen", ratio)
       self.dispatch(self._sel)
       self.dispatch(self._gen)
 
 
 class EnigmaTrainsDebug(Outputs):
 
-   def __init__(self, features: str, variant: str, flatten: bool = True):
+   def __init__(
+      self,
+      features: str,
+      variant: str,
+      flatten: bool = True,
+      ratio: float = 0,
+   ):
       Outputs.__init__(self, flatten)
       self._path = os.path.join(
          bids.dbpath(NAME),
@@ -65,6 +85,7 @@ class EnigmaTrainsDebug(Outputs):
          f"{variant}_{featurepath(features)}",
       )
       self._variant = variant
+      self._ratio = ratio
 
    def path(
       self,
@@ -96,20 +117,30 @@ class EnigmaTrainsDebug(Outputs):
    ) -> None:
       if not (output and self.solver.solved(result)):
          return
-      vectors = samples(output, self._variant)
+      vectors = samples(output, self._variant, self._ratio)
       if vectors:
          self.write(instance, strategy, vectors)
 
 
-def samples(output: str, variant: str) -> str:
+def samples(output: str, variant: str, ratio: float = 0) -> str:
    assert variant in ["sel", "gen"]
    pattern = SEL if variant == "sel" else GEN
    vectors = pattern.findall(output)
    vectors = [x[7:] for x in vectors]  # NOTE: this also removes the sign [+-]
+   if ratio != 0:
+      pos = [x for x in vectors if x.startswith("1")]
+      neg = [x for x in vectors if x.startswith("0")]
+      if (ratio > 0) and (len(pos) * ratio < len(neg)):
+         # filter negative samples
+         neg = random.sample(neg, int(len(pos) * ratio))
+         vectors = pos + neg
+      if (ratio < 0) and (len(neg) * -ratio < len(pos)):
+         # filter positive samples
+         pos = random.sample(pos, int(len(neg) * -ratio))
+         vectors = pos + neg
    if vectors: vectors.append("")  # new line at the end
    return "\n".join(vectors) if vectors else ""
 
 
 def featurepath(features: str) -> str:
    return features.translate(TRANS)
-

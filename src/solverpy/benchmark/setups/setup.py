@@ -44,4 +44,5 @@ class Setup(TypedDict, total=False):
    e_training_examples: str
    gen_features: str
    sel_features: str
+   posneg_ratio: float
 
