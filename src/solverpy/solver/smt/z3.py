@@ -38,7 +38,7 @@ Z3_CHECKSAT = re.compile(
 )
 
 Z3_USING = re.compile(
-   r"^;USING: (.*)$",
+   r"^;(\(check-sat-using .*)$",
    flags=re.MULTILINE,
 )
 
@@ -84,13 +84,13 @@ class Z3(StdinSolver):
       inputstr += b"\n"
       mo = Z3_USING.search(strategy)
       if mo:
-         check = f"(check-sat-using {mo.group(1)})"
+         check = mo.group(1)
          in0 = open(instance, "r").read()
          (in0, count) = Z3_CHECKSAT.subn(check, in0)
          if count != 1:
-            logger.warning(f"Unexpected number ({count}) of 'check-sat' patterns in instance '{instance}' for strategy 'strategy'.")
+            logger.warning(f"Unexpected number ({count}) of 'check-sat' patterns in instance '{instance}' for strategy '{strategy}'.")
          inputstr += in0.encode()
       else:
          inputstr += open(instance, "rb").read()
-      #open(f"/home/yan/tmp.smt2", "wb").write(inputstr)
+      #open(f"/tmp/solverpy-tmp.smt2", "wb").write(inputstr)
       return inputstr

@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2025-08-30)
 
-* feat: Filtering of negative samples (forgetting). [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Filtering of negative samples (forgetting). [[details](https://github.com/cbboyan/solverpy/commit/11262b1) | [browse](https://github.com/cbboyan/solverpy/tree/11262b1)]
 * feat: Allow separate tuning params for gen-filter. [[details](https://github.com/cbboyan/solverpy/commit/139cb1a) | [browse](https://github.com/cbboyan/solverpy/tree/139cb1a)]
 * fix: Fix memory leaks by running external process. [[details](https://github.com/cbboyan/solverpy/commit/c8e6630) | [browse](https://github.com/cbboyan/solverpy/tree/c8e6630)]
 * fix: Fixed model building with `gen` features. [[details](https://github.com/cbboyan/solverpy/commit/6118bdc) | [browse](https://github.com/cbboyan/solverpy/tree/6118bdc)]
