@@ -17,8 +17,21 @@ logger = logging.getLogger(__name__)
 class Trains(Decorator):
 
    def __init__(self, dataname: str, filename: str = "train.in"):
+      Decorator.__init__(
+         self,
+         pid="trains",
+         dataname=dataname,
+         filename=filename,
+      )
       self._lock = multiprocessing.Manager().Lock()
+      self._enabled = True
       self.reset(dataname, filename)
+
+   def enable(self):
+      self._enabled = True
+
+   def disable(self):
+      self._enabled = False
 
    def reset(
       self,
@@ -71,7 +84,7 @@ class Trains(Decorator):
       strategy: str,
       samples: str,
    ) -> None:
-      if not samples:
+      if not samples or not self._enabled:
          return
       self._lock.acquire()
       try:
@@ -89,6 +102,5 @@ class Trains(Decorator):
       samples: str,
    ):
       "Save optional statistics."
-      del instance, strategy, samples # unused arguments
+      del instance, strategy, samples  # unused arguments
       pass
-

@@ -50,6 +50,8 @@ class EnigmaTrains(SvmTrains):
       result: dict[str, Any],
    ) -> str:
       del instance, strategy, result  # unused arguments
+      if not self._enabled:
+         return ""
       return samples(output, self._variant, self._ratio)
 
 

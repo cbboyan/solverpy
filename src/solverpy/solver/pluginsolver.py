@@ -85,3 +85,17 @@ class PluginSolver(Solver):
       for plugin in self.translators:
          (instance, strategy) = plugin.translate(instance, strategy)
       return (instance, strategy)
+
+   def call(
+      self,
+      pid: str,
+      method: str,
+      *args,
+      **kwargs,
+   ):
+      for plugin in self.translators + self.decorators:
+         if plugin.id == pid and hasattr(plugin, method):
+            handler = getattr(plugin, method)
+            handler(*args, **kwargs)
+         else:
+            logger.warning(f"Unknown method {method} of plugin {pid}")
