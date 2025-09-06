@@ -6,7 +6,7 @@ import logging
 from .builder import Builder
 from .autotune import autotune
 from ..benchmark.reports import progress
-from ..benchmark.setups.setup import Setup
+from ..setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 

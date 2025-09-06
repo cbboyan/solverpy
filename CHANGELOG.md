@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-09-06)
 
-* fix: Fixed looping without new trains. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: Major refactor of setups and evaluation. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fixed looping without new trains. [[details](https://github.com/cbboyan/solverpy/commit/b7e7ee2) | [browse](https://github.com/cbboyan/solverpy/tree/b7e7ee2)]
 * feat: Implemented call-by-id for plugins. [[details](https://github.com/cbboyan/solverpy/commit/9ee188d) | [browse](https://github.com/cbboyan/solverpy/tree/9ee188d)]
 * feat: Filtering of negative samples (forgetting). [[details](https://github.com/cbboyan/solverpy/commit/11262b1) | [browse](https://github.com/cbboyan/solverpy/tree/11262b1)]
 * feat: Allow separate tuning params for gen-filter. [[details](https://github.com/cbboyan/solverpy/commit/139cb1a) | [browse](https://github.com/cbboyan/solverpy/tree/139cb1a)]

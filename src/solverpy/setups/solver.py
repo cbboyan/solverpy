@@ -1,18 +1,17 @@
 from typing import TYPE_CHECKING
 import logging
 
-from ...solver.atp.eprover import E_STATIC, E
-from ...solver.atp.prover9 import Prover9
-from ...solver.atp.vampire import Vampire
-from ...builder.plugins import *
-from ...solver.smt import Cvc5, Z3, Bitwuzla
-from ...solver.smt.cvc5 import CVC5_STATIC
-from ...solver.smt.z3 import Z3_STATIC
+from ..solver.atp.eprover import E_STATIC, E
+from ..solver.atp.prover9 import Prover9
+from ..solver.atp.vampire import Vampire
+from ..builder.plugins import *
+from ..solver.smt import Cvc5, Z3, Bitwuzla
+from ..solver.smt.cvc5 import CVC5_STATIC
 from .common import default, init, solver
 from .setup import Setup
 
 if TYPE_CHECKING:
-   from ...builder.plugins.svm import SvmTrains
+   from ..builder.plugins.svm import SvmTrains
 
 logger = logging.getLogger(__name__)
 

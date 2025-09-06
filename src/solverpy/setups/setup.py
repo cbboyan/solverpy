@@ -1,11 +1,11 @@
 from typing import TypedDict, TYPE_CHECKING
 
 if TYPE_CHECKING:
-   from ..db import DB
-   from ...builder.builder import Builder
-   from ...solver.solverpy import SolverPy
-   from ...solver.plugins.plugin import Plugin
-   from ...builder.plugins.svm import SvmTrains
+   from ..benchmark.db import DB
+   from ..builder.builder import Builder
+   from ..solver.solverpy import SolverPy
+   from ..solver.plugins.plugin import Plugin
+   from ..builder.plugins.svm import SvmTrains
 
 
 class Setup(TypedDict, total=False):

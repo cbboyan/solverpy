@@ -1,12 +1,12 @@
 from typing import Any, Callable, TYPE_CHECKING
 import logging
 
-from ...builder.cvc5ml import Cvc5ML
-from ...builder.enigma import Enigma
+from ..builder.cvc5ml import Cvc5ML
+from ..builder.enigma import Enigma
 from .setup import Setup
 
 if TYPE_CHECKING:
-   from ...builder.builder import Builder
+   from ..builder.builder import Builder
 
 logger = logging.getLogger(__name__)
 

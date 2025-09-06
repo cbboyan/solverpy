@@ -5,7 +5,7 @@ import logging
 from .builder import NAME
 from .autotuner import AutoTuner
 from ..benchmark.path import sids, bids
-from ..benchmark.setups.setup import Setup
+from ..setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 

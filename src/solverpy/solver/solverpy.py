@@ -28,7 +28,7 @@ class SolverPy(PluginSolver):
       ]
       PluginSolver.__init__(self, plugins=plugins, **kwargs)
 
-   def determine(self, result: "Result") -> "Result | None":
+   def simulate(self, result: "Result") -> "Result | None":
       "Simulate run from the past result."
       if result["status"] in self.timeouts:
          #if result["status"] not in self.success: # we might want this?

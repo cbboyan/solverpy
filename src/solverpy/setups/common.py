@@ -1,11 +1,11 @@
 from typing import Any, TYPE_CHECKING
 import logging
 
-from ...solver import plugins
+from ..solver import plugins
 from .setup import Setup
 
 if TYPE_CHECKING:
-   from ...tools.typing import SolverMaker
+   from ..tools.typing import SolverMaker
 
 logger = logging.getLogger(__name__)
 

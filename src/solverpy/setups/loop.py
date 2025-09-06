@@ -1,10 +1,11 @@
 import logging
 import gc
 
-from .. import launcher, db
-from ...tools import log
+from ..benchmark import db
+from ..benchmark import evaluation as evaluator
+from ..tools import log
 from .common import default
-from ...builder.builder import Builder
+from ..builder.builder import Builder
 from .setup import Setup
 
 logger = logging.getLogger(__name__)
@@ -106,7 +107,7 @@ def oneloop(setup: Setup) -> Setup:
       f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> "
    )
    if (it > 0) or ("start_dataname" not in setup):
-      launcher.launch(**setup)
+      evaluator.launch(**setup)
       trains_compress(setup)
       trains_merge(setup)
    elif "trains" in setup:
@@ -131,7 +132,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup:
       oneloop(col)
 
    log.ntfy(setup, "solverpy: init")
-   launcher.init(setup)
+   evaluator.init(setup)
    do_loop(devels)
    do_loop(setup)
    if "loops" in setup:

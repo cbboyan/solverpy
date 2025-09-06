@@ -37,7 +37,7 @@ class Jsons(CachedProvider):
    ) -> (dict[str, Any] | None):
       if task.problem in self.cache:
          result = self.cache[task.problem]
-         return task.solver.determine(result)
+         return task.solver.simulate(result)
       return None
 
    def store(
