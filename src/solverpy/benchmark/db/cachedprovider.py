@@ -40,7 +40,7 @@ class CachedProvider(Provider):
          logger.warning("empty cache commit")
          return
       if self._uptodate:
-         logger.debug(f"commit skipped; cache {self} is up-to-date")
+         #logger.debug(f"commit skipped; cache {self} is up-to-date")
          return
       ext = ".gz" if self.compress else ""
       f = f"{self.cachepath()}{ext}"

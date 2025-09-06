@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from .task import Task
 
 if TYPE_CHECKING:
@@ -14,17 +14,21 @@ class SolverTask(Task):
       bid: str,
       sid: str,
       problem: str,
+      calls: list[tuple[str, str, Any, Any]] = [],
    ):
       Task.__init__(self)
       self.solver = solver
       self.bid = bid
       self.sid = sid
       self.problem = problem
+      self._calls = calls
 
    def __str__(self) -> str:
       return f"{self.solver}:{self.sid} @ {self.bid} / {self.problem}"
 
    def run(self) -> "Result":
+      for (pid, method, args, kwargs) in self._calls:
+         self.solver.call(pid, method, *args, **kwargs)
       return self.solver.solve(self.instance, self.strategy)
 
    def status(self, result: "Result") -> bool | None:

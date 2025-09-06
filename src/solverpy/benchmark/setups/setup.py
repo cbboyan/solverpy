@@ -40,6 +40,8 @@ class Setup(TypedDict, total=False):
    trains: "SvmTrains"
    previous_trains: str
    plugins: list["Plugin"]
+   max_proofs: int
+   proofs: (dict[str, int] | None)
 
    e_training_examples: str
    gen_features: str

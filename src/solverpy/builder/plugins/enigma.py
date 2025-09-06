@@ -67,6 +67,8 @@ class EnigmaMultiTrains(MultiTrains):
       MultiTrains.__init__(self, dataname)
       self._sel = EnigmaTrains(dataname, sel, "sel", ratio)
       self._gen = EnigmaTrains(dataname, gen, "gen", ratio)
+      assert self._sel.id == self._gen.id == "trains"
+      self._id = "trains"
       self.dispatch(self._sel)
       self.dispatch(self._gen)
 

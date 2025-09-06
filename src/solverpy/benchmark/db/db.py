@@ -38,7 +38,7 @@ class DB(SolverPyObj):
 
    def commit(self) -> None:
       for key in self.loaded:
-         logger.debug(f"db commit: {key}")
+         #logger.debug(f"db commit: {key}")
          for provider in self.loaded[key]:
             provider.commit()
 

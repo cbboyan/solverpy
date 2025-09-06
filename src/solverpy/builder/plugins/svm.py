@@ -17,8 +17,15 @@ class SvmTrains(Trains):
       self.info.pos = 0
       self.info.neg = 0
 
-   def stats(self, instance: tuple[str, str], strategy: str,
-             samples: str) -> None:
+   def exists(self) -> bool:
+      return svm.exists(self.path())
+
+   def stats(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+      samples: str,
+   ) -> None:
       count = samples.count("\n")
       s0 = samples[0]
       pos = samples.count("\n1 ") + (1 if s0 == "1" else 0)
@@ -35,6 +42,8 @@ class SvmTrains(Trains):
       )
       if os.path.isfile(self.path()):
          svm.compress(self.path())
+      else:
+         logger.warning(f"No trains to compress: {self.path()}.")
 
    def merge(
       self,
@@ -43,6 +52,15 @@ class SvmTrains(Trains):
    ) -> None:
       assert self._filename != outfilename
       assert type(previous) is str
+      if not svm.exists(self.path()):
+         logger.warning(f"Trains not found: {self.path()}.")
+         return
       f_out = self.path(filename=outfilename)
       svm.merge(previous, self.path(), f_out=f_out)
       #self.reset(filename=outfilename)
+
+   def link(self, src: str):
+      if not svm.exists(src):
+         logger.warning(f"Link source not found: {src}.")
+         return
+      svm.link(src, self.path())

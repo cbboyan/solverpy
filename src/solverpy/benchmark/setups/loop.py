@@ -33,6 +33,10 @@ def loopinit(setup: Setup) -> Setup:
 def looping(setup: Setup) -> Setup:
    assert "dataname" in setup
    setup["basedataname"] = setup["dataname"]
+   default(setup, "max_proofs", 0)
+   assert "max_proofs" in setup
+   if setup["max_proofs"] > 0:
+      setup["proofs"] = {}
    loopinit(setup)
    return setup
 
@@ -71,14 +75,23 @@ def oneloop(setup: Setup) -> Setup:
          ("no-compress-trains" not in options):
          setup["trains"].compress()
 
-   def trains_merge(setup):
-      if ("previous_trains" in setup) and not is_last(setup):
-         setup["trains"].merge(setup["previous_trains"], "train.in")
-         #f_out = setup["trains"].path(filename="train.in")
-         #svm.merge(setup["previous_trains"], setup["trains"].path(), f_out=f_out)
-         setup["trains"].reset(filename="train.in")
+   def trains_merge(setup: Setup):
+      assert "trains" in setup
+      trains = setup["trains"]
+      if ("previous_trains" not in setup) or is_last(setup):
+         return
+      previous = setup["previous_trains"]
+      if not trains.exists():
+         logger.warning(f"No trains found: {trains.path()}.")
+         logger.warning(f"Reusing previous trains: {previous}.")
+         trains.link(previous)
+         if "max_proofs" in setup and setup["max_proofs"] > 0:
+            setup["max_proofs"] += 1
+            logger.info(f"Increasing max_proofs to: {setup['max_proofs']}")
+      trains.merge(setup["previous_trains"], "train.in")
+      trains.reset(filename="train.in")
 
-   def model_build(setup):
+   def model_build(setup: Setup):
       if "builder" not in setup: 
          return
       builder = setup["builder"]

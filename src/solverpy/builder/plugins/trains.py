@@ -14,6 +14,15 @@ NAME = "trains"
 logger = logging.getLogger(__name__)
 
 
+def rellink(f_src: str, f_dst: str):
+   d_dst = os.path.dirname(f_dst)
+   os.makedirs(d_dst, exist_ok=True)
+   rel = os.path.relpath(f_src, d_dst)
+   logger.debug(f"linking {f_src} to {f_dst} via {rel}")
+   os.symlink(rel, f_dst)
+
+
+
 class Trains(Decorator):
 
    def __init__(self, dataname: str, filename: str = "train.in"):
@@ -50,6 +59,15 @@ class Trains(Decorator):
       dataname = dataname or self._dataname
       filename = filename or self._filename
       return os.path.join(bids.dbpath(NAME), dataname, filename)
+
+   def exists(self) -> bool:
+      return os.path.isfile(self.path())
+
+   def link(self, src: str):
+      if not os.path.isfile(src):
+         logger.warning(f"Link source not found: {src}.")
+         return
+      rellink(src, self.path())
 
    def register(self, solver: "SolverPy") -> None:
       super().register(solver)

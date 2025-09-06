@@ -8,8 +8,9 @@ import scipy
 from sklearn.datasets import load_svmlight_file, dump_svmlight_file
 
 from ..tools import human
-from ..tools.extprocess import extprocess
+from ..tools.external import external
 from ..benchmark.reports import progress
+from .plugins.trains import rellink
 
 if TYPE_CHECKING:
    from scipy.sparse import spmatrix
@@ -73,7 +74,7 @@ def save(data: "spmatrix", label: "ndarray", f_in: str) -> None:
    logger.info(f"Saved trains: {f_in}")
 
 
-@extprocess
+@external
 def compress(f_in: str, keep: bool = False) -> None:
    logger.info(
       f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
@@ -91,7 +92,8 @@ def compress(f_in: str, keep: bool = False) -> None:
    logger.info(
       f"Trains compressed to {human.humanbytes(size(f_in))}.\n{report}")
 
-@extprocess
+
+@external
 def decompress(f_in: str, keep: bool = True) -> None:
    logger.info(
       f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
@@ -112,7 +114,8 @@ def decompress(f_in: str, keep: bool = True) -> None:
    logger.info(
       f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
-@extprocess
+
+@external
 def merge(
    f_in1: (str | None) = None,
    f_in2: (str | None) = None,
@@ -136,6 +139,15 @@ def merge(
       save(d, l, f_out)
       return None
    return (d, l)
+
+
+def link(src: str, dst: str):
+   if iscompressed(src):
+      todo = zip(datafiles(src), datafiles(dst))
+   else:
+      todo = [(src, dst)]
+   for (f_src, f_dst) in todo:
+      rellink(f_src, f_dst)
 
 
 def deconflict(xs: "spmatrix", ys: "ndarray") -> tuple["spmatrix", "ndarray"]:

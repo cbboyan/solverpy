@@ -44,6 +44,9 @@ class MultiTrains(SvmTrains):
    ) -> tuple[str, ...]:
       return tuple(t.path(dataname, filename) for t in self._trains)
 
+   def exists(self) -> bool:
+      return all(t.exists() for t in self._trains)
+
    def finished(self, *args: Any, **kwargs: Any) -> None:
       self.apply(lambda x: x.finished(*args, **kwargs))
 

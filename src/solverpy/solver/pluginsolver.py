@@ -93,9 +93,11 @@ class PluginSolver(Solver):
       *args,
       **kwargs,
    ):
+      """Call `method` of the plugin(s) `pid`.""" 
       for plugin in self.translators + self.decorators:
-         if plugin.id == pid and hasattr(plugin, method):
-            handler = getattr(plugin, method)
-            handler(*args, **kwargs)
-         else:
-            logger.warning(f"Unknown method {method} of plugin {pid}")
+         if (plugin.id == pid):
+            if hasattr(plugin, method):
+               handler = getattr(plugin, method)
+               handler(*args, **kwargs)
+            else:
+               logger.warning(f"Unknown method {method} of plugin {pid}")

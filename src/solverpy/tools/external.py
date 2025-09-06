@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Callable
 
 
-def extprocess(func: Callable) -> Callable:
+def external(func: Callable) -> Callable:
    """
     Decorator that runs a function in a separate process.
     """

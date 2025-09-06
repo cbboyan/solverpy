@@ -49,6 +49,8 @@ def run(
    force: bool = False,
    solvedby: str | None = None,
    it: int | None = None,
+   proofs: dict[str, int] | None = None,
+   max_proofs: int = 0,
    **others: Any,
 ) -> "Result":
    others = dict(others, force=force, it=it, solvedby=solvedby)
@@ -81,8 +83,25 @@ def run(
    #   if solvable:
    #      logger.debug(f"evaluation: restricted to {len(solvable)} problems solvable by {solvedby}")
    #ps = solvable if solvable else bids.problems(bid)
-   tasks = [SolverTask(solver, bid, sid, p) for p in ps]
+
+   cnt_dis = 0
+   def enable_trains(p: str) -> str:
+      nonlocal cnt_dis
+      if max_proofs and proofs and (p in proofs):
+         if proofs[p] >= max_proofs:
+            cnt_dis += 1
+            return "disable"
+      return "enable"
+
+   tasks = [SolverTask(
+      solver,
+      bid,
+      sid,
+      p,
+      calls = [("trains", enable_trains(p), [], {})]
+   ) for p in ps]
    logger.debug(f"evaluation: {len(tasks)} tasks scheduled")
+   logger.debug(f"evaluation: trains disabled for {cnt_dis} problems")
    # check for the (cached) results in the database
    if db and not force:
       done = db.query(tasks)
@@ -115,6 +134,14 @@ def run(
       if db: db.store(todo, results)
       # compose the cached and new results
       results = {t.problem: res for (t, res) in zip(todo, results)}
+      if max_proofs:
+         assert proofs is not None
+         for (p, res) in results.items():
+            if solver.solved(res):
+               if p not in proofs:
+                  proofs[p] = 0
+               proofs[p] += 1
+         
       results.update(done)
       results.update(skipped)
       logger.debug(
@@ -178,7 +205,7 @@ def legend(
    jobs: list["SolverJob"],
    ref: "SolverJob | None" = None,
    sidnames: bool = False,
-) -> tuple[dict["SolverJob", str], str, str]: 
+) -> tuple[dict["SolverJob", str], str, str]:
    nicks = {}
    if sidnames:
       header = ["name", "solver", "benchmark", "problems"]
