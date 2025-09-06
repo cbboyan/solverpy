@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 class EnigmaModel(AutoTuner):
 
    def __init__(
-         self,
-         trains: Setup,
-         devels: (Setup | None),
-         tuneargs: (dict[str, Any] | None),
-         variant: str,
+      self,
+      trains: Setup,
+      devels: (Setup | None),
+      tuneargs: (dict[str, Any] | None),
+      variant: str,
+      templates: (list[str] | None) = None,
    ):
-      AutoTuner.__init__(self, trains, devels, tuneargs)
+      AutoTuner.__init__(self, trains, devels, tuneargs, templates)
       self._variant = variant
       self._fkey = f"{variant}_features"
       self.reset(self._dataname)
@@ -65,6 +66,7 @@ class EnigmaSel(EnigmaModel):
       trains: Setup,
       devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
+      templates: (list[str] | None) = None,
    ):
       EnigmaModel.__init__(
          self,
@@ -72,6 +74,7 @@ class EnigmaSel(EnigmaModel):
          devels,
          tuneargs,
          "sel",
+         templates,
       )
 
    def apply(self, sid: str, model: str) -> list[str]:
@@ -80,7 +83,11 @@ class EnigmaSel(EnigmaModel):
       sidsolo = sids.fmt(sidsolo, dict(args, sel=model))
       sidcoop = self.template(base, "coop", coop)
       sidcoop = sids.fmt(sidcoop, dict(args, sel=model))
-      news = [sidsolo, sidcoop]
+      news = []
+      if "solo" in self._templates:
+         news.append(sidsolo)
+      if "coop" in self._templates:
+         news.append(sidcoop)
       logger.debug(f"new strategies: {news}")
       return news
 
@@ -92,6 +99,7 @@ class EnigmaGen(EnigmaModel):
       trains: Setup,
       devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
+      templates: (list[str] | None) = None,
    ):
       EnigmaModel.__init__(
          self,
@@ -99,9 +107,12 @@ class EnigmaGen(EnigmaModel):
          devels,
          tuneargs,
          "gen",
+         templates,
       )
 
    def apply(self, sid: str, model: str) -> list[str]:
+      if "gen" not in self._templates:
+         return []
       (base, args) = sids.split(sid)
       sidgen = self.template(base, "gen", gen)
       sidgen = sids.fmt(sidgen, dict(args, gen=model))
@@ -118,12 +129,15 @@ class Enigma(EnigmaModel):
       devels: (Setup | None) = None,
       tunesel: (dict[str, Any] | None) = None,
       tunegen: (dict[str, Any] | None) = None,
+      templates: (list[str] | None) = None,
    ):
+      templates = templates or ["coop", "solo", "gen"]
       AutoTuner.__init__(
          self,
          trains,
          devels,
          tunesel,
+         templates=templates,
       )
       assert "trains" in trains
       assert "sel_features" in trains
@@ -140,7 +154,12 @@ class Enigma(EnigmaModel):
             assert "trains" in devels
             assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
             devels0 = Setup(trains, trains=devels["trains"]._sel)
-      self._sel = EnigmaSel(trains0, devels0, tunesel) if sel else None
+      self._sel = EnigmaSel(
+         trains0,
+         devels0,
+         tunesel,
+         templates,
+      ) if sel else None
 
       trains0 = trains
       devels0 = devels
@@ -151,7 +170,12 @@ class Enigma(EnigmaModel):
             assert "trains" in devels
             assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
             devels0 = Setup(trains, trains=devels["trains"]._gen)
-      self._gen = EnigmaGen(trains0, devels0, tunegen) if gen else None
+      self._gen = EnigmaGen(
+         trains0,
+         devels0,
+         tunegen,
+         templates,
+      ) if gen else None
 
    def reset(self, dataname: str) -> None:
       if self._sel:
@@ -160,7 +184,7 @@ class Enigma(EnigmaModel):
          self._gen.reset(dataname)
       Builder.reset(self, dataname)
 
-   def build(self) -> None: 
+   def build(self) -> None:
       self._strats = []
       if self._sel:
          self._sel.build()
@@ -174,7 +198,7 @@ class Enigma(EnigmaModel):
          self._strats.extend(self.applies(refs, self._dataname))
 
    def apply(self, sid: str, model: str) -> list[str]:
-      del model # unused argument
+      del model  # unused argument
       assert self._sel and self._gen
       (base, args) = sids.split(sid)
       sidsolo = f"{base}-solo"
@@ -184,7 +208,11 @@ class Enigma(EnigmaModel):
       args = dict(args, sel=self._sel._dataname, gen=self._gen._dataname)
       sidsologen = sids.fmt(sidsologen, args)
       sidcoopgen = sids.fmt(sidcoopgen, args)
-      news = [sidsologen, sidcoopgen]
+      news = []
+      if "solo" in self._templates:
+         news.append(sidsologen)
+      if "coop" in self._templates:
+         news.append(sidcoopgen)
       logger.debug(f"new strategies: {news}")
       return news
 
@@ -226,7 +254,7 @@ def solo(
 
 
 def coop(
-   sid : str,
+   sid: str,
    *,
    model: str = "default",
    noinit: bool = False,
@@ -261,4 +289,3 @@ def gen(sid: str, *, model: str = "default", threshold: float = 0.1) -> str:
    threshold0 = f"@@@thrgen:{threshold}@@@"
    args = f'--enigmatic-gen-model="{model0}" --enigmatic-gen-threshold={threshold0}'
    return strat.replace("-H'", f"{args} -H'")
-

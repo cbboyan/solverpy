@@ -4,6 +4,7 @@ import logging
 from ..builder.cvc5ml import Cvc5ML
 from ..builder.enigma import Enigma
 from .setup import Setup
+from .common import default
 
 if TYPE_CHECKING:
    from ..builder.builder import Builder
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 BuilderMaker = Callable[..., "Builder"]
+
 
 def defaultrefs(trains: Setup) -> None:
    if "refs" not in trains:
@@ -20,11 +22,12 @@ def defaultrefs(trains: Setup) -> None:
       idx = ref if (type(ref) is int) else 0
       trains["refs"] = [trains["sidlist"][idx]]
 
+
 def autotuner(
-      mk_builder: BuilderMaker,
-      trains: Setup,
-      *args: Any,
-      **kwargs: Any,
+   mk_builder: BuilderMaker,
+   trains: Setup,
+   *args: Any,
+   **kwargs: Any,
 ) -> Setup:
    defaultrefs(trains)
    trains["builder"] = mk_builder(trains, *args, **kwargs)
@@ -45,4 +48,13 @@ def enigma(
    tunesel: (dict[str, Any] | None) = None,
    tunegen: (dict[str, Any] | None) = None,
 ) -> Setup:
-   return autotuner(Enigma, trains, devels, tunesel, tunegen)
+   default(trains, "templates", None)
+   assert "templates" in trains
+   return autotuner(
+      Enigma,
+      trains,
+      devels,
+      tunesel,
+      tunegen,
+      templates=trains["templates"],
+   )

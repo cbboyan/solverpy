@@ -47,4 +47,5 @@ class Setup(TypedDict, total=False):
    gen_features: str
    sel_features: str
    posneg_ratio: float
+   templates: list[str]
 

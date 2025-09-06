@@ -102,7 +102,7 @@ class Trains(Decorator):
       strategy: str,
       samples: str,
    ) -> None:
-      if not samples or not self._enabled:
+      if (not samples) or (not self._enabled):
          return
       self._lock.acquire()
       try:

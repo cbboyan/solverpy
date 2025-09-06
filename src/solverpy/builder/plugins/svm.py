@@ -63,4 +63,8 @@ class SvmTrains(Trains):
       if not svm.exists(src):
          logger.warning(f"Link source not found: {src}.")
          return
-      svm.link(src, self.path())
+      dst = self.path()
+      if svm.exists(dst):
+         logger.warning(f"Link targed exists: {dst}.")
+         return
+      svm.link(src, dst)

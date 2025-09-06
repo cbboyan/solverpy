@@ -27,12 +27,14 @@ class AutoTuner(Builder):
       trains: Setup,
       devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
+      templates: (list[str] | None) = None,
    ):
       assert "dataname" in trains
       Builder.__init__(self, trains["dataname"])
       self._trains = trains
       self._devels = devels or trains
       self._tuneargs: dict[str, Any] = TUNEARGS | (tuneargs or {})
+      self._templates = templates or []
 
    def path(self, modelfile: str = "model.lgb") -> str:
       if modelfile:

@@ -14,6 +14,7 @@ class MultiTrains(SvmTrains):
    def __init__(self, dataname: str):
       self._trains: list["SvmTrains"] = []
       self._dataname = dataname
+      self._pid = "trains"
 
    def dispatch(self, t: "SvmTrains"):
       self._trains.append(t)
@@ -46,6 +47,18 @@ class MultiTrains(SvmTrains):
 
    def exists(self) -> bool:
       return all(t.exists() for t in self._trains)
+
+   def link(self, src: str | tuple[str]):
+      assert isinstance(src, tuple)
+      assert len(src) == len(self._trains)
+      for (s, t) in zip(src, self._trains):
+         t.link(s)
+
+   def enable(self) -> None:
+      self.apply(lambda x: x.enable())
+
+   def disable(self) -> None:
+      self.apply(lambda x: x.disable())
 
    def finished(self, *args: Any, **kwargs: Any) -> None:
       self.apply(lambda x: x.finished(*args, **kwargs))
