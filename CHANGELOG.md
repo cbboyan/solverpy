@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.9.1 (2025-09-07)
+
+* fix!: Updated package requirements. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v1.9.0 (2025-09-07)
 
 * feat!!: Major refactor and Enigma tuning features. [[details](https://github.com/cbboyan/solverpy/commit/48c0b30) | [browse](https://github.com/cbboyan/solverpy/tree/48c0b30)]
