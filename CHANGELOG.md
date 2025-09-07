@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2025-09-07)
+## v1.9.0 (2025-09-07)
 
-* fix: Training data linking for MultiTrains. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!!: Major refactor and Enigma tuning features. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Training data linking for MultiTrains. [[details](https://github.com/cbboyan/solverpy/commit/301ac1d) | [browse](https://github.com/cbboyan/solverpy/tree/301ac1d)]
 * refactor: Major refactor of setups and evaluation. [[details](https://github.com/cbboyan/solverpy/commit/b5d0ff9) | [browse](https://github.com/cbboyan/solverpy/tree/b5d0ff9)]
 * fix: Fixed looping without new trains. [[details](https://github.com/cbboyan/solverpy/commit/b7e7ee2) | [browse](https://github.com/cbboyan/solverpy/tree/b7e7ee2)]
 * feat: Implemented call-by-id for plugins. [[details](https://github.com/cbboyan/solverpy/commit/9ee188d) | [browse](https://github.com/cbboyan/solverpy/tree/9ee188d)]

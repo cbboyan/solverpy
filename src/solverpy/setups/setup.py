@@ -27,7 +27,6 @@ class Setup(TypedDict, total=False):
    options: list[str]
    delfix: (int | str | None)
 
-
    force: bool
    shuffle: bool
 
