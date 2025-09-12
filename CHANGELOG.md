@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2025-09-12)
+
+* docs: Documentation schemes. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v1.9.1 (2025-09-07)
 
-* fix!: Updated package requirements. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix!: Updated package requirements. [[details](https://github.com/cbboyan/solverpy/commit/bc56e58) | [browse](https://github.com/cbboyan/solverpy/tree/bc56e58)]
 
 ## v1.9.0 (2025-09-07)
 

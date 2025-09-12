@@ -1,0 +1,23 @@
+site_name: SolverPy
+site_url: https://cbboyan.github.io/solverpy/
+theme: 
+  name: material
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+plugins:
+  - search
+  - plantuml:
+      puml_jar: plantuml.jar
+      java_path: java
+      puml_keyword: plantuml
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+  - autorefs: {}
+nav:
+  - Home: index.md
+  - Options: options.md
+  - Markdown: markdown.md

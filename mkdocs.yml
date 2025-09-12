@@ -9,8 +9,25 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.inlinehilite
 
+extra_javascript:
+  - js/solverpy.js
+
+extra_css:
+  - css/solverpy.css
+
 plugins:
   - search
+  - build_plantuml:
+      render: 'local' # or "local" for local rendering
+      bin_path: '/usr/bin/plantuml' # ignored when render: server
+      #server: 'http://www.plantuml.com/plantuml' # official plantuml server
+      #disable_ssl_certificate_validation: true # for self-signed and invalid certs
+      output_format: 'svg' # or "png"
+      allow_multiple_roots: false # in case your codebase contains more locations for diagrams (all ending in diagram_root)
+      diagram_root: 'docs/diagrams' # should reside under docs_dir
+      output_folder: 'out'
+      input_folder: 'src'
+      input_extensions: '' # comma separated list of extensions to parse, by default every file is parsed
   - mkdocstrings:
       handlers:
         python:
@@ -19,7 +36,120 @@ plugins:
 
 nav:
   - Home: index.md
+  - Tutorial: tutorial.md
   - Options: options.md
-  - Documentation: api/reference.md
-
-
+  - Markdown: markdown.md
+  - "\U0001F4E6 API \U0001F6A7":
+    - "\u2139\uFE0F Overview": api/solverpy/index.md
+    - "\U0001F4C1 benchmark":
+      - "\u2139\uFE0F Overview": api/solverpy/benchmark/index.md
+      - "\U0001F4C1 db":
+        - "\u2139\uFE0F Overview": api/solverpy/benchmark/db/index.md
+        - "\U0001F4C1 providers":
+          - "\u2139\uFE0F Overview": api/solverpy/benchmark/db/providers/index.md
+          - "\U0001F916 jsons": api/solverpy/benchmark/db/providers/jsons.md
+          - "\U0001F916 loader": api/solverpy/benchmark/db/providers/loader.md
+          - "\U0001F916 solved": api/solverpy/benchmark/db/providers/solved.md
+          - "\U0001F916 status": api/solverpy/benchmark/db/providers/status.md
+        - "\U0001F916 cachedprovider": api/solverpy/benchmark/db/cachedprovider.md
+        - "\U0001F916 db": api/solverpy/benchmark/db/db.md
+        - "\U0001F916 provider": api/solverpy/benchmark/db/provider.md
+      - "\U0001F4C1 path":
+        - "\u2139\uFE0F Overview": api/solverpy/benchmark/path/index.md
+        - "\U0001F916 bids": api/solverpy/benchmark/path/bids.md
+        - "\U0001F916 sids": api/solverpy/benchmark/path/sids.md
+      - "\U0001F4C1 reports":
+        - "\u2139\uFE0F Overview": api/solverpy/benchmark/reports/index.md
+        - "\U0001F916 data": api/solverpy/benchmark/reports/data.md
+        - "\U0001F916 markdown": api/solverpy/benchmark/reports/markdown.md
+        - "\U0001F916 progress": api/solverpy/benchmark/reports/progress.md
+      - "\U0001F916 evaluation": api/solverpy/benchmark/evaluation.md
+      - "\U0001F916 summary": api/solverpy/benchmark/summary.md
+    - "\U0001F4C1 builder":
+      - "\u2139\uFE0F Overview": api/solverpy/builder/index.md
+      - "\U0001F4C1 autotune":
+        - "\u2139\uFE0F Overview": api/solverpy/builder/autotune/index.md
+        - "\U0001F916 autotune": api/solverpy/builder/autotune/autotune.md
+        - "\U0001F916 build": api/solverpy/builder/autotune/build.md
+        - "\U0001F916 check": api/solverpy/builder/autotune/check.md
+        - "\U0001F916 listener": api/solverpy/builder/autotune/listener.md
+        - "\U0001F916 tune": api/solverpy/builder/autotune/tune.md
+      - "\U0001F4C1 plugins":
+        - "\u2139\uFE0F Overview": api/solverpy/builder/plugins/index.md
+        - "\U0001F916 cvc5": api/solverpy/builder/plugins/cvc5.md
+        - "\U0001F916 enigma": api/solverpy/builder/plugins/enigma.md
+        - "\U0001F916 multi": api/solverpy/builder/plugins/multi.md
+        - "\U0001F916 svm": api/solverpy/builder/plugins/svm.md
+        - "\U0001F916 trains": api/solverpy/builder/plugins/trains.md
+      - "\U0001F916 autotuner": api/solverpy/builder/autotuner.md
+      - "\U0001F916 builder": api/solverpy/builder/builder.md
+      - "\U0001F916 cvc5ml": api/solverpy/builder/cvc5ml.md
+      - "\U0001F916 enigma": api/solverpy/builder/enigma.md
+      - "\U0001F916 svm": api/solverpy/builder/svm.md
+    - "\U0001F4C1 setups":
+      - "\u2139\uFE0F Overview": api/solverpy/setups/index.md
+      - "\U0001F916 common": api/solverpy/setups/common.md
+      - "\U0001F916 loop": api/solverpy/setups/loop.md
+      - "\U0001F916 setup": api/solverpy/setups/setup.md
+      - "\U0001F916 solver": api/solverpy/setups/solver.md
+      - "\U0001F916 tuner": api/solverpy/setups/tuner.md
+    - "\U0001F4C1 solver":
+      - "\u2139\uFE0F Overview": api/solverpy/solver/index.md
+      - "\U0001F4C1 atp":
+        - "\u2139\uFE0F Overview": api/solverpy/solver/atp/index.md
+        - "\U0001F916 cvc5": api/solverpy/solver/atp/cvc5.md
+        - "\U0001F916 eprover": api/solverpy/solver/atp/eprover.md
+        - "\U0001F916 lash": api/solverpy/solver/atp/lash.md
+        - "\U0001F916 prover9": api/solverpy/solver/atp/prover9.md
+        - "\U0001F916 vampire": api/solverpy/solver/atp/vampire.md
+      - "\U0001F4C1 plugins":
+        - "\u2139\uFE0F Overview": api/solverpy/solver/plugins/index.md
+        - "\U0001F4C1 db":
+          - "\u2139\uFE0F Overview": api/solverpy/solver/plugins/db/index.md
+          - "\U0001F916 bid": api/solverpy/solver/plugins/db/bid.md
+          - "\U0001F916 errors": api/solverpy/solver/plugins/db/errors.md
+          - "\U0001F916 outputs": api/solverpy/solver/plugins/db/outputs.md
+          - "\U0001F916 sid": api/solverpy/solver/plugins/db/sid.md
+        - "\U0001F4C1 shell":
+          - "\u2139\uFE0F Overview": api/solverpy/solver/plugins/shell/index.md
+          - "\U0001F916 limits": api/solverpy/solver/plugins/shell/limits.md
+          - "\U0001F916 memory": api/solverpy/solver/plugins/shell/memory.md
+          - "\U0001F916 time": api/solverpy/solver/plugins/shell/time.md
+          - "\U0001F916 timeout": api/solverpy/solver/plugins/shell/timeout.md
+        - "\U0001F4C1 status":
+          - "\u2139\uFE0F Overview": api/solverpy/solver/plugins/status/index.md
+          - "\U0001F916 limiter": api/solverpy/solver/plugins/status/limiter.md
+          - "\U0001F916 smt": api/solverpy/solver/plugins/status/smt.md
+          - "\U0001F916 tptp": api/solverpy/solver/plugins/status/tptp.md
+        - "\U0001F916 decorator": api/solverpy/solver/plugins/decorator.md
+        - "\U0001F916 plugin": api/solverpy/solver/plugins/plugin.md
+        - "\U0001F916 translator": api/solverpy/solver/plugins/translator.md
+      - "\U0001F4C1 smt":
+        - "\u2139\uFE0F Overview": api/solverpy/solver/smt/index.md
+        - "\U0001F916 bitwuzla": api/solverpy/solver/smt/bitwuzla.md
+        - "\U0001F916 cvc5": api/solverpy/solver/smt/cvc5.md
+        - "\U0001F916 z3": api/solverpy/solver/smt/z3.md
+      - "\U0001F916 object": api/solverpy/solver/object.md
+      - "\U0001F916 pluginsolver": api/solverpy/solver/pluginsolver.md
+      - "\U0001F916 reloader": api/solverpy/solver/reloader.md
+      - "\U0001F916 shellsolver": api/solverpy/solver/shellsolver.md
+      - "\U0001F916 solver": api/solverpy/solver/solver.md
+      - "\U0001F916 solverpy": api/solverpy/solver/solverpy.md
+      - "\U0001F916 stdinsolver": api/solverpy/solver/stdinsolver.md
+    - "\U0001F4C1 task":
+      - "\u2139\uFE0F Overview": api/solverpy/task/index.md
+      - "\U0001F916 bar": api/solverpy/task/bar.md
+      - "\U0001F916 launcher": api/solverpy/task/launcher.md
+      - "\U0001F916 shelltask": api/solverpy/task/shelltask.md
+      - "\U0001F916 solvertask": api/solverpy/task/solvertask.md
+      - "\U0001F916 task": api/solverpy/task/task.md
+    - "\U0001F4C1 tools":
+      - "\u2139\uFE0F Overview": api/solverpy/tools/index.md
+      - "\U0001F916 external": api/solverpy/tools/external.md
+      - "\U0001F916 human": api/solverpy/tools/human.md
+      - "\U0001F916 log": api/solverpy/tools/log.md
+      - "\U0001F916 patterns": api/solverpy/tools/patterns.md
+      - "\U0001F916 redirect": api/solverpy/tools/redirect.md
+      - "\U0001F916 timeme": api/solverpy/tools/timeme.md
+      - "\U0001F916 typing": api/solverpy/tools/typing.md
+  

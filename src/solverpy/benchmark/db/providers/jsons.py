@@ -49,7 +49,7 @@ class Jsons(CachedProvider):
          self.cache[task.problem] = result
          self._uptodate = False
 
-   def cachepath(self):
+   def cachepath(self) -> str:
       return os.path.join(
          bids.dbpath(NAME),
          bids.name(self.bid, limit=self.limittype()),

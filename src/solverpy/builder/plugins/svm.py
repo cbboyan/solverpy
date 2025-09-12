@@ -59,7 +59,8 @@ class SvmTrains(Trains):
       svm.merge(previous, self.path(), f_out=f_out)
       #self.reset(filename=outfilename)
 
-   def link(self, src: str):
+   def link(self, src: str | tuple[str]):
+      assert isinstance(src, str)
       if not svm.exists(src):
          logger.warning(f"Link source not found: {src}.")
          return

@@ -9,7 +9,61 @@ if TYPE_CHECKING:
 
 
 class Setup(TypedDict, total=False):
+   """
+   Experiment setup configuration.
 
+   Attributes: 
+       limit: Resource limit for solvers.
+              a longer desc?
+              Ok what happens if I put here some really long text?
+              Ok what happens if I put here some really long text?
+              Ok what happens if I put here some really long text?
+              Ok what happens if I put here some really long text?
+              Ok what happens if I put here some really long text?
+              Ok what happens if I put here some really long text?
+
+              With stuff:
+              ```python
+              code(2+3)
+              call(code)
+              ```
+
+
+
+       cores: Number of cores to be used.
+       ref: 
+       bidfile: 
+       sidfile: 
+       bidlist: 
+       sidlist: 
+       binary: 
+       static: 
+       ntfy: 
+       it: 
+       loops: 
+       news: 
+       refs: 
+       options: 
+       delfix: 
+       force: 
+       shuffle: 
+       dataname: 
+       start_dataname: 
+       basedataname: 
+       db: 
+       builder: 
+       solver: 
+       trains: 
+       previous_trains: 
+       plugins: 
+       max_proofs: 
+       proofs: 
+       e_training_examples: 
+       gen_features: 
+       sel_features: 
+       posneg_ratio: 
+       templates: 
+   """
    limit: str
    cores: int
    ref: (bool | int | str | None)
@@ -37,7 +91,7 @@ class Setup(TypedDict, total=False):
    builder: "Builder"
    solver: "SolverPy"
    trains: "SvmTrains"
-   previous_trains: str
+   previous_trains: str | tuple[str]
    plugins: list["Plugin"]
    max_proofs: int
    proofs: (dict[str, int] | None)
