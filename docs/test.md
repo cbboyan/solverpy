@@ -1,10 +1,8 @@
 # PlantUML Test
 
-```puml
-@startuml
+```plantuml name="ahoj"
 Alice -> Bob: Hello
 Bob -> Alice: Hi there
-@enduml
 ```
 
 `![file](diagrams/out/overview.svg)`

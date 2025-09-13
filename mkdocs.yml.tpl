@@ -6,8 +6,12 @@ theme:
 
 markdown_extensions:
   - pymdownx.highlight
-  - pymdownx.superfences
   - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: dia
+          class: dia
+          format: !!python/name:solverpy.tools.markdown.dia.link
 
 extra_javascript:
   - js/solverpy.js

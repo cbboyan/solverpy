@@ -2,9 +2,23 @@
 
 `SolverPy` provides a uniform Python interface for several automated ATP and SMT solvers.
 
-<div class="image-container">
-  <img src="diagrams/out/solverpy-solvers.svg" alt="Your Image" class="clickable-image">
-</div>
+```plantuml name="solverpy-solvers"
+abstract class solverpy.solver.SolverPy {
+  {abstract} # statuses : set[Status]
+  --
+  {abstract} + solve(instance, strategy) : Result
+  + solved(result) : bool
+}
+
+class solverpy.solver.atp.eprover.E extends solverpy.solver.SolverPy
+class solverpy.solver.atp.vampire.Vampire extends solverpy.solver.SolverPy
+class solverpy.solver.atp.lash.Lash extends solverpy.solver.SolverPy
+class solverpy.solver.atp.prover9.Prover9 extends solverpy.solver.SolverPy
+
+class solverpy.solver.smt.cvc5.Cvc5 extends solverpy.solver.SolverPy
+class solverpy.solver.smt.z3.Z3 extends solverpy.solver.SolverPy
+class solverpy.solver.smt.bitwuzla.Bitwuzla extends solverpy.solver.SolverPy
+```
 
 Currently supported solvers are 
 [`E`][solverpy.solver.atp.eprover],
@@ -111,10 +125,8 @@ from [`setups`][solverpy.setups] module.
 to setup several loops of
 interleaved evaluation and model training.
 
-<center>
-<div class="image-container">
-  <img src="diagrams/out/solverpy-ml.svg" alt="Your Image" class="clickable-image">
-</div>
-</center>
+```dia opt="val"
+solverpy-ml
+```
 
 😎 For more info see [`builder`][solverpy.builder] module.

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2025-09-12)
+## Unreleased changes (2025-09-14)
 
-* docs: Documentation schemes. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: Support PlantUML diagrams in the docs. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: Documentation schemes. [[details](https://github.com/cbboyan/solverpy/commit/c8e5d06) | [browse](https://github.com/cbboyan/solverpy/tree/c8e5d06)]
 
 ## v1.9.1 (2025-09-07)
 

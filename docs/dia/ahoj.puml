@@ -1,0 +1,6 @@
+@startuml
+skinparam backgroundColor transparent
+
+Alice -> Bob: Hello
+Bob -> Alice: Hi there
+@enduml
