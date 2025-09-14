@@ -73,17 +73,41 @@ _Strategies_ are solver-specific, typically command line options as a string.
 ☕ The _result_ is a dictionary guaranteed to contain at least two keys: `status` as a string
 and `runtime` in seconds, apart from solver-specific keys.
 
-😎 For more info see [`solver`][solverpy.solver] module.
+😎 For more details, see the [`solver`][solverpy.solver] module.
 
 ### 🔧 Benchmark evaluation
 
 SolverPy provides dataclass [`Setup`][solverpy.setups.setup] that describes the evaluation configuration.
 It auromatically connects to database [`DB`][solverpy.benchmark.db.db] to store results, by default, using the [`Jsons`][solverpy.benchmark.db.providers.jsons] provider.
 
+```plantuml name="solverpy-benchmark"
+dataclass solverpy.setups.Setup {
+   + bidlist : list[Bid] 
+   + sidlist : list[Sid] 
+   + cores : int
+   + limit : str
+   --
+   + launch()
+   }
+   circle solverpy.setups.evaluation
+   circle solverpy.setups.eprover
+   circle solverpy.setups.cvc5
 
-<div class="image-container">
-  <img src="diagrams/out/solverpy-benchmark.svg" alt="Your Image" class="clickable-image">
-</div>
+   class solverpy.benchmark.db.DB {
+      # providers : Providers
+      --
+      + commit()
+      + connect(benchmark, strategy)
+      + query(tasks) : Results
+      + store(tasks, results)
+}
+
+solverpy.setups.Setup <-- solverpy.setups.evaluation
+solverpy.setups.Setup <-- solverpy.setups.eprover
+solverpy.setups.Setup <-- solverpy.setups.cvc5
+
+solverpy.setups.Setup -right-o "1" solverpy.benchmark.db.DB
+```
 
 To evaluate a set of strategies on a set of benchmark problems, you just need to provide your experiment description as a Python `dict`.
 
@@ -116,7 +140,7 @@ The problem files should be in `problems/` directory.
 
 ☕ After the evaluation, you can inspect the results in the database directory `solverpy_db/results`.
 
-😎 For more info see [`benchmark`][solverpy.benchmark] module.
+😎 For more details, see the [`benchmark`][solverpy.benchmark] module.
 
 ### 🧠 Machine learning
 
@@ -125,8 +149,40 @@ from [`setups`][solverpy.setups] module.
 to setup several loops of
 interleaved evaluation and model training.
 
-```dia opt="val"
-solverpy-ml
+```plantuml name="solverpy-ml"
+dataclass solverpy.setups.Setup {
+   + sidlist : list[Sid]
+   + dataname : str
+   + loops : int
+   ...
+   --
+   + launch()
+}
+circle solverpy.setups.enigma
+circle solverpy.setups.cvc5ml
+
+abstract class solverpy.builder.Builder {
+   {abstract} + strategies : list[Sid]
+   # dataname : str
+   {abstract} + build()
+   {abstract} + apply(sid, model) : list[Sid]
+   + path() : str
+}
+  
+class solverpy.builder.Enigma extends solverpy.builder.Builder {
+   + build()
+   + apply(..) 
+}
+
+class solverpy.builder.Cvc5ML extends solverpy.builder.Builder {
+   + build()
+   + apply(..)
+}
+
+solverpy.setups.Setup <-- solverpy.setups.enigma
+solverpy.setups.Setup <-- solverpy.setups.cvc5ml
+
+solverpy.builder.Builder "1" o-left solverpy.setups.Setup
 ```
 
-😎 For more info see [`builder`][solverpy.builder] module.
+😎 For more details, see the [`builder`][solverpy.builder] module.

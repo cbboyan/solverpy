@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2025-09-14)
 
-* docs: Support PlantUML diagrams in the docs. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: Generate svgs for PlantUML just once. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: Support PlantUML diagrams in the docs. [[details](https://github.com/cbboyan/solverpy/commit/09bd80a) | [browse](https://github.com/cbboyan/solverpy/tree/09bd80a)]
 * docs: Documentation schemes. [[details](https://github.com/cbboyan/solverpy/commit/c8e5d06) | [browse](https://github.com/cbboyan/solverpy/tree/c8e5d06)]
 
 ## v1.9.1 (2025-09-07)

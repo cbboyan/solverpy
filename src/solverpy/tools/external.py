@@ -5,8 +5,8 @@ from typing import Callable
 
 def external(func: Callable) -> Callable:
    """
-    Decorator that runs a function in a separate process.
-    """
+   Decorator that runs a function in a separate process.
+   """
 
    @wraps(func)
    def wrapper(*args, **kwargs):
@@ -32,5 +32,21 @@ def external(func: Callable) -> Callable:
          return data
       else:
          raise data
+
+   return wrapper
+
+
+def catching(func: Callable) -> Callable:
+   """
+   Decorator that catches exceptions and returns them as strings
+   in the case an exception is raised.
+   """
+
+   @wraps(func)
+   def wrapper(*args, **kwargs):
+      try:
+         return func(*args, **kwargs)
+      except Exception as e:
+         return str(e)
 
    return wrapper
