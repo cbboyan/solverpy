@@ -1,0 +1,35 @@
+/* Complete crimson theme */
+
+:root {
+  --md-primary-fg-color: #a8334c;        /* Muted crimson */
+  --md-primary-fg-color--light: #c44569;  /* Lighter variant */
+  --md-primary-fg-color--dark: #8b2538;   /* Darker variant */
+  --md-default-bg-color: #f8f6f3;        /* Paper color */
+  --md-code-bg-color: #f0ede8;           /* Darker paper for code */
+  --md-default-fg-color: #2c2825;        /* Darker text for contrast */
+}
+
+/* Header styling */
+.md-header {
+  background-color: var(--md-primary-fg-color);
+  box-shadow: 0 2px 4px rgba(220, 20, 60, 0.2);
+}
+
+/* Navigation tabs (if using tabs) */
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Active navigation items */
+.md-nav__link--active {
+  color: var(--md-primary-fg-color);
+}
+
+/* Links */
+.md-content a {
+  color: var(--md-primary-fg-color);
+}
+
+.md-content a:hover {
+  color: var(--md-primary-fg-color--dark);
+}

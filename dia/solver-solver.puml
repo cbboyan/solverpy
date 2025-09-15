@@ -1,0 +1,16 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+abstract class solverpy.solver.solver.Solver extends solverpy.solver.object.SolverPyObj {
+   {abstract} # success : frozenset[Status]
+   {abstract} # timeouts : frozenset[Status]
+   {abstract} # statuses : frozenset[Status]
+   {abstract} # run(instance, strategy) : str
+   {abstract} # process(output) : Result
+   + solve(instance, strategy) : Result
+   + valid(result) : bool
+   + solved(result) : bool
+}
+abstract class solverpy.solver.pluginsolver.PluginSolver extends solverpy.solver.solver.Solver 
+@enduml

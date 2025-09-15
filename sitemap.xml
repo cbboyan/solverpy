@@ -2,398 +2,386 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://cbboyan.github.io/solverpy/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/markdown/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/options/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/test/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/tutorial/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/evaluation/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/summary/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/cachedprovider/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/db/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/provider/</loc>
-         <lastmod>2025-09-12</lastmod>
-    </url>
-    <url>
-         <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/providers/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/providers/jsons/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/providers/loader/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/providers/solved/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/db/providers/status/</loc>
-         <lastmod>2025-09-12</lastmod>
-    </url>
-    <url>
-         <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/path/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/path/bids/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/path/sids/</loc>
-         <lastmod>2025-09-12</lastmod>
-    </url>
-    <url>
-         <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/reports/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/reports/data/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/reports/markdown/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/benchmark/reports/progress/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotuner/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/builder/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/cvc5ml/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/enigma/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/svm/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/autotune/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/build/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/check/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/listener/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/autotune/tune/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/cvc5/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/enigma/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/multi/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/svm/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/builder/plugins/trains/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/common/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/loop/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/setup/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/solver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/setups/tuner/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/object/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/pluginsolver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/reloader/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/shellsolver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/solver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/solverpy/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/stdinsolver/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/cvc5/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/eprover/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/lash/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/prover9/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/atp/vampire/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/decorator/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/plugin/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/translator/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/db/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/db/bid/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/db/errors/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/db/outputs/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/db/sid/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/shell/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/shell/limits/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/shell/memory/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/shell/time/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/shell/timeout/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/status/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/status/limiter/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/status/smt/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/plugins/status/tptp/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/smt/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/smt/bitwuzla/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/smt/cvc5/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/solver/smt/z3/</loc>
-         <lastmod>2025-09-12</lastmod>
-    </url>
-    <url>
-         <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/bar/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/launcher/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/shelltask/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/solvertask/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/task/task/</loc>
-         <lastmod>2025-09-12</lastmod>
-    </url>
-    <url>
-         <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/external/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/human/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/log/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/patterns/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/redirect/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/timeme/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/typing/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
+         <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/markdown/dia/</loc>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
+         <loc>https://cbboyan.github.io/solverpy/api/solverpy/tools/markdown/plantuml/</loc>
+         <lastmod>2025-09-15</lastmod>
     </url>
 </urlset>

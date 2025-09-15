@@ -1,0 +1,36 @@
+/* Complete crimson theme */
+:root {
+  /* Primary crimson colors */
+  --md-primary-fg-color: #dc143c;
+  --md-primary-fg-color--light: #ff6b6b;
+  --md-primary-fg-color--dark: #b91c1c;
+  
+  /* Accent colors (optional - for links, buttons, etc.) */
+  --md-accent-fg-color: #dc143c;
+  --md-accent-fg-color--transparent: rgba(220, 20, 60, 0.1);
+}
+
+/* Header styling */
+.md-header {
+  background-color: var(--md-primary-fg-color);
+  box-shadow: 0 2px 4px rgba(220, 20, 60, 0.2);
+}
+
+/* Navigation tabs (if using tabs) */
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Active navigation items */
+.md-nav__link--active {
+  color: var(--md-primary-fg-color);
+}
+
+/* Links */
+.md-content a {
+  color: var(--md-primary-fg-color);
+}
+
+.md-content a:hover {
+  color: var(--md-primary-fg-color--dark);
+}

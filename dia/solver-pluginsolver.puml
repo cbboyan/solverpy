@@ -1,0 +1,16 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+abstract class solverpy.solver.solver.Solver
+abstract class solverpy.solver.pluginsolver.PluginSolver extends solverpy.solver.solver.Solver {
+   # decorators : list[Decorator]
+   # translators : list[Translator]
+   + init(plugins) 
+   + decorate(cmd, instance, strategy) : str
+   + translate(instance, strategy) : tuple
+   + update(instance, strategy, output, result) 
+   + call(pid, method, arguments)
+}
+abstract class solverpy.solver.solverpy.SolverPy extends solverpy.solver.pluginsolver.PluginSolver
+@enduml

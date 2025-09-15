@@ -1,0 +1,39 @@
+/* Simple but effective doc heading style */
+.doc-heading {
+  /* Full width */
+  margin-left: -1.6rem;
+  margin-right: -1.6rem;
+  padding: 0.75rem 1.6rem;
+  
+  /* Simple background */
+  background-color: var(--md-default-bg-color--light, #f8f9fa);
+  border-left: 3px solid var(--md-primary-fg-color, #1976d2);
+  
+  /* Subtle styling */
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.doc-heading code {
+  background: none;
+  font-weight: 700;
+  color: var(--md-primary-fg-color, #1976d2);
+}
+
+/* Dark mode */
+[data-md-color-scheme="slate"] .doc-heading {
+  background-color: var(--md-code-bg-color, #2d3748);
+}
+
+.doc-heading::before {
+  content: "📋";
+  margin-right: 0.5rem;
+}
+
+h2.doc-heading::before {
+  content: "🏗️"; /* Classes */
+}
+
+h3.doc-heading::before {
+  content: "⚙️"; /* Functions */
+}

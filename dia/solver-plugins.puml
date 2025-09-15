@@ -1,0 +1,23 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+abstract class solverpy.solver.pluginsolver.PluginSolver {
+   # decorators : list[Decorator]
+   # translators : list[Translator]
+   --
+   + solve(instance, strategy) : Result
+}
+
+abstract class solverpy.solver.plugins.plugin.Plugin {
+   + register(solver)
+}
+
+abstract class solverpy.solver.plugins.decorator.Decorator extends solverpy.solver.plugins.plugin.Plugin 
+
+abstract class solverpy.solver.plugins.translator.Translator extends solverpy.solver.plugins.plugin.Plugin 
+
+solverpy.solver.plugins.plugin.Plugin "*" o-r- solverpy.solver.pluginsolver.PluginSolver
+
+@enduml

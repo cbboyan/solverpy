@@ -1,6 +1,8 @@
-@startuml
 
-annotation Setup {
+@startuml
+skinparam backgroundColor transparent
+
+dataclass Setup {
     + strategies : list[Sid] 
     + benchmarks : list[Bid] 
     + dataname : str
@@ -109,21 +111,4 @@ Extraction and management
 of training data. Implemented
 as a solver plugin.
 end note
-
-note top of Builder
-Model builder and 
-strategy generator.
-end note
-
-note bottom of Plugin
-Plugins extends the functionality
-of solvers by <i>command decoration</i>
-and <i>processing of solver outputs</i>.
-end note
-
-note bottom of Provider
-Providers connect to 
-different data sources.
-end note
-
 @enduml

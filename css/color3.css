@@ -1,0 +1,11 @@
+/* Crimson gradient header */
+.md-header {
+  background: linear-gradient(135deg, #dc143c 0%, #b91c1c 100%) !important;
+}
+
+/* Update primary colors */
+:root {
+  --md-primary-fg-color: #dc143c;
+  --md-primary-fg-color--light: #ff6b6b;
+  --md-primary-fg-color--dark: #b91c1c;
+}

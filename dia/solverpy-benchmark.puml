@@ -1,0 +1,30 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+dataclass solverpy.setups.Setup {
+   + bidlist : list[Bid] 
+   + sidlist : list[Sid] 
+   + cores : int
+   + limit : str
+   --
+   }
+   circle solverpy.setups.evaluation
+   circle solverpy.setups.eprover
+   circle solverpy.setups.cvc5
+
+   class solverpy.benchmark.db.DB {
+      # providers : Providers
+      --
+      + commit()
+      + connect(benchmark, strategy)
+      + query(tasks) : Results
+      + store(tasks, results)
+}
+
+solverpy.setups.Setup <-- solverpy.setups.evaluation
+solverpy.setups.Setup <-- solverpy.setups.eprover
+solverpy.setups.Setup <-- solverpy.setups.cvc5
+
+solverpy.setups.Setup -right-o "1" solverpy.benchmark.db.DB
+@enduml
