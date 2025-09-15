@@ -24,8 +24,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-"Homepage" = "https://github.com/cbboyan/solverpy"
+"Homepage" = "https://cbboyan.github.io/solverpy/"
+"Source" = "https://github.com/cbboyan/solverpy"
 "Bug Tracker" = "https://github.com/cbboyan/solverpy/issues"
+"Changelog" = "https://github.com/cbboyan/solverpy/blob/main/CHANGELOG.md"
 
 [tool.setuptools-git-versioning]
 enabled = true

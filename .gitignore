@@ -164,4 +164,5 @@ Pipfile.lock
 _dust/
 tags
 docs/api
+docs/dia
 

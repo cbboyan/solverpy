@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2025-09-16)
 
-* docs: Document bids and sids. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: Document bids and sids. [[details](https://github.com/cbboyan/solverpy/commit/ed7a823) | [browse](https://github.com/cbboyan/solverpy/tree/ed7a823)]
 * docs: Generate svgs for PlantUML just once. [[details](https://github.com/cbboyan/solverpy/commit/3df7fdd) | [browse](https://github.com/cbboyan/solverpy/tree/3df7fdd)]
 * docs: Support PlantUML diagrams in the docs. [[details](https://github.com/cbboyan/solverpy/commit/09bd80a) | [browse](https://github.com/cbboyan/solverpy/tree/09bd80a)]
 * docs: Documentation schemes. [[details](https://github.com/cbboyan/solverpy/commit/c8e5d06) | [browse](https://github.com/cbboyan/solverpy/tree/c8e5d06)]
