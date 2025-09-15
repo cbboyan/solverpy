@@ -1,6 +1,29 @@
 .image-container {
+  display: block;
+  cursor: pointer;
+  text-align: center;
+  margin: 0 auto;
+}
+.clickable-image {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+/*
+.image-container {
   display: inline-block;
   cursor: pointer;
+}
+.image-container {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+  cursor: pointer;
+}
+.clickable-image {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
 }
 
 .clickable-image {
@@ -8,6 +31,26 @@
   height: auto;
   transition: transform 0.3s ease;
 }
+*/
+
+/*
+.image-container {
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+  text-align: center;
+
+  align-self: center;
+}
+.clickable-image {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+*/
+
+
 
 .fullscreen {
   position: fixed;

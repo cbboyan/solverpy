@@ -70,8 +70,8 @@ result = cvc5.solve("myproblem.smt2", "--enum-inst") # problem and strategy
 
 _Strategies_ are solver-specific, typically command line options as a string.
 
-☕ The _result_ is a dictionary guaranteed to contain at least two keys: `status` as a string
-and `runtime` in seconds, apart from solver-specific keys.
+> ☕ The _result_ is a dictionary guaranteed to contain at least two keys: `status` as a string
+> and `runtime` in seconds, apart from solver-specific keys.
 
 😎 For more details, see the [`solver`][solverpy.solver] module.
 
@@ -87,7 +87,6 @@ dataclass solverpy.setups.Setup {
    + cores : int
    + limit : str
    --
-   + launch()
    }
    circle solverpy.setups.evaluation
    circle solverpy.setups.eprover
@@ -129,16 +128,17 @@ mysetup = setups.Setup(
 setups.cvc5(mysetup)
 setups.evaluation(mysetup)
 
-mysetup.launch()
+setups.launch(mysetup)
 ```
 
-🤞 Before launching the evaluation, you need to setup the SolverPy database
-by creating directories `solverpy_db/strats` in the current directory.
-This directory stores the strategy files.
-For the above example, there should be an empty file `solverpy_db/strats/default` (default cvc5 strategy).
-The problem files should be in `problems/` directory.
+> 🤞 Before launching the evaluation, you need to setup the SolverPy database
+> by creating directories `solverpy_db/strats` in the current directory. This
+> directory stores the strategy files. For the above example, there should be
+> an empty file `solverpy_db/strats/default` (default cvc5 strategy). The
+> problem files should be in `problems/` directory.
 
-☕ After the evaluation, you can inspect the results in the database directory `solverpy_db/results`.
+> ☕ After the evaluation, you can inspect the results in the database
+> directory `solverpy_db/results`.
 
 😎 For more details, see the [`benchmark`][solverpy.benchmark] module.
 
@@ -156,7 +156,6 @@ dataclass solverpy.setups.Setup {
    + loops : int
    ...
    --
-   + launch()
 }
 circle solverpy.setups.enigma
 circle solverpy.setups.cvc5ml

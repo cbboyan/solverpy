@@ -36,12 +36,13 @@ plugins:
             show_signature_annotations: true
   - autorefs: {}
 
+
 nav:
   - Home: index.md
   - Tutorial: tutorial.md
   - Options: options.md
-  - Test: test.md
   - Markdown: markdown.md
+  - Test: test.md
   - "\U0001F4E6 API \U0001F6A7":
     - "\u2139\uFE0F Overview": api/solverpy/index.md
     - "\U0001F4C1 benchmark":
@@ -49,7 +50,6 @@ nav:
       - "\U0001F4C1 db":
         - "\u2139\uFE0F Overview": api/solverpy/benchmark/db/index.md
         - "\U0001F4C1 providers":
-          - "\u2139\uFE0F Overview": api/solverpy/benchmark/db/providers/index.md
           - "\U0001F916 jsons": api/solverpy/benchmark/db/providers/jsons.md
           - "\U0001F916 loader": api/solverpy/benchmark/db/providers/loader.md
           - "\U0001F916 solved": api/solverpy/benchmark/db/providers/solved.md
@@ -58,11 +58,9 @@ nav:
         - "\U0001F916 db": api/solverpy/benchmark/db/db.md
         - "\U0001F916 provider": api/solverpy/benchmark/db/provider.md
       - "\U0001F4C1 path":
-        - "\u2139\uFE0F Overview": api/solverpy/benchmark/path/index.md
         - "\U0001F916 bids": api/solverpy/benchmark/path/bids.md
         - "\U0001F916 sids": api/solverpy/benchmark/path/sids.md
       - "\U0001F4C1 reports":
-        - "\u2139\uFE0F Overview": api/solverpy/benchmark/reports/index.md
         - "\U0001F916 data": api/solverpy/benchmark/reports/data.md
         - "\U0001F916 markdown": api/solverpy/benchmark/reports/markdown.md
         - "\U0001F916 progress": api/solverpy/benchmark/reports/progress.md
@@ -140,14 +138,15 @@ nav:
       - "\U0001F916 solverpy": api/solverpy/solver/solverpy.md
       - "\U0001F916 stdinsolver": api/solverpy/solver/stdinsolver.md
     - "\U0001F4C1 task":
-      - "\u2139\uFE0F Overview": api/solverpy/task/index.md
       - "\U0001F916 bar": api/solverpy/task/bar.md
       - "\U0001F916 launcher": api/solverpy/task/launcher.md
       - "\U0001F916 shelltask": api/solverpy/task/shelltask.md
       - "\U0001F916 solvertask": api/solverpy/task/solvertask.md
       - "\U0001F916 task": api/solverpy/task/task.md
     - "\U0001F4C1 tools":
-      - "\u2139\uFE0F Overview": api/solverpy/tools/index.md
+      - "\U0001F4C1 markdown":
+        - "\U0001F916 dia": api/solverpy/tools/markdown/dia.md
+        - "\U0001F916 plantuml": api/solverpy/tools/markdown/plantuml.md
       - "\U0001F916 external": api/solverpy/tools/external.md
       - "\U0001F916 human": api/solverpy/tools/human.md
       - "\U0001F916 log": api/solverpy/tools/log.md

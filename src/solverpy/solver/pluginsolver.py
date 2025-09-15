@@ -1,3 +1,52 @@
+"""
+# Solver extension plugins
+
+The class [`PluginSolver`][solverpy.solver.pluginsolver.PluginSolver] extends
+[`Solver`][solverpy.solver.solver.Solver] to add support for plugins. 
+[`Plugin`][solverpy.solver.plugins.plugin.Plugin]'s can extend or modify the
+behavior of the solver. There are two types of plugins: _decorators_ and
+_translators_. 
+
+* [`Decorator`][solverpy.solver.plugins.decorator]'s are used to modify the
+command and the output result of the solver. Typically decorators are used to
+add timing information to the solver output, and parse standardized solver
+output, like TPTP or SMT2. 
+* [`Translator`][solverpy.solver.plugins.translator]'s are used to translate
+the instance and strategy for the
+[`Solver.solve`][solverpy.solver.solver.Solver.solve] method, for example,
+translating a benchmark-problem pair to a filename.
+
+A single solver can register multiple plugins.
+The order of registration might matter.
+The basic abstract class for plugins is [`Plugin`][solverpy.solver.plugins.plugin.Plugin].
+
+```plantuml name="solver-plugins"
+
+abstract class solverpy.solver.pluginsolver.PluginSolver {
+   # decorators : list[Decorator]
+   # translators : list[Translator]
+   --
+   + solve(instance, strategy) : Result
+}
+
+abstract class solverpy.solver.plugins.plugin.Plugin {
+   + register(solver)
+}
+
+abstract class solverpy.solver.plugins.decorator.Decorator extends solverpy.solver.plugins.plugin.Plugin 
+
+abstract class solverpy.solver.plugins.translator.Translator extends solverpy.solver.plugins.plugin.Plugin 
+
+solverpy.solver.plugins.plugin.Plugin "*" o-r- solverpy.solver.pluginsolver.PluginSolver
+
+```
+
+For more on plugins, check the [`plugins`][solverpy.solver.plugins] module. The
+direct superclass of
+[`PluginSolver`][solverpy.solver.pluginsolver.PluginSolver] 
+is [`SolverPy`][solverpy.solver.solverpy.SolverPy] which adds database support.
+"""
+
 from typing import Any, TYPE_CHECKING
 import logging
 
@@ -13,6 +62,21 @@ logger = logging.getLogger(__name__)
 
 
 class PluginSolver(Solver):
+   """
+   ```plantuml name="solver-pluginsolver"
+   abstract class solverpy.solver.solver.Solver
+   abstract class solverpy.solver.pluginsolver.PluginSolver extends solverpy.solver.solver.Solver {
+      # decorators : list[Decorator]
+      # translators : list[Translator]
+      + init(plugins) 
+      + decorate(cmd, instance, strategy) : str
+      + translate(instance, strategy) : tuple
+      + update(instance, strategy, output, result) 
+      + call(pid, method, arguments)
+   }
+   abstract class solverpy.solver.solverpy.SolverPy extends solverpy.solver.pluginsolver.PluginSolver
+   ```
+   """
 
    def __init__(self, plugins: list["Plugin"] = [], **kwargs: Any):
       Solver.__init__(self, **kwargs)

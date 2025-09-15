@@ -56,7 +56,7 @@ def buildsvg(f_puml: str, code: str) -> None:
       with open(f_puml) as f:
          oldcode = f.read()
       if oldcode == code:
-         print(f"Skipped PlantUML diagram: {f_puml}")
+         print(f"Skipped existing PlantUML diagram: {f_puml}")
          return
    with open(f_puml, "w") as f:
       f.write(code)

@@ -39,6 +39,9 @@ E_TABLE = {
 
 
 class E(ShellSolver):
+   """
+   E Prover
+   """
 
    def __init__(
       self,

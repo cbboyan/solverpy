@@ -34,7 +34,7 @@ def get_qualified_name(file_path: Path, src_root: Path) -> str:
    return '.'.join(parts) if parts else ''
 
 
-def create_md_file(py_file: Path, docs_root: Path, src_root: Path) -> Path:
+def create_md_file(py_file: Path, docs_root: Path, src_root: Path) -> Path | None:
    """Create corresponding .md file for a Python file."""
    # Get relative path from src
    rel_path = py_file.relative_to(src_root)
@@ -58,6 +58,9 @@ def create_md_file(py_file: Path, docs_root: Path, src_root: Path) -> Path:
    # Create content
    if qualified_name:
       if rel_path.name == "__init__.py":
+         # check file empty
+         if py_file.stat().st_size == 0:
+            return None
          content = f"::: {qualified_name}\n"
          content = f"# {rel_path.parent.name.capitalize()} Overview \n\n" + content
       else:
@@ -86,7 +89,8 @@ def traverse_module(src_dir: Path, docs_dir: Path) -> List[Path]:
          if file.endswith('.py'):
             py_file = root_path / file
             md_file = create_md_file(py_file, docs_dir, src_dir)
-            created_files.append(md_file)
+            if md_file:
+               created_files.append(md_file)
 
    return created_files
 

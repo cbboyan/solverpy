@@ -1,7 +1,20 @@
 """
+The basic concepts include:
+
++ solver
++ plugin
++ strategy
++ benchmarks
++ result
++ database
++ provider
++ SolverTask
++ builder
+
+
 
 ```plantuml name="overview"
-annotation Setup {
+dataclass Setup {
     + strategies : list[Sid] 
     + benchmarks : list[Bid] 
     + dataname : str
