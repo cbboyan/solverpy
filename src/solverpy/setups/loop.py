@@ -109,6 +109,8 @@ def oneloop(setup: Setup) -> Setup:
    )
    if (it > 0) or ("start_dataname" not in setup):
       evaluator.launch(**setup)
+      if "trains" not in setup:
+         return setup
       trains_compress(setup)
       trains_merge(setup)
    elif "trains" in setup:

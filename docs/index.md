@@ -115,12 +115,18 @@ To evaluate a set of strategies on a set of benchmark problems, you just need to
 Functions from the [`setups`][solverpy.setups] module are used to fill in the required keys and values.
 To run the evaluation you setup a solver for an evaluation, then launch it.
 
+> 🤞 Before launching the evaluation, you need to setup the SolverPy database
+> by creating directories `solverpy_db/strats` in the current directory. This
+> directory stores the strategy files. For the above example, there should be
+> an empty file `solverpy_db/strats/default` (default cvc5 strategy). The
+> problem files should be in `problems/` directory.
+
 ```python
 from solverpy import setups
 
 mysetup = setups.Setup(
     cores=4,
-    bidlist=['problems'],
+    bidlist=["problems"],
     sidlist=["default"],
     limit='T10',
 )
@@ -130,12 +136,6 @@ setups.evaluation(mysetup)
 
 setups.launch(mysetup)
 ```
-
-> 🤞 Before launching the evaluation, you need to setup the SolverPy database
-> by creating directories `solverpy_db/strats` in the current directory. This
-> directory stores the strategy files. For the above example, there should be
-> an empty file `solverpy_db/strats/default` (default cvc5 strategy). The
-> problem files should be in `problems/` directory.
 
 > ☕ After the evaluation, you can inspect the results in the database
 > directory `solverpy_db/results`.

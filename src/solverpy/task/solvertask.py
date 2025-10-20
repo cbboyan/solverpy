@@ -38,7 +38,7 @@ class SolverTask(Task):
           calls: the plugin calls to be executed before solving the task
       """
       Task.__init__(self)
-      self.solver = solver
+      self._solver = solver
       self.bid = bid
       self.sid = sid
       self.problem = problem
@@ -107,4 +107,4 @@ class SolverTask(Task):
       Returns:
           the solver
       """
-      return self.solver
+      return self._solver

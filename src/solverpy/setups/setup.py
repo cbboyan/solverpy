@@ -31,6 +31,7 @@ class Setup(TypedDict, total=False):
        cores: Number of CPU cores for parallel evaluation.
        bidlist: List of benchmark ids. 
        sidlist: List of strategy ids.
+       complete: Complete use of the solver (sat/Satisfiable are successes).
    
    The following parameters additional parameters for an evaluation run:
    
@@ -128,6 +129,7 @@ class Setup(TypedDict, total=False):
    refs: list[str]
    options: list[str]
    delfix: (int | str | None)
+   complete: bool
 
    force: bool
    shuffle: bool
