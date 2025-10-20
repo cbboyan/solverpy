@@ -11,7 +11,7 @@ from ..benchmark.path import bids
 from ..solver.object import SolverPyObj
 
 if TYPE_CHECKING:
-   from ..benchmark.setups.setup import Setup
+   from ..setups.setup import Setup
 
 logger = logging.getLogger(__name__)
 
