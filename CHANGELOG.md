@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2025-10-20)
+## Unreleased changes (2025-10-30)
 
+* feat: Support resource limit for Z3. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * fix: Evaluation-only runs. [[details](https://github.com/cbboyan/solverpy/commit/1ef62ea) | [browse](https://github.com/cbboyan/solverpy/tree/1ef62ea)]
 * docs: Document bids and sids. [[details](https://github.com/cbboyan/solverpy/commit/ed7a823) | [browse](https://github.com/cbboyan/solverpy/tree/ed7a823)]
 * docs: Generate svgs for PlantUML just once. [[details](https://github.com/cbboyan/solverpy/commit/3df7fdd) | [browse](https://github.com/cbboyan/solverpy/tree/3df7fdd)]

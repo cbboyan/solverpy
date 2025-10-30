@@ -20,6 +20,7 @@ Z3_STATIC: str = "-smt2 -st"
 Z3_BUILDER: "LimitBuilder" = {
    "T": "-T:%s",
    "M": lambda giga: f"-memory:{int(1024*float(giga))}",
+   "R": "rlimit=%s",
 }
 
 Z3_PAT: Pattern = re.compile(
