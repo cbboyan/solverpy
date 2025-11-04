@@ -48,6 +48,13 @@ class SolverPy(PluginSolver):
                status="TIMEOUT",
                runtime=self._limits.timeout,
             )
+      elif result["status"] in self.statuses:
+         # the cached result is unknow/GaveUp
+         oldlimits = Limits(result["limit"], {})
+         if oldlimits > self._limits:
+            # recompute if we have less resources (maybe timeout?)
+            # TODO: is this correct?
+            return None
       else:
          # recompute unknown results (GaveUp, unknown)
          # TODO: do we want to always recompute?
