@@ -13,6 +13,7 @@ from .listener import AutotuneListener
 if TYPE_CHECKING:
    from queue import Queue
    from .tune import TuneResult
+   from ..autotuner import AutoTuner
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,10 @@ def tuner(
    min_leaves: int = 16,
    max_leaves: int = 2048,
    queue: "Queue[Any] | None" = None,
+   atpeval: bool = False,
+   builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
+   assert bool(atpeval) == bool(builder)
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
@@ -83,15 +87,22 @@ def tuner(
       queue=queue,
       min_leaves=min_leaves,
       max_leaves=max_leaves,
+      builder=builder,
    )
 
    if init_params is not None:
       f_mod = os.path.join(d_tmp, "init", "model.lgb")
       #(score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
       (_, stats) = build.model(params, dtrain, dtest, f_mod, queue)
+      build.score(stats, builder, "init")
       acc = stats["valid_acc"]
-      best = (stats["score"], acc, stats["train_acc"], f_mod,
-              stats["duration"])
+      best = (
+         stats["score"],
+         acc,
+         stats["train_acc"],
+         f_mod,
+         stats["duration"],
+      )
       logger.debug("- initial model: %s" % human.humanacc(acc))
    else:
       best = (-1, None, None, None, None)

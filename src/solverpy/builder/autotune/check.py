@@ -7,6 +7,7 @@ if TYPE_CHECKING:
    from optuna import Trial
    from lightgbm import Dataset
    from .build import Talker
+   from ..autotuner import AutoTuner
 
 
 def check(
@@ -16,14 +17,29 @@ def check(
    dtest: "Dataset",
    d_tmp: str,
    queue: "Talker | None" = None,
+   builder: "AutoTuner | None" = None,
+   nick: str = "nick",
    **args: Any,
 ) -> float:
    del args  # unused argument
+   #print(f"ARGS: {args}")
    f_mod = os.path.join(d_tmp, "model%04d" % trial.number, "model.lgb")
    #(score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
-   (_, stats) = build.model(params, dtrain, dtest, f_mod, queue)
+   (_, stats) = build.model(
+      params,
+      dtrain,
+      dtest,
+      f_mod,
+      queue,
+   )
+   build.score(
+      stats,
+      builder,
+      f"{nick}/model{trial.number:04d}",
+   )
 
    trial.set_user_attr(key="model", value=f_mod)
+   trial.set_user_attr(key="mlscore", value=stats["mlscore"])
    trial.set_user_attr(key="score", value=stats["score"])
    trial.set_user_attr(key="acc", value=stats["valid_acc"])
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])

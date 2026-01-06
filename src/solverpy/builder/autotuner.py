@@ -60,11 +60,14 @@ class AutoTuner(Builder):
       f_train = self._trains["trains"].path()
       f_test = self._devels["trains"].path()
 
+      use_builder = ("atpeval" in self._tuneargs) and self._tuneargs["atpeval"]
+
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
       ret = autotune.prettytuner(
          f_train=f_train,
          f_test=f_test,
          d_tmp=self.path("opt"),
+         builder=self if use_builder else None,
          **self._tuneargs,
       )
 

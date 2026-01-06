@@ -107,7 +107,8 @@ def run(
             bid,
             sid,
             p,
-            calls=[("trains", enable_trains(p), [], {})],
+            calls=[("trains", enable_trains(p), [],
+                    {})] if enable_trains(p) == "disable" else [],
          ) for p in ps
       ]
       logger.debug(f"evaluation: {len(tasks)} tasks scheduled")
@@ -184,7 +185,6 @@ def run(
    return results
 
 
-
 def launch(
    solver: "SolverPy",
    bidlist: list[str],
@@ -199,7 +199,7 @@ def launch(
    nicks: dict["SolverJob", str] = {}
    totbar: RunningBar | None = None
    refjob = None
-   
+
    def initialize_jobs():
       nonlocal jobs, nicks, totbar, refjob
       logger.debug("evaluation started")
@@ -209,7 +209,9 @@ def launch(
          refjob = (solver, bidlist[0], sidlist[ref])
       jobs = [(solver, bid, sid) for bid in bidlist for sid in sidlist]
       total = sum(len(bids.problems(bid)) for (_, bid, _) in jobs)
-      (nicks, totaldesc, report) = summary.legend(jobs, refjob, sidnames=sidnames)
+      (nicks, totaldesc, report) = summary.legend(jobs,
+                                                  refjob,
+                                                  sidnames=sidnames)
       logger.info(
          f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
       totbar = RunningBar(total, totaldesc, miniters=1)
@@ -231,15 +233,15 @@ def launch(
          totbar.close()
          if totbar._errors:
             logger.error(
-               f"There were errors: {totbar._errors} tasks failed to evaluate.")
+               f"There were errors: {totbar._errors} tasks failed to evaluate."
+            )
       except KeyboardInterrupt as e:
          totbar.close()
          raise e
       report = summary.summarize(allres, nicks, refjob)
       logger.info(f"Evaluation done:\n{report}")
       return allres
-   
+
    initialize_jobs()
    allres = launch_jobs()
    return allres
-

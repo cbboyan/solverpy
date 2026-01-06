@@ -27,7 +27,7 @@ def tune(
    d_tmp = os.path.join(d_tmp, nick)
    if queue: queue.put(("trials", (nick, iters, timeout)))
    study = optuna.create_study(direction='maximize', sampler=sampler)
-   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, queue=queue, **args)
+   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, queue=queue, nick=nick, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
    best = tuple(study.best_trial.user_attrs[x] for x in [
       "score",

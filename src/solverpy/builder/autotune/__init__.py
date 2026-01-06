@@ -1,3 +1,53 @@
+"""
+Meta-parameters tunner.
+
+```plantuml name="builder-autotune"
+class solverpy.builder.autotune.autotune << (M,skyblue) >> {
+  {static} # PHASES : dict[str, Callable]
+  {static} # DEFAULTS : dict[str, Any]
+  --
+  + tuner(...) : tuple
+  + prettytuner(...) : tuple
+}
+
+class solverpy.builder.autotune.tune << (M,skyblue) >> {
+  --
+  # tune() : TuneResult
+  + leaves_grid() : TuneResult
+  + bagging() : TuneResult
+  + min_data() : TuneResult
+  + regular() : TuneResult
+  + depth() : TuneResult
+}
+
+class solverpy.builder.autotune.check << (M,skyblue) >> {
+  --
+  # check() : float
+  + leaves() : float
+  + bagging() : float
+  + min_data() : float
+  + regular() : float
+  + depth() : float
+}
+
+class solverpy.builder.autotune.build << (M,skyblue) >> {
+  --
+  + accuracy(...) : tuple[float, float, float]
+  + model(...) : tuple[Booster, dict[str, Any]]
+}
+
+solverpy.builder.autotune.autotune ..> solverpy.builder.autotune.tune
+
+solverpy.builder.autotune.tune ..> solverpy.builder.autotune.check
+
+solverpy.builder.autotune.check ..> solverpy.builder.autotune.build
+
+
+```
+
+
+"""
+
 from .autotune import tuner, prettytuner
 
 __all__ = ["tuner", "prettytuner"]

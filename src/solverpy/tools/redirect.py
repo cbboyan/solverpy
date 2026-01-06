@@ -22,12 +22,14 @@ class Redirector(object):
    def __init__(self, f_log: str) -> None:
       self._f_log = f_log
 
-   def __enter__(self) -> None:
+   def __enter__(self) -> "Redirector":
       self._redir = start(self._f_log)
+      return self
 
-   def __exit__(self, *args: Any) -> None:
+   def __exit__(self, *args: Any) -> bool:
       del args
       finish(*self._redir)
+      return False
 
 
 def redirect(std: TextIO, fd: int) -> None:
@@ -67,3 +69,4 @@ def call(
          return target(*args, **kwargs)
    except (Exception, KeyboardInterrupt) as e:
       raise (e)  # propagate exception to the parent
+   raise

@@ -5,9 +5,13 @@ import lightgbm as lgb
 from numpy import ndarray
 from scipy.sparse import csr_matrix
 
+from ...setups import Setup
+from ...benchmark import evaluation
+
 if TYPE_CHECKING:
    from queue import Queue
    from lightgbm import Booster, Dataset
+   from ..autotuner import AutoTuner
    Talker = Queue[tuple[str, tuple[Any, ...]]]
 
 POS_ACC_WEIGHT = 2.0
@@ -43,7 +47,7 @@ def model(
    f_mod: str,
    queue: "Talker | None" = None,
 ) -> tuple["Booster", dict[str, Any]]:
-   callbacks = bst = begin = end = score = acc = trainacc = None
+   callbacks = bst = begin = end = mlscore = acc = trainacc = None
 
    def report(key: str, *content: Any) -> None:
       if queue:
@@ -100,7 +104,7 @@ def model(
       return bst
 
    def check_model() -> None:
-      nonlocal score, acc, trainacc
+      nonlocal mlscore, acc, trainacc
       assert bst
       # compute the accuracy on the testing data
       (axs, ays) = (dtest.get_data(), dtest.get_label())
@@ -113,9 +117,9 @@ def model(
       trainacc = accuracy(bst, taxs, tays)
       bst.free_dataset()
       bst.free_network()
-      # compute the score of this model
-      score = POS_ACC_WEIGHT * acc[1] + acc[2]
-      report("built", score)
+      # compute the mlscore of this model
+      mlscore = POS_ACC_WEIGHT * acc[1] + acc[2]
+      report("built", mlscore)
 
    setup_dirs()
    setup_callbacks()
@@ -124,11 +128,32 @@ def model(
 
    assert begin and end
    stats = dict(
-      score=score,
+      mlscore=mlscore,
       valid_acc=acc,
       train_acc=trainacc,
       duration=end - begin,
    )
 
-   #return (score, acc, trainacc, end-begin)
+   #return (mlscore, acc, trainacc, end-begin)
    return (bst, stats)
+
+
+def score(
+   stats: dict[str, Any],
+   builder: "AutoTuner | None",
+   nick: str,
+) -> None:
+   if not builder:
+      stats["score"] = stats["mlscore"]
+      return
+   assert "refs" in builder._trains
+   modelname = f"{builder._dataname}/opt/{nick}"
+   sidlist = builder.applies(builder._trains["refs"], modelname)
+   setup = Setup(builder._devels, sidlist=sidlist)
+   assert "trains" in setup
+   setup["trains"].disable() # do not generate trains now
+   res = evaluation.launch(**setup)
+   solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r)) 
+   score = sum(solved(s, rs) for ((s,_,_), rs) in res.items())
+   stats["score"] = score
+   setup["trains"].enable() # enable back trains
