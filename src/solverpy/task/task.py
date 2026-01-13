@@ -1,8 +1,10 @@
 from typing import Any, Sequence, TYPE_CHECKING
+import signal
 import logging
 
 if TYPE_CHECKING:
    from queue import Queue
+   from ..task.talker import Talker
 
 logger = logging.getLogger(__name__)
 
@@ -33,31 +35,47 @@ class Task:
    def __init__(
       self,
       queue: "Queue[Any] | None" = None,
+      talker: "Talker | None" = None,
    ):
       """Init the task.
 
       :param queue: communication queue (optional) 
 
       """
-      self._queue = queue
+      self._log_queue = queue
+      self._talker = talker
 
    def run(self) -> Any:
       """Run the task and return the result."""
       raise NotImplementedError("Task.run: abstract method not implemented.")
 
    @property
-   def queue(self):
+   def logqueue(self) -> "Queue[Any] | None":
       """Get the queue."""
-      return self._queue
+      return self._log_queue
 
-   @queue.setter
-   def queue(self, q: "Queue[Any]"):
+   @logqueue.setter
+   def logqueue(self, q: "Queue[Any]"):
       """Set the queue.
 
       :param q: the queue
 
       """
-      self._queue = q
+      self._log_queue = q
+
+   #@property
+   #def talker(self) -> "Talker | None":
+   #   """Get the talker."""
+   #   return self._talker
+
+   #@talker.setter
+   #def talker(self, talker: "Talker | None"):
+   #   """Set the talker.
+
+   #   :param t: the talker
+
+   #   """
+   #   self._talker = talker
 
    def status(
       self,
@@ -78,6 +96,7 @@ class Task:
       :param task: the task to be ran
 
       """
+      signal.signal(signal.SIGINT, signal.SIG_IGN)
       try:
          res = task.run()
          status = task.status(res)
@@ -88,16 +107,17 @@ class Task:
          logger.warning(f"Error:: {traceback.format_exc()}")
          status = None
          res = None
-      except KeyboardInterrupt:
-         return None
+      #except KeyboardInterrupt as e:
+      #   raise e
+      #   #return None
       if status is None:
          logger.debug(f"failed task: {task}")
-      if task.queue is not None:
-         task.queue.put(status)
+      #if task.queue is not None:
+      #   task.queue.put(status)
       return res
 
 
-def runtask(task: Task) -> Any:
+def runtask_single(task: Task) -> Any:
    """Run task and return the result.
 
    :param task: 
@@ -106,13 +126,22 @@ def runtask(task: Task) -> Any:
    return task.runtask(task)
 
 
-def setqueue(queue: "Queue[Any]", tasks: Sequence[Task]) -> None:
-   """Set the queue for a list of tasks.
+def runtask(task: Task) -> Any:
+   """Run task and return the result.
 
-   :param queue: the queue to set
-   :param tasks: the tasks to update
+   :param task: 
 
    """
-   for task in tasks:
-      task.queue = queue
+   return (task, task.runtask(task))
+
+
+#def setqueue(queue: "Queue[Any]", tasks: Sequence[Task]) -> None:
+#   """Set the queue for a list of tasks.
+#
+#   :param queue: the queue to set
+#   :param tasks: the tasks to update
+#
+#   """
+#   for task in tasks:
+#      task.queue = queue
 

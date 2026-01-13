@@ -35,3 +35,29 @@ Generic solver result.
 Report = list["str | Report"]
 
 SolverJob = tuple["SolverPy", str, str]
+
+#class SolverJob(tuple):
+#    def __new__(cls, solver: "SolverPy", bid: str, sid: str):
+#        instance = super().__new__(cls, (solver, bid, sid))
+#        return instance
+#    
+#    @property
+#    def solver(self) -> "SolverPy":
+#        return self[0]
+#    
+#    @property
+#    def bid(self) -> str:
+#        return self[1]
+#    
+#    @property
+#    def sid(self) -> str:
+#        return self[2]
+#    
+#    def __hash__(self):
+#        return hash((self.bid, self.sid))
+#    
+#    def __eq__(self, other):
+#        if not isinstance(other, SolverJob):
+#            return False
+#        return self.bid == other.bid and self.sid == other.sid
+    

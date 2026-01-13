@@ -99,7 +99,6 @@ def z3(setup: Setup) -> Setup:
    init(setup)
    return solver(setup, Z3)
 
-
 def cvc5(setup: Setup, training: bool = False) -> Setup:
    init(setup)
    assert "plugins" in setup

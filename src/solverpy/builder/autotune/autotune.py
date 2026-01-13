@@ -9,6 +9,7 @@ from ...tools import human, redirect
 from ...builder import svm
 from . import tune, build
 from .listener import AutotuneListener
+from ...task.talker import Talker
 
 if TYPE_CHECKING:
    from queue import Queue
@@ -57,6 +58,9 @@ def tuner(
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
+   if builder and builder.talker and builder.talker._log_queue:
+      Talker.log_config(builder.talker._log_queue)
+
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
@@ -121,9 +125,10 @@ def tuner(
       return ret
 
 
-def prettytuner(*args, **kwargs) -> Any:
-
-   listener = AutotuneListener()
+def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
+   
+   # TODO: listener uz nekdy musi prijit odjinud?
+   listener = AutotuneListener(headless=headless)
 
    d_tmp = kwargs["d_tmp"]
    os.makedirs(d_tmp, exist_ok=True)
@@ -140,9 +145,10 @@ def prettytuner(*args, **kwargs) -> Any:
          result = listener.listen(msg)
          if result:
             break
-   except (Exception, KeyboardInterrupt) as e:
+   #except (Exception, KeyboardInterrupt) as e:
+   except Exception:
       p.terminate()
-      raise e
+      raise 
    finally:
       p.join()
 

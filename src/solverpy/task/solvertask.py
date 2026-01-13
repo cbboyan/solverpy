@@ -4,6 +4,7 @@ Defines the [`SolverTask`][solverpy.task.solvertask.SolverTask] class.
 
 from typing import TYPE_CHECKING, Any
 from .task import Task
+from .talker import Talker
 
 if TYPE_CHECKING:
    from ..solver.solverpy import SolverPy
@@ -47,6 +48,22 @@ class SolverTask(Task):
    def __str__(self) -> str:
       return f"{self.solver}:{self.sid} @ {self.bid} / {self.problem}"
 
+   def __eq__(self, other):
+      if not isinstance(other, self.__class__):
+         return False
+      return (f"{self.solver}" == f"{other.solver}" \
+         and self.bid == other.bid \
+         and self.sid == other.sid \
+         and self.problem == other.problem)
+
+   def __hash__(self):
+      return hash((
+         str(self.solver),
+         self.bid,
+         self.sid,
+         self.problem,
+      ))
+
    def run(self) -> "Result":
       """
       Run the task and return the result. 
@@ -60,6 +77,8 @@ class SolverTask(Task):
       Returns: 
          the result dictionary
       """
+      if self.logqueue:
+         Talker.log_config(self.logqueue)
       for (pid, method, args, kwargs) in self._calls:
          self.solver.call(pid, method, *args, **kwargs)
       return self.solver.solve(self.instance, self.strategy)

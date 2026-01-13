@@ -86,7 +86,7 @@ class BuilderBar(tqdm):
       d.update(loss=self._loss)
       return d
 
-   def done(
+   def status(
       self,
       loss: list[float],
       n: int = 1,

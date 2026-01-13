@@ -26,7 +26,7 @@ class CachedProvider(Provider):
          store_cache,
       )
       self.compress = compress
-      logger.debug(f"creating provider {self} for {sid} @ {bid}")
+      logger.debug(f"creating provider {type(self).__name__} for {sid} @ {bid}")
       self.load()
 
    def __repr__(self) -> str:
@@ -44,29 +44,30 @@ class CachedProvider(Provider):
          return
       ext = ".gz" if self.compress else ""
       f = f"{self.cachepath()}{ext}"
-      logger.debug(f"cache {self} writing {f}")
+      #logger.debug(f"cache {self} writing {f}")
       os.makedirs(os.path.dirname(f), exist_ok=True)
       ouropen = gzip.open if self.compress else open
       with ouropen(f, "wt") as fw:
          self.cachedump(fw)
-      logger.debug(f"cache {self} saved {len(self.cache)} entries")
+      #logger.debug(f"cache {self} saved {len(self.cache)} entries")
+      logger.debug(f"cache {type(self).__name__} updated")
       self._uptodate = True
 
    def load(self) -> None:
       if self._uptodate:
-         logger.debug(f"loading skipped; cache {self} is up-to-date")
+         logger.debug(f"loading skipped; cache {type(self).__name__} is up-to-date")
          return
       ext = ".gz" if self.compress else ""
       f = f"{self.cachepath()}{ext}"
-      logger.debug(f"cache {self} loading {f}")
+      logger.debug(f"cache {type(self).__name__} loading")
       if os.path.isfile(f):
          ouropen = gzip.open if self.compress else open
          with ouropen(f, "rt") as fr:
             self.cacheload(fr)
-         logger.debug(f"cache {self} loaded {len(self.cache)} entries")
+         logger.debug(f"cache {type(self).__name__} loaded {len(self.cache)} entries")
       else:
          self.cache = {}
-         logger.debug(f"cache {self} not found {f}")
+         logger.debug(f"cache {type(self).__name__} not found")
       self._uptodate = True
 
    def cachepath(self) -> str:

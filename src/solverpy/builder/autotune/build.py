@@ -152,7 +152,7 @@ def score(
    setup = Setup(builder._devels, sidlist=sidlist)
    assert "trains" in setup
    setup["trains"].disable() # do not generate trains now
-   res = evaluation.launch(**setup)
+   res = evaluation.launch(talker=builder.talker, **setup)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r)) 
    score = sum(solved(s, rs) for ((s,_,_), rs) in res.items())
    stats["score"] = score

@@ -5,12 +5,12 @@ import logging
 from .path import bids
 from ..tools import log
 from ..task.solvertask import SolverTask
-from ..task.bar import SolvingBar, RunningBar
+from ..task.talker import Talker
+from ..task.logtalker import LogTalker
 from ..task import launcher
 from .reports import markdown
 from .db.providers.solved import Solved
 from ..setups.setup import Setup
-from . import summary
 
 if TYPE_CHECKING:
    from .db.db import DB
@@ -34,16 +34,9 @@ def init(setup: Setup | None = None):
    logger.info(f"Experiments running.\n{report}")
 
 
-def jobname(solver: Any, bid: str, sid: str) -> str:
-   return f"{solver}:{sid} @ {bid}"
-
-
 def run(
-   solver: "SolverPy",
-   bid: str,
-   sid: str,
-   desc: str | None = None,
-   taskdone: Any = None,
+   job: "SolverJob",
+   talker: Talker,
    db: "DB | None" = None,
    cores: int = 4,
    shuffle: bool = True,
@@ -55,18 +48,18 @@ def run(
    **others: Any,
 ) -> "Result":
    others = dict(others, force=force, it=it, solvedby=solvedby)
-   desc = desc or jobname(solver, bid, sid)
-   logger.debug(f"evaluating {desc}: {jobname(solver, bid, sid)}")
+   talker.next(job)
+   (solver, bid, sid) = job
+   #logger.debug(f"evaluating {jobname(solver, bid, sid)}")
 
    todo: list["SolverTask"] = []
    skipped: dict[str, "Result"] = {}
    done: dict[str, "Result"] = {}
    results: dict[str, "Result"] = {}
    cnt_dis: int = 0
-   bar: "SolvingBar | None" = None
 
    def restrict_problems(ps: list[str]) -> list[str]:
-      nonlocal skipped
+      nonlocal skipped, talker
       if (not solvedby) or (it != 0):
          return ps
       solvable = Solved(bid, solvedby, solver._limits.limit).cache
@@ -78,9 +71,8 @@ def run(
          limit=solver._limits.limit,
       )
       skipped = {p: dict(simulate) for p in (set(ps) - solvable)}
-      if taskdone:
-         for (_, res) in skipped.items():
-            taskdone(solver.solved(res))
+      for (problem, result) in skipped.items():
+         talker.finished(SolverTask(solver, bid, sid, problem), result)
       if db:
          tasks0 = [SolverTask(solver, bid, sid, p) for p in skipped]
          results = [simulate] * len(tasks0)
@@ -121,9 +113,8 @@ def run(
       if db and not force:
          done0 = db.query(tasks)
          todo = [t for t in tasks if t not in done0]
-         if taskdone:
-            for (task, result) in done0.items():
-               taskdone(task.status(result))
+         for (task, result) in done0.items():
+            talker.finished(task, result)
          done = {t.problem: res for (t, res) in done0.items()}
       else:
          done = {}
@@ -135,7 +126,7 @@ def run(
          logger.debug(f"evaluation: {len(todo)} tasks remain to be evaluated")
 
    def launch_evaluation() -> list["Result"]:
-      nonlocal todo, done, bar, results
+      nonlocal todo, done, results
       if not todo:
          logger.debug("evaluation skipped: already done")
          if db:
@@ -146,18 +137,16 @@ def run(
       if shuffle:
          logger.debug(f"shuffling tasks")
          random.shuffle(todo)
-      bar = SolvingBar(len(todo), desc, miniters=1)
       results0 = launcher.launch(
          todo,
-         bar=bar,
-         taskdone=taskdone,
+         talker=talker,
          cores=cores,
          **others,
       )
       return results0
 
    def update_results(results0: list["Result"]):
-      nonlocal results, todo, done, skipped, bar
+      nonlocal results, todo, done, skipped
       # store the new results in the database
       if db: db.store(todo, results0)
       # compose the cached and new results
@@ -171,9 +160,6 @@ def run(
                proofs[p] += 1
       results.update(done)
       results.update(skipped)
-      assert bar
-      logger.debug(
-         f"evaluation done: +{bar._solved} -{bar._unsolved} !{bar._errors}")
 
    # main evaluation of `solver` on `bid` and `sid`
    ps = restrict_problems(bids.problems(bid))
@@ -192,54 +178,42 @@ def launch(
    ref: (bool | int | str | None) = None,
    sidnames: bool = True,
    cores: int = 4,
+   talker: Talker | None = None,
    **others: Any,
 ) -> dict["SolverJob", "Result"]:
 
    jobs: list["SolverJob"] = []
    nicks: dict["SolverJob", str] = {}
-   totbar: RunningBar | None = None
    refjob = None
+   talker = talker or LogTalker()
 
    def initialize_jobs():
-      nonlocal jobs, nicks, totbar, refjob
+      nonlocal jobs, nicks, refjob
       logger.debug("evaluation started")
       if ref is True:
          refjob = (solver, bidlist[0], sidlist[0])
       elif type(ref) is int:
          refjob = (solver, bidlist[0], sidlist[ref])
       jobs = [(solver, bid, sid) for bid in bidlist for sid in sidlist]
-      total = sum(len(bids.problems(bid)) for (_, bid, _) in jobs)
-      (nicks, totaldesc, report) = summary.legend(jobs,
-                                                  refjob,
-                                                  sidnames=sidnames)
-      logger.info(
-         f"Evaluating {len(jobs)} jobs with {total} tasks together:\n{report}")
-      totbar = RunningBar(total, totaldesc, miniters=1)
+      talker.begin(jobs, refjob=refjob, sidnames=sidnames)
 
    def launch_jobs() -> dict["SolverJob", "Result"]:
-      nonlocal totbar, nicks, jobs, refjob
-      assert totbar
+      nonlocal nicks, jobs, refjob, talker
+      assert talker
       allres = {}
       try:
          for job in jobs:
             result1 = run(
-               *job,
-               taskdone=totbar.status,
-               desc=nicks[job],
+               job,
+               talker=talker,
                cores=cores,
                **others,
             )
             allres[job] = result1  # (bid,sid) should be a primary key
-         totbar.close()
-         if totbar._errors:
-            logger.error(
-               f"There were errors: {totbar._errors} tasks failed to evaluate."
-            )
-      except KeyboardInterrupt as e:
-         totbar.close()
-         raise e
-      report = summary.summarize(allres, nicks, refjob)
-      logger.info(f"Evaluation done:\n{report}")
+         talker.end(allres, refjob=refjob)
+      except KeyboardInterrupt:
+         talker.terminate()
+         raise
       return allres
 
    initialize_jobs()

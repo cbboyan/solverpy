@@ -36,7 +36,7 @@ class Timeout(Decorator):
       result: "Result",
    ) -> None:
       del instance, strategy, output # unused arguments
-      # see man(timeout) for timeout exit codes
       if self.solver._exitcode in [124, 137]:
+         # killed by timeout or SIGKILL
          result["status"] = "TIMEOUT"
 

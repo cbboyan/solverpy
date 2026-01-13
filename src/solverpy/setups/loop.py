@@ -1,4 +1,5 @@
-from typing import Any 
+from typing import Callable
+import sys
 import logging
 import gc
 
@@ -6,8 +7,11 @@ from ..benchmark import db
 from ..benchmark import evaluation as evaluator
 from ..tools import log
 from .common import default
+from ..benchmark.path import bids, sids
 from ..builder.builder import Builder
 from .setup import Setup
+from ..task.solvertalker import SolverTalker
+from ..task.logtalker import LogTalker
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +48,18 @@ def looping(setup: Setup) -> Setup:
 
 
 def evaluation(setup: Setup) -> Setup:
+
+   def check_list(setup: Setup, key: str, fun: Callable):
+      if key not in setup:
+         return
+      for id in setup[key]:
+         try:
+            fun(id)
+         except Exception as e:
+            logger.error(f"Wrong id in {key}: {id}")
+            logger.error(f"Exception: {e}")
+            sys.exit(0)
+
    default(setup, "cores", 4)
    default(setup, "ref", True)
    default(setup, "bidfile", "bids")
@@ -60,19 +76,24 @@ def evaluation(setup: Setup) -> Setup:
    if "bidlist" not in setup:
       with open(setup["bidfile"]) as f:
          setup["bidlist"] = f.read().strip().split("\n")
+   check_list(setup, "sidlist", sids.load)
+   check_list(setup, "refs", sids.load)
+   check_list(setup, "bidlist", bids.problems)
    if "loops" in setup:
       looping(setup)
    return setup
 
 
 def oneloop(setup: Setup) -> Setup:
+      
+   assert "options" in setup
+   options = setup["options"]
 
    def is_last(setup):
       return ("loops" in setup) and (setup["it"] == setup["loops"])
 
    def trains_compress(setup: Setup):
-      assert "options" in setup
-      options = setup["options"]
+      nonlocal options
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
          setup["trains"].compress()
@@ -108,7 +129,13 @@ def oneloop(setup: Setup) -> Setup:
       f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> "
    )
    if (it > 0) or ("start_dataname" not in setup):
-      evaluator.launch(**setup)
+      if "headless" in options:
+         talker = LogTalker() 
+      else:
+         talker = SolverTalker()
+      #talker.log_start() # TODO: try this
+      evaluator.launch(talker=talker, **setup)
+      #talker.log_stop()
       if "trains" not in setup:
          return setup
       trains_compress(setup)
@@ -121,7 +148,7 @@ def oneloop(setup: Setup) -> Setup:
    return setup
 
 
-def launch(setup: Setup, devels: Setup | None = None) -> Setup:
+def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    def do_loop(col):
       if not col: return
@@ -134,20 +161,25 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup:
       loopinit(col)
       oneloop(col)
 
-   log.ntfy(setup, "solverpy: init")
-   evaluator.init(setup)
-   do_loop(devels)
-   do_loop(setup)
-   if "loops" in setup:
-      assert "it" in setup
-      while setup["it"] < setup["loops"]:
-         gc.collect()
-         log.ntfy(setup, f"solverpy: iter #{setup['it']}")
-         do_iter(devels)
-         if devels and (setup['it'] + 1 == setup["loops"]):
-            # skip evaluation on trains in the last loop if devel is used
-            break
-         do_iter(setup)
-   log.ntfy(setup, "solverpy: done")
-   return setup
+   try:
+      log.ntfy(setup, "solverpy: init")
+      evaluator.init(setup)
+      do_loop(devels)
+      do_loop(setup)
+      if "loops" in setup:
+         assert "it" in setup
+         while setup["it"] < setup["loops"]:
+            gc.collect()
+            log.ntfy(setup, f"solverpy: iter #{setup['it']}")
+            do_iter(devels)
+            if devels and (setup['it'] + 1 == setup["loops"]):
+               # skip evaluation on trains in the last loop if devel is used
+               break
+            do_iter(setup)
+      log.ntfy(setup, "solverpy: done")
+      return setup
+   except KeyboardInterrupt:
+      #log.ntfy(setup, "solverpy: interrupted")
+      print("Terminated (keyboard interrupt)") 
+      sys.exit(0)
 
