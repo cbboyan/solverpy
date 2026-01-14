@@ -24,7 +24,7 @@ class RemoteTalker(Talker):
 
    def __init__(self, local: Talker):
       Talker.__init__(self)
-      manager = multiprocessing.Manager()
+      manager = multiprocessing.get_context("spawn").Manager()
       self._remote_queue = manager.Queue()
       self._listening_thread = None
       self._stop_listening = threading.Event()

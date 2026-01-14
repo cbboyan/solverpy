@@ -1,6 +1,6 @@
 from typing import Any, Sequence, TYPE_CHECKING
 import logging
-from multiprocessing import Manager
+import multiprocessing as mp
 from queue import Queue
 from logging.handlers import QueueHandler, QueueListener
 
@@ -8,7 +8,7 @@ from ..task.task import Task
 
 if TYPE_CHECKING:
    from ..tools.typing import Result, SolverJob
-   from ..task.solvertask import SolverTask # TODO: generalize to Task
+   from ..task.solvertask import SolverTask  # TODO: generalize to Task
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class Talker:
 
    def __init__(self):
       self._log_queue: Queue[Any] | None = None
-   
+
    @staticmethod
    def log_config(queue):
       """Configure child process logger to use the queue."""
@@ -35,7 +35,7 @@ class Talker:
    def log_start(self):
       """Start parent logging from the queue."""
       root = logging.getLogger()
-      self._log_queue = Manager().Queue()
+      self._log_queue = mp.get_context("spawn").Manager().Queue()
       self._listener = QueueListener(self._log_queue, *root.handlers)
       self._listener.start()
 
@@ -45,7 +45,7 @@ class Talker:
          self._listener.stop()
          self._listener = None
          #logging.getLogger().handlers = self._handlers.copy()
-   
+
    def listening_start(self):
       self.log_start()
 
