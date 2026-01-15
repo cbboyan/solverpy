@@ -1,13 +1,12 @@
 import logging
 from typing import TYPE_CHECKING, Sequence
 
-from .logtalker import LogTalker, jobname
+from .logtalker import LogTalker
 from .bar import SolvingBar, RunningBar
 
 if TYPE_CHECKING:
    from ..tools.typing import Result, SolverJob
    from .task import Task
-   from .solvertask import SolverTask
 
 logger = logging.getLogger(__name__)
 

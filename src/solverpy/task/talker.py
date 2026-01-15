@@ -1,3 +1,51 @@
+"""
+class Talker
+
+```plantuml name="task-talker"
+
+class Talker {
+  - _log_queue: Queue[Any] | None
+  - _listener: QueueListener | None
+  
+  + __init__()
+  + {static} log_config(queue)
+  + log_start()
+  + log_stop()
+  + listening_start()
+  + listening_stop()
+  + begin(jobs, refjob, sidnames, **kwargs)
+  + end(results, refjob)
+  + next(job)
+  + terminate()
+  + launching(tasks)
+  + finished(task, result)
+  + done()
+}
+
+note right of Talker::log_config
+  Configure child process logger
+  to use the queue
+end note
+
+note right of Talker::log_start
+  Start parent logging 
+  from the queue
+end note
+
+note right of Talker::log_stop
+  Stop parent logging
+  from the queue
+end note
+
+note right of Talker::begin
+  Abstract method
+  Raises NotImplementedError
+end note
+
+```
+
+"""
+
 from typing import Any, Sequence, TYPE_CHECKING
 import logging
 import multiprocessing as mp
@@ -17,6 +65,7 @@ class Talker:
 
    def __init__(self):
       self._log_queue: Queue[Any] | None = None
+      self._listener: QueueListener | None = None
 
    @staticmethod
    def log_config(queue):
@@ -52,11 +101,6 @@ class Talker:
    def listening_stop(self):
       self.log_stop()
 
-   #def begin(self, total: int, *, desc: str, **kwargs):
-   #   del total, desc, kwargs  # unused arguments
-   #   raise NotImplementedError(
-   #      "Talker.begin: abstract method not implemented.")
-
    def begin(
       self,
       jobs: list["SolverJob"],
@@ -82,7 +126,9 @@ class Talker:
       pass
 
    def terminate(self):
-      pass
+      if self._listener:
+         self._listener.stop()
+         self._listener = None
 
    def launching(self, tasks: Sequence["Task"]):
       if self._log_queue is None:

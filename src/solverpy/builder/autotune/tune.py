@@ -65,3 +65,8 @@ def regular(**args: Any) -> TuneResult:
 
 def depth(**args: Any) -> TuneResult:
    return tune(check.depth, "depth", **args)
+
+def learning_rate(**args: Any) -> TuneResult:
+   values = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25]
+   sampler = optuna.samplers.GridSampler({"learning_rate": values})
+   return tune(check.learning_rate, "learning_rate", sampler=sampler, **args)

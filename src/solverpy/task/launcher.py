@@ -49,6 +49,10 @@ def launch(
    ret = {}
    logger.debug(f"launching pool with {cores} workers for {len(tasks)} tasks")
    pool = mp.get_context("spawn").Pool(cores)
+   tids = {}
+   for (n,task) in enumerate(tasks):
+      task.tid = n
+      tids[n] = task
    talker.launching(tasks)
    try:
       # TODO: eliminate runtask and make it runtask2
@@ -59,9 +63,9 @@ def launch(
       )
       count = 0
       logger.debug("pool started")
-      for (task, result) in results:
-         talker.finished(task, result)
-         ret[task] = result
+      for (tid, result) in results:
+         talker.finished(tids[tid], result)
+         ret[tid] = result
          count += 1
       logger.debug(f"all tasks done: {len(tasks)} total")
       pool.close()
@@ -76,4 +80,4 @@ def launch(
       pool.join()
       logger.debug(f"pool closed")
       talker.done()
-   return [ret[task] for task in tasks]  # TODO: make it return ret directly
+   return [ret[task.tid] for task in tasks]  # TODO: make it return ret directly

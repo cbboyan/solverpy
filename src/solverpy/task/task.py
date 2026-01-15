@@ -36,6 +36,7 @@ class Task:
       self,
       queue: "Queue[Any] | None" = None,
       talker: "Talker | None" = None,
+      tid: int = -1,
    ):
       """Init the task.
 
@@ -44,10 +45,25 @@ class Task:
       """
       self._log_queue = queue
       self._talker = talker
+      self._tid = tid
 
    def run(self) -> Any:
       """Run the task and return the result."""
       raise NotImplementedError("Task.run: abstract method not implemented.")
+
+   @property
+   def tid(self) -> int:
+      """Get the task id."""
+      return self._tid
+
+   @tid.setter
+   def tid(self, tid: int):
+      """Set the task id.
+
+      :param tid: the task id
+
+      """
+      self._tid = tid
 
    @property
    def logqueue(self) -> "Queue[Any] | None":
@@ -126,13 +142,13 @@ def runtask_single(task: Task) -> Any:
    return task.runtask(task)
 
 
-def runtask(task: Task) -> Any:
+def runtask(task: Task) -> tuple[int, Any]:
    """Run task and return the result.
 
    :param task: 
 
    """
-   return (task, task.runtask(task))
+   return (task.tid, task.runtask(task))
 
 
 #def setqueue(queue: "Queue[Any]", tasks: Sequence[Task]) -> None:

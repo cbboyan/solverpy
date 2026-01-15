@@ -86,14 +86,18 @@ class AutoTuner(Builder):
       else:
          self.talker = RemoteTalker(SolverTalker())
       self.talker.listening_start()
-      ret = autotune.prettytuner(
-         headless=headless,
-         f_train=f_train,
-         f_test=f_test,
-         d_tmp=self.path("opt"),
-         builder=self if use_builder else None,
-         **self._tuneargs,
-      )
+      try:
+         ret = autotune.prettytuner(
+            headless=headless,
+            f_train=f_train,
+            f_test=f_test,
+            d_tmp=self.path("opt"),
+            builder=self if use_builder else None,
+            **self._tuneargs,
+         )
+      except KeyboardInterrupt:
+         self.talker.terminate()
+         raise
       self.talker.listening_stop()
 
       #f_best = ret[3]

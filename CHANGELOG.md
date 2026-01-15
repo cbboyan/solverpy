@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-01-15)
+
+* feat: Introduce tuning of learning_rate. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v1.9.2 (2026-01-14)
 
-* fix!: Slow ATP evaluation launching [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix!: Slow ATP evaluation launching [[details](https://github.com/cbboyan/solverpy/commit/f9ac5a4) | [browse](https://github.com/cbboyan/solverpy/tree/f9ac5a4)]
 * feat: Console headless mode and progress bar fixes. [[details](https://github.com/cbboyan/solverpy/commit/b9c03d8) | [browse](https://github.com/cbboyan/solverpy/tree/b9c03d8)]
 * feat: ATP evaluation for model building. [[details](https://github.com/cbboyan/solverpy/commit/9a31b55) | [browse](https://github.com/cbboyan/solverpy/tree/9a31b55)]
 * feat: Support resource limit for Z3. [[details](https://github.com/cbboyan/solverpy/commit/7ce9b49) | [browse](https://github.com/cbboyan/solverpy/tree/7ce9b49)]

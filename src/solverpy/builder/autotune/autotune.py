@@ -24,6 +24,7 @@ PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "r": tune.regular,
    "m": tune.min_data,
    "d": tune.depth,
+   "e": tune.learning_rate,
 }
 
 DEFAULTS: dict[str, Any] = {
@@ -127,7 +128,6 @@ def tuner(
 
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
    
-   # TODO: listener uz nekdy musi prijit odjinud?
    listener = AutotuneListener(headless=headless)
 
    d_tmp = kwargs["d_tmp"]

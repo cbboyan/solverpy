@@ -1,8 +1,12 @@
+from typing import Any, TYPE_CHECKING
 import logging
 import multiprocessing
 import threading
 
 from .talker import Talker
+
+if TYPE_CHECKING:
+   from queue import Queue
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +29,10 @@ class RemoteTalker(Talker):
    def __init__(self, local: Talker):
       Talker.__init__(self)
       manager = multiprocessing.get_context("spawn").Manager()
-      self._remote_queue = manager.Queue()
-      self._listening_thread = None
-      self._stop_listening = threading.Event()
-      self._local = local
+      self._remote_queue: Queue[Any] = manager.Queue()
+      self._listening_thread: threading.Thread | None = None
+      self._stop_listening: threading.Event = threading.Event()
+      self._local: Talker = local
 
    def __getattribute__(self, name):
       if name in RemoteTalker.REMOTES:
@@ -84,9 +88,19 @@ class RemoteTalker(Talker):
       try:
          handler = getattr(self._local, method)
       except AttributeError:
-         logger.error(f"Method '{method}' not found on local talker\n{self._local}\n{dir(self._local)}")
+         logger.error(
+            f"Method '{method}' not found on local talker\n{self._local}\n{dir(self._local)}"
+         )
       assert handler
       try:
          handler(*args, **kwargs)
       except Exception as e:
          logger.error(f"Error calling {method}: {e}", exc_info=True)
+
+   def terminate(self):
+      super().terminate()
+      self._local.terminate()
+      if self._listening_thread and self._listening_thread.is_alive():
+         self._stop_listening.set()
+         self._listening_thread.join(timeout=2.0)
+         self._listening_thread = None
