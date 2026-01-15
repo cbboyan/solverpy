@@ -1,0 +1,11 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+class Legend {
+   + function (method call)
+   - communication (primitives)
+   # code lines (snippets)
+   ~ thread/process (launching)
+}
+@enduml

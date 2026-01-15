@@ -2411,11 +2411,18 @@ It auromatically connects to database <a class="autorefs autorefs-internal" titl
 </blockquote>
 <p>Functions from the <a class="autorefs autorefs-internal" href="api/solverpy/setups/#solverpy.setups"><code>setups</code></a> module are used to fill in the required keys and values.
 To run the evaluation you setup a solver for an evaluation, then launch it.</p>
+<blockquote>
+<p>🤞 Before launching the evaluation, you need to setup the SolverPy database
+by creating directories <code>solverpy_db/strats</code> in the current directory. This
+directory stores the strategy files. For the above example, there should be
+an empty file <code>solverpy_db/strats/default</code> (default cvc5 strategy). The
+problem files should be in <code>problems/</code> directory.</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">solverpy</span> <span class="kn">import</span> <span class="n">setups</span>
 
 <span class="n">mysetup</span> <span class="o">=</span> <span class="n">setups</span><span class="o">.</span><span class="n">Setup</span><span class="p">(</span>
     <span class="n">cores</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">bidlist</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;problems&#39;</span><span class="p">],</span>
+    <span class="n">bidlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;problems&quot;</span><span class="p">],</span>
     <span class="n">sidlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">],</span>
     <span class="n">limit</span><span class="o">=</span><span class="s1">&#39;T10&#39;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -2426,11 +2433,6 @@ To run the evaluation you setup a solver for an evaluation, then launch it.</p>
 <span class="n">setups</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">mysetup</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
-<p>🤞 Before launching the evaluation, you need to setup the SolverPy database
-by creating directories <code>solverpy_db/strats</code> in the current directory. This
-directory stores the strategy files. For the above example, there should be
-an empty file <code>solverpy_db/strats/default</code> (default cvc5 strategy). The
-problem files should be in <code>problems/</code> directory.</p>
 <p>☕ After the evaluation, you can inspect the results in the database
 directory <code>solverpy_db/results</code>.</p>
 </blockquote>

@@ -1,0 +1,107 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+class solverpy.builder.autotune.build << (M,skyblue) >> {
+   + model(params)
+   --
+   + score(model)
+   # evaluation.launch()
+}
+
+
+class solverpy.benchmark.evaluation << (M,skyblue) >> {
+  + launch(jobs) : Results
+  --
+  + run(job) : Result
+}
+
+class solverpy.setups.loop << (M,skyblue) >> {
+  + evaluation(setup) : Setup
+  --
+  + launch(setup) : Setup
+  + oneloop(setup) : Setup
+}
+
+class solverpy.builder.autotune.build << (M,skyblue) >> {
+  + model(params)
+  + score(model)
+}
+
+class solverpy.task.launcher << (M,skyblue) >> {
+  + launch(tasks)
+  ~ pool = Pool(cores)
+}
+
+class solverpy.task.SolverTask {
+  - queue: Queue
+  - talker: Talker
+  --
+  {static} + runtask(task)
+  # task.run()
+  --
+  + run()
+  {static} # Talker.log_config()
+  # plugin.calls()
+  # solver.solve()
+}
+
+class solverpy.tools.external << (M,skyblue) >> {
+   + external
+   --
+   ~ Process.start(target)
+}
+
+class solverpy.builder.svm << (M,skyblue) >> {
+   + compress
+   + decompress
+   + merge 
+}
+
+class solverpy.builder.autotune.autotune << (M,skyblue) >> {
+   + prettytuner(setup)
+   # queue = Queue()
+   ~ Process.start(tuner)
+   --
+   + tuner(setup)
+   # build.model()
+   # tune(phase)
+}
+
+class solverpy.builder.autotune.tune << (M,skyblue) >> {
+   + leaves_grid()
+   + bagging()
+   + regular()
+   + min_data()
+   + depth()
+   --
+   + tune()
+   # study = optuna.study()
+   ~ study.optimize(check)
+}
+
+class solverpy.builder.autotune.check << (M,skyblue) >> {
+   + leaves()
+   + bagging()
+   + regular()
+   + min_data()
+   + depth()
+   --
+   + check()
+   # build.model()
+   # build.score()
+}
+
+solverpy.setups.loop ..> solverpy.benchmark.evaluation
+solverpy.builder.autotune.build ..> solverpy.benchmark.evaluation
+solverpy.benchmark.evaluation ..> solverpy.task.launcher
+solverpy.task.launcher ..> solverpy.task.SolverTask
+solverpy.builder.svm ..> solverpy.tools.external
+
+solverpy.builder.autotune.autotune ..> solverpy.builder.autotune.tune
+solverpy.builder.autotune.tune ..> solverpy.builder.autotune.check
+solverpy.builder.autotune.check ..> solverpy.builder.autotune.build
+
+
+@enduml

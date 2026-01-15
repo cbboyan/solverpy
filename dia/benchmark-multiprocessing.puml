@@ -1,0 +1,62 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+class solverpy.task.launcher << (M,skyblue) >> {
+  + launch(tasks)
+  ~ pool = Pool(cores)
+}
+
+class solverpy.tools.external << (M,skyblue) >> {
+   + external
+   --
+   ~ Process.start(target)
+}
+
+class solverpy.builder.svm << (M,skyblue) >> {
+   + compress()
+   + decompress()
+   + merge() 
+}
+
+class solverpy.builder.autotune.autotune << (M,skyblue) >> {
+   + prettytuner(setup)
+   # queue = Queue()
+   ~ Process.start(tuner)
+   --
+   + tuner(setup)
+   # build.model()
+   # tune(phase)
+}
+
+class solverpy.setups.loop << (M,skyblue) >> {
+   + launch(setup)
+   --
+   + oneloop(setup)
+   # evaluation.launch()
+}
+
+class solverpy.task.remotetalker.RemoteTalker {
+   + listening_start()
+   ~ Thread.start()
+   --
+   + listening_stop()
+   ~ Thread.join()
+}
+
+class solverpy.task.talker.Talker {
+   + listening_start()
+   ~ QueueListener.start()
+   --
+   + listening_stop()
+   ~ QueueListener.stop()
+}
+
+
+solverpy.builder.svm ..> solverpy.tools.external : target
+solverpy.setups.loop ..> solverpy.task.launcher
+solverpy.builder.autotune.autotune ..> solverpy.task.launcher
+
+
+@enduml

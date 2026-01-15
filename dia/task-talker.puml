@@ -1,0 +1,45 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+class Talker {
+  - _log_queue: Queue[Any] | None
+  - _listener: QueueListener | None
+
+  + __init__()
+  + {static} log_config(queue)
+  + log_start()
+  + log_stop()
+  + listening_start()
+  + listening_stop()
+  + begin(jobs, refjob, sidnames, **kwargs)
+  + end(results, refjob)
+  + next(job)
+  + terminate()
+  + launching(tasks)
+  + finished(task, result)
+  + done()
+}
+
+note right of Talker::log_config
+  Configure child process logger
+  to use the queue
+end note
+
+note right of Talker::log_start
+  Start parent logging 
+  from the queue
+end note
+
+note right of Talker::log_stop
+  Stop parent logging
+  from the queue
+end note
+
+note right of Talker::begin
+  Abstract method
+  Raises NotImplementedError
+end note
+
+@enduml

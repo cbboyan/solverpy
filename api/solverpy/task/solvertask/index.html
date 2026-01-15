@@ -2459,8 +2459,7 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 
               <details class="quote">
                 <summary>Source code in <code>src/solverpy/task/solvertask.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
-<span class="normal"> 14</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 14</span>
 <span class="normal"> 15</span>
 <span class="normal"> 16</span>
 <span class="normal"> 17</span>
@@ -2556,7 +2555,26 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SolverTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SolverTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Represents a task to be executed by a</span>
 <span class="sd">   [`SolverPy`][solverpy.solver.solverpy.SolverPy] solver. </span>
@@ -2584,7 +2602,7 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="sd">          calls: the plugin calls to be executed before solving the task</span>
 <span class="sd">      &quot;&quot;&quot;</span>
       <span class="n">Task</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span> <span class="o">=</span> <span class="n">solver</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">bid</span> <span class="o">=</span> <span class="n">bid</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">sid</span> <span class="o">=</span> <span class="n">sid</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
@@ -2592,6 +2610,22 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 
    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
       <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bid</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="si">}</span><span class="s2">&quot;</span>
+
+   <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+         <span class="k">return</span> <span class="kc">False</span>
+      <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">solver</span><span class="si">}</span><span class="s2">&quot;</span> \
+         <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bid</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">bid</span> \
+         <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">sid</span> \
+         <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">problem</span><span class="p">)</span>
+
+   <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
+         <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">),</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">bid</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span>
+      <span class="p">))</span>
 
    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Result&quot;</span><span class="p">:</span>
 <span class="w">      </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2606,6 +2640,8 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="sd">      Returns: </span>
 <span class="sd">         the result dictionary</span>
 <span class="sd">      &quot;&quot;&quot;</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logqueue</span><span class="p">:</span>
+         <span class="n">Talker</span><span class="o">.</span><span class="n">log_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logqueue</span><span class="p">)</span>
       <span class="k">for</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls</span><span class="p">:</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">)</span>
@@ -2653,7 +2689,7 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="sd">      Returns:</span>
 <span class="sd">          the solver</span>
 <span class="sd">      &quot;&quot;&quot;</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2902,8 +2938,7 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 
             <details class="quote">
               <summary>Source code in <code>src/solverpy/task/solvertask.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -2926,7 +2961,8 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
-<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
    <span class="bp">self</span><span class="p">,</span>
    <span class="n">solver</span><span class="p">:</span> <span class="s2">&quot;SolverPy&quot;</span><span class="p">,</span>
    <span class="n">bid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2946,7 +2982,7 @@ of <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.SolverT
 <span class="sd">       calls: the plugin calls to be executed before solving the task</span>
 <span class="sd">   &quot;&quot;&quot;</span>
    <span class="n">Task</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-   <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span> <span class="o">=</span> <span class="n">solver</span>
    <span class="bp">self</span><span class="o">.</span><span class="n">bid</span> <span class="o">=</span> <span class="n">bid</span>
    <span class="bp">self</span><span class="o">.</span><span class="n">sid</span> <span class="o">=</span> <span class="n">sid</span>
    <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
@@ -3000,22 +3036,24 @@ the <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.Solver
 
             <details class="quote">
               <summary>Source code in <code>src/solverpy/task/solvertask.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Result&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Result&quot;</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Run the task and return the result. </span>
 
@@ -3028,6 +3066,8 @@ the <a class="autorefs autorefs-internal" href="#solverpy.task.solvertask.Solver
 <span class="sd">   Returns: </span>
 <span class="sd">      the result dictionary</span>
 <span class="sd">   &quot;&quot;&quot;</span>
+   <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logqueue</span><span class="p">:</span>
+      <span class="n">Talker</span><span class="o">.</span><span class="n">log_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logqueue</span><span class="p">)</span>
    <span class="k">for</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls</span><span class="p">:</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">)</span>
@@ -3105,20 +3145,20 @@ queue.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/solverpy/task/solvertask.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s2">&quot;Result&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s2">&quot;Result&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Translate the result to (typically smaller) status to send it over the</span>
 <span class="sd">   queue.</span>

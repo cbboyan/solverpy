@@ -2474,6 +2474,17 @@ filled in by functions in the <a class="autorefs autorefs-internal" href="../#so
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="solverpy.setups.setup.Setup.complete">complete</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Complete use of the solver (sat/Satisfiable are successes).</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
       <p>The following parameters additional parameters for an evaluation run:</p>
@@ -3046,7 +3057,9 @@ directly by the user.</p>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Setup</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Setup</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   A (typed) dictionary summarizing the configuration of the experiment.</span>
 <span class="sd">   An ordinary dictionary can be used in its place but type annotations</span>
@@ -3064,6 +3077,7 @@ directly by the user.</p>
 <span class="sd">       cores: Number of CPU cores for parallel evaluation.</span>
 <span class="sd">       bidlist: List of benchmark ids. </span>
 <span class="sd">       sidlist: List of strategy ids.</span>
+<span class="sd">       complete: Complete use of the solver (sat/Satisfiable are successes).</span>
 
 <span class="sd">   The following parameters additional parameters for an evaluation run:</span>
 
@@ -3161,6 +3175,7 @@ directly by the user.</p>
    <span class="n">refs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
    <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
    <span class="n">delfix</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span>
+   <span class="n">complete</span><span class="p">:</span> <span class="nb">bool</span>
 
    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span>
    <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span>
