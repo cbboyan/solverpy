@@ -1,9 +1,8 @@
 from typing import Any
 import os
 import re
-import random
 
-from .svm import SvmTrains
+from .svm import SvmTrains, filter_posneg
 from .multi import MultiTrains
 from ...solver.plugins.db.outputs import Outputs
 from ...benchmark.path import bids
@@ -128,20 +127,11 @@ class EnigmaTrainsDebug(Outputs):
 
 def samples(output: str, variant: str, ratio: float = 0) -> str:
    assert variant in ["sel", "gen"]
+   seed = hash(output)
    pattern = SEL if variant == "sel" else GEN
    vectors = pattern.findall(output)
    vectors = [x[7:] for x in vectors]  # NOTE: this also removes the sign [+-]
-   if ratio != 0:
-      pos = [x for x in vectors if x.startswith("1")]
-      neg = [x for x in vectors if x.startswith("0")]
-      if (ratio > 0) and (len(pos) * ratio < len(neg)):
-         # filter negative samples
-         neg = random.sample(neg, int(len(pos) * ratio))
-         vectors = pos + neg
-      if (ratio < 0) and (len(neg) * -ratio < len(pos)):
-         # filter positive samples
-         pos = random.sample(pos, int(len(neg) * -ratio))
-         vectors = pos + neg
+   vectors = filter_posneg(vectors, ratio, seed=seed)
    if vectors: vectors.append("")  # new line at the end
    return "\n".join(vectors) if vectors else ""
 

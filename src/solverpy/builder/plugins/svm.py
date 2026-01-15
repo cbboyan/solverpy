@@ -1,4 +1,6 @@
+from typing import Any
 import os
+import random
 import logging
 import multiprocessing
 
@@ -69,3 +71,24 @@ class SvmTrains(Trains):
          logger.warning(f"Link targed exists: {dst}.")
          return
       svm.link(src, dst)
+
+
+def filter_posneg(
+   samples: list[Any],
+   ratio: float,
+   seed: int = 0,
+) -> list[Any]:
+   if ratio == 0:
+      return samples
+   pos = [x for x in samples if x.startswith("1")]
+   neg = [x for x in samples if x.startswith("0")]
+   random.seed(seed)
+   if (ratio > 0) and (len(pos) * ratio < len(neg)):
+      # filter negative samples
+      neg = random.sample(neg, int(len(pos) * ratio))
+      samples = pos + neg
+   if (ratio < 0) and (len(neg) * -ratio < len(pos)):
+      # filter positive samples
+      pos = random.sample(pos, int(len(neg) * -ratio))
+      samples = pos + neg
+   return samples

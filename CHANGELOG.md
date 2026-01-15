@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-01-15)
+## Unreleased changes (2026-01-16)
 
-* feat: Introduce tuning of learning_rate. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Keep pos/neg ratio for cvc5ml. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Introduce tuning of learning_rate. [[details](https://github.com/cbboyan/solverpy/commit/4850b71) | [browse](https://github.com/cbboyan/solverpy/tree/4850b71)]
 
 ## v1.9.2 (2026-01-14)
 
