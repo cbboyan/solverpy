@@ -150,5 +150,6 @@ class Setup(TypedDict, total=False):
    gen_features: str
    sel_features: str
    posneg_ratio: float
+   posneg_weight: float
    templates: list[str]
 

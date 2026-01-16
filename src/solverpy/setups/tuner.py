@@ -22,6 +22,11 @@ def defaultrefs(trains: Setup) -> None:
       idx = ref if (type(ref) is int) else 0
       trains["refs"] = [trains["sidlist"][idx]]
 
+def defaultweight(trains: Setup, tune: dict[str, Any] | None) -> None:
+   if not tune:
+      return
+   if ("posneg_weight" in trains) and ("posneg_weight" not in tune):
+      tune["posneg_weight"] = trains["posneg_weight"]
 
 def autotuner(
    mk_builder: BuilderMaker,
@@ -39,6 +44,7 @@ def cvc5ml(
    devels: (Setup | None) = None,
    tuneargs: (dict[str, Any] | None) = None,
 ) -> Setup:
+   defaultweight(trains, tuneargs)
    return autotuner(Cvc5ML, trains, devels, tuneargs)
 
 
@@ -49,6 +55,8 @@ def enigma(
    tunegen: (dict[str, Any] | None) = None,
 ) -> Setup:
    default(trains, "templates", None)
+   defaultweight(trains, tunesel)
+   defaultweight(trains, tunegen)
    assert "templates" in trains
    return autotuner(
       Enigma,

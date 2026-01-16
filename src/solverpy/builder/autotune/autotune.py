@@ -56,6 +56,7 @@ def tuner(
    max_leaves: int = 2048,
    queue: "Queue[Any] | None" = None,
    atpeval: bool = False,
+   posneg_weight: float = 0,
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
@@ -77,7 +78,13 @@ def tuner(
    pos = sum(ys)
    neg = len(ys) - pos
    #params["scale_pos_weight"] = neg / pos
-   params["is_unbalance"] = "true" if neg != pos else "false"
+   if posneg_weight == 0:
+      params["is_unbalance"] = "true" if neg != pos else "false"
+      logger.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
+   else:
+      params["scale_pos_weight"] = posneg_weight * (neg / pos)
+      logger.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
+
    phases0 = phases.split(":")
    if "m" in phases:
       params["feature_pre_filter"] = "false"
