@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-01-16)
 
-* feat: Keep pos/neg ratio for cvc5ml. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Disabling generation of debugging trains. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Keep pos/neg ratio for cvc5ml. [[details](https://github.com/cbboyan/solverpy/commit/5f8ba0b) | [browse](https://github.com/cbboyan/solverpy/tree/5f8ba0b)]
 * feat: Introduce tuning of learning_rate. [[details](https://github.com/cbboyan/solverpy/commit/4850b71) | [browse](https://github.com/cbboyan/solverpy/tree/4850b71)]
 
 ## v1.9.2 (2026-01-14)

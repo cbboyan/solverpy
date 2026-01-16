@@ -35,12 +35,6 @@ class Trains(Decorator):
       self._enabled = True
       self.reset(dataname, filename)
 
-   def enable(self):
-      self._enabled = True
-
-   def disable(self):
-      self._enabled = False
-
    def reset(
       self,
       dataname: (str | None) = None,

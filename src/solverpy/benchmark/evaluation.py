@@ -99,8 +99,10 @@ def run(
             bid,
             sid,
             p,
-            calls=[("trains", enable_trains(p), [],
-                    {})] if enable_trains(p) == "disable" else [],
+            calls=[
+               ("trains", "disable", [], {}),
+               ("debug-trains", "disable", [], {}),
+            ] if enable_trains(p) == "disable" else [],
          ) for p in ps
       ]
       logger.debug(f"evaluation: {len(tasks)} tasks scheduled")

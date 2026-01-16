@@ -150,10 +150,13 @@ def score(
    modelname = f"{builder._dataname}/opt/{nick}"
    sidlist = builder.applies(builder._trains["refs"], modelname)
    setup = Setup(builder._devels, sidlist=sidlist)
+   assert "solver" in setup
    assert "trains" in setup
-   setup["trains"].disable() # do not generate trains now
+   setup["solver"].call("trains", "disable")
+   setup["solver"].call("debug-trains", "disable")
    res = evaluation.launch(talker=builder.talker, **setup)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r)) 
    score = sum(solved(s, rs) for ((s,_,_), rs) in res.items())
    stats["score"] = score
-   setup["trains"].enable() # enable back trains
+   setup["solver"].call("trains", "enable")
+   setup["solver"].call("debug-trains", "enable")

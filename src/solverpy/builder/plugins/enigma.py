@@ -81,7 +81,7 @@ class EnigmaTrainsDebug(Outputs):
       flatten: bool = True,
       ratio: float = 0,
    ):
-      Outputs.__init__(self, flatten)
+      Outputs.__init__(self, flatten, pid="debug-trains")
       self._path = os.path.join(
          bids.dbpath(NAME),
          "debug",

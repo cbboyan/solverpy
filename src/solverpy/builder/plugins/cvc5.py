@@ -32,7 +32,7 @@ class Cvc5TrainsDebug(Outputs):
 
    def __init__(self, flatten: bool = True, ratio: float = 0):
       self._ratio = ratio
-      Outputs.__init__(self, flatten)
+      Outputs.__init__(self, flatten, pid="debug-trains")
       self._path = bids.dbpath(NAME)
 
    def path(self, instance: tuple[str, str], strategy: str) -> str:

@@ -17,8 +17,14 @@ class Outputs(Decorator):
       self,
       flatten: bool = True,
       compress: bool = True,
+      pid: str | None = None,
    ):
-      Decorator.__init__(self, flatten=flatten, compress=compress)
+      Decorator.__init__(
+         self,
+         flatten=flatten,
+         compress=compress,
+         pid=pid,
+      )
       self._path = bids.dbpath(NAME)
       self._flatten = flatten
       self._compress = compress
@@ -47,6 +53,8 @@ class Outputs(Decorator):
       output: str,
       result: dict,
    ) -> None:
+      if not self._enabled:
+         return
       if output and self.solver.valid(result):
          self.write(instance, strategy, output)
 
@@ -56,6 +64,8 @@ class Outputs(Decorator):
       strategy: str,
       content: str,
    ) -> None:
+      if not self._enabled:
+         return
       f = self.path(instance, strategy)
       os.makedirs(os.path.dirname(f), exist_ok=True)
       if self._compress:
@@ -64,4 +74,3 @@ class Outputs(Decorator):
          fw = open(f, "wb")
       fw.write(content.encode())
       fw.close()
-
