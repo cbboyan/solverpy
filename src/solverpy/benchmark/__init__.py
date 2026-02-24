@@ -1,4 +1,196 @@
 """
+# Module overview
+
+## Legend
+
+```plantuml name="code-legend"
+class Legend {
+   + function (method call)
+   - communication (primitives)
+   # code lines (snippets)
+   ~ thread/process (launching)
+}
+```
+
+## Multiprocessing
+
+The following diagram highlights places where new Python processes or threads
+are launched.
+`launcher` launches Pool for parallel execution of solvers.
+Method `prettytuner` launches `tuner` in a separate process to avoid issues
+with unallocated memory.
+Note that this might involve pool execution for ATP evaluation.
+
+```plantuml name="benchmark-multiprocessing"
+
+class solverpy.task.launcher << (M,skyblue) >> {
+  + launch(tasks)
+  ~ pool = Pool(cores)
+}
+
+class solverpy.tools.external << (M,skyblue) >> {
+   + external
+   --
+   ~ Process.start(target)
+}
+
+class solverpy.builder.svm << (M,skyblue) >> {
+   + compress()
+   + decompress()
+   + merge() 
+}
+
+class solverpy.builder.autotune.autotune << (M,skyblue) >> {
+   + prettytuner(setup)
+   # queue = Queue()
+   ~ Process.start(tuner)
+   --
+   + tuner(setup)
+   # build.model()
+   # tune(phase)
+}
+
+class solverpy.setups.loop << (M,skyblue) >> {
+   + launch(setup)
+   --
+   + oneloop(setup)
+   # evaluation.launch()
+}
+
+class solverpy.task.remotetalker.RemoteTalker {
+   + listening_start()
+   ~ Thread.start()
+   --
+   + listening_stop()
+   ~ Thread.join()
+}
+
+class solverpy.task.talker.Talker {
+   + listening_start()
+   ~ QueueListener.start()
+   --
+   + listening_stop()
+   ~ QueueListener.stop()
+}
+
+
+solverpy.builder.svm ..> solverpy.tools.external : target
+solverpy.setups.loop ..> solverpy.task.launcher
+solverpy.builder.autotune.autotune ..> solverpy.task.launcher
+
+
+```
+
+
+## Big View
+
+```plantuml name="benchmark-overview"
+
+class solverpy.builder.autotune.build << (M,skyblue) >> {
+   + model(params)
+   --
+   + score(model)
+   # evaluation.launch()
+}
+
+
+class solverpy.benchmark.evaluation << (M,skyblue) >> {
+  + launch(jobs) : Results
+  --
+  + run(job) : Result
+}
+
+class solverpy.setups.loop << (M,skyblue) >> {
+  + evaluation(setup) : Setup
+  --
+  + launch(setup) : Setup
+  + oneloop(setup) : Setup
+}
+
+class solverpy.builder.autotune.build << (M,skyblue) >> {
+  + model(params)
+  + score(model)
+}
+
+class solverpy.task.launcher << (M,skyblue) >> {
+  + launch(tasks)
+  ~ pool = Pool(cores)
+}
+
+class solverpy.task.SolverTask {
+  - queue: Queue
+  - talker: Talker
+  --
+  {static} + runtask(task)
+  # task.run()
+  --
+  + run()
+  {static} # Talker.log_config()
+  # plugin.calls()
+  # solver.solve()
+}
+
+class solverpy.tools.external << (M,skyblue) >> {
+   + external
+   --
+   ~ Process.start(target)
+}
+
+class solverpy.builder.svm << (M,skyblue) >> {
+   + compress
+   + decompress
+   + merge 
+}
+
+class solverpy.builder.autotune.autotune << (M,skyblue) >> {
+   + prettytuner(setup)
+   # queue = Queue()
+   ~ Process.start(tuner)
+   --
+   + tuner(setup)
+   # build.model()
+   # tune(phase)
+}
+
+class solverpy.builder.autotune.tune << (M,skyblue) >> {
+   + leaves_grid()
+   + bagging()
+   + regular()
+   + min_data()
+   + depth()
+   --
+   + tune()
+   # study = optuna.study()
+   ~ study.optimize(check)
+}
+
+class solverpy.builder.autotune.check << (M,skyblue) >> {
+   + leaves()
+   + bagging()
+   + regular()
+   + min_data()
+   + depth()
+   --
+   + check()
+   # build.model()
+   # build.score()
+}
+
+solverpy.setups.loop ..> solverpy.benchmark.evaluation
+solverpy.builder.autotune.build ..> solverpy.benchmark.evaluation
+solverpy.benchmark.evaluation ..> solverpy.task.launcher
+solverpy.task.launcher ..> solverpy.task.SolverTask
+solverpy.builder.svm ..> solverpy.tools.external
+
+solverpy.builder.autotune.autotune ..> solverpy.builder.autotune.tune
+solverpy.builder.autotune.tune ..> solverpy.builder.autotune.check
+solverpy.builder.autotune.check ..> solverpy.builder.autotune.build
+
+
+```
+
+%solverpy.task.SolverTask --|> solverpy.task.Task
+
 # Parallel benchmark evaluation
 
 To evaluate a set of strategies on a set of benchmark problems, you just need to provide your experiment description as a Python `dict` and launch the experiments.

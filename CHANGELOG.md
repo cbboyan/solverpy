@@ -1,7 +1,16 @@
 # Change Log
 
-## Unreleased changes (2026-01-06)
+## Unreleased changes (2026-01-16)
 
+* feat: Customize pos/neg weight ration. [[details](https://github.com/cbboyan/solverpy/commit/6279e5a) | [browse](https://github.com/cbboyan/solverpy/tree/6279e5a)]
+* fix: Disabling generation of debugging trains. [[details](https://github.com/cbboyan/solverpy/commit/e661db5) | [browse](https://github.com/cbboyan/solverpy/tree/e661db5)]
+* feat: Keep pos/neg ratio for cvc5ml. [[details](https://github.com/cbboyan/solverpy/commit/5f8ba0b) | [browse](https://github.com/cbboyan/solverpy/tree/5f8ba0b)]
+* feat: Introduce tuning of learning_rate. [[details](https://github.com/cbboyan/solverpy/commit/4850b71) | [browse](https://github.com/cbboyan/solverpy/tree/4850b71)]
+
+## v1.9.2 (2026-01-14)
+
+* fix!: Slow ATP evaluation launching [[details](https://github.com/cbboyan/solverpy/commit/f9ac5a4) | [browse](https://github.com/cbboyan/solverpy/tree/f9ac5a4)]
+* feat: Console headless mode and progress bar fixes. [[details](https://github.com/cbboyan/solverpy/commit/b9c03d8) | [browse](https://github.com/cbboyan/solverpy/tree/b9c03d8)]
 * feat: ATP evaluation for model building. [[details](https://github.com/cbboyan/solverpy/commit/9a31b55) | [browse](https://github.com/cbboyan/solverpy/tree/9a31b55)]
 * feat: Support resource limit for Z3. [[details](https://github.com/cbboyan/solverpy/commit/7ce9b49) | [browse](https://github.com/cbboyan/solverpy/tree/7ce9b49)]
 * fix: Evaluation-only runs. [[details](https://github.com/cbboyan/solverpy/commit/1ef62ea) | [browse](https://github.com/cbboyan/solverpy/tree/1ef62ea)]

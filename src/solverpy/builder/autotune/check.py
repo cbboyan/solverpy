@@ -126,3 +126,17 @@ def depth(
    params = dict(params, max_depth=max_depth)
    score = check(trial, params, queue=queue, **args)
    return score
+
+
+def learning_rate(
+   trial: "Trial",
+   params: dict[str, Any],
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
+   learning_rate = trial.suggest_float("learning_rate", 0.01, 0.25)
+   if queue:
+      queue.put(("trying", ("learning_rate", trial.number, (learning_rate, ))))
+   params = dict(params, learning_rate=learning_rate)
+   score = check(trial, params, queue=queue, **args)
+   return score

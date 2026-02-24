@@ -22,7 +22,6 @@ def rellink(f_src: str, f_dst: str):
    os.symlink(rel, f_dst)
 
 
-
 class Trains(Decorator):
 
    def __init__(self, dataname: str, filename: str = "train.in"):
@@ -32,15 +31,9 @@ class Trains(Decorator):
          dataname=dataname,
          filename=filename,
       )
-      self._lock = multiprocessing.Manager().Lock()
+      self._lock = multiprocessing.get_context("spawn").Manager().Lock()
       self._enabled = True
       self.reset(dataname, filename)
-
-   def enable(self):
-      self._enabled = True
-
-   def disable(self):
-      self._enabled = False
 
    def reset(
       self,

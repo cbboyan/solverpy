@@ -67,6 +67,7 @@ def call(
    try:
       with Redirector(f_log):
          return target(*args, **kwargs)
-   except (Exception, KeyboardInterrupt) as e:
-      raise (e)  # propagate exception to the parent
+   #except (Exception, KeyboardInterrupt) as e:
+   except Exception:
+      raise   # propagate exception to the parent
    raise

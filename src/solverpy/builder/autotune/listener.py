@@ -1,4 +1,5 @@
 from typing import Any, TypeVar, TYPE_CHECKING
+import time
 import logging
 
 from ...tools import human
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 class Listener:
 
    def listen(self, message) -> Any:
-      logger.debug(f"listening: {message}")
+      #logger.debug(f"listening: {message}")
       try:
          (key, content) = message
       except (TypeError, ValueError):
@@ -33,7 +34,8 @@ class Listener:
 
 class AutotuneListener(Listener):
 
-   def __init__(self):
+   def __init__(self, headless: bool = False):
+      self._headless = headless
       self.bar = None
       self.desc = "trial"
       self.iters = ""
@@ -50,18 +52,37 @@ class AutotuneListener(Listener):
       return val
 
    def building(self, f_mod: str, total: int) -> None:
+      self._last_time = time.perf_counter() 
+      self._start_time = time.perf_counter()
+      self._wait_time = 5
       logger.debug(f"building model: {f_mod}")
-      self.bar = BuilderBar(total, self.desc)
+      if self._headless:
+         logger.info(f"Building model: {f_mod}")
+      else:
+         self.bar = BuilderBar(total, self.desc)
 
    def built(self, score: float) -> None:
-      assert self.bar
-      self.bar.close()
+      if self.bar:
+         self.bar.close()
+         self.bar = None
       logger.debug(f"model {self.f_mod} built: score={score:.4f}")
 
+   def status(self, n: int, total: int, loss: list[float]) -> None:
+      if self.bar:
+         self.bar.status(loss)
+      if n > 3 and (n % 10 != 0):
+         return
+      elapsed = time.perf_counter() - self._last_time
+      if n > 3 and elapsed < self._wait_time:
+         return
+      logme = logger.info if self._headless else logger.debug
+      msg = "/".join(f"{x:.4f}" for x in loss)
+      runtime = time.perf_counter() - self._start_time
+      logme(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
+      self._last_time = time.perf_counter()
+
    def iteration(self, n: int, total: int, loss: list[float]) -> None:
-      del n, total  # unused argument
-      assert self.bar
-      self.bar.done(loss)
+      self.status(n, total, loss)
 
    def trials(self, nick: str, iters: int, timeout: int) -> None:
       del timeout
@@ -77,6 +98,8 @@ class AutotuneListener(Listener):
       self.values = ", ".join("%.4f" % v if type(v) is float else str(v)
                               for v in values)
       self.desc = f"[{it+1}{self.iters}] {self.values:8s}"
+      if self._headless:
+         logger.info(f"Trying {self.desc}")
 
    #def tried(self, score, acc, trainacc, duration):
    def tried(self, stats: dict[str, Any]) -> None:
@@ -114,4 +137,5 @@ class AutotuneListener(Listener):
       logger.info(msg)
 
    def debug(self, msg: str) -> None:
-      logger.debug(msg)
+      #logger.debug(msg)
+      pass

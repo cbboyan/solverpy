@@ -28,6 +28,14 @@ class SolverPy(PluginSolver):
       ]
       PluginSolver.__init__(self, plugins=plugins, **kwargs)
 
+   def __hash__(self):
+      return hash(str(self))
+
+   def __eq__(self, other):
+      if not isinstance(other, SolverPy):
+         return False
+      return str(self) == str(other)
+
    def simulate(self, result: "Result") -> "Result | None":
       "Simulate run from the past result."
       if result["status"] in self.timeouts:
@@ -73,3 +81,5 @@ class SolverPy(PluginSolver):
    @property
    def statuses(self) -> frozenset[str]:
       return self._statuses
+
+

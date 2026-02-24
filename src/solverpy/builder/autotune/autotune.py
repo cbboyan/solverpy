@@ -9,6 +9,7 @@ from ...tools import human, redirect
 from ...builder import svm
 from . import tune, build
 from .listener import AutotuneListener
+from ...task.talker import Talker
 
 if TYPE_CHECKING:
    from queue import Queue
@@ -23,6 +24,7 @@ PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "r": tune.regular,
    "m": tune.min_data,
    "d": tune.depth,
+   "e": tune.learning_rate,
 }
 
 DEFAULTS: dict[str, Any] = {
@@ -54,9 +56,13 @@ def tuner(
    max_leaves: int = 2048,
    queue: "Queue[Any] | None" = None,
    atpeval: bool = False,
+   posneg_weight: float = 0,
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
+   if builder and builder.talker and builder.talker._log_queue:
+      Talker.log_config(builder.talker._log_queue)
+
    if queue: queue.put(("tuning", time.time()))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
@@ -72,7 +78,13 @@ def tuner(
    pos = sum(ys)
    neg = len(ys) - pos
    #params["scale_pos_weight"] = neg / pos
-   params["is_unbalance"] = "true" if neg != pos else "false"
+   if posneg_weight == 0:
+      params["is_unbalance"] = "true" if neg != pos else "false"
+      logger.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
+   else:
+      params["scale_pos_weight"] = posneg_weight * (neg / pos)
+      logger.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
+
    phases0 = phases.split(":")
    if "m" in phases:
       params["feature_pre_filter"] = "false"
@@ -121,9 +133,9 @@ def tuner(
       return ret
 
 
-def prettytuner(*args, **kwargs) -> Any:
-
-   listener = AutotuneListener()
+def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
+   
+   listener = AutotuneListener(headless=headless)
 
    d_tmp = kwargs["d_tmp"]
    os.makedirs(d_tmp, exist_ok=True)
@@ -140,9 +152,10 @@ def prettytuner(*args, **kwargs) -> Any:
          result = listener.listen(msg)
          if result:
             break
-   except (Exception, KeyboardInterrupt) as e:
+   #except (Exception, KeyboardInterrupt) as e:
+   except Exception:
       p.terminate()
-      raise e
+      raise 
    finally:
       p.join()
 

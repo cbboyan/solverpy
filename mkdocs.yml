@@ -138,10 +138,15 @@ nav:
       - "\U0001F916 solverpy": api/solverpy/solver/solverpy.md
       - "\U0001F916 stdinsolver": api/solverpy/solver/stdinsolver.md
     - "\U0001F4C1 task":
+      - "\u2139\uFE0F Overview": api/solverpy/task/index.md
       - "\U0001F916 bar": api/solverpy/task/bar.md
       - "\U0001F916 launcher": api/solverpy/task/launcher.md
+      - "\U0001F916 logtalker": api/solverpy/task/logtalker.md
+      - "\U0001F916 remotetalker": api/solverpy/task/remotetalker.md
       - "\U0001F916 shelltask": api/solverpy/task/shelltask.md
+      - "\U0001F916 solvertalker": api/solverpy/task/solvertalker.md
       - "\U0001F916 solvertask": api/solverpy/task/solvertask.md
+      - "\U0001F916 talker": api/solverpy/task/talker.md
       - "\U0001F916 task": api/solverpy/task/task.md
     - "\U0001F4C1 tools":
       - "\U0001F4C1 markdown":

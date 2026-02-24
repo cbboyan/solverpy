@@ -99,7 +99,6 @@ def z3(setup: Setup) -> Setup:
    init(setup)
    return solver(setup, Z3)
 
-
 def cvc5(setup: Setup, training: bool = False) -> Setup:
    init(setup)
    assert "plugins" in setup
@@ -115,12 +114,15 @@ def cvc5(setup: Setup, training: bool = False) -> Setup:
       ])
       default(setup, "dataname", "data/model")
       assert "dataname" in setup
-      trains = Cvc5Trains(setup["dataname"])
+      default(setup, "posneg_ratio", 0)
+      assert "posneg_ratio" in setup
+      ratio = setup["posneg_ratio"]
+      trains = Cvc5Trains(setup["dataname"], ratio)
       plugs = setup["plugins"]
       plugs.append(trains)
       options = setup["options"]
       if "debug-trains" in options:
-         plugs.append(Cvc5TrainsDebug("flatten" in options))
+         plugs.append(Cvc5TrainsDebug("flatten" in options, ratio))
       setup["trains"] = trains
    default(setup, "static", static)
    return solver(setup, Cvc5)
