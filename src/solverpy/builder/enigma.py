@@ -54,7 +54,11 @@ class EnigmaModel(AutoTuner):
 
    def build(self) -> None:
       super().build()
-      f_map = self.path("enigma.map")
+      self.makemap()
+
+   def makemap(self, mapfile: str | None = None) -> None:
+      f_map = mapfile or self.path("enigma.map")
+      logger.debug(f"creating enigma map: {f_map}")
       features = self._trains[self._fkey]
       open(f_map, "w").write(f'features("{features}").\n')
 
@@ -88,6 +92,7 @@ class EnigmaSel(EnigmaModel):
          news.append(sidsolo)
       if "coop" in self._templates:
          news.append(sidcoop)
+      self.makemap(os.path.join(bids.dbpath(NAME), model, "enigma.map"))
       logger.debug(f"new strategies: {news}")
       return news
 
@@ -117,6 +122,7 @@ class EnigmaGen(EnigmaModel):
       sidgen = self.template(base, "gen", gen)
       sidgen = sids.fmt(sidgen, dict(args, gen=model))
       news = [sidgen]
+      self.makemap(os.path.join(bids.dbpath(NAME), model, "enigma.map"))
       logger.debug(f"new strategies: {news}")
       return news
 
@@ -198,7 +204,6 @@ class Enigma(EnigmaModel):
          self._strats.extend(self.applies(refs, self._dataname))
 
    def apply(self, sid: str, model: str) -> list[str]:
-      del model  # unused argument
       assert self._sel and self._gen
       (base, args) = sids.split(sid)
       sidsolo = f"{base}-solo"
@@ -214,6 +219,7 @@ class Enigma(EnigmaModel):
       if "coop" in self._templates:
          news.append(sidcoopgen)
       logger.debug(f"new strategies: {news}")
+      self.makemap(os.path.join(bids.dbpath(NAME), model, "enigma.map"))
       return news
 
 
