@@ -8,7 +8,7 @@ if TYPE_CHECKING:
    from ....tools.typing import Result
    from ...solverpy import SolverPy
 
-TPTP_STATUS = re.compile(r"^[#%] SZS status (\S*)", re.MULTILINE)
+TPTP_STATUS = re.compile(r"[#%] SZS status (\S*)", re.MULTILINE)
 
 TPTP_OK = frozenset([
    'Satisfiable',
