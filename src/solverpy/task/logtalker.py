@@ -20,7 +20,7 @@ def jobname(solver: Any, bid: str, sid: str) -> str:
 
 class LogTalker(Talker):
    
-   def __init__(self, log_progress = True):
+   def __init__(self, log_progress: bool = True):
       super().__init__()
       self._log_progress = log_progress
       self._last_time = None
@@ -88,7 +88,7 @@ class LogTalker(Talker):
       else:
          logger.debug(f"evaluation done: {bar}")
 
-   def status(self, new: bool | None, n: int = 1):
+   def status(self, new: bool | None, n: int = 1) -> None:
       if new is True:
          self._solved += n
       elif new is False:

@@ -57,7 +57,7 @@ class Task:
       return self._tid
 
    @tid.setter
-   def tid(self, tid: int):
+   def tid(self, tid: int) -> None:
       """Set the task id.
 
       :param tid: the task id
@@ -71,7 +71,7 @@ class Task:
       return self._log_queue
 
    @logqueue.setter
-   def logqueue(self, q: "Queue[Any]"):
+   def logqueue(self, q: "Queue[Any]") -> None:
       """Set the queue.
 
       :param q: the queue
@@ -106,7 +106,7 @@ class Task:
       return (result is not None)
 
    @staticmethod
-   def runtask(task: "Task"):
+   def runtask(task: "Task") -> Any:
       """Run the task andd announce the result over the queue.
 
       :param task: the task to be ran

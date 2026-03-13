@@ -28,10 +28,10 @@ class SolverPy(PluginSolver):
       ]
       PluginSolver.__init__(self, plugins=plugins, **kwargs)
 
-   def __hash__(self):
+   def __hash__(self) -> int:
       return hash(str(self))
 
-   def __eq__(self, other):
+   def __eq__(self, other: object) -> bool:
       if not isinstance(other, SolverPy):
          return False
       return str(self) == str(other)

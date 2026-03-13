@@ -68,7 +68,7 @@ class Talker:
       self._listener: QueueListener | None = None
 
    @staticmethod
-   def log_config(queue):
+   def log_config(queue: "Queue[Any] | None") -> None:
       """Configure child process logger to use the queue."""
       if not queue:
          return
@@ -81,24 +81,24 @@ class Talker:
       root.setLevel(logging.INFO)
       logger.debug("logging redirected")
 
-   def log_start(self):
+   def log_start(self) -> None:
       """Start parent logging from the queue."""
       root = logging.getLogger()
       self._log_queue = mp.get_context("spawn").Manager().Queue()
       self._listener = QueueListener(self._log_queue, *root.handlers)
       self._listener.start()
 
-   def log_stop(self):
+   def log_stop(self) -> None:
       """Stop parent logging from the queue."""
       if self._listener:
          self._listener.stop()
          self._listener = None
          #logging.getLogger().handlers = self._handlers.copy()
 
-   def listening_start(self):
+   def listening_start(self) -> None:
       self.log_start()
 
-   def listening_stop(self):
+   def listening_stop(self) -> None:
       self.log_stop()
 
    def begin(
@@ -108,7 +108,7 @@ class Talker:
       refjob: "SolverJob | None" = None,
       sidnames: bool = True,
       **kwargs,
-   ):
+   ) -> None:
       del jobs, refjob, sidnames, kwargs
       raise NotImplementedError(
          "Talker.begin: abstract method not implemented.")
@@ -117,28 +117,28 @@ class Talker:
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
-   ):
+   ) -> None:
       del results, refjob  # unused arguments
       self.terminate()
 
-   def next(self, job: "SolverJob"):
+   def next(self, job: "SolverJob") -> None:
       del job  # unused arguments
       pass
 
-   def terminate(self):
+   def terminate(self) -> None:
       if self._listener:
          self._listener.stop()
          self._listener = None
 
-   def launching(self, tasks: Sequence["Task"]):
+   def launching(self, tasks: Sequence["Task"]) -> None:
       if self._log_queue is None:
          return
       for task in tasks:
          task.logqueue = self._log_queue
 
-   def finished(self, task: "SolverTask", result: "Result"):
+   def finished(self, task: "SolverTask", result: "Result") -> None:
       del task, result  # unused arguments
       pass
 
-   def done(self):
+   def done(self) -> None:
       pass

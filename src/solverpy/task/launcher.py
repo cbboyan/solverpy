@@ -18,7 +18,7 @@ def run(
    tasks: list["Task"],
    cores: int = 4,
    chunksize: int = 1,
-) -> Any:
+) -> list[Any]:
    """Launch `tasks` in parallel on multiple cores and return results.
 
    :param tasks:  list of task to be executed (instances of Task)
@@ -43,7 +43,7 @@ def launch(
    cores: int = 4,
    chunksize: int = 1,
    **others: Any,
-) -> Any:
+) -> list[Any]:
    del others  # unused argument
    talker = talker or LogTalker()
    ret = {}

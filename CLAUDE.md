@@ -5,6 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
+# Run all tests
+pytest
+
+# Run a single test file
+pytest tests/test_limits.py
+
+# Run a single test
+pytest tests/test_limits.py::test_timeout_only
+
 # Build the package
 python3 -m build
 

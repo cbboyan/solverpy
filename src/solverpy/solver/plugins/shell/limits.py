@@ -60,7 +60,7 @@ class Limits(Decorator, Translator):
    def __str__(self) -> str:
       return self.limit
 
-   def __lt__(self, other):
+   def __lt__(self, other: "Limits") -> bool | None:
       if self.limit and not other.limit:
          return None
       if self.memory and not other.memory:

@@ -33,7 +33,7 @@ def humanbytes(b: float) -> str:
    units = {0: 'Bytes', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB', 5: 'PB'}
    power = 1024
    n = 0
-   while b > power:
+   while b >= power:
       b /= power
       n += 1
    return "%.2f %s" % (b, units[n])

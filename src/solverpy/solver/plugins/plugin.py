@@ -14,10 +14,10 @@ class Plugin(SolverPyObj):
       del solver # unused argument
       raise NotImplementedError()
    
-   def enable(self):
+   def enable(self) -> None:
       self._enabled = True
 
-   def disable(self):
+   def disable(self) -> None:
       self._enabled = False
 
    @property
