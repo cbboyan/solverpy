@@ -1,0 +1,21 @@
+set(prolog_style_variables).
+
+formulas(assumptions).
+(exists X (lives(X) & killed(X,agatha))) # label(pel55_1) # label(axiom).
+lives(agatha) # label(pel55_2_1) # label(axiom).
+lives(butler) # label(pel55_2_2) # label(axiom).
+lives(charles) # label(pel55_2_3) # label(axiom).
+(all X (lives(X) -> X = agatha | X = butler | X = charles)) # label(pel55_3) # label(axiom).
+(all X all Y (killed(X,Y) -> hates(X,Y))) # label(pel55_4) # label(axiom).
+(all X all Y (killed(X,Y) -> -richer(X,Y))) # label(pel55_5) # label(axiom).
+(all X (hates(agatha,X) -> -hates(charles,X))) # label(pel55_6) # label(axiom).
+(all X (X != butler -> hates(agatha,X))) # label(pel55_7) # label(axiom).
+(all X (-richer(X,agatha) -> hates(butler,X))) # label(pel55_8) # label(axiom).
+(all X (hates(agatha,X) -> hates(butler,X))) # label(pel55_9) # label(axiom).
+(all X exists Y -hates(X,Y)) # label(pel55_10) # label(axiom).
+agatha != butler # label(pel55_11) # label(axiom).
+end_of_list.
+
+formulas(goals).
+killed(agatha,agatha) # label(pel55) # label(conjecture).
+end_of_list.

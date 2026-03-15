@@ -23,7 +23,7 @@ twine upload dist/*
 # Format code (PEP8, indent_width=3)
 yapf -i <file>
 
-# View current version
+# View current version (derived from git tags via gitautoversion)
 setuptools-git-versioning
 
 # Generate docs
@@ -33,6 +33,15 @@ setuptools-git-versioning
 ```
 
 There are no automated tests in this repository.
+
+## Versioning
+
+Versioning is automated via a `post-commit` git hook (`.git/hooks/post-commit`) using the `gitautoversion` package (also in this repo). After every commit it:
+1. Regenerates `CHANGELOG.md` from the git log
+2. Amends the commit to include the updated changelog (a lockfile prevents infinite recursion)
+3. Sets version tags on commits
+
+Do not manually edit `CHANGELOG.md` or version tags — they are managed automatically.
 
 ## Code Style
 

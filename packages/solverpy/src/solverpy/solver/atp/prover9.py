@@ -107,3 +107,7 @@ class Prover9(StdinSolver):
    def timeouts(self) -> frozenset[str]:
       return TPTP_TIMEOUT
 
+   @property
+   def statuses(self) -> frozenset[str]:
+      return TPTP_ALL
+

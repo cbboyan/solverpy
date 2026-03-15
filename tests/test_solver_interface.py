@@ -6,6 +6,12 @@ command building, and pure-logic methods (valid, solved, simulate).
 
 import pytest
 from solverpy.solver.plugins.shell.limits import Limits
+from solverpy.solver.shellsolver import ShellSolver
+
+
+@pytest.fixture
+def has_command(solver):
+   return isinstance(solver, ShellSolver)
 
 
 # --- instantiation & identity ---
@@ -113,19 +119,27 @@ def test_solved_empty(solver):
 
 # --- command() ---
 
-def test_command_is_string(solver):
+def test_command_is_string(solver, has_command):
+   if not has_command:
+      pytest.skip("StdinSolver has no command() method")
    assert isinstance(solver.command("problem.p", ""), str)
 
 
-def test_command_contains_instance(solver):
+def test_command_contains_instance(solver, has_command):
+   if not has_command:
+      pytest.skip("StdinSolver has no command() method")
    assert "my_problem.p" in solver.command("my_problem.p", "")
 
 
-def test_command_contains_strategy(solver):
+def test_command_contains_strategy(solver, has_command):
+   if not has_command:
+      pytest.skip("StdinSolver has no command() method")
    assert "--auto" in solver.command("problem.p", "--auto")
 
 
-def test_command_contains_limit(solver):
+def test_command_contains_limit(solver, has_command):
+   if not has_command:
+      pytest.skip("StdinSolver has no command() method")
    # The limit string (e.g. "5") should appear in the command
    cmd = solver.command("problem.p", "")
    assert str(solver._limits.timeout) in cmd

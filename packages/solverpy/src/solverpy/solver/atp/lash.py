@@ -17,9 +17,7 @@ L_STATIC = "-p tstp"
 
 L_PAT = re.compile(r"^% (Steps|Mode): (\S*)$", flags=re.MULTILINE)
 
-L_BUILDER: "LimitBuilder" = {
-   "T": "",
-}
+L_BUILDER: "LimitBuilder" = {}
 
 L_TABLE = {
    "Steps": "Steps",

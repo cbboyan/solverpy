@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased changes (2026-03-12)
+## Unreleased changes (2026-03-15)
 
+* tests: prover9 and lash inputs [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * fix: Fixed search for SZS status [[details](https://github.com/cbboyan/solverpy/commit/9d5742b) | [browse](https://github.com/cbboyan/solverpy/tree/9d5742b)]
 * fix: ATP evaluation for Enigma models. [[details](https://github.com/cbboyan/solverpy/commit/2b47e01) | [browse](https://github.com/cbboyan/solverpy/tree/2b47e01)]
 * feat: Customize pos/neg weight ration. [[details](https://github.com/cbboyan/solverpy/commit/6279e5a) | [browse](https://github.com/cbboyan/solverpy/tree/6279e5a)]
