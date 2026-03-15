@@ -1,39 +1,3 @@
-[build-system]
-requires = ["setuptools","setuptools-git-versioning<2"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "solverpy"
-description = "Python inteface for Automated Reasoning (AR) solvers, provers, and checkers."
-readme = "README.md"
-requires-python = ">=3.10"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Operating System :: OS Independent",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-]
-dependencies = [
-  "PyYAML",
-  "lightgbm",
-  "numpy",
-  "optuna",
-  "Requests",
-  "scikit_learn",
-  "scipy",
-  "tqdm",
-]
-dynamic = ["version"]
-
-[project.urls]
-"Homepage" = "https://cbboyan.github.io/solverpy/"
-"Source" = "https://github.com/cbboyan/solverpy"
-"Bug Tracker" = "https://github.com/cbboyan/solverpy/issues"
-"Changelog" = "https://github.com/cbboyan/solverpy/blob/main/CHANGELOG.md"
-
-[tool.setuptools-git-versioning]
-enabled = true
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
@@ -41,4 +5,3 @@ testpaths = ["tests"]
 based_on_style = "pep8"
 indent_width = 3
 continuation_indent_width = 3
-
