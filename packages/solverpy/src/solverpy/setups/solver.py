@@ -2,7 +2,7 @@ import logging
 
 from ..solver.atp.eprover import E_STATIC, E
 from ..solver.atp.prover9 import Prover9
-from ..solver.atp.vampire import Vampire
+from ..solver.atp.vampire import V_STATIC, Vampire
 from ..solver.smt import Cvc5, Z3, Bitwuzla
 from ..solver.smt.cvc5 import CVC5_STATIC
 from .common import default, init, solver
@@ -19,6 +19,7 @@ def eprover(setup: Setup) -> Setup:
 
 def vampire(setup: Setup) -> Setup:
    init(setup)
+   default(setup, "static", V_STATIC.split())
    return solver(setup, Vampire)
 
 
