@@ -166,7 +166,7 @@ def dict_to_mkdocs_nav(nav_dict: Dict,
 def main():
    """Main function to generate documentation structure."""
    # Define paths
-   src_dir = Path('src')
+   src_dir = Path('packages/solverpy/src')
    docs_api_dir = Path('docs/api')
 
    # Check if src directory exists
