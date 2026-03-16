@@ -1,3 +1,4 @@
+from typing import Any
 import os
 import subprocess
 import logging
@@ -12,7 +13,7 @@ import inspect
 
 logger = logging.getLogger(__name__)
 
-def frame_filename():
+def frame_filename() -> str:
    for frame_info in inspect.stack():
       frame = frame_info.frame
       if 'page' in frame.f_locals:
@@ -31,7 +32,7 @@ OPTIONS = ["name"]
 
 ROOT = "docs"
 
-def validator(language, inputs, options, attrs, md):
+def validator(language: str, inputs: dict, options: dict, attrs: dict, md: Any) -> bool:
    okay = True
    for (k, v) in inputs.items():
       if k in OPTIONS:
@@ -42,7 +43,7 @@ def validator(language, inputs, options, attrs, md):
 
 
 # def link(code, language, options, md, **kwargs):
-def link(code, language, css_class, options, md, **kwargs):
+def link(code: str, language: str, css_class: str, options: dict, md: Any, **kwargs: Any) -> str:
    image_name = code.strip()
    image_path = os.path.join('diagrams/out', f'{image_name}.svg')
    d_src = os.path.dirname(frame_filename())
@@ -64,11 +65,11 @@ def linkhtml(src: str, alt: str) -> str:
 </div>
 '''
 
-def buildsvg(f_puml):
+def buildsvg(f_puml: str) -> None:
    subprocess.run(["plantuml", "-tsvg", f_puml])
    print(f"Generated diagram {f_puml}")
 
-def plantuml(code, language, css_class, options, md, **kwargs):
+def plantuml(code: str, language: str, css_class: str, options: dict, md: Any, **kwargs: Any) -> str:
    assert "name" in options
    f_puml = f"{options['name']}.puml"
    f_puml = os.path.join(ROOT, "dia", f_puml)

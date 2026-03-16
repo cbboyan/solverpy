@@ -1,3 +1,4 @@
+from typing import Any
 import os
 import subprocess
 import hashlib
@@ -24,7 +25,7 @@ HTML = """
 """
 
 
-def frame_filename():
+def frame_filename() -> str:
    for frame_info in inspect.stack():
       frame = frame_info.frame
       if 'page' in frame.f_locals:
@@ -37,7 +38,7 @@ def frame_filename():
    return filename
 
 
-def validator(language, inputs, options, attrs, md):
+def validator(language: str, inputs: dict, options: dict, attrs: dict, md: Any) -> bool:
    del md
    assert language == "plantuml"
    okay = True
@@ -65,7 +66,7 @@ def buildsvg(f_puml: str, code: str) -> None:
 
 
 @catching
-def plantuml(code, language, css_class, options, md, **kwargs):
+def plantuml(code: str, language: str, css_class: str, options: dict, md: Any, **kwargs: Any) -> str:
    del css_class, md, kwargs
    assert language == "plantuml"
    if "name" in options:

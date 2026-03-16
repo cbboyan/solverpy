@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-03-16)
 
-* tests: benchmark evaluation tests for cvc5 [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: missing type annotations in solverpy [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* tests: benchmark evaluation tests for cvc5 [[details](https://github.com/cbboyan/solverpy/commit/3fa41ff) | [browse](https://github.com/cbboyan/solverpy/tree/3fa41ff)]
 * tests: fix vampire static args [[details](https://github.com/cbboyan/solverpy/commit/0a62d0b) | [browse](https://github.com/cbboyan/solverpy/tree/0a62d0b)]
 * refactor: testing of solver runs [[details](https://github.com/cbboyan/solverpy/commit/4674631) | [browse](https://github.com/cbboyan/solverpy/tree/4674631)]
 * tests: prover9 and lash inputs [[details](https://github.com/cbboyan/solverpy/commit/de5909b) | [browse](https://github.com/cbboyan/solverpy/tree/de5909b)]

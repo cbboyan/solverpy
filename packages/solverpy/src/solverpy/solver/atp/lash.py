@@ -8,7 +8,7 @@ from ..plugins.shell.time import Time
 
 if TYPE_CHECKING:
    from ..plugins.plugin import Plugin
-   from ...tools.typing import LimitBuilder
+   from ...tools.typing import LimitBuilder, Result
 
 L_BINARY = "lash"
 
@@ -53,7 +53,7 @@ class Lash(ShellSolver):
          binary=binary,
       )
 
-   def process(self, output):
+   def process(self, output: str) -> "Result":
       result = patterns.keyval(L_PAT, output, L_TABLE)
       result = patterns.mapval(result, human.numeric)
       return result

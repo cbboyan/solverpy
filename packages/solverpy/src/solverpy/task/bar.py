@@ -51,8 +51,8 @@ class DefaultBar(tqdm):
       d.update(speta=speta)
       return d
 
-   def status(self, status, n=1) -> None:
-      del status # unused argument 
+   def status(self, status: Any, n: int = 1) -> None:
+      del status # unused argument
       self.update(n)
 
 
@@ -124,7 +124,7 @@ class RunningBar(DefaultBar):
       d.update(errors=asc)
       return d
 
-   def status(self, status, n=1) -> None:
+   def status(self, status: bool | None, n: int = 1) -> None:
       if status is None:
          self._errors += n
       self.update(n)

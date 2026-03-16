@@ -23,7 +23,7 @@ def reporter(fun: Callable[..., "Report"]) -> Callable[..., str]:
    return wrapper
 
 
-def typename(obj: object, quote: str = ""):
+def typename(obj: object, quote: str = "") -> str:
    t = type(obj)
    return f"{quote}{t.__module__}.{t.__name__}{quote}"
 

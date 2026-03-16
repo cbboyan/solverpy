@@ -32,7 +32,7 @@ class LogTalker(Talker):
       refjob: "SolverJob | None" = None,
       sidnames: bool = True,
       **kwargs,
-   ):
+   ) -> None:
       del kwargs
       self._total_count = sum(len(bids.problems(bid)) for (_, bid, _) in jobs)
       sum0 = summary.legend(jobs, refjob, sidnames=sidnames)
@@ -48,7 +48,7 @@ class LogTalker(Talker):
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
-   ):
+   ) -> None:
       super().end(results, refjob=refjob)
       if self._total_errors:
          logger.error(
@@ -57,7 +57,7 @@ class LogTalker(Talker):
       report = summary.summarize(results, self._total_nicks_full, refjob)
       logger.info(f"Evaluation done:\n{report}")
 
-   def next(self, job: "SolverJob"):
+   def next(self, job: "SolverJob") -> None:
       jname = jobname(*job)
       self._solved = self._unsolved = self._errors = 0
       self._job_desc = self._total_nicks[job[1:3]] or jname
@@ -66,7 +66,7 @@ class LogTalker(Talker):
       logger.debug(f"evaluating {self._job_desc}: {jname}")
       super().next(job)
    
-   def launching(self, tasks: Sequence["Task"]):
+   def launching(self, tasks: Sequence["Task"]) -> None:
       self._last_time = time.perf_counter()
       self._start_time = time.perf_counter()
       self._wait_time = 1.0
@@ -77,11 +77,11 @@ class LogTalker(Talker):
       self,
       task: "SolverTask",
       result: "Result",
-   ):
+   ) -> None:
       super().finished(task, result)
       self.status(task.status(result))
    
-   def done(self):
+   def done(self) -> None:
       bar = f"+{self._solved} -{self._unsolved} !{self._errors}"
       if self._log_progress:
          logger.info(f"Evaluation done: {bar}")

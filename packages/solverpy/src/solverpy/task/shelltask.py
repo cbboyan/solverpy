@@ -5,7 +5,7 @@ from .task import Task
 
 class ShellTask(Task):
 
-   def __init__(self, cmd):
+   def __init__(self, cmd: str) -> None:
       self.cmd = cmd
 
    def run(self) -> bytes:
