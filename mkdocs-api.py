@@ -165,40 +165,37 @@ def dict_to_mkdocs_nav(nav_dict: Dict,
 
 def main():
    """Main function to generate documentation structure."""
-   # Define paths
-   src_dir = Path('packages/solverpy/src')
+   packages = [
+      ('packages/solverpy/src', 'solverpy', '📦 solverpy'),
+      ('packages/solverpy-learn/src', 'solverpy_learn', '📦 solverpy-learn'),
+   ]
    docs_api_dir = Path('docs/api')
-
-   # Check if src directory exists
-   if not src_dir.exists():
-      print(f"Error: {src_dir} directory not found!")
-      return
-
-   # Create docs/api directory
    docs_api_dir.mkdir(parents=True, exist_ok=True)
 
-   print(
-      f"Traversing {src_dir} and creating documentation in {docs_api_dir}...")
+   mkdocs_nav = []
+   for src_path, pkg_name, nav_label in packages:
+      src_dir = Path(src_path)
+      if not src_dir.exists():
+         print(f"Warning: {src_dir} not found, skipping.")
+         continue
 
-   # Traverse and create files
-   created_files = traverse_module(src_dir, docs_api_dir)
+      print(f"Traversing {src_dir} ...")
+      created_files = traverse_module(src_dir, docs_api_dir)
+      print(f"  Created {len(created_files)} files.")
 
-   print(f"Created {len(created_files)} documentation files:")
-   for file in sorted(created_files):
-      print(f"  {file}")
+      nav_structure = build_nav_structure(docs_api_dir, created_files)
+      nav_list = dict_to_mkdocs_nav(nav_structure)
 
-   # Build navigation structure
-   nav_structure = build_nav_structure(docs_api_dir, created_files)
-   nav_list = dict_to_mkdocs_nav(nav_structure)
-
-   # Create the final YAML structure
-   assert len(nav_list) == 1
-   api = nav_list[0]
-   assert type(api) == dict and type(api["📁 api"]) == list
-   api['📦 API 🚧'] = api["📁 api"][0]["📁 solverpy"]
-   del api["📁 api"]
-   nav_list = [api]
-   mkdocs_nav = nav_list
+      # Extract the package subtree: api -> pkg_name
+      assert len(nav_list) == 1
+      api_entry = nav_list[0]
+      assert "📁 api" in api_entry
+      pkg_key = f"📁 {pkg_name}"
+      pkg_nav = next(
+         v for item in api_entry["📁 api"]
+         for k, v in item.items() if k == pkg_key
+      )
+      mkdocs_nav.append({nav_label: pkg_nav})
    
    # Output YAML
    print("\nGenerated MkDocs navigation YAML:")
@@ -207,8 +204,9 @@ def main():
       mkdocs_nav,
       default_flow_style=False,
       sort_keys=False,
+      allow_unicode=True,
    )
-   # add spaces at the beginning of each line
+   # indent each line so it nests under mkdocs nav:
    yaml_output = '  ' + yaml_output.replace('\n', '\n  ')
 
    nav_file = Path('mkdocs.yml')

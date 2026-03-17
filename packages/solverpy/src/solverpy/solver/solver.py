@@ -70,9 +70,11 @@ class Solver(SolverPyObj):
    """
 
    def __init__(self, **kwargs: Any):
+      """Initialize the solver, passing keyword arguments to `SolverPyObj`."""
       SolverPyObj.__init__(self, **kwargs)
 
    def __str__(self) -> str:
+      """Return the solver name."""
       return self.name
 
    def solve(self, instance: Any, strategy: Any) -> "Result":

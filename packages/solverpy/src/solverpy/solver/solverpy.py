@@ -1,3 +1,18 @@
+"""
+# Resource limits and result caching
+
+`SolverPy` extends [`PluginSolver`][solverpy.solver.pluginsolver.PluginSolver]
+with two concerns:
+
+* **Resource limits** — a [`Limits`][solverpy.solver.plugins.shell.limits.Limits]
+  object (time/memory) is created at construction and a
+  [`Limiter`][solverpy.solver.plugins.status.limiter.Limiter] decorator is
+  automatically registered to translate exit codes into timeout statuses.
+* **Result simulation** — [`simulate`][solverpy.solver.solverpy.SolverPy.simulate]
+  checks whether a cached result from a previous run is still applicable under
+  the current resource limits, avoiding redundant solver invocations.
+"""
+
 from typing import Any, TYPE_CHECKING
 
 from .pluginsolver import PluginSolver
@@ -10,6 +25,12 @@ if TYPE_CHECKING:
 
 
 class SolverPy(PluginSolver):
+   """
+   Extends `PluginSolver` with resource limits and cached-result simulation.
+
+   Concrete solver subclasses (e.g. `ShellSolver`, `StdinSolver`) build on
+   this class and supply the actual solver binary invocation.
+   """
 
    def __init__(
       self,
@@ -17,6 +38,12 @@ class SolverPy(PluginSolver):
       plugins: list["Plugin"] = [],
       **kwargs: Any,
    ):
+      """
+      Args:
+          limits: resource limits (time/memory) for solver runs.
+          plugins: additional plugins to register (a `Limiter` is always appended).
+          **kwargs: forwarded to `PluginSolver.__init__`.
+      """
       assert limits.limit.startswith("T")
       self._limits: Limits = limits
       self._exitcode: int = -1
@@ -29,9 +56,11 @@ class SolverPy(PluginSolver):
       PluginSolver.__init__(self, plugins=plugins, **kwargs)
 
    def __hash__(self) -> int:
+      """Hash based on the solver's string representation."""
       return hash(str(self))
 
    def __eq__(self, other: object) -> bool:
+      """Two solvers are equal when their string representations match."""
       if not isinstance(other, SolverPy):
          return False
       return str(self) == str(other)
@@ -72,14 +101,17 @@ class SolverPy(PluginSolver):
 
    @property
    def timeouts(self) -> frozenset[str]:
+      """The set of timeout statuses, populated by the solver's status plugin."""
       return self._timeouts
 
    @property
    def success(self) -> frozenset[str]:
+      """The set of successful statuses, populated by the solver's status plugin."""
       return self._success
 
    @property
    def statuses(self) -> frozenset[str]:
+      """The set of all valid statuses, populated by the solver's status plugin."""
       return self._statuses
 
 

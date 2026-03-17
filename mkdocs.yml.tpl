@@ -28,7 +28,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
+          paths: [packages/solverpy/src, packages/solverpy-learn/src]
           options:
             show_source: true
             show_root_heading: true

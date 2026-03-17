@@ -79,12 +79,20 @@ class PluginSolver(Solver):
    """
 
    def __init__(self, plugins: list["Plugin"] = [], **kwargs: Any):
+      """
+      Initialize the solver and register all provided plugins.
+
+      Args:
+          plugins: list of `Plugin` instances to register on construction.
+          **kwargs: forwarded to `Solver.__init__`.
+      """
       Solver.__init__(self, **kwargs)
       self.decorators: list["Decorator"] = []
       self.translators: list["Translator"] = []
       self.init(plugins)
 
    def represent(self):
+      """Return a dict representation listing the class name, decorators, and translators."""
       return dict(
          cls=self.name,
          decorators=[repr(x) for x in self.decorators],
