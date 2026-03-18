@@ -14,9 +14,26 @@ def build(fun: "StrMaker", arg: Any) -> str:
 
 
 class Limits(Decorator, Translator):
-   """
-   This is either a decorator or a translator based on the value
-   of `cmdline`.
+   """Parse a resource-limit string and apply solver-specific CLI flags.
+
+   `Limits` can operate as either a
+   [`Decorator`][solverpy.solver.plugins.decorator.Decorator] or a
+   [`Translator`][solverpy.solver.plugins.translator.Translator] depending on
+   the `cmdline` flag:
+
+   - `cmdline=True` *(default)* — registers as a decorator; `decorate()` appends
+     the constructed flags to the shell command (e.g. `--cpu-limit=10`).
+   - `cmdline=False` — registers as a translator; `translate()` prepends the
+     flags to the strategy string so the solver receives them as part of its
+     options input.
+
+   The limit string uses the format `T<seconds>[-M<gigabytes>]`, e.g.:
+
+   - `"T10"` — 10-second CPU/wall-clock limit
+   - `"T10-M4"` — 10 seconds and 4 GB memory limit
+
+   Each flag letter is mapped to a CLI template via the `builder` dict provided
+   by the concrete solver subclass.
    """
 
    def __init__(
@@ -52,6 +69,7 @@ class Limits(Decorator, Translator):
       self._inputfile = inputfile
 
    def register(self, solver: "SolverPy") -> None:
+      """Register as a decorator or translator depending on `cmdline`."""
       if self.cmdline:
          solver.decorators.append(self)
       else:
@@ -79,6 +97,11 @@ class Limits(Decorator, Translator):
       instance: Any,
       strategy: Any,
    ) -> str:
+      """Append limit flags to *cmd* when `cmdline=True` (no-op otherwise).
+
+      An optional `/dev/stdin` suffix is appended when `inputfile=True` so that
+      solvers that read the problem from stdin receive the correct filename.
+      """
       del instance, strategy  # unused arguments
       if self.cmdline:
          input = " /dev/stdin" if self._inputfile else ""
@@ -91,6 +114,7 @@ class Limits(Decorator, Translator):
       instance: Any,
       strategy: str,
    ) -> tuple[Any, str]:
+      """Prepend limit flags to *strategy* when `cmdline=False` (no-op otherwise)."""
       if not self.cmdline:
          return (instance, self.strategy + strategy)
       else:
@@ -98,4 +122,5 @@ class Limits(Decorator, Translator):
 
    @property
    def strategy(self) -> str:
+      """The constructed CLI flag string derived from the limit string."""
       return self.strat

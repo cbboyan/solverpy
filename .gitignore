@@ -165,4 +165,9 @@ _dust/
 tags
 docs/api
 docs/dia
+dust/
+
+# solverpy test DB — keep strats, ignore generated output dirs
+tests/data/solverpy_db/*/
+!tests/data/solverpy_db/strats/
 

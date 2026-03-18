@@ -11,24 +11,27 @@ abstract class solverpy.solver.plugins.decorator.Decorator
 abstract class solverpy.solver.plugins.translator.Translator
 
 class solverpy.solver.plugins.shell.limits.Limits extends solverpy.solver.plugins.decorator.Decorator
-solverpy.solver.plugins.shell.limits.Limits extends solverpy.solver.plugins.translator.Translator
+solverpy.solver.plugins.shell.limits.Limits --|> solverpy.solver.plugins.translator.Translator
 
 class solverpy.solver.plugins.shell.timeout.Timeout extends solverpy.solver.plugins.decorator.Decorator
 class solverpy.solver.plugins.shell.time.Time extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.shell.memory.Memory extends solverpy.solver.plugins.decorator.Decorator
 
 ```
 
 | Plugin | Description |
 |---|---|
-| [`Limits`][solverpy.solver.plugins.shell.limits.Limits] | Parses the limit string (e.g. `T5-M2048`) and appends solver-specific CLI flags; can also inject limits via stdin |
+| [`Limits`][solverpy.solver.plugins.shell.limits.Limits] | Parses the limit string (e.g. `T5-M2048`) and appends solver-specific CLI flags; can also prepend limits to the strategy string |
 | [`Timeout`][solverpy.solver.plugins.shell.timeout.Timeout] | Prepends `timeout --kill-after=15 --foreground N` to enforce a hard wall-clock cutoff |
 | [`Time`][solverpy.solver.plugins.shell.time.Time] | Prepends `/usr/bin/env time -p` to measure real/user/sys time; populates `runtime` in the result |
+| [`Memory`][solverpy.solver.plugins.shell.memory.Memory] | Prepends `ulimit -Sv N` to cap virtual memory before the solver process starts |
 
 """
 
 from .limits import Limits
 from .timeout import Timeout
 from .time import Time
+from .memory import Memory
 
-__all__ = ["Limits", "Timeout", "Time"]
+__all__ = ["Limits", "Timeout", "Time", "Memory"]
 

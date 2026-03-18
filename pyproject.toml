@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["slow: marks tests as slow (skipped by default)"]
 
 [tool.yapf]
 based_on_style = "pep8"

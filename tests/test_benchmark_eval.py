@@ -25,10 +25,16 @@ EVAL_CASES = [
    pytest.param(
       (setups.vampire, ["problems/bushy010"], ["vampire-default"]),
       id="vampire-bushy010-default",
+      marks=pytest.mark.slow,
    ),
    pytest.param(
       (setups.cvc5, ["problems/smt010"], ["cvc5-enum"]),
       id="cvc5-smt010-enum",
+   ),
+   pytest.param(
+      (setups.bitwuzla, ["problems/sage010"], ["bitwuzla-default"]),
+      id="bitwuzla-sage010-default",
+      marks=pytest.mark.slow,
    ),
 ]
 
@@ -103,7 +109,7 @@ def db_error_count(eval_case):
 def valid_statuses(eval_case):
    setup, _, _ = eval_case
    solver = setup["solver"]
-   return solver._success | solver._timeouts
+   return solver._statuses
 
 
 @pytest.fixture(scope="module")

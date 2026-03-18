@@ -23,6 +23,17 @@ TIME_TABLE = {
 
 
 class Time(Decorator):
+   """Measure wall-clock time using `/usr/bin/env time -p`.
+
+   Prepends `/usr/bin/env time -p` to the solver command.  The POSIX output
+   written to *stderr* is parsed in `update()` and three keys are added to the
+   result:
+
+   - `realtime` — elapsed wall-clock time (seconds)
+   - `usertime` — user-mode CPU time (seconds)
+   - `systime`  — kernel-mode CPU time (seconds)
+   - `runtime`  — `realtime - systime` (used as the canonical solve time)
+   """
 
    def __init__(self, **kwargs):
       Decorator.__init__(self, **kwargs)
@@ -34,6 +45,7 @@ class Time(Decorator):
       instance: Any,
       strategy: Any,
    ) -> str:
+      """Prepend `/usr/bin/env time -p` to *cmd*."""
       del instance, strategy  # unused arguments
       return f"{self.prefix} {cmd}"
 
@@ -44,6 +56,7 @@ class Time(Decorator):
       output: str,
       result: "Result",
    ) -> None:
+      """Parse `real / user / sys` lines from *output* and populate *result*."""
       del instance, strategy  # unused arguments
       res = patterns.keyval(TIME_PAT, output, TIME_TABLE)
       res = patterns.mapval(res, float)
