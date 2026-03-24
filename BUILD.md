@@ -1,4 +1,4 @@
-* to build:
+* to build (go to packages/PKG):
 
     $ python3 -m build
 
