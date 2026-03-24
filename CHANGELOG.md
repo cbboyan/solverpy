@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-03-24)
+
+* feat: Python-native runtime measurement. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.0.0 (2026-03-24)
 
-* feat!!!: Major refactor and package split. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!!!: Major refactor and package split. [[details](https://github.com/cbboyan/solverpy/commit/ec3beb9) | [browse](https://github.com/cbboyan/solverpy/tree/ec3beb9)]
 * docs: doc and skills [[details](https://github.com/cbboyan/solverpy/commit/02f7999) | [browse](https://github.com/cbboyan/solverpy/tree/02f7999)]
 * docs: documentation pieces [[details](https://github.com/cbboyan/solverpy/commit/d87b0e4) | [browse](https://github.com/cbboyan/solverpy/tree/d87b0e4)]
 * refactor: missing type annotations in solverpy [[details](https://github.com/cbboyan/solverpy/commit/960f1e6) | [browse](https://github.com/cbboyan/solverpy/tree/960f1e6)]

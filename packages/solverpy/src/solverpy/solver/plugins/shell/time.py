@@ -1,43 +1,31 @@
+import time as _time
+import resource
 from typing import Any, TYPE_CHECKING
-import re
 
 from ..decorator import Decorator
-from ....tools import patterns
 
 if TYPE_CHECKING:
    from ....tools.typing import Result
 
-# real 0.01
-# user 0.01
-# sys 0.00
-
-TIME_CMD = "/usr/bin/env time -p"
-
-TIME_PAT = re.compile(r"^(real|user|sys) ([0-9.]*)$", re.MULTILINE)
-
-TIME_TABLE = {
-   "real": "realtime",
-   "user": "usertime",
-   "sys": "systime",
-}
-
 
 class Time(Decorator):
-   """Measure wall-clock time using `/usr/bin/env time -p`.
+   """Measure wall-clock, user, and sys time using Python's stdlib.
 
-   Prepends `/usr/bin/env time -p` to the solver command.  The POSIX output
-   written to *stderr* is parsed in `update()` and three keys are added to the
-   result:
+   Snapshots `time.perf_counter()` and `resource.getrusage(RUSAGE_CHILDREN)`
+   in `decorate()` (just before the subprocess) and computes deltas in
+   `update()` (just after).  Three keys are added to the result:
 
    - `realtime` — elapsed wall-clock time (seconds)
-   - `usertime` — user-mode CPU time (seconds)
-   - `systime`  — kernel-mode CPU time (seconds)
-   - `runtime`  — `realtime - systime` (used as the canonical solve time)
+   - `usertime` — user-mode CPU time of child processes (seconds)
+   - `systime`  — kernel-mode CPU time of child processes (seconds)
+   - `runtime`  — `realtime - systime` (canonical solve time)
+
+   The solver command is not modified, so no timing lines appear in the
+   raw solver output.
    """
 
    def __init__(self, **kwargs):
       Decorator.__init__(self, **kwargs)
-      self.prefix = TIME_CMD
 
    def decorate(
       self,
@@ -45,9 +33,13 @@ class Time(Decorator):
       instance: Any,
       strategy: Any,
    ) -> str:
-      """Prepend `/usr/bin/env time -p` to *cmd*."""
+      """Snapshot start times; return *cmd* unchanged."""
       del instance, strategy  # unused arguments
-      return f"{self.prefix} {cmd}"
+      self._t0_wall = _time.perf_counter()
+      r = resource.getrusage(resource.RUSAGE_CHILDREN)
+      self._t0_user = r.ru_utime
+      self._t0_sys = r.ru_stime
+      return cmd
 
    def update(
       self,
@@ -56,13 +48,13 @@ class Time(Decorator):
       output: str,
       result: "Result",
    ) -> None:
-      """Parse `real / user / sys` lines from *output* and populate *result*."""
-      del instance, strategy  # unused arguments
-      res = patterns.keyval(TIME_PAT, output, TIME_TABLE)
-      res = patterns.mapval(res, float)
-      result.update(res)
-      if ("realtime" in res) and ("systime" in res):
-         result["runtime"] = res["realtime"] - res["systime"]
-         #result["realtime"] = res["realtime"]
-         #result["runtime"] = res["usertime"]
-
+      """Compute time deltas and populate *result*."""
+      del instance, strategy, output  # unused arguments
+      wall = _time.perf_counter() - self._t0_wall
+      r = resource.getrusage(resource.RUSAGE_CHILDREN)
+      user = r.ru_utime - self._t0_user
+      sys_ = r.ru_stime - self._t0_sys
+      result["realtime"] = wall
+      result["usertime"] = user
+      result["systime"] = sys_
+      result["runtime"] = wall - sys_
