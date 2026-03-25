@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-03-24)
+## v2.0.1 (2026-03-25)
 
-* feat: Python-native runtime measurement. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix!: Fixed comment char in outputs. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Python-native runtime measurement. [[details](https://github.com/cbboyan/solverpy/commit/d6efd86) | [browse](https://github.com/cbboyan/solverpy/tree/d6efd86)]
 
 ## v2.0.0 (2026-03-24)
 

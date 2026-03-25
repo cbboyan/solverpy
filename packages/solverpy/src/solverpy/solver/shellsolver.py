@@ -112,7 +112,7 @@ class ShellSolver(SolverPy):
       except subprocess.CalledProcessError as e:
          output = e.output
          self._exitcode = e.returncode
-      return f"### INSTANCE {instance}\n### STRATEGY {strategy}\n### COMMAND: {cmd}\n" + output.decode()
+      return f"%%% INSTANCE {instance}\n%%% STRATEGY {strategy}\n%%% COMMAND: {cmd}\n" + output.decode()
 
    def command(self, instance: Any, strategy: Any) -> str:
       """
