@@ -18,16 +18,21 @@ QF_BV_SMT2  = DATA / "qf_bv.smt2"
 FINSET1     = DATA / "problems/bushy010/finset_1__t13_finset_1.p"
 
 # Solvers under test — used by interface tests (no problem file needed).
-SOLVERS = [
+SHELL_SOLVERS = [
    pytest.param(E("T5"),                      id="eprover"),
    pytest.param(E("T5", binary="eprover-ho"), id="eprover-ho"),
    pytest.param(Vampire("T5"),                id="vampire"),
    pytest.param(Lash("T5"),                   id="lash"),
-   pytest.param(Prover9("T5"),                id="prover9"),
    pytest.param(Cvc5("T5"),                   id="cvc5"),
-   pytest.param(Z3("T5"),                     id="z3"),
    pytest.param(Bitwuzla("T5"),               id="bitwuzla"),
 ]
+
+STDIN_SOLVERS = [
+   pytest.param(Prover9("T5"),                id="prover9"),
+   pytest.param(Z3("T5"),                     id="z3"),
+]
+
+SOLVERS = SHELL_SOLVERS + STDIN_SOLVERS
 
 # (solver, problem, strategy, expected_status) — used by run tests.
 CASES = [
@@ -46,6 +51,11 @@ CASES = [
 
 @pytest.fixture(params=SOLVERS)
 def solver(request):
+   return request.param
+
+
+@pytest.fixture(params=SHELL_SOLVERS)
+def shell_solver(request):
    return request.param
 
 
