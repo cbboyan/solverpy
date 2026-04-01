@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-01)
 
-* test: split SOLVERS into SHELL_SOLVERS/STDIN_SOLVERS fixtures [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* test: testing files [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* test: split SOLVERS into SHELL_SOLVERS/STDIN_SOLVERS fixtures [[details](https://github.com/cbboyan/solverpy/commit/03f52fc) | [browse](https://github.com/cbboyan/solverpy/tree/03f52fc)]
 
 ## v2.0.1 (2026-03-25)
 

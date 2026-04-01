@@ -1,7 +1,10 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["slow: marks tests as slow (skipped by default)"]
-addopts = "-m 'not slow'"
+markers = [
+   "slow: marks tests as slow (skipped by default)",
+   "learn: marks tests as ML learning tests (skipped by default)",
+]
+addopts = "-m 'not slow and not learn'"
 
 [tool.yapf]
 based_on_style = "pep8"

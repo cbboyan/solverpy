@@ -53,7 +53,7 @@ def oneloop(setup: Setup) -> Setup:
    options = setup["options"]
 
    def is_last(setup: Setup) -> bool:
-      return ("loops" in setup) and (setup["it"] == setup["loops"])
+      return ("loops" in setup) and (setup.get("it") == setup["loops"])
 
    def trains_compress(setup: Setup) -> None:
       nonlocal options
@@ -124,10 +124,13 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
    try:
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup)
+      if "loops" in setup:
+         looping(setup)
+         if devels:
+            looping(devels)
       do_loop(devels)
       do_loop(setup)
       if "loops" in setup:
-         assert "it" in setup
          while setup["it"] < setup["loops"]:
             gc.collect()
             log.ntfy(setup, f"solverpy: iter #{setup['it']}")

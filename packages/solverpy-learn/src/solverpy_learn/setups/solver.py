@@ -1,7 +1,7 @@
 import logging
 
 from solverpy.solver.atp.eprover import E_STATIC
-from solverpy.setups.common import default
+from solverpy.setups.common import default, init
 from solverpy.setups.setup import Setup
 from ..builder.plugins import (
    EnigmaTrains,
@@ -16,12 +16,9 @@ logger = logging.getLogger(__name__)
 
 def eprover(setup: Setup, training: bool = False) -> Setup:
    from solverpy.setups.solver import eprover as _eprover_base
-   _eprover_base(setup)
    if not training:
+      _eprover_base(setup)
       return setup
-   assert "plugins" in setup
-   assert "options" in setup
-   static = setup["static"]
    default(setup, "dataname", "data/model")
    assert "dataname" in setup
    default(setup, "e_training_examples", "11")
@@ -36,6 +33,9 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
    gen = setup["gen_features"]
    dataname = setup["dataname"]
    ratio = setup["posneg_ratio"]
+   default(setup, "static", E_STATIC.split())
+   assert "static" in setup
+   static = setup["static"]
    static.append(f"--training-examples={setup['e_training_examples']}")
    if sel:
       static.append(f'--enigmatic-sel-features="{sel}"')
@@ -52,6 +52,7 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
          "`sel_features` or `gen_features` must be provided in setup to generate trains."
       )
    setup["trains"] = trains
+   init(setup)
    plugs = setup["plugins"]
    plugs.append(trains)
    flatten = "flatten" in setup["options"]
@@ -60,16 +61,18 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
          plugs.append(EnigmaTrainsDebug(sel, "sel", flatten, ratio))
       if gen:
          plugs.append(EnigmaTrainsDebug(gen, "gen", flatten, ratio))
+   _eprover_base(setup)
    return setup
 
 
 def cvc5(setup: Setup, training: bool = False) -> Setup:
    from solverpy.setups.solver import cvc5 as _cvc5_base
-   _cvc5_base(setup)
    if not training:
+      _cvc5_base(setup)
       return setup
-   assert "plugins" in setup
-   assert "options" in setup
+   from solverpy.solver.smt.cvc5 import CVC5_STATIC
+   default(setup, "static", CVC5_STATIC.split())
+   assert "static" in setup
    static = setup["static"]
    static.extend([
       "--produce-proofs",
@@ -84,10 +87,12 @@ def cvc5(setup: Setup, training: bool = False) -> Setup:
    assert "posneg_ratio" in setup
    ratio = setup["posneg_ratio"]
    trains = Cvc5Trains(setup["dataname"], ratio)
+   init(setup)
    plugs = setup["plugins"]
    plugs.append(trains)
    options = setup["options"]
    if "debug-trains" in options:
       plugs.append(Cvc5TrainsDebug("flatten" in options, ratio))
    setup["trains"] = trains
+   _cvc5_base(setup)
    return setup
