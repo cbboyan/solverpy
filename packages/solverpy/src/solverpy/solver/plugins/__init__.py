@@ -115,6 +115,7 @@ instantiated standalone to inspect or write cached output files.
 
 from .db.bid import Bid
 from .db.sid import Sid
+from .db.eprovesid import EProverSid
 from .db.outputs import Outputs
 from .db.errors import Errors
 

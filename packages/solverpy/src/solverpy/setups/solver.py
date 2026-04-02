@@ -7,6 +7,8 @@ from ..solver.smt import Cvc5, Z3, Bitwuzla
 from ..solver.smt.bitwuzla import BWZ_STATIC
 from ..solver.smt.cvc5 import CVC5_STATIC
 from ..solver.smt.z3 import Z3_STATIC
+from ..solver.plugins.db.sid import Sid
+from ..solver.plugins.db.eprovesid import EProverSid
 from .common import default, init, solver
 from .setup import Setup
 
@@ -16,6 +18,10 @@ logger = logging.getLogger(__name__)
 def eprover(setup: Setup) -> Setup:
    init(setup)
    default(setup, "static", E_STATIC.split())
+   setup["plugins"] = [
+      EProverSid() if isinstance(p, Sid) else p
+      for p in setup["plugins"]
+   ]
    return solver(setup, E)
 
 

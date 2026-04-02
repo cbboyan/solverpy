@@ -1,8 +1,12 @@
 # Change Log
 
+## v2.0.3 (2026-04-02)
+
+* feat!: Support E Prover new --parse-strategy format via EProverSid plugin. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.0.2 (2026-04-02)
 
-* fix!: Fixed ML-looping after package split. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix!: Fixed ML-looping after package split. [[details](https://github.com/cbboyan/solverpy/commit/4a105a1) | [browse](https://github.com/cbboyan/solverpy/tree/4a105a1)]
 * test: testing files [[details](https://github.com/cbboyan/solverpy/commit/055debf) | [browse](https://github.com/cbboyan/solverpy/tree/055debf)]
 * test: split SOLVERS into SHELL_SOLVERS/STDIN_SOLVERS fixtures [[details](https://github.com/cbboyan/solverpy/commit/03f52fc) | [browse](https://github.com/cbboyan/solverpy/tree/03f52fc)]
 

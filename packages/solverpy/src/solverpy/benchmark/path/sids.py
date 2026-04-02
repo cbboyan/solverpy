@@ -105,6 +105,13 @@ def load(sid: str) -> str:
    """Load the strategy definition."""
    return open(path(sid)).read().strip()
 
+def resolve(sid: str, strategy: str) -> str:
+   """Instantiate the strategy definition if parametric."""
+   if "@@@" in strategy:
+      (sid, args) = split(sid)
+      strategy = instatiate(strategy, args)
+   return strategy
+
 def save(sid: str, strategy: str) -> None:
    """Save the strategy definition."""
    f_sid = path(sid)

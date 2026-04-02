@@ -26,10 +26,5 @@ class Sid(Translator):
       strategy: str,
    ) -> tuple[Any, str]:
       """Load and (if parametric) instantiate the strategy definition."""
-      sid = strategy
-      strategy0 = sids.load(sid)
-      if "@@@" in strategy0:
-         (sid, args) = sids.split(sid)
-         strategy0 = sids.instatiate(strategy0, args)
-      return (instance, strategy0)
+      return (instance, sids.resolve(strategy, sids.load(strategy)))
 
