@@ -15,7 +15,7 @@ AGATHA_SMT2 = DATA / "agatha.smt2"
 AGATHA_LADR = DATA / "agatha.ladr"
 THF_P       = DATA / "thf.p"
 QF_BV_SMT2  = DATA / "qf_bv.smt2"
-FINSET1     = DATA / "problems/bushy010/finset_1__t13_finset_1.p"
+FINSET1     = DATA / "problems" / "bushy010/finset_1__t13_finset_1.p"
 
 # Solvers under test — used by interface tests (no problem file needed).
 SHELL_SOLVERS = [

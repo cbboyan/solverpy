@@ -19,20 +19,20 @@ DB_DIR   = DATA_DIR / "solverpy_db"
 # (solver_setup_fn, bidlist, sidlist)
 EVAL_CASES = [
    pytest.param(
-      (setups.eprover, ["problems/bushy010"], ["eprover-default"]),
+      (setups.eprover, ["bushy010"], ["eprover-default"]),
       id="eprover-bushy010-default",
    ),
    pytest.param(
-      (setups.vampire, ["problems/bushy010"], ["vampire-default"]),
+      (setups.vampire, ["bushy010"], ["vampire-default"]),
       id="vampire-bushy010-default",
       marks=pytest.mark.slow,
    ),
    pytest.param(
-      (setups.cvc5, ["problems/smt010"], ["cvc5-enum"]),
+      (setups.cvc5, ["smt010"], ["cvc5-enum"]),
       id="cvc5-smt010-enum",
    ),
    pytest.param(
-      (setups.bitwuzla, ["problems/sage010"], ["bitwuzla-default"]),
+      (setups.bitwuzla, ["sage010"], ["bitwuzla-default"]),
       id="bitwuzla-sage010-default",
       marks=pytest.mark.slow,
    ),

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-04-01)
+## v2.0.2 (2026-04-02)
 
-* test: testing files [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix!: Fixed ML-looping after package split. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* test: testing files [[details](https://github.com/cbboyan/solverpy/commit/055debf) | [browse](https://github.com/cbboyan/solverpy/tree/055debf)]
 * test: split SOLVERS into SHELL_SOLVERS/STDIN_SOLVERS fixtures [[details](https://github.com/cbboyan/solverpy/commit/03f52fc) | [browse](https://github.com/cbboyan/solverpy/tree/03f52fc)]
 
 ## v2.0.1 (2026-03-25)

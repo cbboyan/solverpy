@@ -33,18 +33,18 @@ tests/
 
 ```bash
 # All fast tests (omit slow)
-SOLVERPY_BENCHMARKS=tests/data SOLVERPY_DB=tests/data/solverpy_db pytest
+SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db pytest
 
 # A single parametrised case
-SOLVERPY_BENCHMARKS=tests/data SOLVERPY_DB=tests/data/solverpy_db \
+SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
   pytest tests/test_benchmark_eval.py -k bitwuzla-sage010-default
 
 # Include slow-marked tests
-SOLVERPY_BENCHMARKS=tests/data SOLVERPY_DB=tests/data/solverpy_db \
+SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
   pytest -m slow
 
 # Run all (fast + slow)
-SOLVERPY_BENCHMARKS=tests/data SOLVERPY_DB=tests/data/solverpy_db \
+SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
   pytest -m ""
 ```
 
@@ -60,7 +60,7 @@ All end-to-end solver tests live in `tests/test_benchmark_eval.py` as entries in
 ```python
 EVAL_CASES = [
     pytest.param(
-        (setups.bitwuzla, ["problems/sage010"], ["bitwuzla-default"]),
+        (setups.bitwuzla, ["sage010"], ["bitwuzla-default"]),
         id="bitwuzla-sage010-default",
         marks=pytest.mark.slow,   # omit if fast enough
     ),
@@ -164,7 +164,7 @@ Currently slow tests are only excluded when explicitly deselected with `-m`.
 
 | Variable | Value for tests | Purpose |
 |---|---|---|
-| `SOLVERPY_BENCHMARKS` | `tests/data` | Root for bid resolution |
+| `SOLVERPY_BENCHMARKS` | `tests/data/problems` | Root for bid resolution |
 | `SOLVERPY_DB` | `tests/data/solverpy_db` | Where results, strats, solved, etc. live |
 
 Both must be set before running evaluation tests.  The `solverpy_env` fixture also

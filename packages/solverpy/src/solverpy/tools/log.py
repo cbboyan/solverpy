@@ -57,35 +57,37 @@ def init_yaml() -> None:
 
 
 def init() -> None:
+   root = logging.getLogger("")
+   root.setLevel(logging.DEBUG)
    # set up logging to file
-   logging.basicConfig(
-      level=logging.DEBUG,
-      format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
-      filename=filename(),
-      filemode="w")
+   fh = logging.FileHandler(filename(), mode="w")
+   fh.setLevel(logging.DEBUG)
+   fh.setFormatter(
+      logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s"))
+   root.addHandler(fh)
    # define a Handler which writes INFO messages or higher to the sys.stderr
-   #console = logging.StreamHandler()
    console = logging.StreamHandler(
       io.TextIOWrapper(os.fdopen(sys.stderr.fileno(), "wb")))
-
    console.setLevel(logging.INFO)
-   # set a format which is simpler for console use
-   #formatter = logging.Formatter("%(name)-12s: %(levelname)-8s %(message)s")
-   formatter = logging.Formatter("%(asctime)-12s: %(levelname)-8s %(message)s")
-   #formatter = logging.Formatter("%(asctime)-12s: %(message)s")
-   # tell the handler to use this format
-   console.setFormatter(formatter)
-   # add the handler to the root logger
-   logging.getLogger("").addHandler(console)
+   console.setFormatter(
+      logging.Formatter("%(asctime)-12s: %(levelname)-8s %(message)s"))
+   root.addHandler(console)
    logger.info("Logger running.")
    atexit.register(terminating)
    init_yaml()
 
 
 def terminating() -> None:
-   logger.info("Logger terminated.")
    if "last_traceback" in dir(sys):
       msg = traceback.format_exception(sys.last_type, sys.last_value,
                                        sys.last_traceback)
       msg = "".join(msg)
       logger.error(f"Last exception:\n{msg}")
+   for handler in logging.getLogger("").handlers[:]:
+      if isinstance(handler, logging.FileHandler):
+         try:
+            handler.flush()
+            handler.close()
+         except Exception:
+            pass
+         logging.getLogger("").removeHandler(handler)

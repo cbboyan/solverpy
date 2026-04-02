@@ -1,0 +1,11 @@
+--decision=internal
+--simplification=none
+--no-inst-no-entail
+--no-cbqi
+--full-saturate-quant
+--ml-engine
+--ml-vert-base=@@@vb:64@@@
+--ml-vert-length=@@@vl:3@@@
+--ml-horiz-base=@@@hb:64@@@
+--ml-context=@@@ctx:all@@@
+--ml-type-features
