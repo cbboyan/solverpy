@@ -10,9 +10,9 @@ Issues found during code review, roughly ordered by priority.
 ~~Writes to `~/debug.log` and iterates all solver attributes with `dir()` on every call to
 `launch()`. Creates unbounded log growth and has a measurable performance impact.~~
 
-### 2. Mutable default argument in `SolverTask.__init__` — `task/solvertask.py:28`
-`calls: list[...] = []` is shared across all instances created without an explicit
-`calls` argument. Plugin calls registered in one task leak into all subsequent tasks.
+### ~~2. Mutable default argument in `SolverTask.__init__` — `task/solvertask.py:28`~~ ✓ FIXED
+~~`calls: list[...] = []` is shared across all instances created without an explicit
+`calls` argument. Plugin calls registered in one task leak into all subsequent tasks.~~
 
 ### 3. File resource leak in `Outputs.write()` — `solver/plugins/db/outputs.py:72–76`
 `fw.close()` is not inside a `with` block — if `fw.write()` raises, the file descriptor

@@ -25,7 +25,7 @@ class SolverTask(Task):
       bid: str,
       sid: str,
       problem: str,
-      calls: list[tuple[str, str, Any, Any]] = [],
+      calls: list[tuple[str, str, Any, Any]] | None = None,
    ):
       """
       Create a new task to execute `solver` on problem `problem` from benchmark
@@ -43,7 +43,7 @@ class SolverTask(Task):
       self.bid = bid
       self.sid = sid
       self.problem = problem
-      self._calls = calls
+      self._calls = calls if calls is not None else []
 
    def __str__(self) -> str:
       return f"{self.solver}:{self.sid} @ {self.bid} / {self.problem}"

@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-08)
 
-* fix: Remove debug code from launcher.launch() that wrote to ~/debug.log [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fix mutable default argument in SolverTask.__init__ [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Remove debug code from launcher.launch() that wrote to ~/debug.log [[details](https://github.com/cbboyan/solverpy/commit/602e85b) | [browse](https://github.com/cbboyan/solverpy/tree/602e85b)]
 
 ## v2.0.3 (2026-04-02)
 
