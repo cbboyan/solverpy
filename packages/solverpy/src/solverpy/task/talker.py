@@ -86,7 +86,9 @@ class Talker:
       """Start parent logging from the queue."""
       root = logging.getLogger()
       self._manager = mp.get_context("spawn").Manager()
+      assert self._manager
       self._log_queue = self._manager.Queue()
+      assert self._log_queue
       self._listener = QueueListener(self._log_queue, *root.handlers)
       self._listener.start()
 
