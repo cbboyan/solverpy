@@ -14,9 +14,9 @@ Issues found during code review, roughly ordered by priority.
 ~~`calls: list[...] = []` is shared across all instances created without an explicit
 `calls` argument. Plugin calls registered in one task leak into all subsequent tasks.~~
 
-### 3. File resource leak in `Outputs.write()` — `solver/plugins/db/outputs.py:72–76`
-`fw.close()` is not inside a `with` block — if `fw.write()` raises, the file descriptor
-leaks. Under heavy evaluation load this can exhaust system file descriptors.
+### ~~3. File resource leak in `Outputs.write()` — `solver/plugins/db/outputs.py:72–76`~~ ✓ FIXED
+~~`fw.close()` is not inside a `with` block — if `fw.write()` raises, the file descriptor
+leaks. Under heavy evaluation load this can exhaust system file descriptors.~~
 
 ---
 

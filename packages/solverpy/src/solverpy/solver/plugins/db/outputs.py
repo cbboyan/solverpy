@@ -92,8 +92,8 @@ class Outputs(Decorator):
       f = self.path(instance, strategy)
       os.makedirs(os.path.dirname(f), exist_ok=True)
       if self._compress:
-         fw = gzip.open(f + ".gz", "wb")
+         with gzip.open(f + ".gz", "wb") as fw:
+            fw.write(content.encode())
       else:
-         fw = open(f, "wb")
-      fw.write(content.encode())
-      fw.close()
+         with open(f, "wb") as fw:
+            fw.write(content.encode())
