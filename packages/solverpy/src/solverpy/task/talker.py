@@ -66,6 +66,7 @@ class Talker:
    def __init__(self):
       self._log_queue: Queue[Any] | None = None
       self._listener: QueueListener | None = None
+      self._manager: mp.managers.SyncManager | None = None
 
    @staticmethod
    def log_config(queue: "Queue[Any] | None") -> None:
@@ -84,7 +85,8 @@ class Talker:
    def log_start(self) -> None:
       """Start parent logging from the queue."""
       root = logging.getLogger()
-      self._log_queue = mp.get_context("spawn").Manager().Queue()
+      self._manager = mp.get_context("spawn").Manager()
+      self._log_queue = self._manager.Queue()
       self._listener = QueueListener(self._log_queue, *root.handlers)
       self._listener.start()
 
@@ -93,7 +95,9 @@ class Talker:
       if self._listener:
          self._listener.stop()
          self._listener = None
-         #logging.getLogger().handlers = self._handlers.copy()
+      if self._manager:
+         self._manager.shutdown()
+         self._manager = None
 
    def listening_start(self) -> None:
       self.log_start()
@@ -126,9 +130,7 @@ class Talker:
       pass
 
    def terminate(self) -> None:
-      if self._listener:
-         self._listener.stop()
-         self._listener = None
+      self.log_stop()
 
    def launching(self, tasks: Sequence["Task"]) -> None:
       if self._log_queue is None:

@@ -30,10 +30,10 @@ an outer pool (e.g. during Optuna trial evaluation), every outer worker spawns a
 processes are forked. The fix is to detect when already inside a worker (e.g. via a
 global flag or env var) and run tasks sequentially instead of spawning a new pool.
 
-### 5. Manager queue lifecycle — `task/talker.py:87`
-`mp.get_context("spawn").Manager().Queue()` creates a Manager subprocess that is never
+### ~~5. Manager queue lifecycle — `task/talker.py:87`~~ ✓ FIXED
+~~`mp.get_context("spawn").Manager().Queue()` creates a Manager subprocess that is never
 cleaned up if the program crashes or `log_stop()` is not called. Multiple calls to
-`log_start()` without `log_stop()` orphan Manager processes.
+`log_start()` without `log_stop()` orphan Manager processes.~~
 
 ### 6. Solver mutable state visible across processes — `solver/solverpy.py:22–25`, `solver/solver.py:92`
 `_exitcode` and `_output` are set on the solver during `solve()`. With spawn-based

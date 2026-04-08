@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-08)
 
-* fix: Fix file descriptor leak in Outputs.write() [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fix Manager subprocess leak in Talker.log_start() [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fix file descriptor leak in Outputs.write() [[details](https://github.com/cbboyan/solverpy/commit/52a3c05) | [browse](https://github.com/cbboyan/solverpy/tree/52a3c05)]
 * fix: Fix mutable default argument in SolverTask.__init__ [[details](https://github.com/cbboyan/solverpy/commit/7106b62) | [browse](https://github.com/cbboyan/solverpy/tree/7106b62)]
 * fix: Remove debug code from launcher.launch() that wrote to ~/debug.log [[details](https://github.com/cbboyan/solverpy/commit/602e85b) | [browse](https://github.com/cbboyan/solverpy/tree/602e85b)]
 
