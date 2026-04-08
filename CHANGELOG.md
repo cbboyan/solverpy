@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-04-08)
+
+* fix: Remove debug code from launcher.launch() that wrote to ~/debug.log [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.0.3 (2026-04-02)
 
-* feat!: Support E Prover new --parse-strategy format via EProverSid plugin. [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!: Support E Prover new --parse-strategy format via EProverSid plugin. [[details](https://github.com/cbboyan/solverpy/commit/8a8010f) | [browse](https://github.com/cbboyan/solverpy/tree/8a8010f)]
 
 ## v2.0.2 (2026-04-02)
 

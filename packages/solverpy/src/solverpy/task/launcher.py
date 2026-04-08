@@ -54,21 +54,6 @@ def launch(
          task.tid = n
          tids[n] = task
       talker.launching(tasks)
-      import pickle, os
-      task = tasks[0]  # Pick first task
-      with open(os.path.expanduser("~/debug.log"), "a") as f:
-         f.write(f"Task attributes: {task.__dict__}\n")
-          
-         # Try to pickle it
-         try:
-            pickled = pickle.dumps(task)
-            f.write(f"Task pickles successfully, size: {len(pickled)} bytes\n")
-            f.write(f"Solver, size: {dir(task._solver)} bytes\n")
-            for x in dir(task._solver):
-               f.write(f"Solver, {x}: {dir(getattr(task._solver, x))}\n")
-
-         except Exception as e:
-            f.write(f"Task pickle error: {e}\n")
       try:
          # TODO: eliminate runtask and make it runtask2
          results = pool.imap_unordered(

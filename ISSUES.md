@@ -6,9 +6,9 @@ Issues found during code review, roughly ordered by priority.
 
 ## Critical
 
-### 1. Debug code left in `launcher.launch()` — `task/launcher.py:57–71`
-Writes to `~/debug.log` and iterates all solver attributes with `dir()` on every call to
-`launch()`. Creates unbounded log growth and has a measurable performance impact.
+### ~~1. Debug code left in `launcher.launch()` — `task/launcher.py:57–71`~~ ✓ FIXED
+~~Writes to `~/debug.log` and iterates all solver attributes with `dir()` on every call to
+`launch()`. Creates unbounded log growth and has a measurable performance impact.~~
 
 ### 2. Mutable default argument in `SolverTask.__init__` — `task/solvertask.py:28`
 `calls: list[...] = []` is shared across all instances created without an explicit
