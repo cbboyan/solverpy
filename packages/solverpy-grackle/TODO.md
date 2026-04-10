@@ -161,10 +161,9 @@ Key types: `params: dict[str, list[str]]`, `defaults: dict[str, str]`,
 
 ### 8c. Trainer layer
 
-- [ ] Add `grackle/trainer/config.py` — `TrainerConfig(TypedDict, total=False)` with `timeout`,
-  `instance_budget`, `restarts`, `log`, `nick`
-- [ ] Annotate `trainer/trainer.py`
-- [ ] Annotate `trainer/paramils.py`, `trainer/ramparils.py`, `trainer/stage.py`
+- [x] Add `grackle/trainer/config.py` — `TrainerConfig(TypedDict, total=False)` + `Insts` alias
+- [x] Annotate `trainer/trainer.py`
+- [x] Annotate `trainer/paramils.py`, `trainer/ramparils.py`, `trainer/stage.py`
 - [ ] Annotate solver-specific trainers (`lash/`, `vampire/`, `z3/`, `cvc5/`, `eprover/`, `bitwuzla/`)
 
 ### 8d. Core
