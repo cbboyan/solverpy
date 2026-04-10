@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "packages/solverpy-grackle/tests"]
 markers = [
    "slow: marks tests as slow (skipped by default)",
    "learn: marks tests as ML learning tests (skipped by default)",
