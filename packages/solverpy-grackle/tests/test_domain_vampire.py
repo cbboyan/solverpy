@@ -1,24 +1,24 @@
 import pytest
-from grackle.trainer.vampire.domain import VampireDomain
-from grackle.trainer.vampire.full import VampireFullDomain
-from grackle.trainer.vampire.casc import VampireCascDomain
+from grackle.trainer.vampire.default import DefaultDomain
+from grackle.trainer.vampire.full import FullDomain
+from grackle.trainer.vampire.casc import CascDomain
 
 
 @pytest.fixture
 def domain():
-   return VampireDomain()
+   return DefaultDomain()
 
 @pytest.fixture
 def domain_full():
-   return VampireFullDomain()
+   return FullDomain()
 
 @pytest.fixture
 def domain_casc():
-   return VampireCascDomain()
+   return CascDomain()
 
 
 # ---------------------------------------------------------------------------
-# VampireDomain — params
+# DefaultDomain — params
 # ---------------------------------------------------------------------------
 
 def test_params_is_dict(domain):
@@ -36,7 +36,7 @@ def test_params_selection_values(domain):
 
 
 # ---------------------------------------------------------------------------
-# VampireDomain — defaults
+# DefaultDomain — defaults
 # ---------------------------------------------------------------------------
 
 def test_defaults_is_dict(domain):
@@ -54,7 +54,7 @@ def test_defaults_covers_all_params(domain):
 
 
 # ---------------------------------------------------------------------------
-# VampireDomain — conditions / forbiddens
+# DefaultDomain — conditions / forbiddens
 # ---------------------------------------------------------------------------
 
 def test_conditions_empty(domain):
@@ -79,7 +79,7 @@ def test_forbiddens_avatar_off(domain):
 
 
 # ---------------------------------------------------------------------------
-# VampireDomain — dump
+# DefaultDomain — dump
 # ---------------------------------------------------------------------------
 
 def test_dump_contains_param(domain):
@@ -96,7 +96,7 @@ def test_dump_sorted(domain):
 
 
 # ---------------------------------------------------------------------------
-# VampireFullDomain — extra params vs VampireDomain
+# FullDomain — extra params vs DefaultDomain
 # ---------------------------------------------------------------------------
 
 def test_full_has_more_params(domain, domain_full):
@@ -114,7 +114,7 @@ def test_full_defaults_covers_all_params(domain_full):
 
 
 # ---------------------------------------------------------------------------
-# VampireCascDomain — basic checks
+# CascDomain — basic checks
 # ---------------------------------------------------------------------------
 
 def test_casc_params_count(domain_casc):

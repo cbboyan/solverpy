@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from ..domain.grackle import GrackleDomain, _parse_params, _parse_forbiddens
 
 
-class VampireCascDomain(GrackleDomain):
+class CascDomain(GrackleDomain):
 
    @property
    def params(self) -> Mapping[str, Any]:

@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-11)
 
-* refactor: restore bitwuzla domains as DefaultDomain and BitwuzlaDomain [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename vampire domain classes and remove dead init.py [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: restore bitwuzla domains as DefaultDomain and BitwuzlaDomain [[details](https://github.com/cbboyan/solverpy/commit/a81b922) | [browse](https://github.com/cbboyan/solverpy/tree/a81b922)]
 * refactor: remove domain_ prefix from vampire files; rename DefaultDomain to BitwuzlaDomain [[details](https://github.com/cbboyan/solverpy/commit/f9f2eed) | [browse](https://github.com/cbboyan/solverpy/tree/f9f2eed)]
 * feat: Annotate domain layer and runner layer; delete dead StageRunner [[details](https://github.com/cbboyan/solverpy/commit/7cf012a) | [browse](https://github.com/cbboyan/solverpy/tree/7cf012a)]
 * feat: Add RunnerConfig TypedDict and annotate runner base classes [[details](https://github.com/cbboyan/solverpy/commit/b6b67e0) | [browse](https://github.com/cbboyan/solverpy/tree/b6b67e0)]

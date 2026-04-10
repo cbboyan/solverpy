@@ -1,7 +1,7 @@
 from ..domain.grackle import GrackleDomain, _parse_params, _parse_forbiddens
 
 
-class VampireFullDomain(GrackleDomain):
+class FullDomain(GrackleDomain):
 
    @property
    def params(self):
