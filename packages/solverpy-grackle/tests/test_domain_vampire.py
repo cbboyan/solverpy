@@ -1,7 +1,7 @@
 import pytest
 from grackle.trainer.vampire.domain import VampireDomain
-from grackle.trainer.vampire.domain_full import VampireFullDomain
-from grackle.trainer.vampire.domain_casc import VampireCascDomain
+from grackle.trainer.vampire.full import VampireFullDomain
+from grackle.trainer.vampire.casc import VampireCascDomain
 
 
 @pytest.fixture

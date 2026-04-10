@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from grackle.runner.vampire import VampireRunner
-from grackle.trainer.vampire.domain_full import DEFAULTS, REPLACE
+from grackle.trainer.vampire.full import DEFAULTS, REPLACE
 
 
 # --- fixtures ---

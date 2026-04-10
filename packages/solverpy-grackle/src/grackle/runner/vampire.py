@@ -2,7 +2,7 @@ from solverpy.solver.atp.vampire import Vampire, V_BINARY, V_STATIC
 
 from .solverpy import SolverPyRunner
 from .config import Params, RunnerConfig
-from ..trainer.vampire.domain_full import DEFAULTS, REPLACE
+from ..trainer.vampire.full import DEFAULTS, REPLACE
 
 
 class VampireRunner(SolverPyRunner):
