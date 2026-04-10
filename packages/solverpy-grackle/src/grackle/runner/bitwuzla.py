@@ -1,3 +1,4 @@
+from typing import Any
 import re
 from os import path, getenv
 from .runner import GrackleRunner
@@ -5,20 +6,24 @@ from .runner import GrackleRunner
 from grackle.trainer.bitwuzla.default import DefaultDomain
 
 BWZ_BINARY = "bitwuzla"
-BWZ_STATIC = "-v -M=4096" # -t=1 -l=1 --smt2
+BWZ_STATIC = "-v -M=4096"  # -t=1 -l=1 --smt2
 
 BWZ_OK = ['sat', 'unsat']
 BWZ_FAILED = ['unknown']
 BWZ_RESULTS = BWZ_OK + BWZ_FAILED
 
-TIMEOUT = "timeout --kill-after=1 --foreground %s " # note the space at the end
+TIMEOUT = "timeout --kill-after=1 --foreground %s "  # note the space at the end
 
 # patterns to be matched in the output
 PATS = {
-   "STATUS"  : re.compile(r"^(sat|unsat|unknown)$", flags=re.MULTILINE),
-   "LOGIC"   : re.compile(r"^\[bitwuzla\>parse\] logic (\S*)$", flags=re.MULTILINE),
-   "EXPECTED": re.compile(r"^\[bitwuzla\>parse\] status (\S*)$", flags=re.MULTILINE),
-   "USERTIME": re.compile(r"\buser\s*(\d*\.\d*)\b")
+   "STATUS":
+   re.compile(r"^(sat|unsat|unknown)$", flags=re.MULTILINE),
+   "LOGIC":
+   re.compile(r"^\[bitwuzla\>parse\] logic (\S*)$", flags=re.MULTILINE),
+   "EXPECTED":
+   re.compile(r"^\[bitwuzla\>parse\] status (\S*)$", flags=re.MULTILINE),
+   "USERTIME":
+   re.compile(r"\buser\s*(\d*\.\d*)\b")
 }
 
 # list of ignored errors
@@ -28,17 +33,23 @@ IGNORED = [
    "timeout: the monitored command dumped core",
 ]
 
-def format1(notfound="error", apply=str):
+
+# format1<V>(notfound: V, apply: str -> V)
+def format1(notfound: Any = "error", apply: Any = str) -> Any:
+
    def handle(mo):
       return apply(mo.group(1)) if mo else notfound
+
    return handle
 
+
 VALS = {
-   "STATUS"  : format1(),
-   "LOGIC"   : format1(),
+   "STATUS": format1(),
+   "LOGIC": format1(),
    "EXPECTED": format1(),
    "USERTIME": format1(999999999, float),
 }
+
 
 class BitwuzlaRunner(GrackleRunner):
 
@@ -49,18 +60,20 @@ class BitwuzlaRunner(GrackleRunner):
       #self.conds = self.conditions(CONDITIONS)
 
    def args(self, params):
-      def one(arg, val):
-         arg = arg.replace("_","-")
-         return f"--{arg}={val}"
-      return " ".join([one(x,params[x]) for x in sorted(params)])
 
-   def cmd(self, params, inst):
+      def one(arg, val):
+         arg = arg.replace("_", "-")
+         return f"--{arg}={val}"
+
+      return " ".join([one(x, params[x]) for x in sorted(params)])
+
+   def cmd(self, params, inst=""):
       params = self.clean(params)
       args = self.args(params)
       problem = path.join(getenv("SOLVERPY_BENCHMARKS", "."), inst)
       if "timeout" in self.config:
          t = self.config["timeout"]
-         timeout = TIMEOUT % (t+1)
+         timeout = TIMEOUT % (t + 1)
          limit = f" -t={t*1000}"
       else:
          timeout = ""
@@ -70,7 +83,7 @@ class BitwuzlaRunner(GrackleRunner):
 
    def process(self, out, inst):
       out = out.decode()
-      res = {key:VALS[key](PATS[key].search(out)) for key in PATS}
+      res = {key: VALS[key](PATS[key].search(out)) for key in PATS}
       status = res["STATUS"]
       if status not in BWZ_RESULTS:
          if any(x in out for x in IGNORED):
@@ -78,12 +91,14 @@ class BitwuzlaRunner(GrackleRunner):
          else:
             return None
       ok = self.success(status)
+      assert "timeout" in self.config
+      assert "penalty" in self.config
       runtime = res["USERTIME"] if ok else self.config["timeout"]
-      quality = 10+int(1000*runtime) if ok else self.config["penalty"]
+      quality = 10 + int(1000 * runtime) if ok else self.config["penalty"]
       return [quality, runtime, status]
 
-   def success(self, status):
-      return status in BWZ_OK
+   def success(self, result):
+      return result in BWZ_OK
       #return (result in BWZ_OK) and (result[1] < self.config["timeout"])
 
    #def clean(self, params):
@@ -103,5 +118,9 @@ class BitwuzlaRunner(GrackleRunner):
    #   return params
 
    def clean(self, params):
-      params = {x:params[x] for x in params if params[x] != self.domain.defaults[x]}
+      assert self.domain
+      params = {
+         x: params[x]
+         for x in params if params[x] != self.domain.defaults[x]
+      }
       return params

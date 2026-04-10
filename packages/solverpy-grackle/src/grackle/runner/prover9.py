@@ -100,9 +100,9 @@ def make_lines(params, selector, builder, master="counter", deactive="none"):
 
    lines = ""
    params = {x[len(selector):]:y for (x,y) in params.items() if x.startswith(f"{selector}")}
-   n = None
-   key = None
-   cur = None
+   n: int = -1
+   key: str = ""
+   cur: dict[str, str] = {}
    move(0)
    while key in params and str(params[key]) != deactive:
       lines += builder(cur, selector+key[0])
@@ -144,8 +144,8 @@ class Prover9Runner(GrackleRunner):
    def __init__(self, config={}):
       GrackleRunner.__init__(self, config)
       self.default("penalty", 100000000)
-      penalty = self.config["penalty"]
-      self.default("penalty.error", penalty*1000)
+      assert "penalty" in self.config
+      self.default("penalty.error", self.config["penalty"]*1000)  # type: ignore[typeddict-item]
       self.default_domain(DefaultDomain)
       #self.conds = self.conditions(CONDITIONS)
       self.temp_file_to_delete = ''  # for the temp files
@@ -171,6 +171,7 @@ class Prover9Runner(GrackleRunner):
       if a_set: lines.append("")
       lines.extend([f"assign({key}, {val})." for (key,val) in sorted(a_assign)])
       if a_assign: lines.append("")
+      assert self.domain
       lines.append(make_strategy(params, self.domain.defaults))
       header = "\n".join(lines)
       if not header.strip():
@@ -187,7 +188,7 @@ class Prover9Runner(GrackleRunner):
          f_tmp.write(self.args(params))
       return f_tmp.name
 
-   def cmd(self, params, inst):
+   def cmd(self, params, inst=""):
       params = self.clean(params)
       temp_strategy_file = self.create_temp_strategy_file(params)
       self.temp_file_to_delete = temp_strategy_file
@@ -207,7 +208,8 @@ class Prover9Runner(GrackleRunner):
          if ("SEARCH FAILED" not in out) and ("Fatal error" in out):
             for ignored in IGNORED:
                if ignored in out:
-                  return [self.config["penalty.error"], self.config["timeout"], "IGNORED", -1]
+                  assert "timeout" in self.config
+            return [self.config["penalty.error"], self.config["timeout"], "IGNORED", -1]  # type: ignore[typeddict-item]
             return None # report error
          result = "SEARCH FAILED"  
       ok = self.success(result)
@@ -222,7 +224,8 @@ class Prover9Runner(GrackleRunner):
       else:
          runtime = 0.0001
 
-      quality = 10+int(1000*runtime) if ok else self.config["penalty"]   
+      assert "penalty" in self.config
+      quality = 10+int(1000*runtime) if ok else self.config["penalty"]
 
       match_resources = re.search(pattern_kept, out)
       if match_resources:
@@ -240,6 +243,7 @@ class Prover9Runner(GrackleRunner):
       return result in P_OK
 
    def clean(self, params):
+      assert self.domain
       params = {x:params[x] for x in params if params[x] != self.domain.defaults[x]}
       return params
 

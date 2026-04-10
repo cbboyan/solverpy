@@ -24,7 +24,7 @@ class RunnerConfig(TypedDict, total=False):
 
    # --- optional / trainer-set ---
    nick: str           # subdirectory for paramils/ramparils working dir
-   extra: str          # StageRunner: extra params joined onto every conf
+   extra: str          # extra params joined onto every conf (legacy StageRunner)
 
    # --- solver-specific binaries / static args ---
    cbinary: str        # cvc5 binary path

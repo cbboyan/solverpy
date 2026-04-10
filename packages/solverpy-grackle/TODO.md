@@ -135,26 +135,37 @@ Follow solverpy's style (see `~/repos/cbboyan/solverpy/CLAUDE.md`).  Key convent
   before accessing optional keys (both runtime guard and pyright narrowing)
 - `TYPE_CHECKING` guard for heavy imports used only in annotations
 
-### 8a. Runner layer
+### 8a. Domain layer (prerequisite for runners and trainers)
+
+`GrackleDomain` is the return type of `runner.domain` and used in `clean()`.
+Annotate this first so runner and trainer annotations can reference it properly.
+
+Key types: `params: dict[str, list[str]]`, `defaults: dict[str, str]`,
+`conditions: list[tuple[str, str, list[str]] | str]`, `forbiddens: list[str]`,
+`dump() -> str`.
+
+- [x] Annotate `trainer/domain/grackle.py` — `GrackleDomain` + module-level helpers; add `Condition` type alias
+- [x] Annotate `trainer/domain/custom.py` — `CustomDomain`
+- [x] Annotate `trainer/domain/multi.py` — `MultiDomain`
+
+### 8b. Runner layer
 
 - [x] Add `grackle/runner/config.py` — `Params` alias + `RunnerConfig(TypedDict, total=False)`
 - [x] Annotate `Runner` and `GrackleRunner` in `runner/runner.py`
-- [x] Annotate `SolverPyRunner` in `runner/solverpy.py` (also adds `assert "penalty"/"direct" in self.config`)
-- [ ] Annotate `runner/lash.py`, `runner/vampire.py`, `runner/z3.py`, `runner/cvc5.py`, `runner/eprover.py`
-- [ ] Fix and annotate `runner/stage.py` (broken: missing import, syntax error, wrong delegation pattern)
-- [ ] Annotate `runner/bitwuzla.py`, `runner/prover9.py` (legacy; fix pre-existing errors first)
+- [x] Annotate `SolverPyRunner` in `runner/solverpy.py`
+- [x] Annotate `runner/lash.py`, `runner/vampire.py`, `runner/z3.py`, `runner/cvc5.py`, `runner/eprover.py`
+- [x] Delete `runner/stage.py` — dead code; staging is handled entirely by `StageTrainer`
+- [x] Fix `runner/bitwuzla.py`, `runner/prover9.py` — asserts, param renames, `cmd` default arg
+  (`format1` in `bitwuzla.py` uses `Any` — would need `TypeVar` for full genericity, but Python
+  tooling has a gap at generic defaults; `Any` is intentional)
 
-### 8b. Trainer layer
+### 8c. Trainer layer
 
 - [ ] Add `grackle/trainer/config.py` — `TrainerConfig(TypedDict, total=False)` with `timeout`,
   `instance_budget`, `restarts`, `log`, `nick`
 - [ ] Annotate `trainer/trainer.py`
 - [ ] Annotate `trainer/paramils.py`, `trainer/ramparils.py`, `trainer/stage.py`
 - [ ] Annotate solver-specific trainers (`lash/`, `vampire/`, `z3/`, `cvc5/`, `eprover/`, `bitwuzla/`)
-
-### 8c. Domain layer
-
-- [ ] Annotate `trainer/domain/grackle.py`, `domain/custom.py`, `domain/multi.py`
 
 ### 8d. Core
 

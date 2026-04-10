@@ -4,12 +4,15 @@ import sys
 import hashlib
 import subprocess
 import multiprocessing
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from .. import log
 from ..tools import load_class
 from ..trainer.domain.multi import MultiDomain
 from .config import Params, RunnerConfig
+
+if TYPE_CHECKING:
+   from ..trainer.domain.grackle import GrackleDomain
 
 def wrapper(args):
    (runner, (entity, inst)) = args
@@ -147,11 +150,12 @@ class GrackleRunner(Runner):
    def default_domain(self, maker: Any, **kwargs: Any) -> None:
       if not self._domain:
          self._domain = maker(**kwargs)
-  
+
    def load_domain(self, cfg: dict[str, str]) -> None:
-      self._domain = None
+      self._domain: "GrackleDomain | None" = None
+      self._conds: dict[str, dict[str, list[str]]] = {}
       names = [x for x in cfg if "." not in x]
-      domains = []
+      domains: list["GrackleDomain"] = []
       for key in sorted(names):
          prf = f"{key}."
          args = {x[len(prf):]:y for (x,y) in cfg.items() if x.startswith(prf)}
@@ -162,14 +166,13 @@ class GrackleRunner(Runner):
       elif len(domains) > 1:
          self._domain = MultiDomain(domains)
       assert self._domain
-      self._conds = {}
-      for (slave,master,domain) in self._domain.conditions:
+      for (slave, master, values) in self._domain.conditions:
          if slave not in self._conds:
             self._conds[slave] = {}
-         self._conds[slave][master] = domain
-         
+         self._conds[slave][master] = values
+
    def conditions(self, s_conds: str) -> dict[str, dict[str, frozenset[str]]]:
-      conds = {}
+      conds: dict[str, dict[str, frozenset[str]]] = {}
       for line in s_conds.strip().split("\n"):
          if "|" not in line:
             continue
@@ -177,18 +180,17 @@ class GrackleRunner(Runner):
          name = name.strip()
          (cname, vals) = cond.split(" in ")
          cname = cname.strip()
-         vals = vals.strip().strip("{}").split(",")
-         vals = frozenset([x.strip() for x in vals])
+         vals_set = frozenset([x.strip() for x in vals.strip().strip("{}").split(",")])
          if name not in conds:
             conds[name] = {}
-         conds[name][cname] = vals
+         conds[name][cname] = vals_set
       return conds
 
    @property
-   def domain(self):
+   def domain(self) -> "GrackleDomain | None":
       return self._domain
 
    @domain.setter
-   def domain(self, value):
+   def domain(self, value: "GrackleDomain") -> None:
       self._domain = value
 

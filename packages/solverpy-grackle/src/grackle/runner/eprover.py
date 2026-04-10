@@ -1,6 +1,7 @@
 from solverpy.solver.atp.eprover import E, E_BINARY, E_STATIC
 
 from .solverpy import SolverPyRunner
+from .config import Params, RunnerConfig
 from grackle.trainer.eprover.heuristic import HEURISTIC_CEFS
 
 
@@ -84,16 +85,17 @@ class EproverRunner(SolverPyRunner):
 
    RESOURCE_KEY = "Processed"
 
-   def __init__(self, config={}):
+   def __init__(self, config: RunnerConfig = RunnerConfig()):
       SolverPyRunner.__init__(self, config)
       self.default("penalty", 1000000)
-      self.config["prefix"] = "eprover-"
+      self.config["prefix"] = "eprover-"  # type: ignore[typeddict-item]
       binary = self.config.get("ebinary") or E_BINARY
       static = self.config.get("eargs") or E_STATIC
+      assert "timeout" in self.config
       limit = self.config["timeout"]
       self.setup(E(limit=f"T{limit}", binary=binary, static=static))
 
-   def args(self, params):
+   def args(self, params: Params) -> str:
       eargs = dict(params)
       eargs = convert(eargs)
 
@@ -219,7 +221,7 @@ class EproverRunner(SolverPyRunner):
 
       return E_FIXED_ARGS + (E_PROTO_ARGS % eargs) + ho_extra + sat_extra
 
-   def clean(self, params):
+   def clean(self, params: Params) -> Params | None:
       params = convert(params)
 
       if "slots" not in params:
