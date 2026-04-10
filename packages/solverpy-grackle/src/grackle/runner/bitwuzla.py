@@ -2,8 +2,7 @@ from typing import Any
 import re
 from os import path, getenv
 from .runner import GrackleRunner
-#from ..trainer.bitwuzla.domain import DEFAULTS, CONDITIONS
-from grackle.trainer.bitwuzla.default import BitwuzlaDomain
+from grackle.trainer.bitwuzla.default import DefaultDomain
 
 BWZ_BINARY = "bitwuzla"
 BWZ_STATIC = "-v -M=4096"  # -t=1 -l=1 --smt2
@@ -56,7 +55,7 @@ class BitwuzlaRunner(GrackleRunner):
    def __init__(self, config={}):
       GrackleRunner.__init__(self, config)
       self.default("penalty", 100000000)
-      self.default_domain(BitwuzlaDomain)
+      self.default_domain(DefaultDomain)
       #self.conds = self.conditions(CONDITIONS)
 
    def args(self, params):

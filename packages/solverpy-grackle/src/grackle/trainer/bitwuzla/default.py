@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from ..domain.grackle import GrackleDomain, Condition
 
 
-class BitwuzlaDomain(GrackleDomain):
+class DefaultDomain(GrackleDomain):
 
    def __init__(self, **kwargs: Any) -> None:
       GrackleDomain.__init__(self, **kwargs)
