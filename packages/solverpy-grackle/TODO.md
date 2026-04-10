@@ -53,6 +53,10 @@ Add `grackle/trainer/ramparils.py` as a drop-in alternative to `ParamilsTrainer`
 - Same interface as `ParamilsTrainer` (`improve(state, conf, insts)`)
 - Add `RamparilsStageTrainer` alongside `ParamilsStageTrainer`
 
+- [x] Add `grackle/trainer/ramparils.py` — `RamparilsTrainer`, `RamparilsStageTrainer`
+- [x] Add `bin/grackle-ramparils-wrapper.py` — algo wrapper using `#%# RamParIls #%#` result format
+- [x] Add `ramparils` to `pyproject.toml` dependencies
+
 ## 6. Migrate evaluation to solverpy
 
 Replace the current `Runner.runs()` multiprocessing pool with solverpy's evaluation pipeline (`solverpy.benchmark.evaluation`):
@@ -78,7 +82,7 @@ Replace the current `Runner.runs()` multiprocessing pool with solverpy's evaluat
 - [x] Add `pyproject.toml` following `solverpy-learn` pattern (name `solverpy-grackle`, depends on `solverpy` + `PyYAML`)
 - [x] Add grackle tests to root `pyproject.toml` testpaths
 - [x] Exclude ParamILS Ruby sources, SMAC files, `eprover.old/`, `eprover.newer/`, `examples/`
-- [ ] Convert `bin/` scripts to proper entry points via `[project.scripts]` — at minimum `fly-grackle.py` and `grackle-wrapper.py`; scripts currently parked at `~/repos/cbboyan/solverpy/scripts/grackle/`
+- [x] Convert `bin/` scripts to proper entry points via `[project.scripts]` — `fly-grackle`, `grackle-paramils`, `grackle-ramparils`; entry point modules in `src/grackle/scripts/`; original scripts kept in `scripts/grackle/`
 
 ## 10. Documentation
 

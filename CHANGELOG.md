@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-04-10)
+
+* feat: Add RamparilsTrainer and installable entry points for grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.1.0 (2026-04-10)
 
-* feat!!: Add solverpy-grackle package with full Grackle support [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!!: Add solverpy-grackle package with full Grackle support [[details](https://github.com/cbboyan/solverpy/commit/2acb53a) | [browse](https://github.com/cbboyan/solverpy/tree/2acb53a)]
 * fix: Fix Manager subprocess leak in Talker.log_start() [[details](https://github.com/cbboyan/solverpy/commit/e05b446) | [browse](https://github.com/cbboyan/solverpy/tree/e05b446)]
 * fix: Fix file descriptor leak in Outputs.write() [[details](https://github.com/cbboyan/solverpy/commit/52a3c05) | [browse](https://github.com/cbboyan/solverpy/tree/52a3c05)]
 * fix: Fix mutable default argument in SolverTask.__init__ [[details](https://github.com/cbboyan/solverpy/commit/7106b62) | [browse](https://github.com/cbboyan/solverpy/tree/7106b62)]

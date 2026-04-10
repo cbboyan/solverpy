@@ -16,8 +16,14 @@ classifiers = [
 dependencies = [
   "solverpy",
   "PyYAML",
+  "ramparils",
 ]
 dynamic = ["version"]
+
+[project.scripts]
+fly-grackle    = "grackle.scripts.fly:main"
+grackle-paramils  = "grackle.scripts.paramils_wrapper:main"
+grackle-ramparils = "grackle.scripts.ramparils_wrapper:main"
 
 [project.urls]
 "Homepage" = "https://cbboyan.github.io/solverpy/"
