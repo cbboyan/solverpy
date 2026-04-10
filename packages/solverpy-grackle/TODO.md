@@ -59,12 +59,67 @@ Add `grackle/trainer/ramparils.py` as a drop-in alternative to `ParamilsTrainer`
 
 ## 6. Migrate evaluation to solverpy
 
-Replace the current `Runner.runs()` multiprocessing pool with solverpy's evaluation pipeline (`solverpy.benchmark.evaluation`):
+Replace the current `Runner.runs()` multiprocessing pool with solverpy's evaluation pipeline
+(`solverpy.benchmark.evaluation`).  Evaluation moves from `Runner.runs()` into `main.py`
+directly.  The grackle `DB` class is kept but backed by `solverpy_db/` instead of JSON files.
 
-- Use `evaluation.run(job, talker, db, cores)` where `job = (solver, bid, sid)`
-- `direct=True` → no `Sid` plugin on the solver (strategy string passed directly)
-- `direct=False` → add `Sid` plugin (`solverpy.solver.plugins.db.sid.Sid`) so the solver loads strategy content from `solverpy_db/strats/` by sid
-- Result caching moves from grackle's `db.py` JSON files to solverpy's `solverpy_db/` providers
+### 6a. `Apply` solverpy plugin + `plugin()` in grackle
+
+Add `Apply(fn: Result -> dict)` to **solverpy** (`solverpy/solver/plugins/apply.py`) — a
+generic `Decorator` whose `update()` calls `fn(result)` and merges the returned dict into
+`result`.  Useful beyond grackle for any caller wanting to compute and store derived result
+keys.  Export from `solverpy/solver/plugins/__init__.py`.
+
+In grackle, add `SolverPyRunner.plugin()` which extracts all needed data as plain
+primitives — `penalty` (int), `resource_key` (str|None), `success` (frozenset[str]) — and
+returns a single `Apply` instance whose lambda closes only over those primitives (no runner
+reference → fully picklable across `multiprocessing` boundaries).  Subclasses override
+`plugin()` for custom logic.
+
+Add `SolverPyRunner.setup(solver)` which stores the solver and calls
+`solver.init([self.plugin()])` to attach the plugin last (after all built-in plugins
+have already populated `status`, `runtime`, etc.).  Concrete runners call `setup()`
+instead of assigning `self._solver` directly.
+
+`run()` now reads `result["quality"]` and `result["resources"]` directly from the result
+dict instead of computing them inline.
+
+- [x] Add `solverpy/solver/plugins/apply.py` — `Apply(Decorator)` with `fn: Result -> dict`
+- [x] Export `Apply` from `solverpy/solver/plugins/__init__.py`
+- [x] Add `plugin()` and `setup()` to `SolverPyRunner`
+- [x] Update concrete runners to call `setup()` instead of `self._solver = ...`
+
+### 6b. `solverpy_db/confs` and `solverpy_db/strats`
+
+The current `confs/` directory moves into `solverpy_db/confs/`.  A parallel
+`solverpy_db/strats/` directory holds the translated solver strategy strings.  Both use the
+same SHA224 hash as the filename.  `GrackleRunner.name()` writes to `solverpy_db/confs/`;
+`SolverPyRunner` writes the strategy string to `solverpy_db/strats/` when saving a conf.
+
+### 6c. Move evaluation into `main.py`
+
+Remove `Runner.runs()` from `runner.py`.  In `main.py`, replace `db.update(confs)` with a
+loop over confs calling `evaluation.run((runner._solver, bid, conf), talker, solverpy_db,
+cores)`.  The conf hash serves as `sid`; `bid` comes from the `.fly` config.
+
+### 6d. Use solverpy bids directly in `.fly` config
+
+`trains.data` / `evals.data` are now plain paths passed to `bids.problems()` — same as
+solverpy's bid resolution (path relative to `SOLVERPY_BENCHMARKS`; can be a directory or a
+file listing problem paths).  Drop the `solverpy:` prefix — it is no longer needed.  Existing
+`.fly` files only need the prefix removed; file-list paths continue to work unchanged.
+
+### 6e. Rewrite `DB` to use solverpy_db providers
+
+After each `evaluation.run()` call, populate `DB.results[conf][inst]` by reading back
+`{quality, runtime, status, resources}` from solverpy_db.  Remove `DB.save()` / `DB.load()`
+(JSON files); persistence is handled by solverpy_db providers.  `DB.update_ranking()`,
+`DB.mastered()`, `DB.status()` stay unchanged.
+
+- [ ] Move `confs/` into `solverpy_db/confs/`; write strategy strings to `solverpy_db/strats/`
+- [ ] Move evaluation loop from `Runner.runs()` / `DB.update()` into `main.py`
+- [ ] Drop `solverpy:` prefix in `state.py:data()`; pass bid directly to `bids.problems()`
+- [ ] Rewrite `DB` to read results from solverpy_db providers; remove JSON save/load
 
 ## 7. YAML scenario files
 

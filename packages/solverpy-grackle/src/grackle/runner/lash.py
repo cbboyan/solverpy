@@ -16,7 +16,7 @@ class LashRunner(SolverPyRunner):
       mode_dir = getenv("LASH_MODE_DIR", "./modes")
       static = self.config.get("lstatic") or f"-p tstp -m mode0 -M {mode_dir}"
       limit = self.config["timeout"]
-      self._solver = Lash(limit=f"T{limit}", binary=binary, static=static)
+      self.setup(Lash(limit=f"T{limit}", binary=binary, static=static))
 
    def args(self, params):
       return " ".join([f"-flag {x} {params[x]}" for x in sorted(params)])

@@ -91,7 +91,7 @@ class EproverRunner(SolverPyRunner):
       binary = self.config.get("ebinary") or E_BINARY
       static = self.config.get("eargs") or E_STATIC
       limit = self.config["timeout"]
-      self._solver = E(limit=f"T{limit}", binary=binary, static=static)
+      self.setup(E(limit=f"T{limit}", binary=binary, static=static))
 
    def args(self, params):
       eargs = dict(params)

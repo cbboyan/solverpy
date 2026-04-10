@@ -19,7 +19,7 @@ class Cvc5Runner(SolverPyRunner):
          limit = f"T{limit}-R{self.config['rlimit']}"
       else:
          limit = f"T{limit}"
-      self._solver = Cvc5(limit=limit, binary=binary, static=static)
+      self.setup(Cvc5(limit=limit, binary=binary, static=static))
 
    def args(self, params):
       def one(arg, val):

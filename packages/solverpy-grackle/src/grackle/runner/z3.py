@@ -51,7 +51,7 @@ class Z3Runner(SolverPyRunner):
       #self.conds = self.conditions(CONDITIONS)
 
       limit = self.config["timeout"]
-      self._solver = Z3(limit=f"T{limit}-M4", complete=False)
+      self.setup(Z3(limit=f"T{limit}-M4", complete=False))
 
    def args(self, params):
       options = []

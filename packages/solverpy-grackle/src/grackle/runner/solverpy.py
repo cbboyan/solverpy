@@ -1,18 +1,51 @@
 import os
+from typing import TYPE_CHECKING
+
+from solverpy.solver.plugins.apply import Apply
 
 from .. import log
 from .runner import GrackleRunner
+
+if TYPE_CHECKING:
+   from solverpy.solver.solverpy import SolverPy
 
 
 class SolverPyRunner(GrackleRunner):
    """Base runner for solverpy-backed solvers.
 
-   Subclasses must set `self._solver` (a solverpy solver instance) in
-   `__init__` and implement `args(params)`.  Override `RESOURCE_KEY` to
-   pull a solver-specific resource counter from the result dict.
+   Subclasses construct a solverpy solver and pass it to `setup()`, which
+   attaches the grackle `Apply` plugin and stores it as `self._solver`.
+   Subclasses must also implement `args(params)`.
+
+   Set `RESOURCE_KEY` to a result-dict key to pull a solver-specific resource
+   counter, or override `plugin()` for custom quality/resources logic.
    """
 
+   _solver: "SolverPy"
    RESOURCE_KEY = None
+
+   def args(self, params):
+      raise NotImplementedError("Abstract method `SolverPyRunner.args` not implemented.")
+
+   def plugin(self):
+      """Build an Apply plugin that adds `quality` and `resources` to each result.
+
+      All values needed to compute quality and resources are extracted as plain
+      primitives here, so the resulting lambdas are fully picklable (no runner
+      reference survives in the closure).
+      """
+      penalty = self.config["penalty"]
+      reskey = self.RESOURCE_KEY
+      success = self._solver.success
+      return Apply(lambda result: {
+         "quality": 10 + int(1000 * result["runtime"]) if result["status"] in success else penalty,
+         "resources": result[reskey] if reskey in result else 0,
+      })
+
+   def setup(self, solver: "SolverPy") -> None:
+      """Store *solver* and attach the grackle quality/resources plugin."""
+      self._solver = solver
+      self._solver.init([self.plugin()])
 
    def run(self, entity, inst):
       params = entity if self.config["direct"] else self.recall(entity)
@@ -28,12 +61,7 @@ class SolverPyRunner(GrackleRunner):
          )
          log.fatal(msg)
          return None
-      ok = self._solver.solved(result)
-      status = result["status"]
-      runtime = result["runtime"]
-      quality = 10 + int(1000 * runtime) if ok else self.config["penalty"]
-      resources = result.get(self.RESOURCE_KEY, quality) if self.RESOURCE_KEY else quality
-      return [quality, runtime, status, resources]
+      return [result["quality"], result["runtime"], result["status"], result["resources"]]
 
    def success(self, result):
       return result in self._solver.success

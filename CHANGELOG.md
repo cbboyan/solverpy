@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-04-10)
+## Unreleased changes (2026-04-11)
 
-* feat: Add RamparilsTrainer and installable entry points for grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Add Apply plugin to solverpy and wire quality/resources into SolverPyRunner [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Add RamparilsTrainer and installable entry points for grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/dee1cda) | [browse](https://github.com/cbboyan/solverpy/tree/dee1cda)]
 
 ## v2.1.0 (2026-04-10)
 

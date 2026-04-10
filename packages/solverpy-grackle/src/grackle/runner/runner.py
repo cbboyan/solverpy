@@ -107,7 +107,7 @@ class GrackleRunner(Runner):
    def repr(self, params):
       return " ".join(["%s=%s"%(p,params[p]) for p in sorted(params)])
   
-   def clean(self, params):
+   def clean(self, params) -> dict | None:
       assert self.domain
       # clean default values
       params = {x:params[x] for x in params if params[x] != self.domain.defaults[x]}

@@ -113,6 +113,7 @@ instantiated standalone to inspect or write cached output files.
 
 """
 
+from .apply import Apply
 from .db.bid import Bid
 from .db.sid import Sid
 from .db.eprovesid import EProverSid

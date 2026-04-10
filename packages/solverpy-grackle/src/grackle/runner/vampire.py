@@ -14,7 +14,7 @@ class VampireRunner(SolverPyRunner):
       binary = self.config.get("vbinary") or V_BINARY
       static = self.config.get("vargs") or V_STATIC
       limit = self.config["timeout"]
-      self._solver = Vampire(limit=f"T{limit}", binary=binary, static=static)
+      self.setup(Vampire(limit=f"T{limit}", binary=binary, static=static))
 
    def args(self, params):
       def one(arg, val):
