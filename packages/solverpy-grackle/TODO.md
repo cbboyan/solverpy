@@ -164,7 +164,9 @@ Key types: `params: dict[str, list[str]]`, `defaults: dict[str, str]`,
 - [x] Add `grackle/trainer/config.py` — `TrainerConfig(TypedDict, total=False)` + `Insts` alias
 - [x] Annotate `trainer/trainer.py`
 - [x] Annotate `trainer/paramils.py`, `trainer/ramparils.py`, `trainer/stage.py`
-- [ ] Annotate solver-specific trainers (`lash/`, `vampire/`, `z3/`, `cvc5/`, `eprover/`, `bitwuzla/`)
+- [x] Annotate solver-specific trainers (`lash/`, `vampire/`, `z3/`, `cvc5/`, `eprover/`, `bitwuzla/`)
+- [x] Delete `tarunner.py` files (SMAC-related dead code) from lash, vampire, cvc5, bitwuzla
+- [x] Delete trivial `paramils.py` subclasses (just `pass`) from lash, vampire, cvc5, bitwuzla — use `ParamilsTrainer` directly
 
 ### 8d. Core
 

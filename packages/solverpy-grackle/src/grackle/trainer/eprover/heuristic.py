@@ -1,4 +1,7 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
 
 
 # 20 predefined (freq, CEF) pairs for heuristic slot selection.
@@ -41,7 +44,7 @@ class HeuristicDomain(GrackleDomain):
     EproverRunner always appends 1*FIFOWeight(ConstPrio) as the final CEF for completeness."""
 
     @property
-    def params(self):
+    def params(self) -> Mapping[str, Any]:
         indices = [str(i) for i in range(N_CEFS)]
         return {
             "slots": ["1", "2", "3", "4"],
@@ -52,7 +55,7 @@ class HeuristicDomain(GrackleDomain):
         }
 
     @property
-    def defaults(self):
+    def defaults(self) -> dict[str, str]:
         return {
             "slots": "4",
             "heur0": "0",   # 2*CRSW(PreferGround,...)
@@ -62,7 +65,7 @@ class HeuristicDomain(GrackleDomain):
         }
 
     @property
-    def conditions(self):
+    def conditions(self) -> list[Condition]:
         return [
             ("heur1", "slots", ["2", "3", "4"]),
             ("heur2", "slots", ["3", "4"]),

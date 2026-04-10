@@ -1,20 +1,24 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
+
 
 class DefaultDomain(GrackleDomain):
 
-   def __init__(self, **kwargs):
+   def __init__(self, **kwargs: Any) -> None:
       GrackleDomain.__init__(self, **kwargs)
 
    @property
-   def params(self):
+   def params(self) -> Mapping[str, Any]:
       return DOMAINS
 
    @property
-   def defaults(self):
+   def defaults(self) -> dict[str, str]:
       return DEFAULTS
 
    @property
-   def conditions(self):
+   def conditions(self) -> list[Condition]:
       return CONDITIONS
 
 

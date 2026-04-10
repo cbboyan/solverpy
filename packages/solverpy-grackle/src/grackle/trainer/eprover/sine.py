@@ -1,11 +1,14 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
 
 
 class SineDomain(GrackleDomain):
     """SinE axiom selection parameters."""
 
     @property
-    def params(self):
+    def params(self) -> Mapping[str, Any]:
         return {
             "sine": ["0", "1"],
             "sineG": ["CountFormulas", "CountTerms"],
@@ -18,7 +21,7 @@ class SineDomain(GrackleDomain):
         }
 
     @property
-    def defaults(self):
+    def defaults(self) -> dict[str, str]:
         return {
             "sine": "1",
             "sineG": "CountFormulas",
@@ -31,7 +34,7 @@ class SineDomain(GrackleDomain):
         }
 
     @property
-    def conditions(self):
+    def conditions(self) -> list[Condition]:
         return [
             ("sineG",  "sine", ["1"]),
             ("sineh",  "sine", ["1"]),

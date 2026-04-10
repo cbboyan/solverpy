@@ -1,4 +1,7 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
 
 
 class CoreDomain(GrackleDomain):
@@ -18,7 +21,7 @@ class CoreDomain(GrackleDomain):
     ]
 
     @property
-    def params(self):
+    def params(self) -> Mapping[str, Any]:
         return {
             # Literal selection
             "sel": self._SEL,
@@ -57,7 +60,7 @@ class CoreDomain(GrackleDomain):
         }
 
     @property
-    def defaults(self):
+    def defaults(self) -> dict[str, str]:
         # Defaults match the nb7 / new_bool_7 strategy profile
         return {
             "sel": "SelectMaxLComplexAvoidAppVar",

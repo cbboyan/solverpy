@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from grackle.runner.cvc5 import Cvc5Runner
-from grackle.trainer.cvc5.domain import DEFAULTS
+from grackle.trainer.cvc5.default import DEFAULTS
 
 
 # --- fixtures ---

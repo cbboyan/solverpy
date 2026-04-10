@@ -1,14 +1,17 @@
+from typing import Any
+from collections.abc import Mapping
+
 from ..domain.grackle import GrackleDomain, _parse_params, _parse_forbiddens
 
 
 class LashDomain(GrackleDomain):
 
    @property
-   def params(self):
+   def params(self) -> Mapping[str, Any]:
       return _parse_params(PARAMS)
 
    @property
-   def defaults(self):
+   def defaults(self) -> dict[str, str]:
       return DEFAULTS
 
 

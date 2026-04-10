@@ -1,28 +1,31 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
 
 
 class OptionsDomain(GrackleDomain):
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         GrackleDomain.__init__(self, **kwargs)
 
     @property
-    def params(self):
+    def params(self) -> Mapping[str, Any]:
         return PARAMS
 
     @property
-    def defaults(self):
+    def defaults(self) -> dict[str, str]:
         return DEFAULTS
 
     @property
-    def conditions(self):
+    def conditions(self) -> list[Condition]:
         return CONDITIONS
 
-    def split(self, params):
+    def split(self, params: dict[str, str]) -> tuple[dict[str, str], dict[str, str]]:
         cond = lambda x: x.startswith("t__")
-        params = {x: y for (x, y) in params.items() if not cond(x)}
+        opts = {x: y for (x, y) in params.items() if not cond(x)}
         fixed = {x: y for (x, y) in params.items() if cond(x)}
-        return (params, fixed)
+        return (opts, fixed)
 
 D_BOOL = ["true", "false"]
 D_SMALL = [0, 1, 2, 3, 4, 5]

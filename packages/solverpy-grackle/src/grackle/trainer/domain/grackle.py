@@ -1,6 +1,7 @@
 from typing import Any
+from collections.abc import Mapping
 
-Condition = tuple[str, str, list[str]]
+Condition = tuple[str, str, list[Any]]
 """A parameter condition: (slave, master, allowed_values)."""
 
 
@@ -65,7 +66,7 @@ class GrackleDomain:
       return f"{type(self).__name__}"
 
    @property
-   def params(self) -> dict[str, list[str]]:
+   def params(self) -> Mapping[str, Any]:
       return {}
 
    @property

@@ -2,7 +2,7 @@ from solverpy.solver.smt.cvc5 import Cvc5, CVC5_BINARY, CVC5_STATIC
 
 from .solverpy import SolverPyRunner
 from .config import Params, RunnerConfig
-from ..trainer.cvc5.domain import DEFAULTS, CONDITIONS
+from ..trainer.cvc5.default import DEFAULTS, CONDITIONS
 
 
 class Cvc5Runner(SolverPyRunner):

@@ -1,11 +1,14 @@
-from ..domain.grackle import GrackleDomain
+from typing import Any
+from collections.abc import Mapping
+
+from ..domain.grackle import GrackleDomain, Condition
 
 
 class OrderingDomain(GrackleDomain):
     """Term ordering: type (LPO4/KBO6), precedence generation, weight generation (KBO only), HO order kind."""
 
     @property
-    def params(self):
+    def params(self) -> Mapping[str, Any]:
         return {
             "tord": ["LPO4", "KBO6"],
             "tord_prec": ["invfreq", "invfreqconjmax", "invfreqconstmin", "arity",
@@ -17,7 +20,7 @@ class OrderingDomain(GrackleDomain):
         }
 
     @property
-    def defaults(self):
+    def defaults(self) -> dict[str, str]:
         return {
             "tord": "KBO6",
             "tord_prec": "invfreq",
@@ -27,7 +30,7 @@ class OrderingDomain(GrackleDomain):
         }
 
     @property
-    def conditions(self):
+    def conditions(self) -> list[Condition]:
         return [
             ("tord_weight", "tord", ["KBO6"]),
             ("tord_const", "tord", ["KBO6"]),

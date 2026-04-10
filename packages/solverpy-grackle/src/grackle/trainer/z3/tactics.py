@@ -65,11 +65,11 @@ class TacticsDomain(CustomDomain):
         self.n_depths, self.has_depths = self.init_args(DEPTHS)
         self.init_domain()
 
-    def split(self, params):
+    def split(self, params: dict[str, str]) -> tuple[dict[str, str], dict[str, str]]:
         cond = lambda x: x.startswith("t__")
         fixed = {x: y for (x, y) in params.items() if not cond(x)}
-        params = {x: y for (x, y) in params.items() if cond(x)}
-        return (params, fixed)
+        tactics = {x: y for (x, y) in params.items() if cond(x)}
+        return (tactics, fixed)
 
     def init_args(self, args):
         n_args = max([len(args[arg]) for arg in args])
