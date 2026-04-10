@@ -1,6 +1,7 @@
 import sys
 import os
 from os import path, system
+from typing import Any
 import subprocess
 import time
 
@@ -20,7 +21,7 @@ def reparamils(scenariofile, outdir, cwd, binary="param_ils_2_3_run.rb", count=1
      
    running = {numRun:run(numRun,init) for numRun in range(count)}
    fresh = count
-   elder = (None,None,None)
+   elder: Any = (None, None, None)
    it = 1
    log = ""
    print(">> --- TRAIN ITER %d ---" % it)
@@ -30,6 +31,7 @@ def reparamils(scenariofile, outdir, cwd, binary="param_ils_2_3_run.rb", count=1
    else:
       end = float("inf")
    iter_start = time.time()
+   stable_time: float = float("inf")
    adult = False
    while running:
       time.sleep(2)
@@ -59,8 +61,8 @@ def reparamils(scenariofile, outdir, cwd, binary="param_ils_2_3_run.rb", count=1
             print(">> time limit reached. terminating.")
             sys.stdout.flush()
 
-      winner = None
-      bestq = None
+      winner: Any = None
+      bestq: Any = None
       for numRun in running:
          (n,q,params) = grackle.paramils.results.parse(outdir, numRun)
          if n == N:
@@ -133,7 +135,7 @@ def reparamils(scenariofile, outdir, cwd, binary="param_ils_2_3_run.rb", count=1
    #print("RES: ", elder[2])
    return elder[2]
 
-def launch(scenario, domains, init, insts, cwd, timeout, cores, restarts, logs):
+def launch(scenario: str, domains: str, init: Any, insts: list[str], cwd: str, timeout: Any, cores: int, restarts: bool, logs: Any) -> Any:
    system("rm -fr %s" % cwd)
    system("mkdir -p %s" % cwd)
 

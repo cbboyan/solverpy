@@ -31,11 +31,11 @@ class State:
          if key in unused:
             unused.remove(key)
 
-      self.cores = require("cores", 4)
-      self.tops = require("tops", 10)
-      self.best = require("best", 4)
-      self.rank = require("rank", 1)
-      self.timeout = require("timeout", 0)
+      self.cores: int = int(require("cores", 4))
+      self.tops: int = int(require("tops", 10))
+      self.best: int = int(require("best", 4))
+      self.rank: int = int(require("rank", 1))
+      self.timeout: int | float = int(require("timeout", 0))
       self.atavistic = require("atavistic", True, warn=False)
       self.selection = require("selection", "default", warn=False)
       self.ntfy = require("ntfy", False, warn=False)
@@ -108,14 +108,16 @@ class State:
       self.attention = {i:0.0 for i in self.trains.insts}
       self.alls = []
       inits = open(ini["inits"]).read().strip().split("\n")
-      runner = self.trains.runner
+      assert self.trains.runner
+      r = self.trains.runner
       self.nicks = {}
       self.elders = {}
       self.origins = {}
       for (n, f_init) in enumerate(inits):
-         params = runner.parse(open(f_init).read().strip().split())
-         params = runner.clean(params)
-         init = runner.name(params)
+         params = r.parse(open(f_init).read().strip().split())
+         params = r.clean(params)
+         assert params is not None
+         init = r.name(params)
          self.alls.append(init)
          self.nickname(init, f"s{n:02d}")
          self.elders[init] = init

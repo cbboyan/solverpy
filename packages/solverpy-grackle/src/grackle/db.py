@@ -1,13 +1,18 @@
 import json
 from os import path
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+   from .runner.runner import GrackleRunner
+
 
 class DB:
-   def __init__(self, name, rank):
+   def __init__(self, name: str, rank: int) -> None:
       self.name = name
-      self.insts = []      # all instances
-      self.results = {}    # { conf : {inst:[quality,runtime,..]} }
-      self.ranking = {}    # { inst : [conf] }
-      self.runner = None
+      self.insts: list[str] = []          # all instances
+      self.results: dict[str, Any] = {}   # { conf : {inst:[quality,runtime,..]} }
+      self.ranking: dict[str, Any] = {}   # { inst : [conf] }
+      self.runner: "GrackleRunner | None" = None
       self.rank = rank
       self.load("cache")
 
@@ -32,6 +37,7 @@ class DB:
   
       # evaluate them
       if cis:
+         assert self.runner
          outs = self.runner.runs(cis)
          for ((conf,inst),result) in outs:
             self.results[conf][inst] = result
@@ -39,25 +45,26 @@ class DB:
       # udpate ranking for each instance
       self.update_ranking(confs)
 
-   def update_ranking(self, confs):
+   def update_ranking(self, confs: list[str]) -> None:
+      assert self.runner
       self.ranking = {}
       for inst in self.insts:
          key = lambda conf: (self.results[conf][inst][0], conf)
-         #oks = [c for c in confs if self.results[c][inst] and self.results[c][inst][0] != failed]
          oks = [c for c in confs if self.results[c][inst] and self.runner.success(self.results[c][inst][2])]
          self.ranking[inst] = sorted(oks, key=key)
 
    def mastered(self, conf):
       return [i for i in self.insts if conf in self.ranking[i][:self.rank]]
 
-   def status(self, failed=1000000000):
+   def status(self, failed: int = 1000000000) -> tuple[Any, ...]:
+      assert self.runner
       total = 0
       qsum = 0.0
       tsum = 0.0
       suc = 0
       qsumsuc = 0.0
       tsumsuc = 0.0
-      success = set()
+      success: set[str] = set()
       for conf in self.results:
          for inst in self.insts:
             result = self.results[conf][inst]
@@ -65,7 +72,7 @@ class DB:
             qsum += result[0]
             tsum += result[1]
             total += 1
-            if self.runner.success(result[2]): # result[0] != failed:
+            if self.runner.success(result[2]):
                qsumsuc += result[0]
                tsumsuc += result[1]
                suc += 1

@@ -49,7 +49,7 @@ class ParamilsTrainer(Trainer):
       assert "timeout" in state.trainer.runner.config
       assert "timeout" in state.trainer.config
       scenario = SCENARIO % (algo, state.trainer.runner.config["timeout"], state.trainer.config["timeout"])
-      params = reparamils.launch(
+      result: Any = reparamils.launch(
          scenario,
          domains=self.domains(params),
          init=params,
@@ -59,8 +59,10 @@ class ParamilsTrainer(Trainer):
          restarts=self.config["restarts"],  # type: ignore[typeddict-item]
          cores=state.cores,
          logs=self.config["log"])  # type: ignore[typeddict-item]
+      assert result is not None
 
-      params = self.runner.clean(params)
+      params = self.runner.clean(result)
+      assert params is not None
       return params if direct else self.runner.name(params)  # type: ignore[return-value]
 
 

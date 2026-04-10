@@ -3,7 +3,7 @@ import time
 import requests
 import socket
 
-FATAL_LOG = os.path.join(os.getenv("HOME"),"grackle-errors.log")
+FATAL_LOG = os.path.join(os.path.expanduser("~"), "grackle-errors.log")
 
 def ntfy(state, msg):
    if not state.ntfy:
@@ -54,7 +54,6 @@ def candidates(state, candidates, avgs):
    print("TRAINING CANDIDATES:")
    for c in candidates:
       print("%s: %s" % (state.nicks[c], avgs[c]))
-   print
 
 def finished(state):
    print("> Nothing more to do. Terminating.")

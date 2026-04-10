@@ -170,9 +170,12 @@ Key types: `params: dict[str, list[str]]`, `defaults: dict[str, str]`,
 
 ### 8d. Core
 
-- [ ] Annotate `db.py`, `jsondb.py`
-- [ ] Annotate `state.py`, `main.py`
-- [ ] Annotate `tools.py`, `log.py`
+- [x] Annotate `db.py` — type `runner: GrackleRunner | None`, asserts before use
+- [x] Annotate `state.py` — fix shadowed `runner` var, explicit int casts for `require()`
+- [x] Annotate `tools.py` — `load_class`, `convert`, `parse_ini`
+- [x] Annotate `log.py` — fix `os.getenv("HOME")` → `os.path.expanduser("~")`; drop bare `print`
+- [x] Fix `paramils/reparamils.py` — `elder/winner/bestq: Any`; `stable_time` init; `launch()` return type
+- [ ] Annotate `jsondb.py`, `main.py` (low priority — no pyright errors)
 
 ## 9. Migrate to solverpy monorepo
 
