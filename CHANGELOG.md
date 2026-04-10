@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-11)
 
-* feat: Add Apply plugin to solverpy and wire quality/resources into SolverPyRunner [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Add RunnerConfig TypedDict and annotate runner base classes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: Add Apply plugin to solverpy and wire quality/resources into SolverPyRunner [[details](https://github.com/cbboyan/solverpy/commit/044388c) | [browse](https://github.com/cbboyan/solverpy/tree/044388c)]
 * feat: Add RamparilsTrainer and installable entry points for grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/dee1cda) | [browse](https://github.com/cbboyan/solverpy/tree/dee1cda)]
 
 ## v2.1.0 (2026-04-10)

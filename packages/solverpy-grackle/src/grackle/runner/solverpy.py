@@ -1,10 +1,11 @@
 import os
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from solverpy.solver.plugins.apply import Apply
 
 from .. import log
 from .runner import GrackleRunner
+from .config import Params
 
 if TYPE_CHECKING:
    from solverpy.solver.solverpy import SolverPy
@@ -24,16 +25,17 @@ class SolverPyRunner(GrackleRunner):
    _solver: "SolverPy"
    RESOURCE_KEY = None
 
-   def args(self, params):
+   def args(self, params: Params) -> str:
       raise NotImplementedError("Abstract method `SolverPyRunner.args` not implemented.")
 
-   def plugin(self):
+   def plugin(self) -> Apply:
       """Build an Apply plugin that adds `quality` and `resources` to each result.
 
       All values needed to compute quality and resources are extracted as plain
       primitives here, so the resulting lambdas are fully picklable (no runner
       reference survives in the closure).
       """
+      assert "penalty" in self.config
       penalty = self.config["penalty"]
       reskey = self.RESOURCE_KEY
       success = self._solver.success
@@ -47,8 +49,9 @@ class SolverPyRunner(GrackleRunner):
       self._solver = solver
       self._solver.init([self.plugin()])
 
-   def run(self, entity, inst):
-      params = entity if self.config["direct"] else self.recall(entity)
+   def run(self, entity: str | Params, inst: str) -> list[Any] | None:
+      assert "direct" in self.config
+      params: Params = entity if self.config["direct"] else self.recall(entity)  # type: ignore[assignment]
       strat = self.args(params)
       problem = os.path.join(os.getenv("SOLVERPY_BENCHMARKS", "."), inst)
       try:
@@ -57,11 +60,11 @@ class SolverPyRunner(GrackleRunner):
          result = {}
       if not self._solver.valid(result):
          msg = "\nERROR(Grackle): Error while evaluating on instance %s!\nstrategy: %s\nparams: %s\noutput: \n%s\n" % (
-            inst, strat, self.repr(params), getattr(self._solver, "_output", "")
+            inst, strat, params, getattr(self._solver, "_output", "")
          )
          log.fatal(msg)
          return None
       return [result["quality"], result["runtime"], result["status"], result["resources"]]
 
-   def success(self, result):
+   def success(self, result: str) -> bool:
       return result in self._solver.success

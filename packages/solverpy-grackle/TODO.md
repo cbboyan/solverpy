@@ -129,7 +129,38 @@ After each `evaluation.run()` call, populate `DB.results[conf][inst]` by reading
 
 ## 8. Type annotations
 
-- Add type hints throughout, following solverpy's style (see `~/repos/cbboyan/solverpy/CLAUDE.md`)
+Follow solverpy's style (see `~/repos/cbboyan/solverpy/CLAUDE.md`).  Key conventions:
+- `Params = dict[str, str]` for solver parameter dicts
+- `RunnerConfig(TypedDict, total=False)` for runner config — use `assert "key" in self.config`
+  before accessing optional keys (both runtime guard and pyright narrowing)
+- `TYPE_CHECKING` guard for heavy imports used only in annotations
+
+### 8a. Runner layer
+
+- [x] Add `grackle/runner/config.py` — `Params` alias + `RunnerConfig(TypedDict, total=False)`
+- [x] Annotate `Runner` and `GrackleRunner` in `runner/runner.py`
+- [x] Annotate `SolverPyRunner` in `runner/solverpy.py` (also adds `assert "penalty"/"direct" in self.config`)
+- [ ] Annotate `runner/lash.py`, `runner/vampire.py`, `runner/z3.py`, `runner/cvc5.py`, `runner/eprover.py`
+- [ ] Fix and annotate `runner/stage.py` (broken: missing import, syntax error, wrong delegation pattern)
+- [ ] Annotate `runner/bitwuzla.py`, `runner/prover9.py` (legacy; fix pre-existing errors first)
+
+### 8b. Trainer layer
+
+- [ ] Add `grackle/trainer/config.py` — `TrainerConfig(TypedDict, total=False)` with `timeout`,
+  `instance_budget`, `restarts`, `log`, `nick`
+- [ ] Annotate `trainer/trainer.py`
+- [ ] Annotate `trainer/paramils.py`, `trainer/ramparils.py`, `trainer/stage.py`
+- [ ] Annotate solver-specific trainers (`lash/`, `vampire/`, `z3/`, `cvc5/`, `eprover/`, `bitwuzla/`)
+
+### 8c. Domain layer
+
+- [ ] Annotate `trainer/domain/grackle.py`, `domain/custom.py`, `domain/multi.py`
+
+### 8d. Core
+
+- [ ] Annotate `db.py`, `jsondb.py`
+- [ ] Annotate `state.py`, `main.py`
+- [ ] Annotate `tools.py`, `log.py`
 
 ## 9. Migrate to solverpy monorepo
 
