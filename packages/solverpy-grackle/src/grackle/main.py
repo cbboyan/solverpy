@@ -1,13 +1,16 @@
 #!/usr/bin/python
 
-import json
-from os import path
 import random
+from typing import TYPE_CHECKING, Any
 from . import log, unsolved
+
+if TYPE_CHECKING:
+   from .state import State
+   from .db import DB
 
 random.seed(43)
 
-def evaluate(state, db, confs):
+def evaluate(state: "State", db: "DB", confs: list[str]) -> None:
    log.timestamp(state.start_time, "Evaluation started")
    log.update(db, confs)
    db.update(confs)
@@ -19,14 +22,15 @@ def evaluate(state, db, confs):
    state.trains.save("cache")
    log.status(state, db)
 
-def reduction(state):
+def reduction(state: "State") -> None:
    mastered = {c:state.evals.mastered(c) for c in state.genofond()}
    enough = [c for c in state.genofond() if len(mastered[c])>=state.best]
    active = sorted(enough, key=lambda x: len(mastered[x]), reverse=True)
    state.active = active[:state.tops]
    log.active(state, mastered)
 
-def select(state):
+def select(state: "State") -> list[str]:
+   assert isinstance(state.selection, str)
    bps = {c:state.trains.mastered(c) for c in state.active}
    log.training(state, bps)
    # default selection is by (attention, -solved) [ascending]
@@ -62,7 +66,7 @@ def select(state):
    log.candidates(state, candidates, avgs)
    return candidates
 
-def specialize(state, conf):
+def specialize(state: "State", conf: str) -> Any:
    log.timestamp(state.start_time, "Specialization started")
    insts = state.trains.mastered(conf)
    uns = unsolved.select(state, conf, insts) 
@@ -76,7 +80,7 @@ def specialize(state, conf):
    log.timestamp(state.start_time, "Specialization done")
    return new
 
-def improve(state, candidates):
+def improve(state: "State", candidates: list[str]) -> bool:
    for conf in candidates:
       new = specialize(state, conf)
       if new is False:
@@ -94,7 +98,7 @@ def improve(state, candidates):
    state.trains.save("final")
    return False
 
-def loop(state):
+def loop(state: "State") -> "State":
    while True:
       log.iter(state)
       evaluate(state, state.evals, state.genofond())

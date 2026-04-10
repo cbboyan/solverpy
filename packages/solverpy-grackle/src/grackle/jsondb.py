@@ -1,8 +1,9 @@
 import json
+from typing import Any, Callable
 
 SOLVED = ['Satisfiable', 'Unsatisfiable', 'Theorem', 'CounterSatisfiable', 'ContradictoryAxioms', 'sat', 'unsat']
 
-def transcript(fin):
+def transcript(fin: str) -> dict[str, str] | None:
    try:
       lines = [line.split() for line in open(fin).read().strip().split("\n")]
    except OSError:
@@ -10,7 +11,7 @@ def transcript(fin):
    lines = {line[4]: line[-1] for line in lines}
    return lines
 
-def load(f, f_trans=None, filter_mode=None, f_restrict=None): 
+def load(f: str, f_trans: str | None = None, filter_mode: bool | None = None, f_restrict: str | None = None) -> dict[str, Any]:
    # `filter_mode` is `None`, `True`, or `False`.
    res = json.load(open(f))
    if f_restrict:
@@ -24,15 +25,14 @@ def load(f, f_trans=None, filter_mode=None, f_restrict=None):
          res = {(renames[s] if s in renames else s):res[s] for s in res}
    return res
 
-def update(todb, fromdb):
+def update(todb: dict[str, Any], fromdb: dict[str, Any]) -> None:
    news = fromdb.keys() - todb.keys()
-   #both = fromdb.keys() & todb.keys()
    for s in news:
-      todb[s] = fromdb[s] 
+      todb[s] = fromdb[s]
 
-def join(dbs, prefs=None):
+def join(dbs: list[str], prefs: list[str | None] | None = None) -> dict[str, Any]:
    prefs = prefs if prefs else [None for x in dbs]
-   joint = {}
+   joint: dict[str, Any] = {}
    for (db, pref) in zip(dbs, prefs):
       js = load(db)
       if pref:
@@ -40,41 +40,36 @@ def join(dbs, prefs=None):
       update(joint, js)
    return joint
 
-def solved1(result, limit=None):
-   def is_solved(res):
+def solved1(result: dict[str, Any], limit: float | None = None) -> set[str]:
+   def is_solved(res: Any) -> bool:
       if not res: return False
       return res[2] in SOLVED and ((res[1]<=limit) if limit else True)
    return set(p for p in result if is_solved(result[p]))
 
-def solved(results, apply=solved1, limit=None):
+def solved(results: dict[str, Any], apply: Callable[..., Any] = solved1, limit: float | None = None) -> dict[str, Any]:
    return {s:apply(results[s],limit) for s in results}
 
-def counts(results, limit=None):
+def counts(results: dict[str, Any], limit: float | None = None) -> dict[str, int]:
    return solved(results, apply=lambda r,l: len(solved1(r,l)), limit=limit)
 
-def solves(results, solved0=None, limit=None):
+def solves(results: dict[str, Any], solved0: dict[str, Any] | None = None, limit: float | None = None) -> dict[str, frozenset[str]]:
    solved0 = solved0 if solved0 else solved(results, limit=limit)
    probs = frozenset(p for c in results for p in results[c])
    probs = {p:frozenset(c for c in results if p in solved0[c]) for p in probs}
    return probs
 
-def scores(results, fellows, solved0=None, limit=None):
-   fellows = {x:results[x] for x in fellows}
-   solved0 = solved(fellows, limit=limit) if not solved0 else solved0
-   solves0 = solves(fellows, solved0, limit=limit)
+def scores(results: dict[str, Any], fellows: list[str], solved0: dict[str, Any] | None = None, limit: float | None = None) -> dict[str, float]:
+   fellows_res = {x:results[x] for x in fellows}
+   solved0 = solved(fellows_res, limit=limit) if not solved0 else solved0
+   solves0 = solves(fellows_res, solved0, limit=limit)
 
-   #morsel = lambda p: len(fellows) / len(solves0[p])
-   #morsel = lambda p: (1 / len(solves0[p])) 
-   #morsel = lambda p: (len(fellows)/len(solves0[p])) * (1/(len(fellows)**1)) 
-   morsel = lambda p: (len(fellows)/len(solves0[p])) * (1/(2**(len(fellows)-1))) 
-   #morsel = lambda p: (1/len(solves0[p])) * (1/(len(fellows)**2)) 
+   morsel = lambda p: (len(fellows_res)/len(solves0[p])) * (1/(2**(len(fellows_res)-1)))
    score = lambda c: sum(morsel(p) for p in solved0[c])
-   #score = lambda c: sum(morsel(p) for p in solved0[c])/len(solved0[c])
-   return {c:score(c) for c in fellows}
+   return {c:score(c) for c in fellows_res}
 
-def similars(results, fellows, solves0=None, limit=None):
-   solves0 = solves0 if solves0 else solves({x:results[x] for x in fellows}, limit=limit) 
-   sims = {x:{} for x in fellows}
+def similars(results: dict[str, Any], fellows: list[str], solves0: dict[str, frozenset[str]] | None = None, limit: float | None = None) -> dict[str, dict[str, int]]:
+   solves0 = solves0 if solves0 else solves({x:results[x] for x in fellows}, limit=limit)
+   sims: dict[str, dict[str, int]] = {x:{} for x in fellows}
    for p in solves0:
       linked = solves0[p]
       for (s,t) in [(s,t) for s in linked for t in linked if s!=t]:
@@ -84,14 +79,12 @@ def similars(results, fellows, solves0=None, limit=None):
 
 
 # printing
-#
-#
 
-def perf(counts):
+def perf(counts: dict[str, int]) -> None:
    data = [(counts[s], s) for s in sorted(counts, key=lambda x: counts[x])]
    print("\n".join("%s\t%s" % x for x in data))
 
-def greedy(results, max_n=None):
+def greedy(results: dict[str, Any], max_n: int | None = None) -> list[str]:
    cover = []
    total = 0
    n = 0
