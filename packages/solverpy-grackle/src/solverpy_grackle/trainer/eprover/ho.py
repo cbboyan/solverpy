@@ -25,13 +25,15 @@ class HoDomain(GrackleDomain):
 
     @property
     def defaults(self) -> dict[str, str]:
+        # Defaults match E binary defaults (args() fallbacks).
+        # clean() strips params at these values so they produce no CLI flag.
         return {
-            "neg_ext": "all",
-            "pos_ext": "all",
-            "ext_sup_max_depth": "0",
-            "lift_lambdas": "false",
-            "local_rw": "true",
-            "fool_unroll": "false",
-            "inverse_recognition": "false",
-            "replace_inj_defs": "false",
+            "neg_ext": "off",           # no flag
+            "pos_ext": "off",           # no flag
+            "ext_sup_max_depth": "-1",  # no flag
+            "lift_lambdas": "true",     # no flag
+            "local_rw": "false",        # no flag
+            "fool_unroll": "true",      # no flag
+            "inverse_recognition": "false",  # no flag
+            "replace_inj_defs": "false",     # no flag
         }

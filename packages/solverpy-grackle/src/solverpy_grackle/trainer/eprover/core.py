@@ -50,22 +50,23 @@ class CoreDomain(GrackleDomain):
 
     @property
     def defaults(self) -> dict[str, str]:
-        # Defaults match the nb7 / new_bool_7 strategy profile
+        # Defaults match E binary defaults (runner DEFAULTS + args() fallbacks).
+        # clean() strips params at these values; convert() fills them back in.
         return {
-            "sel": "SelectMaxLComplexAvoidAppVar",
-            "simparamod": "normal",
-            "der": "stragg",
-            "forwardcntxtsr": "1",
-            "fwdemod": "1",
-            "condense": "1",
-            "presat": "1",
-            "prefer": "0",
-            "splaggr": "0",
-            "srd": "0",
-            "splcl": "0",
-            "defcnf": "4",
-            "strong_rw_inst": "1",
-            "no_eq_unfolding": "1",
-            "sos_input_types": "1",
-            "satcheck": "ConjMinMinFreq",
+            "sel": "SelectMaxLComplexAvoidPosPred",  # runner DEFAULT
+            "simparamod": "none",   # no flag
+            "der": "none",          # no flag
+            "forwardcntxtsr": "0",  # no flag
+            "fwdemod": "2",         # direct sentinel: no flag
+            "condense": "0",        # no flag
+            "presat": "0",          # no flag
+            "prefer": "0",          # no flag
+            "splaggr": "0",         # no flag
+            "srd": "0",             # no flag
+            "splcl": "0",           # direct sentinel: no flag
+            "defcnf": "24",         # runner DEFAULT
+            "strong_rw_inst": "0",  # no flag (args() fallback)
+            "no_eq_unfolding": "0", # no flag (args() fallback)
+            "sos_input_types": "0", # no flag (args() fallback)
+            "satcheck": "none",     # no flag (args() fallback)
         }

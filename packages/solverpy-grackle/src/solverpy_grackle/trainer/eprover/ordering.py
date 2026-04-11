@@ -21,12 +21,14 @@ class OrderingDomain(GrackleDomain):
 
     @property
     def defaults(self) -> dict[str, str]:
+        # Defaults match E binary defaults (runner DEFAULTS + args() fallbacks).
+        # clean() strips params at these values so they produce no CLI flag.
         return {
-            "tord": "KBO6",
-            "tord_prec": "invfreq",
-            "tord_weight": "precrank10",
-            "tord_const": "1",
-            "ho_order_kind": "lfho",
+            "tord": "LPO4",        # runner DEFAULT
+            "tord_prec": "arity",  # runner DEFAULT
+            "tord_weight": "arity",# runner DEFAULT (only active for KBO6)
+            "tord_const": "0",     # runner DEFAULT (only active for KBO6)
+            "ho_order_kind": "lfho",  # no flag (args() fallback)
         }
 
     @property

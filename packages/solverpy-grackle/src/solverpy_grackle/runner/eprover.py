@@ -37,7 +37,7 @@ SINE_DEFAULTS = {
    "sineF": "1.0",
 }
 
-E_PROTO_ARGS = "%(splaggr)s%(srd)s%(forwardcntxtsr)s%(defcnf)s%(prefer)s%(presat)s%(condense)s%(splcl)s%(fwdemod)s%(der)s%(simparamod)s-t%(tord)s %(prord)s-W%(sel)s %(sine)s%(heur)s"
+E_PROTO_ARGS = "%(splaggr)s%(srd)s%(forwardcntxtsr)s%(defcnf)s%(prefer)s%(presat)s%(condense)s%(splcl)s%(fwdemod)s%(der)s%(simparamod)s-t%(tord)s %(prord)s-W%(sel)s %(sine)s"
 
 E_SINE_ARGS = "--sine='GSinE(%(sineG)s,%(sineh)s,%(sinegf)s,%(sineD)s,%(sineR)s,%(sineL)s,%(sineF)s)' "
 
@@ -220,7 +220,7 @@ class EproverRunner(SolverPyRunner):
       if satcheck != "none":
          sat_extra = "--satcheck=%s --satcheck-proc-interval=5000 " % satcheck
 
-      return E_FIXED_ARGS + (E_PROTO_ARGS % eargs) + ho_extra + sat_extra
+      return E_FIXED_ARGS + (E_PROTO_ARGS % eargs) + ho_extra + sat_extra + eargs["heur"]
 
    def clean(self, params: Params) -> Params | None:
       params = convert(params)
@@ -254,5 +254,16 @@ class EproverRunner(SolverPyRunner):
       for param in delete:
          if param in params:
             del params[param]
+
+      # strip domain defaults (heuristic params are always retained since
+      # E's built-in Default heuristic is not expressible as CEF indices)
+      if self.domain:
+         hkeys = {"slots"} | {k for k in params if (k.startswith("heur") and k[4:].isdigit())
+                                                 or k.startswith("freq")
+                                                 or k.startswith("cef")}
+         params = {k: v for k, v in params.items()
+                   if k in hkeys
+                   or k not in self.domain.defaults
+                   or v != self.domain.defaults[k]}
 
       return params

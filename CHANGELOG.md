@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-11)
 
-* refactor: extract HoDomain from CoreDomain; parametric HeuristicDomain max_slots [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: eprover domain defaults match E binary defaults; clean() strips them; -H moved to end of args [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: extract HoDomain from CoreDomain; parametric HeuristicDomain max_slots [[details](https://github.com/cbboyan/solverpy/commit/b06ffb0) | [browse](https://github.com/cbboyan/solverpy/tree/b06ffb0)]
 * refactor: replace old wrapper scripts with new grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/ff8a124) | [browse](https://github.com/cbboyan/solverpy/tree/ff8a124)]
 * refactor: tests [[details](https://github.com/cbboyan/solverpy/commit/7e36f8c) | [browse](https://github.com/cbboyan/solverpy/tree/7e36f8c)]
 * refactor: remove patch.dict SOLVERPY_BENCHMARKS from runner tests [[details](https://github.com/cbboyan/solverpy/commit/e1ec665) | [browse](https://github.com/cbboyan/solverpy/tree/e1ec665)]
