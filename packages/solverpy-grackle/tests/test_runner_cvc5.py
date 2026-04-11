@@ -154,20 +154,32 @@ def test_success_timeout(runner):
 
 def _make_solver_mock(status="unsat", runtime=0.8, resources=42000, valid=True, solved=True):
    mock = MagicMock()
-   mock.solve.return_value = {
+   base_result = {
       "status": status,
       "runtime": runtime,
       "resource::resourceUnitsUsed": resources,
    }
+   stored_plugins = []
+
+   def init_side_effect(plugins):
+      stored_plugins.extend(plugins)
+
+   def solve_side_effect(problem, strat):
+      result = dict(base_result)
+      for plugin in stored_plugins:
+         plugin.update(problem, strat, "", result)
+      return result
+
+   mock.init.side_effect = init_side_effect
+   mock.solve.side_effect = solve_side_effect
    mock.valid.return_value = valid
-   mock.solved.return_value = solved
    mock.success = frozenset(["sat", "unsat"])
    return mock
 
 
 def test_run_success(runner):
-   runner._solver = _make_solver_mock(status="unsat", runtime=0.8, resources=42000)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(status="unsat", runtime=0.8, resources=42000))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run({"cbqi": "no"}, "problems/p1.smt2")
    quality, runtime, status, res = result
@@ -178,16 +190,16 @@ def test_run_success(runner):
 
 
 def test_run_uses_resource_units(runner):
-   runner._solver = _make_solver_mock(resources=99999)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(resources=99999))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run({}, "problems/p1.smt2")
    assert result[3] == 99999
 
 
 def test_run_timeout_uses_penalty(runner):
-   runner._solver = _make_solver_mock(status="timeout", valid=True, solved=False)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(status="timeout", valid=True, solved=False))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run({}, "problems/p1.smt2")
    assert result[0] == 100000000
@@ -210,8 +222,8 @@ def test_run_exception_returns_none(runner):
 
 
 def test_run_calls_solve_with_correct_problem(runner):
-   runner._solver = _make_solver_mock()
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock())
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       runner.run({"cbqi": "no"}, "problems/p1.smt2")
    assert runner._solver.solve.call_args[0][0] == "/bench/problems/p1.smt2"

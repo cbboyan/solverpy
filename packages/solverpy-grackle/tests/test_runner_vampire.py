@@ -133,16 +133,28 @@ def test_success_gave_up(runner):
 
 def _make_solver_mock(status="Theorem", runtime=1.2, active=500, valid=True, solved=True):
    mock = MagicMock()
-   mock.solve.return_value = {"status": status, "runtime": runtime, "Active": active}
+   base_result = {"status": status, "runtime": runtime, "Active": active}
+   stored_plugins = []
+
+   def init_side_effect(plugins):
+      stored_plugins.extend(plugins)
+
+   def solve_side_effect(problem, strat):
+      result = dict(base_result)
+      for plugin in stored_plugins:
+         plugin.update(problem, strat, "", result)
+      return result
+
+   mock.init.side_effect = init_side_effect
+   mock.solve.side_effect = solve_side_effect
    mock.valid.return_value = valid
-   mock.solved.return_value = solved
    mock.success = frozenset(["Theorem", "Unsatisfiable"])
    return mock
 
 
 def test_run_success(runner):
-   runner._solver = _make_solver_mock(status="Theorem", runtime=1.2, active=500)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(status="Theorem", runtime=1.2, active=500))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    quality, runtime, status, resources = result
@@ -153,16 +165,16 @@ def test_run_success(runner):
 
 
 def test_run_uses_active_as_resource(runner):
-   runner._solver = _make_solver_mock(active=999)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(active=999))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    assert result[3] == 999
 
 
 def test_run_timeout_uses_penalty(runner):
-   runner._solver = _make_solver_mock(status="ResourceOut", valid=True, solved=False)
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock(status="ResourceOut", valid=True, solved=False))
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    assert result[0] == 100000000
@@ -187,16 +199,16 @@ def test_run_exception_returns_none(runner):
 
 
 def test_run_calls_solve_with_correct_problem(runner):
-   runner._solver = _make_solver_mock()
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock())
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    assert runner._solver.solve.call_args[0][0] == "/bench/TPTP/Problems/p1.p"
 
 
 def test_run_strategy_contains_flag(runner):
-   runner._solver = _make_solver_mock()
    runner.config["penalty"] = 100000000
+   runner.setup(_make_solver_mock())
    with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
       runner.run({"avatar": "on"}, "TPTP/Problems/p1.p")
    strategy = runner._solver.solve.call_args[0][1]
