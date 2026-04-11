@@ -2,6 +2,7 @@
 
 ## Unreleased changes (2026-04-11)
 
+* refactor: replace old wrapper scripts with new grackle scripts [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * refactor: tests [[details](https://github.com/cbboyan/solverpy/commit/7e36f8c) | [browse](https://github.com/cbboyan/solverpy/tree/7e36f8c)]
 * refactor: remove patch.dict SOLVERPY_BENCHMARKS from runner tests [[details](https://github.com/cbboyan/solverpy/commit/e1ec665) | [browse](https://github.com/cbboyan/solverpy/tree/e1ec665)]
 * refactor: update all imports and references from grackle to solverpy_grackle [[details](https://github.com/cbboyan/solverpy/commit/2ff1fbc) | [browse](https://github.com/cbboyan/solverpy/tree/2ff1fbc)]

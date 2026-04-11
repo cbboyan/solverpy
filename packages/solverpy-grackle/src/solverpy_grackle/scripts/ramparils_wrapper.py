@@ -2,7 +2,7 @@ import sys
 import json
 from solverpy_grackle.tools import load_class
 
-RESULT = "#%# RamParIls #%# %s, %s, %s"
+RESULT = "#%%# RamParIls #%%# %s, %s, %s"
 
 
 def main():

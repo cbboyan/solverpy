@@ -5,7 +5,7 @@ if __name__ == '__main__':
    import json
    from solverpy_grackle.tools import load_class
 
-   RESULT = "#%# RamParIls #%# %s, %s, %s"
+   RESULT = "#%%# RamParIls #%%# %s, %0.6f, %s"
 
    def run():
       conf = json.loads(sys.argv[1])
