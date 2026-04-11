@@ -3,7 +3,7 @@
 if __name__ == '__main__':
    import sys
    import json
-   from grackle.tools import load_class
+   from solverpy_grackle.tools import load_class
 
    RESULT = "#%# RamParIls #%# %s, %s, %s"
 

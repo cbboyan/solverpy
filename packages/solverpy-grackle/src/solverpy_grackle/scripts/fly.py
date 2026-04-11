@@ -1,6 +1,6 @@
 import sys
-import grackle.state
-import grackle.main
+import solverpy_grackle.state
+import solverpy_grackle.main
 
 
 def main():
@@ -8,5 +8,5 @@ def main():
       print("usage: %s grackle.fly" % sys.argv[0])
       sys.exit(-1)
 
-   init = grackle.state.State(sys.argv[1])
-   grackle.main.loop(init)
+   init = solverpy_grackle.state.State(sys.argv[1])
+   solverpy_grackle.main.loop(init)

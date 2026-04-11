@@ -1,6 +1,6 @@
 import pytest
-from grackle.trainer.cvc5.base import Cvc5BaseDomain
-from grackle.trainer.cvc5.default import Cvc5Domain
+from solverpy_grackle.trainer.cvc5.base import Cvc5BaseDomain
+from solverpy_grackle.trainer.cvc5.default import Cvc5Domain
 
 
 @pytest.fixture

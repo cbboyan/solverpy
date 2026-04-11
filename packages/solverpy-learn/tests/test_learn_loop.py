@@ -8,14 +8,14 @@ the expected trains and models are produced in the database.
 Run with:
    SOLVERPY_BENCHMARKS=tests/data/problems \
    SOLVERPY_DB=tests/data/solverpy_db \
-   pytest -m learn tests/test_learn_loop.py
+   pytest -m learn packages/solverpy-learn/tests/test_learn_loop.py
 """
 
 import shutil
 import pytest
 from pathlib import Path
 
-DATA_DIR   = Path(__file__).parent / "data"
+DATA_DIR   = Path(__file__).parent.parent.parent.parent / "tests" / "data"
 DB_DIR     = DATA_DIR / "solverpy_db"
 STRATS_DIR = DB_DIR / "strats"
 

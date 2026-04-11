@@ -7,8 +7,8 @@ with a mocked solverpy solver.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from grackle.runner.vampire import VampireRunner
-from grackle.trainer.vampire.full import DEFAULTS, REPLACE
+from solverpy_grackle.runner.vampire import VampireRunner
+from solverpy_grackle.trainer.vampire.full import DEFAULTS, REPLACE
 
 
 # --- fixtures ---
@@ -20,8 +20,8 @@ def _mock_load_domain(self, cfg):
 
 @pytest.fixture
 def runner():
-   with patch("grackle.runner.vampire.Vampire"), \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.vampire.Vampire"), \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = VampireRunner({"timeout": 10})
    return r
 

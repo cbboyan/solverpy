@@ -7,6 +7,6 @@ def mock_domain(self, cfg):
 
 
 def z3_domain(self, cfg):
-   from grackle.trainer.z3.options import OptionsDomain
+   from solverpy_grackle.trainer.z3.options import OptionsDomain
    self._domain = OptionsDomain()
    self._conds = {}

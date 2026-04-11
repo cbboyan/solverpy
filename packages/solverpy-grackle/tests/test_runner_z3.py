@@ -7,9 +7,9 @@ with a mocked solverpy solver.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from grackle.runner.z3 import Z3Runner, tactical
-from grackle.trainer.z3.options import OptionsDomain
-from grackle.trainer.z3.tactics import TACTICS, BOOLS, DEPTHS
+from solverpy_grackle.runner.z3 import Z3Runner, tactical
+from solverpy_grackle.trainer.z3.options import OptionsDomain
+from solverpy_grackle.trainer.z3.tactics import TACTICS, BOOLS, DEPTHS
 
 
 # --- fixtures ---
@@ -21,8 +21,8 @@ def _mock_load_domain(self, cfg):
 
 @pytest.fixture
 def runner():
-   with patch("grackle.runner.z3.Z3"), \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.z3.Z3"), \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = Z3Runner({"timeout": 10})
    return r
 

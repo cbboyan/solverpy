@@ -1,5 +1,5 @@
 import pytest
-from grackle.trainer.lash.domain import LashDomain, DEFAULTS, PARAMS
+from solverpy_grackle.trainer.lash.domain import LashDomain, DEFAULTS, PARAMS
 
 
 @pytest.fixture

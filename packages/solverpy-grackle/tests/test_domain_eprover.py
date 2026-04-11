@@ -1,9 +1,9 @@
 import pytest
-from grackle.trainer.eprover.heuristic import HEURISTIC_CEFS, N_CEFS, HeuristicDomain
-from grackle.trainer.eprover.ordering import OrderingDomain
-from grackle.trainer.eprover.core import CoreDomain
-from grackle.trainer.eprover.sine import SineDomain
-from grackle.trainer.eprover.default import DefaultDomain
+from solverpy_grackle.trainer.eprover.heuristic import HEURISTIC_CEFS, N_CEFS, HeuristicDomain
+from solverpy_grackle.trainer.eprover.ordering import OrderingDomain
+from solverpy_grackle.trainer.eprover.core import CoreDomain
+from solverpy_grackle.trainer.eprover.sine import SineDomain
+from solverpy_grackle.trainer.eprover.default import DefaultDomain
 
 
 # ── HEURISTIC_CEFS list ───────────────────────────────────────────────────────
@@ -317,7 +317,7 @@ class TestSplitJoin:
 
 _RUNNER_CFG = {
     "timeout": "1",
-    "domain": "grackle.trainer.eprover.default.DefaultDomain",
+    "domain": "solverpy_grackle.trainer.eprover.default.DefaultDomain",
 }
 
 
@@ -325,14 +325,14 @@ class TestRunnerArgsNewParams:
     """Smoke-tests for the EproverRunner.args() extensions (no actual E binary needed)."""
 
     def _make_params(self, **overrides):
-        from grackle.trainer.eprover.default import DefaultDomain
+        from solverpy_grackle.trainer.eprover.default import DefaultDomain
         d = DefaultDomain()
         p = dict(d.defaults)
         p.update(overrides)
         return p
 
     def test_nb7_like_heuristic(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params()
         args = r.args(p)
@@ -343,7 +343,7 @@ class TestRunnerArgsNewParams:
         assert "ConjectureRelativeSymbolWeight(PreferNonGoals" in args
 
     def test_ho_ext_flags(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params()
         args = r.args(p)
@@ -355,7 +355,7 @@ class TestRunnerArgsNewParams:
         assert "--fool-unroll=false" in args
 
     def test_satcheck_flag(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params()
         args = r.args(p)
@@ -363,14 +363,14 @@ class TestRunnerArgsNewParams:
         assert "--satcheck-proc-interval=5000" in args
 
     def test_no_satcheck_when_none(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(satcheck="none")
         args = r.args(p)
         assert "--satcheck" not in args
 
     def test_kbo6_ordering(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(tord="KBO6", tord_prec="invfreq",
                               tord_weight="precrank10", tord_const="1")
@@ -381,7 +381,7 @@ class TestRunnerArgsNewParams:
         assert "-c1" in args
 
     def test_lpo4_ordering_no_weight(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(tord="LPO4", tord_prec="arity")
         args = r.args(p)
@@ -390,28 +390,28 @@ class TestRunnerArgsNewParams:
         assert "-w" not in args
 
     def test_ho_order_kind_lambda(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(ho_order_kind="lambda")
         args = r.args(p)
         assert "--ho-order-kind=lambda" in args
 
     def test_strong_rw_inst(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(strong_rw_inst="1")
         args = r.args(p)
         assert "--strong-rw-inst" in args
 
     def test_inverse_recognition(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(inverse_recognition="true")
         args = r.args(p)
         assert "--inverse-recognition" in args
 
     def test_3_slots(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(slots="3", heur0="5", heur1="6", heur2="7")
         args = r.args(p)
@@ -422,7 +422,7 @@ class TestRunnerArgsNewParams:
         assert "FIFOWeight(ConstPrio)" in args
 
     def test_always_appends_fifo_const_prio(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(slots="1", heur0="2")  # slot 0 = FIFOWeight(PreferProcessed)
         args = r.args(p)
@@ -431,7 +431,7 @@ class TestRunnerArgsNewParams:
         assert "FIFOWeight(ConstPrio)" in args
 
     def test_clean_removes_unused_heur(self):
-        from grackle.runner.eprover import EproverRunner
+        from solverpy_grackle.runner.eprover import EproverRunner
         r = EproverRunner(_RUNNER_CFG)
         p = self._make_params(slots="2")
         cleaned = r.clean(p)

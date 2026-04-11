@@ -7,7 +7,7 @@ with a mocked solverpy solver.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from grackle.runner.eprover import EproverRunner, DEFAULTS, SINE_DEFAULTS
+from solverpy_grackle.runner.eprover import EproverRunner, DEFAULTS, SINE_DEFAULTS
 
 
 # --- fixtures ---
@@ -43,8 +43,8 @@ def _mock_load_domain(self, cfg):
 
 @pytest.fixture
 def runner():
-   with patch("grackle.runner.eprover.E"), \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.eprover.E"), \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = EproverRunner({"timeout": 5})
    return r
 

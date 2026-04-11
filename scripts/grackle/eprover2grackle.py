@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from grackle.runner.eprover import cef2block, EproverRunner
+from solverpy_grackle.runner.eprover import cef2block, EproverRunner
 
 # Grackle's (BliStr-based) parameter space for E strategies:
 #

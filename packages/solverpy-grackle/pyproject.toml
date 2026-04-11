@@ -21,9 +21,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-fly-grackle    = "grackle.scripts.fly:main"
-grackle-paramils  = "grackle.scripts.paramils_wrapper:main"
-grackle-ramparils = "grackle.scripts.ramparils_wrapper:main"
+fly-grackle    = "solverpy_grackle.scripts.fly:main"
+grackle-paramils  = "solverpy_grackle.scripts.paramils_wrapper:main"
+grackle-ramparils = "solverpy_grackle.scripts.ramparils_wrapper:main"
 
 [project.urls]
 "Homepage" = "https://cbboyan.github.io/solverpy/"

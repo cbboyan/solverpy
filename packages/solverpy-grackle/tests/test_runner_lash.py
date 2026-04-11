@@ -7,8 +7,8 @@ with a mocked solverpy solver.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from grackle.runner.lash import LashRunner
-from grackle.trainer.lash.domain import DEFAULTS
+from solverpy_grackle.runner.lash import LashRunner
+from solverpy_grackle.trainer.lash.domain import DEFAULTS
 
 
 # --- fixtures ---
@@ -20,8 +20,8 @@ def _mock_load_domain(self, cfg):
 
 @pytest.fixture
 def runner():
-   with patch("grackle.runner.lash.Lash"), \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.lash.Lash"), \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = LashRunner({"timeout": 10})
    return r
 
@@ -87,8 +87,8 @@ def test_clean_returns_dict(runner):
 # --- static string uses LASH_MODE_DIR ---
 
 def test_static_uses_lash_mode_dir():
-   with patch("grackle.runner.lash.Lash") as mock_lash, \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain), \
+   with patch("solverpy_grackle.runner.lash.Lash") as mock_lash, \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain), \
         patch.dict("os.environ", {"LASH_MODE_DIR": "/my/modes"}):
       LashRunner({"timeout": 5})
    static_arg = mock_lash.call_args[1].get("static") or mock_lash.call_args[0][2]
@@ -96,8 +96,8 @@ def test_static_uses_lash_mode_dir():
 
 
 def test_static_config_override():
-   with patch("grackle.runner.lash.Lash") as mock_lash, \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.lash.Lash") as mock_lash, \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       LashRunner({"timeout": 5, "lstatic": "-p tstp -m mymode"})
    static_arg = mock_lash.call_args[1].get("static") or mock_lash.call_args[0][2]
    assert static_arg == "-p tstp -m mymode"

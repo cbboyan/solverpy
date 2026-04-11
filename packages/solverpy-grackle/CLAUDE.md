@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Location
 
 This package lives in the solverpy monorepo at `~/repos/cbboyan/solverpy/packages/solverpy-grackle/`.
-The source root is `src/grackle/`. The original standalone repo is at `~/repos/cbboyan/grackle` (kept for reference).
+The source root is `src/solverpy_grackle/`. The original standalone repo is at `~/repos/cbboyan/grackle` (kept for reference).
 
 Remaining planned work:
 - **YAML scenario files**: migrate `.fly` config format from INI-style to YAML
@@ -36,13 +36,13 @@ See `examples/lash/` and `examples/vampire/` for complete example setups.
 
 ## Architecture Overview
 
-### Core Loop (`grackle/main.py`, `grackle/state.py`)
+### Core Loop (`solverpy_grackle/main.py`, `solverpy_grackle/state.py`)
 
 The main loop in `main.py` calls `evaluate()` → `reduction()` → `select()` → `improve()` each iteration. `state.py` manages all shared state: the strategy collection, evaluation databases, runner/trainer instances, and genealogy tracking.
 
-Configuration is loaded from `.fly` files (INI-style) via `grackle/tools.py:parse_ini()`. Classes are instantiated dynamically via fully-qualified Python paths (e.g., `grackle.runner.lash.LashRunner`).
+Configuration is loaded from `.fly` files (INI-style) via `solverpy_grackle/tools.py:parse_ini()`. Classes are instantiated dynamically via fully-qualified Python paths (e.g., `solverpy_grackle.runner.lash.LashRunner`).
 
-### Runner System (`grackle/runner/`)
+### Runner System (`solverpy_grackle/runner/`)
 
 Two-level hierarchy:
 - **`Runner`** (base): abstract `cmd()`, `process()`, `success()` interface + subprocess execution and parallel `runs()` via multiprocessing pool
@@ -56,7 +56,7 @@ Solver-specific runners extend `GrackleRunner`:
 - `Cvc5Runner` — CVC5 SMT solver
 - `BitwuzlaRunner`, `Prover9Runner`, `Cvc4Runner` — less maintained
 
-**All new and updated runners must use `solverpy`** (see `grackle/runner/z3.py` as the template). The `solverpy` library lives at `~/repos/cbboyan/solverpy` (see its `CLAUDE.md` for full details) and provides solver classes for all supported provers: `solverpy.solver.atp.{lash,vampire,eprover,prover9}` and `solverpy.solver.smt.{z3,cvc5,bitwuzla}`.
+**All new and updated runners must use `solverpy`** (see `solverpy_grackle/runner/z3.py` as the template). The `solverpy` library lives at `~/repos/cbboyan/solverpy` (see its `CLAUDE.md` for full details) and provides solver classes for all supported provers: `solverpy.solver.atp.{lash,vampire,eprover,prover9}` and `solverpy.solver.smt.{z3,cvc5,bitwuzla}`.
 
 The `solverpy` solver hierarchy is: `Solver → PluginSolver → SolverPy → ShellSolver → {E, Vampire, Lash, Prover9, Cvc5, Bitwuzla}` (Z3 uses `StdinSolver` instead of `ShellSolver`). Solvers are instantiated with a limit string (e.g., `"T10"` for 10s, `"T10-M4"` for 10s+4GB) and optional `static` args override. `ShellSolver.solve(instance, strategy)` runs `{time} {cmd} {strategy} {instance}` as a subprocess.
 
@@ -92,7 +92,7 @@ def success(self, result):  # result is a status string
 
 The `solverpy` solver's `solve(instance, strategy)` runs `{cmd} {strategy} {instance}` (strategy is appended between the static args and the problem file). The result dict always has `status` (from the status plugin) and `runtime` (from the `Time` plugin, computed as `realtime - systime`). Solver-specific resource keys vary: LASH → `Steps`, Vampire → `Active`, E → `Processed`, CVC5 → `resource::resourceUnitsUsed`.
 
-### Trainer System (`grackle/trainer/`)
+### Trainer System (`solverpy_grackle/trainer/`)
 
 - **`Trainer`** (base): abstract `improve(state, conf, insts)` → new conf name
 - **`ParamilsTrainer`**: main trainer — calls `self.runner.domain.dump()` to get the ParamILS param spec, invokes `reparamils.launch()` (Ruby script `paramils/param_ils_2_3_run.rb`), returns best params
@@ -102,7 +102,7 @@ The `solverpy` solver's `solve(instance, strategy)` runs `{cmd} {strategy} {inst
 
 Solver-specific trainers live in subdirectories (`trainer/lash/`, `trainer/vampire/`, `trainer/z3/`, etc.) and primarily define the parameter domain.
 
-### Domain System (`grackle/trainer/domain/`)
+### Domain System (`solverpy_grackle/trainer/domain/`)
 
 Each solver needs a domain definition:
 - **`GrackleDomain`** (base): defines `params` (name→range/set), `defaults`, `conditions` (parameter dependencies), `forbiddens`. `dump()` exports to ParamILS `.pcs` format.
@@ -123,7 +123,7 @@ Each solver needs a domain definition:
 | CVC4 | `Cvc4ParamilsTrainer` | Raw-string `PARAMS/CONDITIONS/FORBIDDENS` | **Obsolete — mark for removal** |
 | EProver | `EproverParamilsTunerTrainer` | Tuner-managed, non-standard architecture | Needs rewrite; use `MultiDomain` for staged tuning |
 
-### Database (`grackle/db.py`, `grackle/jsondb.py`)
+### Database (`solverpy_grackle/db.py`, `solverpy_grackle/jsondb.py`)
 
 `db.py` tracks `results[conf][inst] = [quality, runtime, status, ...]` and `ranking[inst] = [conf, ...]` sorted by quality. `jsondb.py` adds JSON serialization, portfolio scoring, and greedy portfolio selection.
 
@@ -163,11 +163,11 @@ selection = default # Heuristic: default|weak|random|mul|div|reverse|family (com
 runner.prefix = lash-             # Prefix for generated config filenames
 
 trains.data = problems.ok         # Benchmark instance list file
-trains.runner = grackle.runner.lash.LashRunner
+trains.runner = solverpy_grackle.runner.lash.LashRunner
 trains.runner.timeout = 1
 
-trainer = grackle.trainer.lash.paramils.LashParamilsTrainer
-trainer.runner = grackle.runner.lash.LashRunner
+trainer = solverpy_grackle.trainer.lash.paramils.LashParamilsTrainer
+trainer.runner = solverpy_grackle.runner.lash.LashRunner
 trainer.runner.timeout = 1
 trainer.timeout = 300
 trainer.restarts = True

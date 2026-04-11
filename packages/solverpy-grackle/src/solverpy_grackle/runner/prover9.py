@@ -3,8 +3,8 @@ import tempfile
 import os 
 from os import path, getenv
 from .runner import GrackleRunner
-#from grackle.trainer.prover9.domain import DEFAULTS
-from grackle.trainer.prover9.default import DefaultDomain
+#from solverpy_grackle.trainer.prover9.domain import DEFAULTS
+from solverpy_grackle.trainer.prover9.default import DefaultDomain
 
 P_BINARY = "prover9"
 P_STATIC = "-f "     # is Prover9's flag for input files (strategies and problems)

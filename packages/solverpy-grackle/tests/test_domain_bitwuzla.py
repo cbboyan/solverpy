@@ -1,6 +1,6 @@
 import pytest
-from grackle.trainer.bitwuzla.default import DefaultDomain
-from grackle.trainer.bitwuzla.bitwuzla import BitwuzlaDomain
+from solverpy_grackle.trainer.bitwuzla.default import DefaultDomain
+from solverpy_grackle.trainer.bitwuzla.bitwuzla import BitwuzlaDomain
 
 
 @pytest.fixture

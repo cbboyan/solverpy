@@ -7,8 +7,8 @@ with a mocked solverpy solver.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from grackle.runner.cvc5 import Cvc5Runner
-from grackle.trainer.cvc5.default import DEFAULTS
+from solverpy_grackle.runner.cvc5 import Cvc5Runner
+from solverpy_grackle.trainer.cvc5.default import DEFAULTS
 
 
 # --- fixtures ---
@@ -20,16 +20,16 @@ def _mock_load_domain(self, cfg):
 
 @pytest.fixture
 def runner():
-   with patch("grackle.runner.cvc5.Cvc5"), \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.cvc5.Cvc5"), \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = Cvc5Runner({"timeout": 10})
    return r
 
 
 @pytest.fixture
 def runner_rlimit():
-   with patch("grackle.runner.cvc5.Cvc5") as mock_cvc5, \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.cvc5.Cvc5") as mock_cvc5, \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       r = Cvc5Runner({"timeout": 10, "rlimit": 500000})
    return r, mock_cvc5
 
@@ -120,8 +120,8 @@ def test_rlimit_included_in_limit_string(runner_rlimit):
 
 def test_no_rlimit_uses_time_only(runner):
    # runner fixture has no rlimit — limit should be T10 only
-   with patch("grackle.runner.cvc5.Cvc5") as mock_cvc5, \
-        patch("grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
+   with patch("solverpy_grackle.runner.cvc5.Cvc5") as mock_cvc5, \
+        patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", _mock_load_domain):
       Cvc5Runner({"timeout": 10})
    limit_arg = mock_cvc5.call_args[1].get("limit") or mock_cvc5.call_args[0][0]
    assert limit_arg == "T10"

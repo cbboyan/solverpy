@@ -3,7 +3,7 @@ Integration tests — actually invoke the solver binaries.
 Requires SOLVERPY_BENCHMARKS to point at a directory with problem files.
 Each test is skipped automatically if the relevant binary is not in PATH.
 
-Run as: SOLVERPY_BENCHMARKS=/path/to/solverpy/tests/data pytest tests/integration/
+Run as: SOLVERPY_BENCHMARKS=tests/data pytest packages/solverpy-grackle/tests/integration/
 """
 
 import os
@@ -54,8 +54,8 @@ def _check_result(result):
 def eprover_runner():
    if not shutil.which("eprover"):
       pytest.skip("eprover not installed")
-   from grackle.runner.eprover import EproverRunner
-   with patch("grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
+   from solverpy_grackle.runner.eprover import EproverRunner
+   with patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
       return EproverRunner({"timeout": 10})
 
 def test_eprover_run_returns_result(eprover_runner):
@@ -78,8 +78,8 @@ def test_eprover_resource_is_processed_count(eprover_runner):
 def vampire_runner():
    if not shutil.which("vampire"):
       pytest.skip("vampire not installed")
-   from grackle.runner.vampire import VampireRunner
-   with patch("grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
+   from solverpy_grackle.runner.vampire import VampireRunner
+   with patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
       return VampireRunner({"timeout": 10})
 
 def test_vampire_run_returns_result(vampire_runner):
@@ -102,8 +102,8 @@ def test_vampire_resource_is_active_clauses(vampire_runner):
 def lash_runner():
    if not shutil.which("lash"):
       pytest.skip("lash not installed")
-   from grackle.runner.lash import LashRunner
-   with patch("grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
+   from solverpy_grackle.runner.lash import LashRunner
+   with patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
       return LashRunner({"timeout": 10, "lstatic": f"-p tstp -m empty -M {BENCHMARKS}"})
 
 def test_lash_run_returns_result(lash_runner):
@@ -126,8 +126,8 @@ def test_lash_resource_is_steps(lash_runner):
 def z3_runner():
    if not shutil.which("z3"):
       pytest.skip("z3 not installed")
-   from grackle.runner.z3 import Z3Runner
-   with patch("grackle.runner.runner.GrackleRunner.load_domain", z3_domain):
+   from solverpy_grackle.runner.z3 import Z3Runner
+   with patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", z3_domain):
       return Z3Runner({"timeout": 10})
 
 def test_z3_run_returns_result(z3_runner):
@@ -150,8 +150,8 @@ def test_z3_resource_is_rlimit(z3_runner):
 def cvc5_runner():
    if not shutil.which("cvc5"):
       pytest.skip("cvc5 not installed")
-   from grackle.runner.cvc5 import Cvc5Runner
-   with patch("grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
+   from solverpy_grackle.runner.cvc5 import Cvc5Runner
+   with patch("solverpy_grackle.runner.runner.GrackleRunner.load_domain", mock_domain):
       return Cvc5Runner({"timeout": 10})
 
 def test_cvc5_run_returns_result(cvc5_runner):

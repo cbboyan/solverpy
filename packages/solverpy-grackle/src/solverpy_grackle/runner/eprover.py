@@ -2,7 +2,7 @@ from solverpy.solver.atp.eprover import E, E_BINARY, E_STATIC
 
 from .solverpy import SolverPyRunner
 from .config import Params, RunnerConfig
-from grackle.trainer.eprover.heuristic import HEURISTIC_CEFS
+from solverpy_grackle.trainer.eprover.heuristic import HEURISTIC_CEFS
 
 
 E_FIXED_ARGS = "--delete-bad-limit=150000000 "

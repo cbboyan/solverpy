@@ -2,7 +2,7 @@ from typing import Any
 import re
 from os import path, getenv
 from .runner import GrackleRunner
-from grackle.trainer.bitwuzla.default import DefaultDomain
+from solverpy_grackle.trainer.bitwuzla.default import DefaultDomain
 
 BWZ_BINARY = "bitwuzla"
 BWZ_STATIC = "-v -M=4096"  # -t=1 -l=1 --smt2

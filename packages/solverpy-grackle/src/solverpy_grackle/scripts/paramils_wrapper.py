@@ -1,6 +1,6 @@
 import sys
 import json
-from grackle.tools import load_class
+from solverpy_grackle.tools import load_class
 
 RESULT = "\nResult for ParamILS: %s, %s, %s, 1000000, %s"
 
