@@ -244,7 +244,7 @@ def test_run_calls_solve_with_correct_problem(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
    runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
-   assert runner._solver.solve.call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "problems/p1.smt2")
+   assert runner._solver.solve.call_args[0][0] == os.path.join(os.getenv("SOLVERPY_BENCHMARKS", "."), "problems/p1.smt2")
 
 
 def test_run_strategy_contains_set_option(runner):

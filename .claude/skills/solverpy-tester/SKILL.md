@@ -33,22 +33,22 @@ tests/
 
 ```bash
 # All fast tests (omit slow)
-SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db pytest
+pytest
 
 # A single parametrised case
-SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
-  pytest tests/test_benchmark_eval.py -k bitwuzla-sage010-default
+pytest tests/test_benchmark_eval.py -k bitwuzla-sage010-default
 
 # Include slow-marked tests
-SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
-  pytest -m slow
+pytest -m slow
 
 # Run all (fast + slow)
-SOLVERPY_BENCHMARKS=tests/data/problems SOLVERPY_DB=tests/data/solverpy_db \
-  pytest -m ""
+pytest -m ""
 ```
 
 Use `pytest` (not `python -m pytest`).
+
+No env vars needed — the `solverpy_env` fixture sets `SOLVERPY_BENCHMARKS` and
+`SOLVERPY_DB` automatically before each module run.
 
 ---
 

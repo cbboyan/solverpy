@@ -251,4 +251,4 @@ def test_run_calls_solve_with_correct_problem(runner):
    runner.setup(_make_solver_mock())
    runner.run(MINIMAL_PARAMS, "problems/p1.p")
    call_args = runner._solver.solve.call_args
-   assert call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "problems/p1.p")
+   assert call_args[0][0] == os.path.join(os.getenv("SOLVERPY_BENCHMARKS", "."), "problems/p1.p")

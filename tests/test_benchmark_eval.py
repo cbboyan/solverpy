@@ -41,10 +41,7 @@ EVAL_CASES = [
 
 @pytest.fixture(scope="module")
 def solverpy_env():
-   """Clean the DB (keep strats/) and clear the bid cache.
-   Assumes SOLVERPY_DB and SOLVERPY_BENCHMARKS are set correctly before running pytest,
-   e.g.: SOLVERPY_BENCHMARKS=tests/data SOLVERPY_DB=tests/data/solverpy_db pytest
-   """
+   """Clean the DB (keep strats/) and clear the bid cache."""
    import solverpy.benchmark.path.bids as bids_mod
 
    for d in DB_DIR.iterdir():
@@ -54,6 +51,8 @@ def solverpy_env():
    bids_mod.problems.__defaults__[0].clear()
 
    yield
+
+   bids_mod.problems.__defaults__[0].clear()
 
 
 @pytest.fixture(params=EVAL_CASES, scope="module")

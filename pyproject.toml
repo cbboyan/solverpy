@@ -3,8 +3,9 @@ testpaths = ["tests", "packages/solverpy-grackle/tests", "packages/solverpy-lear
 markers = [
    "slow: marks tests as slow (skipped by default)",
    "learn: marks tests as ML learning tests (skipped by default)",
+   "grackle: marks tests as grackle tests (skipped by default)",
 ]
-addopts = "-m 'not slow and not learn'"
+addopts = "-m 'not slow and not learn and not grackle'"
 
 [tool.yapf]
 based_on_style = "pep8"

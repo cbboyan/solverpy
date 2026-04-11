@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-11)
 
-* refactor: remove patch.dict SOLVERPY_BENCHMARKS from runner tests [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: tests [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: remove patch.dict SOLVERPY_BENCHMARKS from runner tests [[details](https://github.com/cbboyan/solverpy/commit/e1ec665) | [browse](https://github.com/cbboyan/solverpy/tree/e1ec665)]
 * refactor: update all imports and references from grackle to solverpy_grackle [[details](https://github.com/cbboyan/solverpy/commit/2ff1fbc) | [browse](https://github.com/cbboyan/solverpy/tree/2ff1fbc)]
 * refactor: rename grackle package to solverpy_grackle; move learn tests to solverpy-learn [[details](https://github.com/cbboyan/solverpy/commit/71ac712) | [browse](https://github.com/cbboyan/solverpy/tree/71ac712)]
 * fix: Runner tests broken by missing Apply plugin simulation [[details](https://github.com/cbboyan/solverpy/commit/064d6bb) | [browse](https://github.com/cbboyan/solverpy/tree/064d6bb)]

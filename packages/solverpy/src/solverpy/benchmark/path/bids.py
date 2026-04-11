@@ -30,21 +30,19 @@ Example:
 import os
 
 DEFAULT_NAME = "."
-DEFAULT_DIR = os.getenv("SOLVERPY_BENCHMARKS", DEFAULT_NAME)
-
 DB_NAME = "solverpy_db"
-DB_DIR = os.getenv("SOLVERPY_DB", DB_NAME)
 
 
 def bidpath(bid: str) -> str:
    """Return the path to the benchmark id file or directory."""
-   return os.path.join(DEFAULT_DIR, bid)
+   return os.path.join(os.getenv("SOLVERPY_BENCHMARKS", DEFAULT_NAME), bid)
 
 
 def dbpath(subdir: str | None = None) -> str:
    """Return the full path to the database directory."""
    # TODO: move this elsewhere
-   return os.path.join(DB_DIR, subdir) if subdir else DB_DIR
+   base = os.getenv("SOLVERPY_DB", DB_NAME)
+   return os.path.join(base, subdir) if subdir else base
 
 
 def path(

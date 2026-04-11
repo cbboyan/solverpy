@@ -9,11 +9,13 @@ Run as: SOLVERPY_BENCHMARKS=tests/data pytest packages/solverpy-grackle/tests/in
 import os
 import shutil
 import pytest
+from pathlib import Path
 from unittest.mock import patch
 
 from .conftest import mock_domain, z3_domain
 
-BENCHMARKS = os.getenv("SOLVERPY_BENCHMARKS", ".")
+# Absolute path to the shared test problem files — independent of SOLVERPY_BENCHMARKS
+BENCHMARKS = str(Path(__file__).parents[4] / "tests" / "data" / "problems")
 
 TPTP_PROBLEM = "agatha.p"
 THF_PROBLEM  = "thf.p"
