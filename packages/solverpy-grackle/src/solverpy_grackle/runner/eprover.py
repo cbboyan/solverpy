@@ -181,6 +181,7 @@ class EproverRunner(SolverPyRunner):
          for i in range(slots):
             cefs += ["%s*%s" % (eargs["freq%d"%i], block2cef(eargs["cef%d"%i]))]
          cefs.sort(key=lambda x: int(x.split("*")[0]))
+         cefs.append("1*FIFOWeight(ConstPrio)")
          eargs["heur"] = "-H'(%s)'" % ",".join(cefs)
 
       # new optional args (absent from DEFAULTS; use .get() with E-default fallbacks)

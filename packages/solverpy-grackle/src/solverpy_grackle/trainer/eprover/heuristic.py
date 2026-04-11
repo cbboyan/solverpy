@@ -40,34 +40,32 @@ N_CEFS = len(HEURISTIC_CEFS)  # 20
 
 
 class HeuristicDomain(GrackleDomain):
-    """Clause selection heuristic: up to 4 slots, each picking one of N_CEFS predefined (freq, CEF) pairs.
+    """Clause selection heuristic: up to max_slots slots, each picking one of N_CEFS predefined (freq, CEF) pairs.
     EproverRunner always appends 1*FIFOWeight(ConstPrio) as the final CEF for completeness."""
+
+    def __init__(self, max_slots: int = 4) -> None:
+        GrackleDomain.__init__(self, max_slots=max_slots)
+        self._max_slots = max_slots
 
     @property
     def params(self) -> Mapping[str, Any]:
         indices = [str(i) for i in range(N_CEFS)]
-        return {
-            "slots": ["1", "2", "3", "4"],
-            "heur0": indices,
-            "heur1": indices,
-            "heur2": indices,
-            "heur3": indices,
-        }
+        p: dict[str, Any] = {"slots": [str(i) for i in range(1, self._max_slots + 1)]}
+        for i in range(self._max_slots):
+            p[f"heur{i}"] = indices
+        return p
 
     @property
     def defaults(self) -> dict[str, str]:
-        return {
-            "slots": "4",
-            "heur0": "0",   # 2*CRSW(PreferGround,...)
-            "heur1": "1",   # 6*CRSW(ByDerivationDepth,...)
-            "heur2": "2",   # 1*FIFOWeight(PreferProcessed)
-            "heur3": "3",   # 1*CRSW(PreferNonGoals,...)
-        }
+        d = {"slots": str(self._max_slots)}
+        for i in range(self._max_slots):
+            d[f"heur{i}"] = str(i)
+        return d
 
     @property
     def conditions(self) -> list[Condition]:
-        return [
-            ("heur1", "slots", ["2", "3", "4"]),
-            ("heur2", "slots", ["3", "4"]),
-            ("heur3", "slots", ["4"]),
-        ]
+        conds = []
+        for i in range(1, self._max_slots):
+            active = [str(j) for j in range(i + 1, self._max_slots + 1)]
+            conds.append((f"heur{i}", "slots", active))
+        return conds

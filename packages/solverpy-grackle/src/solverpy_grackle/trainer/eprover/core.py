@@ -1,7 +1,7 @@
 from typing import Any
 from collections.abc import Mapping
 
-from ..domain.grackle import GrackleDomain, Condition
+from ..domain.grackle import GrackleDomain
 
 
 class CoreDomain(GrackleDomain):
@@ -46,17 +46,6 @@ class CoreDomain(GrackleDomain):
             "sos_input_types": ["0", "1"],
             # SAT checking
             "satcheck": ["none", "ConjMinMinFreq"],
-            # HO extension rules
-            "neg_ext": ["off", "all"],
-            "pos_ext": ["off", "all"],
-            "ext_sup_max_depth": ["-1", "0", "1"],
-            # HO lambda handling
-            "lift_lambdas": ["true", "false"],
-            "local_rw": ["false", "true"],
-            "fool_unroll": ["true", "false"],
-            # HO injectivity
-            "inverse_recognition": ["false", "true"],
-            "replace_inj_defs": ["false", "true"],
         }
 
     @property
@@ -79,12 +68,4 @@ class CoreDomain(GrackleDomain):
             "no_eq_unfolding": "1",
             "sos_input_types": "1",
             "satcheck": "ConjMinMinFreq",
-            "neg_ext": "all",
-            "pos_ext": "all",
-            "ext_sup_max_depth": "0",
-            "lift_lambdas": "false",
-            "local_rw": "true",
-            "fool_unroll": "false",
-            "inverse_recognition": "false",
-            "replace_inj_defs": "false",
         }
