@@ -9,9 +9,10 @@ if __name__ == '__main__':
 
    def run():
       conf = json.loads(sys.argv[1])
+      cutoff = int(float(sys.argv[3]))
+      conf["timeout"] = cutoff
       runner = load_class(conf["cls"])(config=conf)
       inst = sys.argv[2]
-      runner.config["cutoff"] = int(float(sys.argv[3]))
 
       params = runner.parse(sys.argv[4:])
       fixed = conf.get("fixed", {})

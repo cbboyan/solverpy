@@ -9,8 +9,8 @@ if __name__ == '__main__':
    
    def run():
       conf = json.loads(sys.argv[1])
+      conf["timeout"] = int(float(sys.argv[4]))
       runner = load_class(conf["cls"])(config=conf)
-      runner.config["cutoff"] = int(float(sys.argv[4]))
       inst = sys.argv[2]
       seed = sys.argv[6]
       #(quality,clock) = runner.run(params, inst)[:2]
