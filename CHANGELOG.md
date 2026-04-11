@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-11)
 
-* fix: Runner tests broken by missing Apply plugin simulation [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename grackle package to solverpy_grackle; move learn tests to solverpy-learn [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Runner tests broken by missing Apply plugin simulation [[details](https://github.com/cbboyan/solverpy/commit/064d6bb) | [browse](https://github.com/cbboyan/solverpy/tree/064d6bb)]
 * refactor: rename vampire domain classes and remove dead init.py [[details](https://github.com/cbboyan/solverpy/commit/318b04b) | [browse](https://github.com/cbboyan/solverpy/tree/318b04b)]
 * refactor: restore bitwuzla domains as DefaultDomain and BitwuzlaDomain [[details](https://github.com/cbboyan/solverpy/commit/a81b922) | [browse](https://github.com/cbboyan/solverpy/tree/a81b922)]
 * refactor: remove domain_ prefix from vampire files; rename DefaultDomain to BitwuzlaDomain [[details](https://github.com/cbboyan/solverpy/commit/f9f2eed) | [browse](https://github.com/cbboyan/solverpy/tree/f9f2eed)]
