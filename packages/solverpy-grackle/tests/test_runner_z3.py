@@ -4,6 +4,7 @@ No Z3 binary required — covers args(), success(), and run()
 with a mocked solverpy solver.
 """
 
+import os
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -200,8 +201,7 @@ def _make_solver_mock(status="unsat", runtime=0.5, rlimit=12345, valid=True, sol
 def test_run_success(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="unsat", runtime=0.5, rlimit=12345))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
+   result = runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
    quality, runtime, status, resources = result
    assert status == "unsat"
    assert runtime == pytest.approx(0.5)
@@ -212,16 +212,14 @@ def test_run_success(runner):
 def test_run_uses_rlimit_as_resource(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(rlimit=99999))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    assert result[3] == 99999
 
 
 def test_run_timeout_uses_penalty(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="timeout", valid=True, solved=False))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    quality, runtime, status, resources = result
    assert quality == 100000000
    assert status == "timeout"
@@ -230,8 +228,7 @@ def test_run_timeout_uses_penalty(runner):
 def test_run_invalid_result_returns_none(runner):
    runner._solver = _make_solver_mock(valid=False)
    runner._solver._output = "some error"
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    assert result is None
 
 
@@ -239,23 +236,20 @@ def test_run_exception_returns_none(runner):
    runner._solver.solve.side_effect = Exception("z3 crashed")
    runner._solver.valid.return_value = False
    runner._solver._output = ""
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    assert result is None
 
 
 def test_run_calls_solve_with_correct_problem(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
-   assert runner._solver.solve.call_args[0][0] == "/bench/problems/p1.smt2"
+   runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
+   assert runner._solver.solve.call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "problems/p1.smt2")
 
 
 def test_run_strategy_contains_set_option(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
+   runner.run({"smt.mbqi": "true"}, "problems/p1.smt2")
    strategy = runner._solver.solve.call_args[0][1]
    assert "(set-option :smt.mbqi true)" in strategy

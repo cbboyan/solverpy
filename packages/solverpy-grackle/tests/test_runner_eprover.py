@@ -4,6 +4,7 @@ No E binary required — covers args(), clean(), success(), and run()
 with a mocked solverpy solver.
 """
 
+import os
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -213,8 +214,7 @@ def _make_solver_mock(status="Theorem", runtime=1.5, processed=42, valid=True, s
 def test_run_success(runner):
    runner.config["penalty"] = 1000000
    runner.setup(_make_solver_mock(status="Theorem", runtime=1.5, processed=42))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
    quality, runtime, status, resources = result
    assert status == "Theorem"
    assert runtime == pytest.approx(1.5)
@@ -225,8 +225,7 @@ def test_run_success(runner):
 def test_run_timeout_uses_penalty(runner):
    runner.config["penalty"] = 1000000
    runner.setup(_make_solver_mock(status="ResourceOut", runtime=5.0, valid=True, solved=False))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
    quality, runtime, status, resources = result
    assert quality == 1000000
    assert status == "ResourceOut"
@@ -235,8 +234,7 @@ def test_run_timeout_uses_penalty(runner):
 def test_run_invalid_result_returns_none(runner):
    runner._solver = _make_solver_mock(valid=False)
    runner._solver._output = "some error output"
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
    assert result is None
 
 
@@ -244,15 +242,13 @@ def test_run_exception_returns_none(runner):
    runner._solver.solve.side_effect = Exception("solver crashed")
    runner._solver.valid.return_value = False
    runner._solver._output = ""
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "problems/p1.p")
    assert result is None
 
 
 def test_run_calls_solve_with_correct_problem(runner):
    runner.config["penalty"] = 1000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run(MINIMAL_PARAMS, "problems/p1.p")
+   runner.run(MINIMAL_PARAMS, "problems/p1.p")
    call_args = runner._solver.solve.call_args
-   assert call_args[0][0] == "/bench/problems/p1.p"
+   assert call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "problems/p1.p")

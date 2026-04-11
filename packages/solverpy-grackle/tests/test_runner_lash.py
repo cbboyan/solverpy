@@ -4,6 +4,7 @@ No Lash binary required — covers args(), clean(), success(), and run()
 with a mocked solverpy solver.
 """
 
+import os
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -152,8 +153,7 @@ def _make_solver_mock(status="Theorem", runtime=1.0, steps=100, valid=True, solv
 def test_run_success(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="Theorem", runtime=1.0, steps=100))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    quality, runtime, status, resources = result
    assert status == "Theorem"
    assert runtime == pytest.approx(1.0)
@@ -164,16 +164,14 @@ def test_run_success(runner):
 def test_run_uses_steps_as_resource(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(steps=999))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    assert result[3] == 999
 
 
 def test_run_timeout_uses_penalty(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="ResourceOut", valid=True, solved=False))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
+   result = runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
    assert result[0] == 100000000
    assert result[2] == "ResourceOut"
 
@@ -181,30 +179,26 @@ def test_run_timeout_uses_penalty(runner):
 def test_run_invalid_result_returns_none(runner):
    runner._solver = _make_solver_mock(valid=False)
    runner._solver._output = "error"
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      assert runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p") is None
+   assert runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p") is None
 
 
 def test_run_exception_returns_none(runner):
    runner._solver.solve.side_effect = Exception("lash crashed")
    runner._solver.valid.return_value = False
    runner._solver._output = ""
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      assert runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p") is None
+   assert runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p") is None
 
 
 def test_run_calls_solve_with_correct_problem(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
-   assert runner._solver.solve.call_args[0][0] == "/bench/TPTP/Problems/p1.p"
+   runner.run(MINIMAL_PARAMS, "TPTP/Problems/p1.p")
+   assert runner._solver.solve.call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "TPTP/Problems/p1.p")
 
 
 def test_run_strategy_contains_flag(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run({"AP_WEIGHT": "2"}, "TPTP/Problems/p1.p")
+   runner.run({"AP_WEIGHT": "2"}, "TPTP/Problems/p1.p")
    strategy = runner._solver.solve.call_args[0][1]
    assert "-flag AP_WEIGHT 2" in strategy

@@ -4,6 +4,7 @@ No CVC5 binary required — covers args(), clean(), success(), and run()
 with a mocked solverpy solver.
 """
 
+import os
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -180,8 +181,7 @@ def _make_solver_mock(status="unsat", runtime=0.8, resources=42000, valid=True, 
 def test_run_success(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="unsat", runtime=0.8, resources=42000))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({"cbqi": "no"}, "problems/p1.smt2")
+   result = runner.run({"cbqi": "no"}, "problems/p1.smt2")
    quality, runtime, status, res = result
    assert status == "unsat"
    assert runtime == pytest.approx(0.8)
@@ -192,16 +192,14 @@ def test_run_success(runner):
 def test_run_uses_resource_units(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(resources=99999))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    assert result[3] == 99999
 
 
 def test_run_timeout_uses_penalty(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock(status="timeout", valid=True, solved=False))
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      result = runner.run({}, "problems/p1.smt2")
+   result = runner.run({}, "problems/p1.smt2")
    assert result[0] == 100000000
    assert result[2] == "timeout"
 
@@ -209,21 +207,18 @@ def test_run_timeout_uses_penalty(runner):
 def test_run_invalid_result_returns_none(runner):
    runner._solver = _make_solver_mock(valid=False)
    runner._solver._output = "error"
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      assert runner.run({}, "problems/p1.smt2") is None
+   assert runner.run({}, "problems/p1.smt2") is None
 
 
 def test_run_exception_returns_none(runner):
    runner._solver.solve.side_effect = Exception("cvc5 crashed")
    runner._solver.valid.return_value = False
    runner._solver._output = ""
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      assert runner.run({}, "problems/p1.smt2") is None
+   assert runner.run({}, "problems/p1.smt2") is None
 
 
 def test_run_calls_solve_with_correct_problem(runner):
    runner.config["penalty"] = 100000000
    runner.setup(_make_solver_mock())
-   with patch.dict("os.environ", {"SOLVERPY_BENCHMARKS": "/bench"}):
-      runner.run({"cbqi": "no"}, "problems/p1.smt2")
-   assert runner._solver.solve.call_args[0][0] == "/bench/problems/p1.smt2"
+   runner.run({"cbqi": "no"}, "problems/p1.smt2")
+   assert runner._solver.solve.call_args[0][0] == os.path.join(os.environ["SOLVERPY_BENCHMARKS"], "problems/p1.smt2")
