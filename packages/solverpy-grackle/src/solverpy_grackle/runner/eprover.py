@@ -255,15 +255,15 @@ class EproverRunner(SolverPyRunner):
          if param in params:
             del params[param]
 
-      # strip domain defaults (heuristic params are always retained since
-      # E's built-in Default heuristic is not expressible as CEF indices)
-      if self.domain:
-         hkeys = {"slots"} | {k for k in params if (k.startswith("heur") and k[4:].isdigit())
-                                                 or k.startswith("freq")
-                                                 or k.startswith("cef")}
-         params = {k: v for k, v in params.items()
-                   if k in hkeys
-                   or k not in self.domain.defaults
-                   or v != self.domain.defaults[k]}
+      ## strip domain defaults (heuristic params are always retained since
+      ## E's built-in Default heuristic is not expressible as CEF indices)
+      #if self.domain:
+      #   hkeys = {"slots"} | {k for k in params if (k.startswith("heur") and k[4:].isdigit())
+      #                                           or k.startswith("freq")
+      #                                           or k.startswith("cef")}
+      #   params = {k: v for k, v in params.items()
+      #             if k in hkeys
+      #             or k not in self.domain.defaults
+      #             or v != self.domain.defaults[k]}
 
       return params

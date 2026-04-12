@@ -11,6 +11,8 @@ def main():
       return
 
    conf = json.loads(sys.argv[1])
+   cutoff = int(float(sys.argv[3]))
+   conf["timeout"] = cutoff
    runner = load_class(conf["cls"])(config=conf)
    inst = sys.argv[2]
    runner.config["cutoff"] = int(float(sys.argv[3]))
@@ -22,6 +24,6 @@ def main():
    res = runner.run(params, inst)
    if not res:
       res = [9999999999, 9999999999]
-   (quality, clock) = res[:2]
+   (quality, clock, status) = res[:3]
 
-   print(RESULT % ("OK", clock, quality))
+   print(RESULT % (status, clock, quality))
