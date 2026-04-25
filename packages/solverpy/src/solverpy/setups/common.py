@@ -41,6 +41,13 @@ def init(setup: Setup) -> Setup:
             flatten="flatten" in options,
             compress="compress" in options,
          )
+      if "proofs" in options or "premises" in options:
+         plugs.append(plugins.Proofs(
+            proof="proofs" in options,
+            premises="premises" in options,
+            flatten="flatten" in options,
+            compress="compress" in options,
+         ))
       default(setup, "plugins", plugs)
    return setup
 

@@ -63,7 +63,7 @@ def eval_case(request, solverpy_env):
       limit="T1",
       bidlist=bidlist,
       sidlist=sidlist,
-      options=["headless", "outputs"],
+      options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
    solver_fn(setup)
@@ -168,3 +168,37 @@ def test_status_values_valid(db_status, valid_statuses):
    for problem, status_runtime in db_status.items():
       status = status_runtime.split("\t")[0]
       assert status in valid_statuses, f"{problem}: unexpected status {status!r}"
+
+
+# --- premises/ ---
+
+@pytest.fixture(scope="module")
+def db_premises_count(eval_case):
+   setup, bid, sid = eval_case
+   d = DB_DIR / "premises" / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
+   return len(list(d.glob("*"))) if d.exists() else 0
+
+
+def test_premises_count_le_solved(db_premises_count, db_solved):
+   assert db_premises_count <= len(db_solved)
+
+
+def test_premises_nonempty_for_tptp(eval_case, db_premises_count, db_solved):
+   setup, _, _ = eval_case
+   solver = setup["solver"]
+   if "Theorem" not in solver.success:
+      pytest.skip("SMT solver — no TPTP premises")
+   assert db_premises_count == len(db_solved)
+
+
+def test_premises_content_valid(eval_case, db_solved):
+   setup, bid, sid = eval_case
+   solver = setup["solver"]
+   if "Theorem" not in solver.success:
+      pytest.skip("SMT solver — no TPTP premises")
+   d = DB_DIR / "premises" / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
+   for problem in db_solved:
+      p = d / problem.replace("/", "_._")
+      assert p.exists(), f"Missing premises file for {problem}"
+      names = p.read_text().strip().split("\n")
+      assert all(n.strip() for n in names), f"Empty name in {problem}"

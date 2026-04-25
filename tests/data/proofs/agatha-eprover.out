@@ -1,0 +1,133 @@
+% (lift_lambdas = 1, lambda_to_forall = 1,unroll_only_formulas = 1, sine = (null))
+% Initializing proof state
+# local_data = (nil)
+% Scanning for AC axioms
+%
+%cnf(i_0_3, plain, (lives(agatha))).
+%
+%cnf(i_0_4, plain, (lives(butler))).
+%
+%cnf(i_0_5, plain, (lives(charles))).
+%
+%cnf(i_0_14, plain, (agatha!=butler)).
+%
+%cnf(i_0_2, plain, (lives(esk1_0))).
+%
+%cnf(i_0_1, plain, (killed(esk1_0,agatha))).
+%
+%cnf(i_0_7, plain, (hates(X1,X2)|~killed(X1,X2))).
+%
+%cnf(i_0_15, negated_conjecture, (~killed(agatha,agatha))).
+%
+%cnf(i_0_10, plain, (X1=butler|hates(agatha,X1))).
+%
+%cnf(i_0_12, plain, (hates(butler,X1)|~hates(agatha,X1))).
+%
+%cnf(i_0_17, plain, (X1=butler|hates(butler,X1))).
+%
+%cnf(i_0_13, plain, (~hates(X1,esk2_1(X1)))).
+%
+%cnf(i_0_18, plain, (esk2_1(butler)=butler)).
+%
+%cnf(i_0_19, plain, (esk2_1(agatha)=butler)).
+%
+%cnf(i_0_16, plain, (hates(butler,X1)|~killed(agatha,X1))).
+%
+%cnf(i_0_20, plain, (~killed(X1,esk2_1(X1)))).
+%
+%cnf(i_0_11, plain, (richer(X1,agatha)|hates(butler,X1))).
+%
+%cnf(i_0_6, plain, (X1=agatha|X1=butler|X1=charles|~lives(X1))).
+%
+%cnf(i_0_26, plain, (agatha=esk1_0|esk1_0=butler|esk1_0=charles)).
+%
+%cnf(i_0_21, plain, (~hates(butler,butler))).
+%
+%cnf(i_0_31, negated_conjecture, (esk1_0=butler|esk1_0=charles)).
+%
+%cnf(i_0_38, negated_conjecture, (esk1_0=butler|charles!=butler)).
+%
+%cnf(i_0_42, negated_conjecture, (killed(butler,agatha)|charles!=butler)).
+%
+%cnf(i_0_22, plain, (~hates(agatha,butler))).
+%
+%cnf(i_0_40, negated_conjecture, (esk1_0=butler|killed(charles,agatha))).
+%
+%cnf(i_0_23, plain, (~killed(agatha,butler))).
+%
+%cnf(i_0_24, plain, (~killed(butler,butler))).
+%%%%%
+%cnf(i_0_8, plain, (~richer(X1,X2)|~killed(X1,X2))).
+%
+%cnf(i_0_45, plain, (hates(butler,X1)|~killed(X1,agatha))).
+%
+%cnf(i_0_46, plain, (~killed(butler,agatha))).
+%
+%cnf(i_0_48, negated_conjecture, (charles!=butler)).
+%%
+%cnf(i_0_9, plain, (~hates(agatha,X1)|~hates(charles,X1))).
+%
+%cnf(i_0_50, plain, (X1=butler|~hates(charles,X1))).
+%
+%cnf(i_0_51, plain, (X1=butler|~killed(charles,X1))).
+%
+%cnf(i_0_49, plain, (~hates(charles,X1)|~killed(agatha,X1))).
+%
+%cnf(i_0_52, negated_conjecture, (esk1_0=butler)).
+
+% Proof found!
+% SZS status Theorem
+% SZS output start CNFRefutation
+fof(c_0_0, axiom, ![X1]:((hates(agatha,X1)=>~(hates(charles,X1)))), file('agatha.p', pel55_6)).
+fof(c_0_1, axiom, ![X1]:((X1!=butler=>hates(agatha,X1))), file('agatha.p', pel55_7)).
+fof(c_0_2, conjecture, killed(agatha,agatha), file('agatha.p', pel55)).
+fof(c_0_3, axiom, ![X1]:((lives(X1)=>(X1=agatha|X1=butler|X1=charles))), file('agatha.p', pel55_3)).
+fof(c_0_4, axiom, ?[X1]:((lives(X1)&killed(X1,agatha))), file('agatha.p', pel55_1)).
+fof(c_0_5, axiom, ![X1, X2]:((killed(X1,X2)=>~(richer(X1,X2)))), file('agatha.p', pel55_5)).
+fof(c_0_6, axiom, ![X1]:((~(richer(X1,agatha))=>hates(butler,X1))), file('agatha.p', pel55_8)).
+fof(c_0_7, axiom, ![X1]:(?[X2]:(~(hates(X1,X2)))), file('agatha.p', pel55_10)).
+fof(c_0_8, axiom, ![X1]:((hates(agatha,X1)=>hates(butler,X1))), file('agatha.p', pel55_9)).
+fof(c_0_9, axiom, ![X1, X2]:((killed(X1,X2)=>hates(X1,X2))), file('agatha.p', pel55_4)).
+fof(c_0_10, axiom, agatha!=butler, file('agatha.p', pel55_11)).
+fof(c_0_11, plain, ![X1]:((hates(agatha,X1)=>~hates(charles,X1))), inference(fof_simplification,[status(thm)],[c_0_0])).
+fof(c_0_12, plain, ![X1]:((X1!=butler=>hates(agatha,X1))), inference(fof_simplification,[status(thm)],[c_0_1])).
+fof(c_0_13, negated_conjecture, ~killed(agatha,agatha), inference(fof_simplification,[status(thm)],[inference(assume_negation,[status(cth)],[c_0_2])])).
+fof(c_0_14, plain, ![X4]:((~lives(X4)|(X4=agatha|X4=butler|X4=charles))), inference(fof_nnf,[status(thm)],[inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_3])])])).
+fof(c_0_15, plain, (lives(esk1_0)&killed(esk1_0,agatha)), inference(skolemize,[status(esa)],[inference(variable_rename,[status(thm)],[c_0_4])])).
+fof(c_0_16, plain, ![X9]:((~hates(agatha,X9)|~hates(charles,X9))), inference(fof_nnf,[status(thm)],[inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_11])])])).
+fof(c_0_17, plain, ![X10]:((X10=butler|hates(agatha,X10))), inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_12])])).
+fof(c_0_18, negated_conjecture, ~killed(agatha,agatha), inference(fof_nnf,[status(thm)],[c_0_13])).
+cnf(c_0_19, plain, (X1=agatha|X1=butler|X1=charles|~lives(X1)), inference(split_conjunct,[status(thm)],[c_0_14])).
+cnf(c_0_20, plain, (lives(esk1_0)), inference(split_conjunct,[status(thm)],[c_0_15])).
+fof(c_0_21, plain, ![X1, X2]:((killed(X1,X2)=>~richer(X1,X2))), inference(fof_simplification,[status(thm)],[c_0_5])).
+fof(c_0_22, plain, ![X1]:((~richer(X1,agatha)=>hates(butler,X1))), inference(fof_simplification,[status(thm)],[c_0_6])).
+fof(c_0_23, plain, ![X1]:(?[X2]:(~hates(X1,X2))), inference(fof_simplification,[status(thm)],[c_0_7])).
+fof(c_0_24, plain, ![X12]:((~hates(agatha,X12)|hates(butler,X12))), inference(fof_nnf,[status(thm)],[inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_8])])])).
+cnf(c_0_25, plain, (~hates(agatha,X1)|~hates(charles,X1)), inference(split_conjunct,[status(thm)],[c_0_16])).
+cnf(c_0_26, plain, (X1=butler|hates(agatha,X1)), inference(split_conjunct,[status(thm)],[c_0_17])).
+fof(c_0_27, plain, ![X5, X6]:((~killed(X5,X6)|hates(X5,X6))), inference(fof_nnf,[status(thm)],[inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_9])])])).
+cnf(c_0_28, negated_conjecture, (~killed(agatha,agatha)), inference(split_conjunct,[status(thm)],[c_0_18])).
+cnf(c_0_29, plain, (agatha=esk1_0|esk1_0=butler|esk1_0=charles), inference(pm,[status(thm)],[c_0_19, c_0_20])).
+cnf(c_0_30, plain, (killed(esk1_0,agatha)), inference(split_conjunct,[status(thm)],[c_0_15])).
+fof(c_0_31, plain, agatha!=butler, inference(fof_simplification,[status(thm)],[c_0_10])).
+fof(c_0_32, plain, ![X7, X8]:((~killed(X7,X8)|~richer(X7,X8))), inference(fof_nnf,[status(thm)],[inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_21])])])).
+fof(c_0_33, plain, ![X11]:((richer(X11,agatha)|hates(butler,X11))), inference(variable_rename,[status(thm)],[inference(fof_nnf,[status(thm)],[c_0_22])])).
+fof(c_0_34, plain, ![X13]:(~hates(X13,esk2_1(X13))), inference(fof_nnf,[status(thm)],[inference(skolemize,[status(esa)],[inference(variable_rename,[status(thm)],[c_0_23])])])).
+cnf(c_0_35, plain, (hates(butler,X1)|~hates(agatha,X1)), inference(split_conjunct,[status(thm)],[c_0_24])).
+cnf(c_0_36, plain, (X1=butler|~hates(charles,X1)), inference(pm,[status(thm)],[c_0_25, c_0_26])).
+cnf(c_0_37, plain, (hates(X1,X2)|~killed(X1,X2)), inference(split_conjunct,[status(thm)],[c_0_27])).
+cnf(c_0_38, negated_conjecture, (esk1_0=butler|esk1_0=charles), inference(cn,[status(thm)],[inference(rw,[status(thm)],[inference(pm,[status(thm)],[c_0_28, c_0_29]), c_0_30])])).
+fof(c_0_39, plain, agatha!=butler, inference(fof_nnf,[status(thm)],[c_0_31])).
+cnf(c_0_40, plain, (~killed(X1,X2)|~richer(X1,X2)), inference(split_conjunct,[status(thm)],[c_0_32])).
+cnf(c_0_41, plain, (richer(X1,agatha)|hates(butler,X1)), inference(split_conjunct,[status(thm)],[c_0_33])).
+cnf(c_0_42, plain, (~hates(X1,esk2_1(X1))), inference(split_conjunct,[status(thm)],[c_0_34])).
+cnf(c_0_43, plain, (X1=butler|hates(butler,X1)), inference(pm,[status(thm)],[c_0_35, c_0_26])).
+cnf(c_0_44, plain, (X1=butler|~killed(charles,X1)), inference(pm,[status(thm)],[c_0_36, c_0_37])).
+cnf(c_0_45, negated_conjecture, (esk1_0=butler|killed(charles,agatha)), inference(pm,[status(thm)],[c_0_30, c_0_38])).
+cnf(c_0_46, plain, (agatha!=butler), inference(split_conjunct,[status(thm)],[c_0_39])).
+cnf(c_0_47, plain, (hates(butler,X1)|~killed(X1,agatha)), inference(pm,[status(thm)],[c_0_40, c_0_41])).
+cnf(c_0_48, plain, (esk2_1(butler)=butler), inference(pm,[status(thm)],[c_0_42, c_0_43])).
+cnf(c_0_49, negated_conjecture, (esk1_0=butler), inference(sr,[status(thm)],[inference(pm,[status(thm)],[c_0_44, c_0_45]), c_0_46])).
+cnf(c_0_50, plain, (~killed(butler,agatha)), inference(rw,[status(thm)],[inference(pm,[status(thm)],[c_0_42, c_0_47]), c_0_48])).
+cnf(c_0_51, plain, ($false), inference(sr,[status(thm)],[inference(rw,[status(thm)],[c_0_30, c_0_49]), c_0_50]), ['proof']).
+% SZS output end CNFRefutation

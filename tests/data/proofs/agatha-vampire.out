@@ -1,0 +1,202 @@
+% Refutation found. Thanks to Tanya!
+% SZS status Theorem for agatha
+% SZS output start Proof for agatha
+fof(f93,plain,(
+  $false),
+  inference(avatar_sat_refutation,[],[f66,f71,f81,f92])).
+fof(f92,plain,(
+  ~spl2_1),
+  inference(avatar_contradiction_clause,[],[f91])).
+fof(f91,plain,(
+  $false | ~spl2_1),
+  inference(subsumption_resolution,[],[f90,f42])).
+fof(f42,plain,(
+  agatha != butler),
+  inference(cnf_transformation,[],[f13])).
+fof(f13,axiom,(
+  agatha != butler),
+  file('agatha.p',pel55_11)).
+fof(f90,plain,(
+  agatha = butler | ~spl2_1),
+  inference(resolution,[],[f89,f38])).
+fof(f38,plain,(
+  ( ! [X0] : (hates(agatha,X0) | butler = X0) )),
+  inference(cnf_transformation,[],[f22])).
+fof(f22,plain,(
+  ! [X0] : (hates(agatha,X0) | butler = X0)),
+  inference(ennf_transformation,[],[f9])).
+fof(f9,axiom,(
+  ! [X0] : (butler != X0 => hates(agatha,X0))),
+  file('agatha.p',pel55_7)).
+fof(f89,plain,(
+  ~hates(agatha,agatha) | ~spl2_1),
+  inference(resolution,[],[f82,f37])).
+fof(f37,plain,(
+  ( ! [X0] : (~hates(charles,X0) | ~hates(agatha,X0)) )),
+  inference(cnf_transformation,[],[f21])).
+fof(f21,plain,(
+  ! [X0] : (~hates(charles,X0) | ~hates(agatha,X0))),
+  inference(ennf_transformation,[],[f8])).
+fof(f8,axiom,(
+  ! [X0] : (hates(agatha,X0) => ~hates(charles,X0))),
+  file('agatha.p',pel55_6)).
+fof(f82,plain,(
+  hates(charles,agatha) | ~spl2_1),
+  inference(backward_demodulation,[],[f44,f57])).
+fof(f57,plain,(
+  charles = sK0 | ~spl2_1),
+  inference(avatar_component_clause,[],[f55])).
+fof(f55,plain,(
+  spl2_1 <=> charles = sK0),
+  introduced(avatar_definition,[new_symbols(naming,[spl2_1])])).
+fof(f44,plain,(
+  hates(sK0,agatha)),
+  inference(resolution,[],[f35,f30])).
+fof(f30,plain,(
+  killed(sK0,agatha)),
+  inference(cnf_transformation,[],[f26])).
+fof(f26,plain,(
+  killed(sK0,agatha) & lives(sK0)),
+  inference(skolemisation,[status(esa),new_symbols(skolem,[sK0])],[f1,f25])).
+fof(f25,plain,(
+  ? [X0] : (killed(X0,agatha) & lives(X0)) => (killed(sK0,agatha) & lives(sK0))),
+  introduced(choice_axiom,[])).
+fof(f1,axiom,(
+  ? [X0] : (killed(X0,agatha) & lives(X0))),
+  file('agatha.p',pel55_1)).
+fof(f35,plain,(
+  ( ! [X0,X1] : (~killed(X0,X1) | hates(X0,X1)) )),
+  inference(cnf_transformation,[],[f19])).
+fof(f19,plain,(
+  ! [X0,X1] : (hates(X0,X1) | ~killed(X0,X1))),
+  inference(ennf_transformation,[],[f6])).
+fof(f6,axiom,(
+  ! [X0,X1] : (killed(X0,X1) => hates(X0,X1))),
+  file('agatha.p',pel55_4)).
+fof(f81,plain,(
+  ~spl2_3),
+  inference(avatar_contradiction_clause,[],[f80])).
+fof(f80,plain,(
+  $false | ~spl2_3),
+  inference(subsumption_resolution,[],[f79,f77])).
+fof(f77,plain,(
+  hates(butler,butler) | ~spl2_3),
+  inference(resolution,[],[f46,f74])).
+fof(f74,plain,(
+  killed(butler,agatha) | ~spl2_3),
+  inference(backward_demodulation,[],[f30,f65])).
+fof(f65,plain,(
+  butler = sK0 | ~spl2_3),
+  inference(avatar_component_clause,[],[f63])).
+fof(f63,plain,(
+  spl2_3 <=> butler = sK0),
+  introduced(avatar_definition,[new_symbols(naming,[spl2_3])])).
+fof(f46,plain,(
+  ( ! [X0] : (~killed(X0,agatha) | hates(butler,X0)) )),
+  inference(resolution,[],[f39,f36])).
+fof(f36,plain,(
+  ( ! [X0,X1] : (~richer(X0,X1) | ~killed(X0,X1)) )),
+  inference(cnf_transformation,[],[f20])).
+fof(f20,plain,(
+  ! [X0,X1] : (~richer(X0,X1) | ~killed(X0,X1))),
+  inference(ennf_transformation,[],[f7])).
+fof(f7,axiom,(
+  ! [X0,X1] : (killed(X0,X1) => ~richer(X0,X1))),
+  file('agatha.p',pel55_5)).
+fof(f39,plain,(
+  ( ! [X0] : (richer(X0,agatha) | hates(butler,X0)) )),
+  inference(cnf_transformation,[],[f23])).
+fof(f23,plain,(
+  ! [X0] : (hates(butler,X0) | richer(X0,agatha))),
+  inference(ennf_transformation,[],[f10])).
+fof(f10,axiom,(
+  ! [X0] : (~richer(X0,agatha) => hates(butler,X0))),
+  file('agatha.p',pel55_8)).
+fof(f79,plain,(
+  ~hates(butler,butler)),
+  inference(superposition,[],[f41,f78])).
+fof(f78,plain,(
+  butler = sK1(butler)),
+  inference(resolution,[],[f48,f41])).
+fof(f48,plain,(
+  ( ! [X0] : (hates(butler,X0) | butler = X0) )),
+  inference(resolution,[],[f40,f38])).
+fof(f40,plain,(
+  ( ! [X0] : (~hates(agatha,X0) | hates(butler,X0)) )),
+  inference(cnf_transformation,[],[f24])).
+fof(f24,plain,(
+  ! [X0] : (hates(butler,X0) | ~hates(agatha,X0))),
+  inference(ennf_transformation,[],[f11])).
+fof(f11,axiom,(
+  ! [X0] : (hates(agatha,X0) => hates(butler,X0))),
+  file('agatha.p',pel55_9)).
+fof(f41,plain,(
+  ( ! [X0] : (~hates(X0,sK1(X0))) )),
+  inference(cnf_transformation,[],[f28])).
+fof(f28,plain,(
+  ! [X0] : ~hates(X0,sK1(X0))),
+  inference(skolemisation,[status(esa),new_symbols(skolem,[sK1])],[f12,f27])).
+fof(f27,plain,(
+  ! [X0] : (? [X1] : ~hates(X0,X1) => ~hates(X0,sK1(X0)))),
+  introduced(choice_axiom,[])).
+fof(f12,axiom,(
+  ! [X0] : ? [X1] : ~hates(X0,X1)),
+  file('agatha.p',pel55_10)).
+fof(f71,plain,(
+  ~spl2_2),
+  inference(avatar_contradiction_clause,[],[f70])).
+fof(f70,plain,(
+  $false | ~spl2_2),
+  inference(subsumption_resolution,[],[f69,f43])).
+fof(f43,plain,(
+  ~killed(agatha,agatha)),
+  inference(cnf_transformation,[],[f16])).
+fof(f16,plain,(
+  ~killed(agatha,agatha)),
+  inference(flattening,[],[f15])).
+fof(f15,negated_conjecture,(
+  ~killed(agatha,agatha)),
+  inference(negated_conjecture,[],[f14])).
+fof(f14,conjecture,(
+  killed(agatha,agatha)),
+  file('agatha.p',pel55)).
+fof(f69,plain,(
+  killed(agatha,agatha) | ~spl2_2),
+  inference(backward_demodulation,[],[f30,f61])).
+fof(f61,plain,(
+  agatha = sK0 | ~spl2_2),
+  inference(avatar_component_clause,[],[f59])).
+fof(f59,plain,(
+  spl2_2 <=> agatha = sK0),
+  introduced(avatar_definition,[new_symbols(naming,[spl2_2])])).
+fof(f66,plain,(
+  spl2_1 | spl2_2 | spl2_3),
+  inference(avatar_split_clause,[],[f53,f63,f59,f55])).
+fof(f53,plain,(
+  butler = sK0 | agatha = sK0 | charles = sK0),
+  inference(resolution,[],[f34,f29])).
+fof(f29,plain,(
+  lives(sK0)),
+  inference(cnf_transformation,[],[f26])).
+fof(f34,plain,(
+  ( ! [X0] : (~lives(X0) | butler = X0 | agatha = X0 | charles = X0) )),
+  inference(cnf_transformation,[],[f18])).
+fof(f18,plain,(
+  ! [X0] : (charles = X0 | butler = X0 | agatha = X0 | ~lives(X0))),
+  inference(flattening,[],[f17])).
+fof(f17,plain,(
+  ! [X0] : ((charles = X0 | butler = X0 | agatha = X0) | ~lives(X0))),
+  inference(ennf_transformation,[],[f5])).
+fof(f5,axiom,(
+  ! [X0] : (lives(X0) => (charles = X0 | butler = X0 | agatha = X0))),
+  file('agatha.p',pel55_3)).
+% SZS output end Proof for agatha
+% ------------------------------
+% Version: Vampire 4.8 (commit 8d999c135 on 2023-07-12 16:43:10 +0000)
+% Linked with Z3 4.9.1.0 6ed071b44407cf6623b8d3c0dceb2a8fb7040cee z3-4.8.4-6427-g6ed071b44
+% Termination reason: Refutation
+
+% Memory used [KB]: 4989
+% Time elapsed: 0.024 s
+% ------------------------------
+% ------------------------------

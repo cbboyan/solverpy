@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 V_BINARY = "vampire"
 
-V_STATIC = "--proof tptp -stat full --input_syntax tptp --memory_limit 2048"
+V_STATIC = "--proof tptp -stat full --input_syntax tptp --memory_limit 2048 --output_axiom_names on"
 
 V_BUILDER: "LimitBuilder" = {
    "T": "--time_limit %ss",

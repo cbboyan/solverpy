@@ -119,6 +119,7 @@ from .db.sid import Sid
 from .db.eprovesid import EProverSid
 from .db.outputs import Outputs
 from .db.errors import Errors
+from .db.proofs import Proofs
 
 def db():
    """Return the standard set of DB plugins: `[Bid(), Sid()]`.
@@ -151,5 +152,18 @@ def outputs(flatten=True, compress=True):
       Errors(flatten, compress),
    ]
 
-__all__ = ["db", "outputs"]
+def proofs(proof=True, premises=False):
+   """Return DB plugins plus proof/premises-capture plugin.
+
+   Returns `[Bid(), Sid(), Proofs(...)]`.  The proof block and/or premise
+   names are written to ``solverpy_db/proofs/`` and
+   ``solverpy_db/premises/<bid>/<problem>`` for successful TPTP solves.
+   """
+   return [
+      Bid(),
+      Sid(),
+      Proofs(proof=proof, premises=premises),
+   ]
+
+__all__ = ["db", "outputs", "proofs"]
 

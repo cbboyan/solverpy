@@ -29,6 +29,7 @@ class solverpy.solver.plugins.db.errors.Errors extends solverpy.solver.plugins.d
 from .bid import Bid
 from .sid import Sid
 from .eprovesid import EProverSid
+from .proofs import Proofs, extract
 
-__all__ = ["Bid", "Sid", "EProverSid"]
+__all__ = ["Bid", "Sid", "EProverSid", "Proofs", "extract"]
 
