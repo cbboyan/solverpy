@@ -16,8 +16,7 @@ from solverpy.benchmark.path import bids, sids
 DATA_DIR = Path(__file__).parent / "data"
 DB_DIR   = DATA_DIR / "solverpy_db"
 
-# (solver_setup_fn, bidlist, sidlist)
-EVAL_CASES = [
+EVAL_ATP = [
    pytest.param(
       (setups.eprover, ["bushy010"], ["eprover-default"]),
       id="eprover-bushy010-default",
@@ -27,6 +26,9 @@ EVAL_CASES = [
       id="vampire-bushy010-default",
       marks=pytest.mark.slow,
    ),
+]
+
+EVAL_SMT = [
    pytest.param(
       (setups.cvc5, ["smt010"], ["cvc5-enum"]),
       id="cvc5-smt010-enum",
@@ -37,6 +39,8 @@ EVAL_CASES = [
       marks=pytest.mark.slow,
    ),
 ]
+
+EVAL_CASES = EVAL_ATP + EVAL_SMT
 
 
 @pytest.fixture(scope="module")
@@ -72,6 +76,23 @@ def eval_case(request, solverpy_env):
    return setup, bidlist[0], sidlist[0]
 
 
+@pytest.fixture(params=EVAL_ATP, scope="module")
+def eval_atp(request, solverpy_env):
+   """Return already-evaluated ATP case (results cached by eval_case)."""
+   solver_fn, bidlist, sidlist = request.param
+   setup = setups.Setup(
+      limit="T1",
+      bidlist=bidlist,
+      sidlist=sidlist,
+      options=["headless", "outputs", "proofs", "premises"],
+      cores=4,
+   )
+   solver_fn(setup)
+   setups.evaluation(setup)
+   setups.launch(setup)
+   return setup, bidlist[0], sidlist[0]
+
+
 @pytest.fixture(scope="module")
 def db_results(eval_case):
    """Results dict loaded from DB: {problem: result}."""
@@ -84,6 +105,14 @@ def db_results(eval_case):
 def db_solved(eval_case):
    """Solved set loaded from DB: set of problem names."""
    setup, bid, sid = eval_case
+   solved = Solved(bid, sid, setup["limit"])
+   return solved.cache
+
+
+@pytest.fixture(scope="module")
+def atp_solved(eval_atp):
+   """Solved set for ATP cases."""
+   setup, bid, sid = eval_atp
    solved = Solved(bid, sid, setup["limit"])
    return solved.cache
 
@@ -173,31 +202,22 @@ def test_status_values_valid(db_status, valid_statuses):
 # --- premises/ ---
 
 @pytest.fixture(scope="module")
-def db_premises_count(eval_case):
-   setup, bid, sid = eval_case
+def db_premises_count(eval_atp):
+   return _file_count("premises", eval_atp)
+
+
+def test_premises_count_le_solved(db_premises_count, atp_solved):
+   assert db_premises_count <= len(atp_solved)
+
+
+def test_premises_nonempty(db_premises_count, atp_solved):
+   assert db_premises_count == len(atp_solved)
+
+
+def test_premises_content_valid(eval_atp, atp_solved):
+   setup, bid, sid = eval_atp
    d = DB_DIR / "premises" / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
-   return len(list(d.glob("*"))) if d.exists() else 0
-
-
-def test_premises_count_le_solved(db_premises_count, db_solved):
-   assert db_premises_count <= len(db_solved)
-
-
-def test_premises_nonempty_for_tptp(eval_case, db_premises_count, db_solved):
-   setup, _, _ = eval_case
-   solver = setup["solver"]
-   if "Theorem" not in solver.success:
-      pytest.skip("SMT solver — no TPTP premises")
-   assert db_premises_count == len(db_solved)
-
-
-def test_premises_content_valid(eval_case, db_solved):
-   setup, bid, sid = eval_case
-   solver = setup["solver"]
-   if "Theorem" not in solver.success:
-      pytest.skip("SMT solver — no TPTP premises")
-   d = DB_DIR / "premises" / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
-   for problem in db_solved:
+   for problem in atp_solved:
       p = d / problem.replace("/", "_._")
       assert p.exists(), f"Missing premises file for {problem}"
       names = p.read_text().strip().split("\n")
