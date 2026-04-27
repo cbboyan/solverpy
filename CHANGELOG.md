@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2026-04-25)
 
-* refactor: split EVAL_CASES into EVAL_ATP and EVAL_SMT; premises tests ATP-only [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: split EVAL_CASES into EVAL_ATP and EVAL_SMT; premises tests ATP-only [[details](https://github.com/cbboyan/solverpy/commit/7978e51) | [browse](https://github.com/cbboyan/solverpy/tree/7978e51)]
 * feat: add Proofs plugin to extract and save TPTP proofs and premises [[details](https://github.com/cbboyan/solverpy/commit/516672f) | [browse](https://github.com/cbboyan/solverpy/tree/516672f)]
 * fix: set conf timeout to cutoff before runner construction in wrappers [[details](https://github.com/cbboyan/solverpy/commit/f83b017) | [browse](https://github.com/cbboyan/solverpy/tree/f83b017)]
 * fix: eprover domain defaults match E binary defaults; clean() strips them; -H moved to end of args [[details](https://github.com/cbboyan/solverpy/commit/999e6fc) | [browse](https://github.com/cbboyan/solverpy/tree/999e6fc)]

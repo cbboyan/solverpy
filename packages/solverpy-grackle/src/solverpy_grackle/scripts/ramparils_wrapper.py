@@ -22,8 +22,7 @@ def main():
    params = runner.clean(params)
    params.update(fixed)
    res = runner.run(params, inst)
-   if not res:
-      res = [9999999999, 9999999999]
-   (quality, clock, status) = res[:3]
+   if res:
+      (quality, clock, status) = res[:3]
+      print(RESULT % (status, clock, quality))
 
-   print(RESULT % (status, clock, quality))

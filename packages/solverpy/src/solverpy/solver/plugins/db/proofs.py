@@ -60,8 +60,7 @@ class Proofs(Decorator):
    """Write TPTP proof and/or premise names to ``solverpy_db/`` subdirectories.
 
    Fires whenever the solver output contains an SZS proof block (between
-   ``% SZS output start`` and ``% SZS output end``), regardless of the result
-   dict.  Requires the instance to be a ``(bid, problem)`` tuple (i.e. used
+   ``% SZS output start`` and ``% SZS output end``).  Requires the instance to be a ``(bid, problem)`` tuple (i.e. used
    together with :class:`~solverpy.solver.plugins.db.bid.Bid`).
 
    Directory structure mirrors
@@ -134,7 +133,7 @@ class Proofs(Decorator):
          problem,
       )
 
-   def finished(
+   def update(
       self,
       instance,
       strategy: str,
