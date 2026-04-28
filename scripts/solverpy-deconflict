@@ -13,7 +13,7 @@ def arguments():
    return args
 
 def main(f_in, f_out):
-   from solverpy.builder import svm
+   from solverpy_learn.builder import svm
    (xs, ys) = svm.load(f_in)
    (xs0, ys0) = svm.deconflict(xs, ys)
    svm.save(xs0, ys0, f_out)

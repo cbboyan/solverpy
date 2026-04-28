@@ -27,7 +27,7 @@ def arguments():
 
 def main(args):
    import json
-   from solverpy.builder import autotune
+   from solverpy_learn.builder import autotune
    from solverpy.tools import human
 
    best = autotune.prettytuner(
