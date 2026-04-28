@@ -2,7 +2,7 @@
 
 ## Unreleased changes (2026-04-28)
 
-* fix: update scripts to import from solverpy_learn after refactor [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: update scripts to import from solverpy_learn after refactor [[details](https://github.com/cbboyan/solverpy/commit/8c7c8bb) | [browse](https://github.com/cbboyan/solverpy/tree/8c7c8bb)]
 * refactor: split EVAL_CASES into EVAL_ATP and EVAL_SMT; premises tests ATP-only [[details](https://github.com/cbboyan/solverpy/commit/7978e51) | [browse](https://github.com/cbboyan/solverpy/tree/7978e51)]
 * feat: add Proofs plugin to extract and save TPTP proofs and premises [[details](https://github.com/cbboyan/solverpy/commit/516672f) | [browse](https://github.com/cbboyan/solverpy/tree/516672f)]
 * fix: set conf timeout to cutoff before runner construction in wrappers [[details](https://github.com/cbboyan/solverpy/commit/f83b017) | [browse](https://github.com/cbboyan/solverpy/tree/f83b017)]

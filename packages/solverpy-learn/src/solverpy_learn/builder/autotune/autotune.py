@@ -137,7 +137,7 @@ def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
    
    listener = AutotuneListener(headless=headless)
 
-   d_tmp = kwargs["d_tmp"]
+   d_tmp = kwargs["d_tmp"] if "d_tmp" in kwargs else "optuna-tmp"
    os.makedirs(d_tmp, exist_ok=True)
    queue = multiprocessing.Queue()
    kwargs["queue"] = queue
