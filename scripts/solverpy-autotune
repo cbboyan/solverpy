@@ -52,6 +52,8 @@ def arguments():
       help="Initial LightGBM lambda_l1 (default: 0.0)."),
    parser.add_argument("--init-lambda-l2", type=float, metavar="f", default=0.0,
       help="Initial LightGBM lambda_l2 (default: 0.0)."),
+   parser.add_argument("--early-stopping", type=int, metavar="n", default=None,
+      help="Set early_stopping in init_params (default: None)."),
    args = parser.parse_args()
    args.test = args.test or args.train
    return args
@@ -79,6 +81,8 @@ def main(args):
       lambda_l1=args.init_lambda_l1,
       lambda_l2=args.init_lambda_l2,
    )
+   if args.early_stopping is not None:
+      init_params["early_stopping"] = args.early_stopping
 
    best = autotune.prettytuner(
       f_train=args.train,
