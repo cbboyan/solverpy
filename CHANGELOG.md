@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-04-29)
 
-* feat: add --early-stopping argument to solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: rename --min_leaves and --max_leaves to --min-leaves and --max-leaves [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: add --early-stopping argument to solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/e61cea0) | [browse](https://github.com/cbboyan/solverpy/tree/e61cea0)]
 * feat: add solverpy-filter script to filter pos/neg training samples by ratio [[details](https://github.com/cbboyan/solverpy/commit/a8a45df) | [browse](https://github.com/cbboyan/solverpy/tree/a8a45df)]
 * feat: extend solverpy-autotune with new arguments [[details](https://github.com/cbboyan/solverpy/commit/bff394d) | [browse](https://github.com/cbboyan/solverpy/tree/bff394d)]
 * fix: Update output of solverpy-autotune. [[details](https://github.com/cbboyan/solverpy/commit/59bf816) | [browse](https://github.com/cbboyan/solverpy/tree/59bf816)]

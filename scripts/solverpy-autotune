@@ -16,9 +16,9 @@ def arguments():
       help="Maximal number of trial models to build (default: 16).")
    parser.add_argument("--timeout", type=int, metavar="t", default=None, 
       help="Overall timeout for tuning in seconds (default: unlimited).")
-   parser.add_argument("--min_leaves", type=int, metavar="min", default=16,
+   parser.add_argument("--min-leaves", type=int, metavar="min", default=16,
       help="Minimal number of leaves for the leaves trial phase `l` (default: 16)."),
-   parser.add_argument("--max_leaves", type=int, metavar="max", default=2048,
+   parser.add_argument("--max-leaves", type=int, metavar="max", default=2048,
       help="Maximal number of leaves for the leaves trial phase `l` (default: 2048)."),
    parser.add_argument("--posneg-weight", type=float, metavar="w", default=0.0,
       help="Positive/negative sample weight ratio; 0 uses is_unbalance instead (default: 0.0)."),
