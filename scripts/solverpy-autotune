@@ -17,43 +17,43 @@ def arguments():
    parser.add_argument("--timeout", type=int, metavar="t", default=None, 
       help="Overall timeout for tuning in seconds (default: unlimited).")
    parser.add_argument("--min-leaves", type=int, metavar="min", default=16,
-      help="Minimal number of leaves for the leaves trial phase `l` (default: 16)."),
+      help="Minimal number of leaves for the leaves trial phase `l` (default: 16).")
    parser.add_argument("--max-leaves", type=int, metavar="max", default=2048,
-      help="Maximal number of leaves for the leaves trial phase `l` (default: 2048)."),
+      help="Maximal number of leaves for the leaves trial phase `l` (default: 2048).")
    parser.add_argument("--posneg-weight", type=float, metavar="w", default=0.0,
-      help="Positive/negative sample weight ratio; 0 uses is_unbalance instead (default: 0.0)."),
+      help="Positive/negative sample weight ratio; 0 uses is_unbalance instead (default: 0.0).")
    parser.add_argument("--tmp", metavar="dir", default="tune-tmp",
-      help="Temporary directory for intermediate files (default: 'tune-tmp')."),
+      help="Temporary directory for intermediate files (default: 'tune-tmp').")
    parser.add_argument("--model-out", metavar="path", default=None,
-      help="Copy the best model file to this path (default: no copy)."),
+      help="Copy the best model file to this path (default: no copy).")
    parser.add_argument("--log-file", metavar="filename", default=None,
-      help="Save stdout log to this file (default: no log file)."),
+      help="Save stdout log to this file (default: no log file).")
    parser.add_argument("--init-learning-rate", type=float, metavar="f", default=0.15,
-      help="Initial LightGBM learning rate (default: 0.15)."),
+      help="Initial LightGBM learning rate (default: 0.15).")
    parser.add_argument("--init-objective", metavar="s", default="binary",
-      help="Initial LightGBM objective (default: 'binary')."),
+      help="Initial LightGBM objective (default: 'binary').")
    parser.add_argument("--init-num-round", type=int, metavar="n", default=200,
-      help="Initial LightGBM num_round (default: 200)."),
+      help="Initial LightGBM num_round (default: 200).")
    parser.add_argument("--init-max-depth", type=int, metavar="n", default=0,
-      help="Initial LightGBM max_depth (default: 0)."),
+      help="Initial LightGBM max_depth (default: 0).")
    parser.add_argument("--init-num-leaves", type=int, metavar="n", default=300,
-      help="Initial LightGBM num_leaves (default: 300)."),
+      help="Initial LightGBM num_leaves (default: 300).")
    parser.add_argument("--init-min-data", type=int, metavar="n", default=20,
-      help="Initial LightGBM min_data (default: 20)."),
+      help="Initial LightGBM min_data (default: 20).")
    parser.add_argument("--init-max-bin", type=int, metavar="n", default=255,
-      help="Initial LightGBM max_bin (default: 255)."),
+      help="Initial LightGBM max_bin (default: 255).")
    parser.add_argument("--init-feature-fraction", type=float, metavar="f", default=1.0,
-      help="Initial LightGBM feature_fraction (default: 1.0)."),
+      help="Initial LightGBM feature_fraction (default: 1.0).")
    parser.add_argument("--init-bagging-fraction", type=float, metavar="f", default=1.0,
-      help="Initial LightGBM bagging_fraction (default: 1.0)."),
+      help="Initial LightGBM bagging_fraction (default: 1.0).")
    parser.add_argument("--init-bagging-freq", type=int, metavar="n", default=0,
-      help="Initial LightGBM bagging_freq (default: 0)."),
+      help="Initial LightGBM bagging_freq (default: 0).")
    parser.add_argument("--init-lambda-l1", type=float, metavar="f", default=0.0,
-      help="Initial LightGBM lambda_l1 (default: 0.0)."),
+      help="Initial LightGBM lambda_l1 (default: 0.0).")
    parser.add_argument("--init-lambda-l2", type=float, metavar="f", default=0.0,
-      help="Initial LightGBM lambda_l2 (default: 0.0)."),
+      help="Initial LightGBM lambda_l2 (default: 0.0).")
    parser.add_argument("--early-stopping", type=int, metavar="n", default=None,
-      help="Set early_stopping in init_params (default: None)."),
+      help="Set early_stopping in init_params (default: None).")
    args = parser.parse_args()
    args.test = args.test or args.train
    return args
