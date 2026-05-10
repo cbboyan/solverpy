@@ -1,4 +1,4 @@
-# Chunked Training Data
+# Chunked Training Data ✓ DONE
 
 Split large SVM-Light training files into fixed-size NPZ chunks to handle
 100 GB+ datasets without loading everything into RAM at once.

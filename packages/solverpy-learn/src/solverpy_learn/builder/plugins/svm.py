@@ -38,14 +38,11 @@ class SvmTrains(Trains):
       with open(self.path() + "-stats.txt", "a") as infa:
          infa.write(f"{instance} {strategy}: {count} ({pos} / {neg})\n")
 
-   def compress(self) -> None:
+   def compress(self, chunk_size: int = 1_000_000) -> None:
       logger.info(
          f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) "
       )
-      if os.path.isfile(self.path()):
-         svm.compress(self.path())
-      else:
-         logger.warning(f"No trains to compress: {self.path()}.")
+      svm.compress(self.path(), chunk_size=chunk_size)
 
    def merge(
       self,
@@ -58,7 +55,7 @@ class SvmTrains(Trains):
          logger.warning(f"Trains not found: {self.path()}.")
          return
       f_out = self.path(filename=outfilename)
-      svm.merge(previous, self.path(), f_out=f_out)
+      svm.merge(previous, self.path(), f_out)
       #self.reset(filename=outfilename)
 
    def link(self, src: str | tuple[str]):

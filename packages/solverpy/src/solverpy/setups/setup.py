@@ -150,4 +150,5 @@ class Setup(TypedDict, total=False):
    posneg_ratio: float
    posneg_weight: float
    templates: list[str]
+   chunk_size: int  # rows per NPZ chunk when compressing SVM-Light trains (default 1_000_000)
 

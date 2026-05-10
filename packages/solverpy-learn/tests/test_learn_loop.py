@@ -282,18 +282,22 @@ def _sel_dir(base: Path, loop: str) -> Path:
    return sel_dirs[0] if sel_dirs else loop_dir
 
 
+def _has_chunks(sel: Path, basename: str) -> bool:
+   return any(sel.glob(f"{basename}-chunk*-data.npz"))
+
+
 def test_train_loop00_files(loop_result):
    db, p = loop_result
    sel = _sel_dir(db / "trains" / p["train_dataname"], "loop00")
-   for fname in ["train.in-data.npz", "train.in-label.npz", "train.in-stats.txt"]:
-      assert (sel / fname).exists(), f"Missing {fname} in {sel}"
+   assert (sel / "train.in-stats.txt").exists(), f"Missing train.in-stats.txt in {sel}"
+   assert _has_chunks(sel, "train.in"), f"No train.in chunks in {sel}"
 
 
 def test_devel_loop00_files(loop_result):
    db, p = loop_result
    sel = _sel_dir(db / "trains" / p["devel_dataname"], "loop00")
-   for fname in ["train.in-data.npz", "train.in-label.npz", "train.in-stats.txt"]:
-      assert (sel / fname).exists(), f"Missing {fname} in {sel}"
+   assert (sel / "train.in-stats.txt").exists(), f"Missing train.in-stats.txt in {sel}"
+   assert _has_chunks(sel, "train.in"), f"No train.in chunks in {sel}"
 
 
 # --- loop01+ contents (addon + merged train) ---
@@ -301,21 +305,17 @@ def test_devel_loop00_files(loop_result):
 def test_train_loop01_files(loop_result):
    db, p = loop_result
    sel = _sel_dir(db / "trains" / p["train_dataname"], "loop01")
-   for fname in [
-      "addon.in-data.npz", "addon.in-label.npz", "addon.in-stats.txt",
-      "train.in-data.npz", "train.in-label.npz",
-   ]:
-      assert (sel / fname).exists(), f"Missing {fname} in {sel}"
+   assert (sel / "addon.in-stats.txt").exists(), f"Missing addon.in-stats.txt in {sel}"
+   assert _has_chunks(sel, "addon.in"), f"No addon.in chunks in {sel}"
+   assert _has_chunks(sel, "train.in"), f"No train.in chunks in {sel}"
 
 
 def test_devel_loop01_files(loop_result):
    db, p = loop_result
    sel = _sel_dir(db / "trains" / p["devel_dataname"], "loop01")
-   for fname in [
-      "addon.in-data.npz", "addon.in-label.npz", "addon.in-stats.txt",
-      "train.in-data.npz", "train.in-label.npz",
-   ]:
-      assert (sel / fname).exists(), f"Missing {fname} in {sel}"
+   assert (sel / "addon.in-stats.txt").exists(), f"Missing addon.in-stats.txt in {sel}"
+   assert _has_chunks(sel, "addon.in"), f"No addon.in chunks in {sel}"
+   assert _has_chunks(sel, "train.in"), f"No train.in chunks in {sel}"
 
 
 # --- model files ---

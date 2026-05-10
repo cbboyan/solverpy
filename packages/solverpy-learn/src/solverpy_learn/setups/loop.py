@@ -40,6 +40,7 @@ def looping(setup: Setup) -> Setup:
    assert "dataname" in setup
    setup["basedataname"] = setup["dataname"]
    default(setup, "max_proofs", 0)
+   default(setup, "chunk_size", 1_000_000)
    assert "max_proofs" in setup
    if setup["max_proofs"] > 0:
       setup["proofs"] = {}
@@ -59,7 +60,8 @@ def oneloop(setup: Setup) -> Setup:
       nonlocal options
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
-         setup["trains"].compress()
+         assert "chunk_size" in setup
+         setup["trains"].compress(chunk_size=setup["chunk_size"])
 
    def trains_merge(setup: Setup) -> None:
       assert "trains" in setup

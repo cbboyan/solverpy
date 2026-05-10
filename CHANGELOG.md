@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-10)
 
-* fix: Python 3.14 multiprocessing + ENIGMATIC_ROOT model path issues [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: chunked NPZ training data for 100 GB+ SVM-Light files [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Python 3.14 multiprocessing + ENIGMATIC_ROOT model path issues [[details](https://github.com/cbboyan/solverpy/commit/0424a31) | [browse](https://github.com/cbboyan/solverpy/tree/0424a31)]
 * fix: remove trailing commas from parser.add_argument calls in solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/3c696bf) | [browse](https://github.com/cbboyan/solverpy/tree/3c696bf)]
 * fix: rename --min_leaves and --max_leaves to --min-leaves and --max-leaves [[details](https://github.com/cbboyan/solverpy/commit/b177ede) | [browse](https://github.com/cbboyan/solverpy/tree/b177ede)]
 * feat: add --early-stopping argument to solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/e61cea0) | [browse](https://github.com/cbboyan/solverpy/tree/e61cea0)]
