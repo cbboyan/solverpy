@@ -31,7 +31,7 @@ class Trains(Decorator):
          dataname=dataname,
          filename=filename,
       )
-      self._lock = multiprocessing.get_context("spawn").Manager().Lock()
+      self._lock = multiprocessing.get_context("fork").Manager().Lock()
       self._enabled = True
       self.reset(dataname, filename)
 

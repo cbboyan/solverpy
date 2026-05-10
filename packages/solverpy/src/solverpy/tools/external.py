@@ -4,12 +4,15 @@ from typing import Callable
 
 def external(func: Callable) -> Callable:
    """
-   Decorator that runs a function in a separate process.
+   Decorator that runs a function in a separate process to free memory on return.
+   Uses fork explicitly so the inner closure does not need to be picklable
+   (Python 3.14 changed the default start method on Linux to forkserver).
    """
 
    @wraps(func)
    def wrapper(*args, **kwargs):
-      queue = multiprocessing.Queue()
+      ctx = multiprocessing.get_context("fork")
+      queue = ctx.Queue()
 
       def target():
          try:
@@ -18,7 +21,7 @@ def external(func: Callable) -> Callable:
          except Exception as e:
             queue.put((False, e))
 
-      process = multiprocessing.Process(target=target)
+      process = ctx.Process(target=target)
       process.start()
       process.join()
 

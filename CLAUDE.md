@@ -108,3 +108,6 @@ The iterative eval/build loop runs: evaluate strategies → collect proofs → t
 |---|---|---|
 | `SOLVERPY_DB` | `solverpy_db` | Path to the results database directory |
 | `SOLVERPY_BENCHMARKS` | `.` (cwd) | Root directory for benchmark problem resolution |
+| `ENIGMATIC_ROOT` | `.` (cwd) | eprover-ho model root: prepended to model paths in strategy strings |
+
+**Important:** `SOLVERPY_DB` must be set as a **relative path** (or left at its default) when using ENIGMA ML strategies with eprover. eprover-ho prepends `ENIGMATIC_ROOT` (defaulting to `.`) to model paths in strategy strings. If `SOLVERPY_DB` is absolute, the concatenation produces `.//absolute/path` which fails on Linux. Use `os.path.relpath()` when setting `SOLVERPY_DB` programmatically.

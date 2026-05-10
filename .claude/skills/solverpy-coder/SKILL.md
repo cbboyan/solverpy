@@ -263,6 +263,8 @@ solver.call("mykey", "disable")
 ### Multiprocessing requires picklability
 `SolverTask` is executed in a `multiprocessing` pool with spawn context. All objects stored in the task (solver, plugins, etc.) must be picklable. Closures and lambdas are not picklable — use named functions or classes.
 
+**Python 3.14 note:** Python 3.14 changed the Linux default multiprocessing start method from `"fork"` to `"forkserver"`. The codebase fixes this by using explicit `"fork"` context wherever the old default was relied upon: `@external` decorator (`tools/external.py`), `prettytuner` (`builder/autotune/autotune.py`), `trains.py` Manager Lock, `plugins/svm.py` Manager Namespace. Where `"spawn"` was set intentionally (to avoid memory leaks from nested pools — see ISSUES.md #4), it is left unchanged. `provider.py` uses a module-level `_ProviderMaker` class (was a local class, unpicklable under spawn).
+
 ### Plugin order matters
 Decorators and translators are applied in registration order. `Bid` must run before `Sid` because `Bid` translates `(bid, problem)` → file path, which `Sid` may depend on. `init()` in `setups/common.py` registers them in the correct order — match it when adding plugins manually.
 
@@ -280,6 +282,13 @@ In `solverpy_learn`, training data collection (`trains`) is implemented as a sol
 
 ### ML loop iterates one past the last training step
 `oneloop()` skips the model build on the final iteration — evaluation happens, training data is collected, but `builder.build()` is not called. This is intentional: the loop is structured as *evaluate → build → evaluate → build → … → evaluate* (n evaluations, n-1 builds for n loops).
+
+### ENIGMATIC_ROOT and model paths in strategy strings
+eprover-ho uses the `ENIGMATIC_ROOT` environment variable as a prefix when resolving model paths from strategy strings (`EnigmaticLgb(...)`). It defaults to `"."` (current working directory) and constructs the full model path as `ENIGMATIC_ROOT + "/" + path_from_strategy + "/" + "model.lgb"`.
+
+**Consequence:** model paths embedded in strategy templates (via `enigma.cef()`) must be **relative paths**. If `SOLVERPY_DB` is an absolute path, `bids.dbpath("models")` returns an absolute path, and eprover prepends `"."` giving `.//absolute/path` — which fails. If `SOLVERPY_DB` is relative (the default is `"solverpy_db"`), `bids.dbpath("models")` returns a relative path and eprover correctly resolves `./relative/path`.
+
+**Rule:** always set `SOLVERPY_DB` as a relative path, or use `os.path.relpath()` when setting it programmatically (e.g. in test fixtures).
 
 ---
 

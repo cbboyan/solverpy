@@ -166,7 +166,15 @@ Currently slow tests are only excluded when explicitly deselected with `-m`.
 |---|---|---|
 | `SOLVERPY_BENCHMARKS` | `tests/data/problems` | Root for bid resolution |
 | `SOLVERPY_DB` | `tests/data/solverpy_db` | Where results, strats, solved, etc. live |
+| `ENIGMATIC_ROOT` | (not set — defaults to `.`) | eprover-ho model path prefix |
 
-Both must be set before running evaluation tests.  The `solverpy_env` fixture also
-clears cached DB subdirs (except `strats/`) and flushes the bid cache before each
-module run.
+Both `SOLVERPY_BENCHMARKS` and `SOLVERPY_DB` must be set as **relative paths** (not absolute). eprover-ho reads `ENIGMATIC_ROOT` (defaulting to `"."`) and prepends it to model paths in strategy strings — if `SOLVERPY_DB` is absolute, the model path becomes `.//absolute/path` which fails.
+
+The `solverpy_env` fixture clears cached DB subdirs (except `strats/`) and flushes the bid cache before each module run.
+
+**`learn_env` fixture pattern** (for ML loop tests): use `os.path.relpath()` when setting env vars derived from `Path(__file__)`:
+```python
+os.environ["SOLVERPY_DB"] = os.path.relpath(DB_DIR)
+os.environ["SOLVERPY_BENCHMARKS"] = os.path.relpath(DATA_DIR / "problems")
+```
+This ensures model paths baked into strategy templates are relative, matching eprover-ho's `ENIGMATIC_ROOT` expectations.

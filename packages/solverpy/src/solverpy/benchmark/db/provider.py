@@ -5,6 +5,24 @@ if TYPE_CHECKING:
    from ...task.solvertask import SolverTask
    from ...tools.typing import ProviderMaker
 
+
+class _ProviderMaker(SolverPyObj):
+   """Picklable callable factory for a Provider subclass with preset kwargs."""
+
+   def __init__(self, cls: type, **kwargs):
+      SolverPyObj.__init__(self, cls_name=cls.__name__, **kwargs)
+      self._cls = cls
+      self._mkwargs = kwargs
+
+   def __call__(
+      self,
+      bid: str,
+      sid: str,
+      limit: (str | None) = None,
+   ):
+      return self._cls(bid, sid, limit, **self._mkwargs)
+
+
 class Provider(SolverPyObj):
    """A data provider that stores and/or queries results of tasks."""
 
@@ -24,25 +42,7 @@ class Provider(SolverPyObj):
 
    @classmethod
    def Maker(cls, **kwargs) -> "ProviderMaker":
-
-      class MakerMaker(SolverPyObj):
-
-         def __init__(self):
-            SolverPyObj.__init__(
-               self,
-               cls_name = cls.__name__,
-               **kwargs,
-            )
-
-         def __call__(
-            self,
-            bid: str,
-            sid: str,
-            limit: (str | None) = None,
-         ):
-            return cls(bid, sid, limit, **kwargs)
-
-      return MakerMaker()
+      return _ProviderMaker(cls, **kwargs)
 
    def query(
       self,

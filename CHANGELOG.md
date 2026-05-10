@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-04-29)
+## Unreleased changes (2026-05-10)
 
-* fix: remove trailing commas from parser.add_argument calls in solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Python 3.14 multiprocessing + ENIGMATIC_ROOT model path issues [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: remove trailing commas from parser.add_argument calls in solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/3c696bf) | [browse](https://github.com/cbboyan/solverpy/tree/3c696bf)]
 * fix: rename --min_leaves and --max_leaves to --min-leaves and --max-leaves [[details](https://github.com/cbboyan/solverpy/commit/b177ede) | [browse](https://github.com/cbboyan/solverpy/tree/b177ede)]
 * feat: add --early-stopping argument to solverpy-autotune [[details](https://github.com/cbboyan/solverpy/commit/e61cea0) | [browse](https://github.com/cbboyan/solverpy/tree/e61cea0)]
 * feat: add solverpy-filter script to filter pos/neg training samples by ratio [[details](https://github.com/cbboyan/solverpy/commit/a8a45df) | [browse](https://github.com/cbboyan/solverpy/tree/a8a45df)]

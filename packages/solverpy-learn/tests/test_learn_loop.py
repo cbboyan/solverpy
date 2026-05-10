@@ -155,13 +155,12 @@ def learn_env():
             f.unlink()
 
    clean()
-   os.environ["SOLVERPY_DB"] = str(DB_DIR)
-   os.environ["SOLVERPY_BENCHMARKS"] = str(DATA_DIR / "problems")
+   os.environ["SOLVERPY_DB"] = os.path.relpath(DB_DIR)
+   os.environ["SOLVERPY_BENCHMARKS"] = os.path.relpath(DATA_DIR / "problems")
    bids_mod.problems.__defaults__[0].clear()
 
    yield DB_DIR
 
-   clean()
    os.environ.pop("SOLVERPY_DB", None)
    os.environ.pop("SOLVERPY_BENCHMARKS", None)
    bids_mod.problems.__defaults__[0].clear()

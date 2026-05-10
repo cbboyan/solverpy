@@ -139,11 +139,12 @@ def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
 
    d_tmp = kwargs["d_tmp"] if (("d_tmp" in kwargs) and kwargs["d_tmp"]) else "tune-tmp"
    os.makedirs(d_tmp, exist_ok=True)
-   queue = multiprocessing.Queue()
+   ctx = multiprocessing.get_context("fork")
+   queue = ctx.Queue()
    kwargs["queue"] = queue
    kwargs["f_log"] = os.path.join(d_tmp, "autotune.log")
    kwargs["target"] = tuner
-   p = multiprocessing.Process(target=redirect.call, args=args, kwargs=kwargs)
+   p = ctx.Process(target=redirect.call, args=args, kwargs=kwargs)
 
    try:
       p.start()
