@@ -74,36 +74,18 @@ cause why `"spawn"` was introduced.  Address that separately.
 
 ---
 
-# Parallel Loading of Chunks
-
-Load NPZ chunks (and raw text chunks) in parallel.  Currently `load()` is a
-sequential loop; each chunk is independent so a pool can be dropped in with
-minimal structural change.
-
-## Changes
-
-### `builder/svm.py`
-
-- `load()` for chunked NPZ: replace the `for` loop with a parallel load (e.g.
-  `Pool.starmap` or `joblib.Parallel`) that loads `(data, label)` pairs
-  concurrently, then `vstack` + `concatenate` as now.
-
-- `load()` for raw text chunks (new, added alongside chunking-in-SvmTrains):
-  parallel `load_svmlight_file` across raw chunk files, then `vstack` +
-  `concatenate`.
-
-## Design notes
-
-- Both chunked formats (NPZ and raw text) are already loops over independent
-  pairs, so the parallelism is straightforward.
-- Decide between `joblib.Parallel` (already a dependency?) and a plain
-  `multiprocessing.Pool` when implementing.
-
 ---
 
 ---
 
 # DONE
+
+## Parallel Loading of Chunks ✓
+
+`load()` in `builder/svm.py` now loads NPZ chunks and raw text chunks in
+parallel via a fork-context `Pool`.  Single-chunk case skips the pool.
+`_stack_pairs()` helper deduplicates the vstack/normalize logic shared by
+both formats.
 
 ## Chunked Training Data ✓
 
