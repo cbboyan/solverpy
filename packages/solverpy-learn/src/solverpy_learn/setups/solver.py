@@ -33,6 +33,7 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
    gen = setup["gen_features"]
    dataname = setup["dataname"]
    ratio = setup["posneg_ratio"]
+   chunk_size = setup.get("chunk_size", 1_000_000)
    default(setup, "static", E_STATIC.split())
    assert "static" in setup
    static = setup["static"]
@@ -42,11 +43,11 @@ def eprover(setup: Setup, training: bool = False) -> Setup:
    if gen:
       static.append(f'--enigmatic-gen-features="{gen}"')
    if sel and gen:
-      trains = EnigmaMultiTrains(dataname, sel, gen, ratio)
+      trains = EnigmaMultiTrains(dataname, sel, gen, ratio, chunk_size=chunk_size)
    elif sel:
-      trains = EnigmaTrains(dataname, sel, "sel", ratio)
+      trains = EnigmaTrains(dataname, sel, "sel", ratio, chunk_size=chunk_size)
    elif gen:
-      trains = EnigmaTrains(dataname, gen, "gen", ratio)
+      trains = EnigmaTrains(dataname, gen, "gen", ratio, chunk_size=chunk_size)
    else:
       raise ValueError(
          "`sel_features` or `gen_features` must be provided in setup to generate trains."
@@ -86,7 +87,8 @@ def cvc5(setup: Setup, training: bool = False) -> Setup:
    default(setup, "posneg_ratio", 0)
    assert "posneg_ratio" in setup
    ratio = setup["posneg_ratio"]
-   trains = Cvc5Trains(setup["dataname"], ratio)
+   chunk_size = setup.get("chunk_size", 1_000_000)
+   trains = Cvc5Trains(setup["dataname"], ratio, chunk_size=chunk_size)
    init(setup)
    plugs = setup["plugins"]
    plugs.append(trains)

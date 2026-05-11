@@ -3,6 +3,7 @@ import os
 import glob
 import io
 import logging
+import multiprocessing
 from collections import defaultdict
 
 import numpy
@@ -33,8 +34,20 @@ def ischunked(f_in: str) -> bool:
    return len(chunkfiles(f_in)) > 0
 
 
+def rawchunkpath(f_in: str, n: int) -> str:
+   return f"{f_in}-raw{n:04d}"
+
+
+def rawchunkfiles(f_in: str) -> list[str]:
+   return sorted(glob.glob(f"{f_in}-raw[0-9][0-9][0-9][0-9]"))
+
+
+def israwchunked(f_in: str) -> bool:
+   return len(rawchunkfiles(f_in)) > 0
+
+
 def exists(f_in: str) -> bool:
-   return ischunked(f_in) or os.path.isfile(f_in)
+   return ischunked(f_in) or israwchunked(f_in) or os.path.isfile(f_in)
 
 
 def size(f_in: str) -> int:
@@ -43,12 +56,16 @@ def size(f_in: str) -> int:
          os.path.getsize(p) + os.path.getsize(q)
          for (p, q) in chunkfiles(f_in)
       )
+   if israwchunked(f_in):
+      return sum(os.path.getsize(p) for p in rawchunkfiles(f_in))
    return os.path.getsize(f_in)
 
 
 def format(f_in: str) -> str:
    if ischunked(f_in):
       return "binary/chunks"
+   if israwchunked(f_in):
+      return "text/raw-chunks"
    if os.path.isfile(f_in):
       return "text/svm"
    return "unknown"
@@ -97,23 +114,75 @@ def compress(f_in: str, keep: bool = False, chunk_size: int = 1_000_000) -> None
       f"Trains compressed to {n} chunks, {human.humanbytes(size(f_in))} total.")
 
 
-def load(f_in: str) -> tuple["spmatrix", "ndarray"]:
+def _compress_raw(raw_path: str, f_in: str, n: int) -> None:
+   with open(raw_path) as fh:
+      lines = fh.readlines()
+   buf = io.BytesIO("".join(lines).encode())
+   (data, label) = load_svmlight_file(buf, zero_based=True)  # type: ignore
+   save_chunk(data, label, f_in, n)
+   os.remove(raw_path)
+
+
+def rawcompress(f_in: str, cores: int | None = None) -> None:
+   raws = rawchunkfiles(f_in)
+   if not raws:
+      logger.warning(f"No raw chunks found: {f_in}.")
+      return
+   logger.info(
+      f"Compressing {len(raws)} raw chunks of size {human.humanbytes(size(f_in))} from `{f_in}`."
+   )
+   args = [(raw, f_in, n) for (n, raw) in enumerate(raws)]
+   if len(args) == 1:
+      _compress_raw(*args[0])
+   else:
+      with multiprocessing.get_context("fork").Pool(cores) as pool:
+         pool.starmap(_compress_raw, args)
+   logger.info(
+      f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total.")
+
+
+def _load_chunk(p: str, q: str) -> tuple["spmatrix", "ndarray"]:
+   return (scipy.sparse.load_npz(p), numpy.load(q, allow_pickle=True)["label"])
+
+
+def _load_rawchunk(raw_path: str) -> tuple["spmatrix", "ndarray"]:
+   return load_svmlight_file(raw_path, zero_based=True)  # type: ignore
+
+
+def _stack_pairs(
+   pairs: list[tuple["spmatrix", "ndarray"]]
+) -> tuple["spmatrix", "ndarray"]:
+   datas = [d for (d, _) in pairs]
+   labels = [lbl for (_, lbl) in pairs]
+   max_cols = max(d.shape[1] for d in datas)
+   normalized = [
+      scipy.sparse.csr_matrix(
+         (d.data, d.indices, d.indptr), shape=(d.shape[0], max_cols)
+      ) if d.shape[1] < max_cols else d
+      for d in datas
+   ]
+   return (scipy.sparse.vstack(normalized), numpy.concatenate(labels))
+
+
+def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
    logger.info(
       f"Loading trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
    if ischunked(f_in):
-      datas = []
-      labels = []
-      for (p, q) in chunkfiles(f_in):
-         datas.append(scipy.sparse.load_npz(p))
-         labels.append(numpy.load(q, allow_pickle=True)["label"])
-      max_cols = max(d.shape[1] for d in datas)
-      normalized = [
-         scipy.sparse.csr_matrix(
-            (d.data, d.indices, d.indptr), shape=(d.shape[0], max_cols)
-         ) if d.shape[1] < max_cols else d
-         for d in datas
-      ]
-      return (scipy.sparse.vstack(normalized), numpy.concatenate(labels))
+      chunks = chunkfiles(f_in)
+      if len(chunks) == 1:
+         pairs = [_load_chunk(*chunks[0])]
+      else:
+         with multiprocessing.get_context("fork").Pool(cores) as pool:
+            pairs = pool.starmap(_load_chunk, chunks)
+      return _stack_pairs(pairs)
+   if israwchunked(f_in):
+      raws = rawchunkfiles(f_in)
+      if len(raws) == 1:
+         pairs = [_load_rawchunk(raws[0])]
+      else:
+         with multiprocessing.get_context("fork").Pool(cores) as pool:
+            pairs = pool.map(_load_rawchunk, raws)
+      return _stack_pairs(pairs)
    logger.debug("loading plain text svm data")
    return load_svmlight_file(f_in, zero_based=True)  # type: ignore
 
@@ -140,11 +209,24 @@ def link(src: str, dst: str) -> None:
          (p_dst, q_dst) = chunkpath(dst, n)
          rellink(p_src, p_dst)
          rellink(q_src, q_dst)
+   elif israwchunked(src):
+      for n, raw in enumerate(rawchunkfiles(src)):
+         rellink(raw, rawchunkpath(dst, n))
    else:
       rellink(src, dst)
 
 
 def merge(f_in1: str, f_in2: str, f_out: str) -> None:
+   if israwchunked(f_in1) or israwchunked(f_in2):
+      n = 0
+      for raw in rawchunkfiles(f_in1):
+         rellink(raw, rawchunkpath(f_out, n))
+         n += 1
+      for raw in rawchunkfiles(f_in2):
+         rellink(raw, rawchunkpath(f_out, n))
+         n += 1
+      logger.info(f"Merged {n} raw chunks into {f_out}.")
+      return
    n = 0
    for (p_src, q_src) in chunkfiles(f_in1):
       (p_dst, q_dst) = chunkpath(f_out, n)

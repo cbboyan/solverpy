@@ -61,7 +61,10 @@ def oneloop(setup: Setup) -> Setup:
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
          assert "chunk_size" in setup
-         setup["trains"].compress(chunk_size=setup["chunk_size"])
+         setup["trains"].compress(
+            chunk_size=setup["chunk_size"],
+            cores=setup.get("cores"),
+         )
 
    def trains_merge(setup: Setup) -> None:
       assert "trains" in setup

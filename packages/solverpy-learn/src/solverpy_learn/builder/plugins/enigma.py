@@ -23,11 +23,12 @@ class EnigmaTrains(SvmTrains):
       features: str,
       variant: str,
       ratio: float = 0,
+      chunk_size: int = 1_000_000,
    ):
       self._features = features
       self._variant = variant
       self._ratio = ratio
-      SvmTrains.__init__(self, dataname)
+      SvmTrains.__init__(self, dataname, chunk_size=chunk_size)
 
    def featurepath(self) -> str:
       return f"{self._variant}_{featurepath(self._features)}"
@@ -62,10 +63,11 @@ class EnigmaMultiTrains(MultiTrains):
       sel: str,
       gen: str,
       ratio: float = 0,
+      chunk_size: int = 1_000_000,
    ):
       MultiTrains.__init__(self, dataname)
-      self._sel = EnigmaTrains(dataname, sel, "sel", ratio)
-      self._gen = EnigmaTrains(dataname, gen, "gen", ratio)
+      self._sel = EnigmaTrains(dataname, sel, "sel", ratio, chunk_size=chunk_size)
+      self._gen = EnigmaTrains(dataname, gen, "gen", ratio, chunk_size=chunk_size)
       assert self._sel.id == self._gen.id == "trains"
       self._id = "trains"
       self.dispatch(self._sel)

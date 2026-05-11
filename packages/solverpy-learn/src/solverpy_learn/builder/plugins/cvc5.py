@@ -13,9 +13,9 @@ SAMPLES = re.compile(r"^; QUANTIFIER SAMPLES\n(.*)^; END QUANTIFIER SAMPLES",
 
 class Cvc5Trains(SvmTrains):
 
-   def __init__(self, dataname: str, ratio: float = 0):
+   def __init__(self, dataname: str, ratio: float = 0, chunk_size: int = 1_000_000):
       self._ratio = ratio
-      SvmTrains.__init__(self, dataname)
+      SvmTrains.__init__(self, dataname, chunk_size=chunk_size)
 
    def extract(
       self,

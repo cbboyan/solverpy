@@ -1,4 +1,111 @@
-# Chunked Training Data ✓ DONE
+# Chunking in SvmTrains (Raw Files)
+
+Write training data directly as fixed-size raw text chunks during `save()` instead
+of appending to a single `train.in` file.  This eliminates the separate compress
+pass and enables parallel NPZ compression.  Also fixes `merge()` for the
+`no-compress` case, since raw text chunks can be merged by relinking (same O(1)
+cost as NPZ chunk merge).
+
+## Changes
+
+### `builder/plugins/svm.py`
+
+- `SvmTrains.__init__`: add `self.info.line_count = 0`, `self.info.raw_chunk_n = 0`,
+  `self.info.chunk_size = chunk_size` to the Manager Namespace so all spawn workers
+  share the values.
+
+- `SvmTrains.save()` (override `Trains.save()`): count lines in `samples`; if
+  adding them would exceed `chunk_size`, increment `raw_chunk_n` and reset
+  `line_count`; append to `{path}-raw{raw_chunk_n:04d}`; update `line_count`.
+  Policy: finish writing the current call even if it slightly overshoots the limit,
+  then roll over for the next call.  All under the existing Manager lock.
+
+- `SvmTrains.compress()`: gather all `train.in-raw*` files and compress in
+  parallel via `Pool.starmap(svm.compress_raw, [...])`.
+
+### `builder/svm.py`
+
+- `rawchunkpath(f_in, n)` — `f"{f_in}-raw{n:04d}"`.
+
+- `rawchunkfiles(f_in)` — glob for `{f_in}-raw*`.
+
+- `compress_raw(raw_path, f_in, n)` — read raw text file, call
+  `load_svmlight_file`, call `save_chunk`.  This is the function mapped across
+  the parallel compression pool.
+
+- `merge()` — extend to handle raw text chunks: link/rename with sequential
+  numbering (no loading needed).
+
+- `format()` / `exists()` / `size()` — add `"text/raw-chunks"` case.
+
+### `setups/loop.py`
+
+- `trains_compress()` unchanged — still triggers after evaluation.  Now it
+  dispatches parallel compression of raw chunks instead of reading one big file.
+
+## Design notes
+
+- `chunk_size` must be stored in `info.chunk_size` (Manager Namespace) so spawned
+  workers see the value set in the main process before evaluation starts.
+- `no-compress` path produces raw text chunks; `merge()` handles them by relinking.
+
+---
+
+# Python 3.14 fork/spawn Considerations
+
+Python 3.14 changed the Linux default multiprocessing start method from `"fork"`
+to `"forkserver"`.  Initial fixes applied, but the root cause (ISSUES.md #4:
+nested pool → quadratic process blowup) that motivated the mixed `"fork"` /
+`"spawn"` strategy has not been addressed.  May require revisiting the whole
+approach.
+
+Fixed so far:
+- `tools/external.py` — `@external` decorator: explicit `"fork"` Process+Queue
+- `benchmark/db/provider.py` — `_ProviderMaker` module-level (was local class)
+- `builder/autotune/autotune.py` — `prettytuner`: explicit `"fork"` Process+Queue
+- `builder/plugins/trains.py` — Manager Lock: `"fork"` context
+- `builder/plugins/svm.py` — Manager Namespace: `"fork"` context
+- `test_learn_loop.py` fixture — use `os.path.relpath()` for `SOLVERPY_DB` and
+  `SOLVERPY_BENCHMARKS` (eprover-ho prepends `ENIGMATIC_ROOT` defaulting to `"."`;
+  absolute paths produced `.//absolute/path` which fails)
+
+Deferred: ISSUES.md #4 (nested pool → quadratic process blowup) is the root
+cause why `"spawn"` was introduced.  Address that separately.
+
+---
+
+# Parallel Loading of Chunks
+
+Load NPZ chunks (and raw text chunks) in parallel.  Currently `load()` is a
+sequential loop; each chunk is independent so a pool can be dropped in with
+minimal structural change.
+
+## Changes
+
+### `builder/svm.py`
+
+- `load()` for chunked NPZ: replace the `for` loop with a parallel load (e.g.
+  `Pool.starmap` or `joblib.Parallel`) that loads `(data, label)` pairs
+  concurrently, then `vstack` + `concatenate` as now.
+
+- `load()` for raw text chunks (new, added alongside chunking-in-SvmTrains):
+  parallel `load_svmlight_file` across raw chunk files, then `vstack` +
+  `concatenate`.
+
+## Design notes
+
+- Both chunked formats (NPZ and raw text) are already loops over independent
+  pairs, so the parallelism is straightforward.
+- Decide between `joblib.Parallel` (already a dependency?) and a plain
+  `multiprocessing.Pool` when implementing.
+
+---
+
+---
+
+# DONE
+
+## Chunked Training Data ✓
 
 Split large SVM-Light training files into fixed-size NPZ chunks to handle
 100 GB+ datasets without loading everything into RAM at once.
@@ -105,28 +212,3 @@ User-configurable via `setup["chunk_size"]`.
 5. **Chunk filename zero-padding** — 4 digits sufficient: 9999 chunks × 1M rows
    × 512 B/row ≈ **5 TB** of SVM-Light text.
 
----
-
-## Python 3.14 fork/spawn considerations
-
-Python 3.14 changed the Linux default multiprocessing start method from `"fork"`
-to `"forkserver"`.  The codebase mixes explicit `"spawn"` (intentional, to avoid
-memory leaks and quadratic-process blowup from nested pools — see ISSUES.md #4)
-with DEFAULT context reliance (was `"fork"`, now `"forkserver"`).
-
-**Rule:** where code previously relied on the DEFAULT start method (implicitly
-`"fork"`), replace with explicit `"fork"` context.  Where `"spawn"` was set
-explicitly, leave it.
-
-Fixed:
-- `tools/external.py` — `@external` decorator: explicit `"fork"` Process+Queue
-- `benchmark/db/provider.py` — `_ProviderMaker` module-level (was local class)
-- `builder/autotune/autotune.py` — `prettytuner`: explicit `"fork"` Process+Queue
-- `builder/plugins/trains.py` — Manager Lock: `"fork"` context
-- `builder/plugins/svm.py` — Manager Namespace: `"fork"` context
-- `test_learn_loop.py` fixture — use `os.path.relpath()` for `SOLVERPY_DB` and
-  `SOLVERPY_BENCHMARKS` (eprover-ho prepends `ENIGMATIC_ROOT` defaulting to `"."`;
-  absolute paths produced `.//absolute/path` which fails)
-
-Deferred: ISSUES.md #4 (nested pool → quadratic process blowup) is the root
-cause why `"spawn"` was introduced.  Address that separately.

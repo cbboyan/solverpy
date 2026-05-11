@@ -12,12 +12,30 @@ logger = logging.getLogger(__name__)
 
 class SvmTrains(Trains):
 
-   def __init__(self, dataname: str, filename: str = "train.in"):
+   def __init__(
+      self,
+      dataname: str,
+      filename: str = "train.in",
+      chunk_size: int = 1_000_000,
+   ):
       Trains.__init__(self, dataname, filename=filename)
       self.info = multiprocessing.get_context("fork").Manager().Namespace()
       self.info.total = 0
       self.info.pos = 0
       self.info.neg = 0
+      self.info.line_count = 0
+      self.info.raw_chunk_n = 0
+      self.info.chunk_size = chunk_size
+
+   def reset(
+      self,
+      dataname: (str | None) = None,
+      filename: str = "train.in",
+   ) -> None:
+      super().reset(dataname=dataname, filename=filename)
+      if hasattr(self, "info"):
+         self.info.line_count = 0
+         self.info.raw_chunk_n = 0
 
    def exists(self) -> bool:
       return svm.exists(self.path())
@@ -38,11 +56,38 @@ class SvmTrains(Trains):
       with open(self.path() + "-stats.txt", "a") as infa:
          infa.write(f"{instance} {strategy}: {count} ({pos} / {neg})\n")
 
-   def compress(self, chunk_size: int = 1_000_000) -> None:
+   def save(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+      samples: str,
+   ) -> None:
+      if (not samples) or (not self._enabled):
+         return
+      new_lines = samples.count("\n")
+      self._lock.acquire()
+      try:
+         if self.info.line_count + new_lines > self.info.chunk_size and \
+            self.info.line_count > 0:
+            self.info.raw_chunk_n += 1
+            self.info.line_count = 0
+         raw_path = svm.rawchunkpath(self.path(), self.info.raw_chunk_n)
+         os.makedirs(os.path.dirname(self.path()), exist_ok=True)
+         with open(raw_path, "a") as fa:
+            fa.write(samples)
+         self.info.line_count += new_lines
+         self.stats(instance, strategy, samples)
+      finally:
+         self._lock.release()
+
+   def compress(self, chunk_size: int | None = None, cores: int | None = None) -> None:
       logger.info(
          f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) "
       )
-      svm.compress(self.path(), chunk_size=chunk_size)
+      if svm.israwchunked(self.path()):
+         svm.rawcompress(self.path(), cores=cores)
+      else:
+         svm.compress(self.path(), chunk_size=chunk_size or self.info.chunk_size)
 
    def merge(
       self,
