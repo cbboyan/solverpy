@@ -14,7 +14,7 @@ from solverpy.tools import human
 from .plugins.trains import rellink
 
 if TYPE_CHECKING:
-   from scipy.sparse import spmatrix
+   from scipy.sparse import spmatrix, csr_matrix
    from numpy import ndarray
 
 logger = logging.getLogger(__name__)
@@ -141,25 +141,29 @@ def rawcompress(f_in: str, cores: int | None = None) -> None:
       f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total.")
 
 
-def _load_chunk(p: str, q: str) -> tuple["spmatrix", "ndarray"]:
+def _load_chunk(p: str, q: str) -> tuple["csr_matrix", "ndarray"]:
    return (scipy.sparse.load_npz(p), numpy.load(q, allow_pickle=True)["label"])
 
 
-def _load_rawchunk(raw_path: str) -> tuple["spmatrix", "ndarray"]:
+def _load_rawchunk(raw_path: str) -> tuple["csr_matrix", "ndarray"]:
    return load_svmlight_file(raw_path, zero_based=True)  # type: ignore
 
 
 def _stack_pairs(
-   pairs: list[tuple["spmatrix", "ndarray"]]
+   pairs: list[tuple["csr_matrix", "ndarray"]]
 ) -> tuple["spmatrix", "ndarray"]:
    datas = [d for (d, _) in pairs]
    labels = [lbl for (_, lbl) in pairs]
-   max_cols = max(d.shape[1] for d in datas)
+   shapes: list[tuple[int, int]] = []
+   for d in datas:
+      assert d.shape is not None
+      shapes.append(d.shape)
+   max_cols = max(s[1] for s in shapes)
    normalized = [
       scipy.sparse.csr_matrix(
-         (d.data, d.indices, d.indptr), shape=(d.shape[0], max_cols)
-      ) if d.shape[1] < max_cols else d
-      for d in datas
+         (d.data, d.indices, d.indptr), shape=(s[0], max_cols)
+      ) if s[1] < max_cols else d
+      for d, s in zip(datas, shapes)
    ]
    return (scipy.sparse.vstack(normalized), numpy.concatenate(labels))
 
