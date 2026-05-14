@@ -1,5 +1,16 @@
 # DONE
 
+## Bug Fixes ✓
+
+- **Debug code in `launcher.launch()`** (`task/launcher.py:57–71`) — wrote to `~/debug.log`
+  and iterated all solver attributes with `dir()` on every call; removed.
+- **Mutable default argument in `SolverTask.__init__`** (`task/solvertask.py:28`) —
+  `calls: list[...] = []` was shared across instances; fixed with `None` default.
+- **File resource leak in `Outputs.write()`** (`solver/plugins/db/outputs.py:72–76`) —
+  `fw.close()` not in `with` block; fixed.
+- **Manager queue lifecycle** (`task/talker.py:87`) — `Manager().Queue()` created a
+  Manager subprocess never cleaned up on crash; fixed.
+
 ## Re-using Trains ✓
 
 Previously collected training data (`train.in`) is reused across loop iterations
