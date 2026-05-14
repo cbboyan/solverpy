@@ -25,6 +25,7 @@ PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "m": tune.min_data,
    "d": tune.depth,
    "e": tune.learning_rate,
+   "w": tune.posneg_weight,
 }
 
 DEFAULTS: dict[str, Any] = {
@@ -73,19 +74,21 @@ def tuner(
 
    os.makedirs(d_tmp, exist_ok=True)
 
+   phases0 = phases.split(":")
    params = dict(DEFAULTS)
    if init_params: params.update(init_params)
    pos = sum(ys)
    neg = len(ys) - pos
-   #params["scale_pos_weight"] = neg / pos
-   if posneg_weight == 0:
+   if "w" in phases0:
+      params["scale_pos_weight"] = neg / pos
+      logger.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
+   elif posneg_weight == 0:
       params["is_unbalance"] = "true" if neg != pos else "false"
       logger.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
    else:
       params["scale_pos_weight"] = posneg_weight * (neg / pos)
       logger.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
 
-   phases0 = phases.split(":")
    if "m" in phases:
       params["feature_pre_filter"] = "false"
    timeout0 = timeout / len(phases0) if timeout else None

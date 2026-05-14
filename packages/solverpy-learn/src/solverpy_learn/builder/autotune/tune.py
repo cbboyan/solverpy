@@ -70,3 +70,10 @@ def learning_rate(**args: Any) -> TuneResult:
    values = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25]
    sampler = optuna.samplers.GridSampler({"learning_rate": values})
    return tune(check.learning_rate, "learning_rate", sampler=sampler, **args)
+
+
+def posneg_weight(**args: Any) -> TuneResult:
+   posneg_base = args["params"]["scale_pos_weight"]
+   values = [posneg_base * m for m in [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]]
+   sampler = optuna.samplers.GridSampler({"scale_pos_weight": values})
+   return tune(check.posneg_weight, "posneg", sampler=sampler, posneg_base=posneg_base, **args)

@@ -140,3 +140,18 @@ def learning_rate(
    params = dict(params, learning_rate=learning_rate)
    score = check(trial, params, queue=queue, **args)
    return score
+
+
+def posneg_weight(
+   trial: "Trial",
+   params: dict[str, Any],
+   posneg_base: float,
+   queue: "Talker | None",
+   **args: Any,
+) -> float:
+   values = [posneg_base * m for m in [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]]
+   spw = trial.suggest_categorical("scale_pos_weight", values)
+   if queue:
+      queue.put(("trying", ("posneg", trial.number, (spw / posneg_base, ))))
+   params = dict(params, scale_pos_weight=spw)
+   return check(trial, params, queue=queue, **args)
