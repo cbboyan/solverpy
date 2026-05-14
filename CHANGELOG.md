@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-12)
+## Unreleased changes (2026-05-14)
 
-* fix: resolve pyright type errors in svm._stack_pairs [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename and regroup svm helpers with chunk_/raw_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: resolve pyright type errors in svm._stack_pairs [[details](https://github.com/cbboyan/solverpy/commit/b7b589d) | [browse](https://github.com/cbboyan/solverpy/tree/b7b589d)]
 * feat: raw-chunk training data + parallel load/compress [[details](https://github.com/cbboyan/solverpy/commit/a652006) | [browse](https://github.com/cbboyan/solverpy/tree/a652006)]
 * feat: chunked NPZ training data for 100 GB+ SVM-Light files [[details](https://github.com/cbboyan/solverpy/commit/6504297) | [browse](https://github.com/cbboyan/solverpy/tree/6504297)]
 * fix: Python 3.14 multiprocessing + ENIGMATIC_ROOT model path issues [[details](https://github.com/cbboyan/solverpy/commit/0424a31) | [browse](https://github.com/cbboyan/solverpy/tree/0424a31)]

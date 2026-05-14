@@ -71,7 +71,7 @@ class SvmTrains(Trains):
             self.info.line_count > 0:
             self.info.raw_chunk_n += 1
             self.info.line_count = 0
-         raw_path = svm.rawchunkpath(self.path(), self.info.raw_chunk_n)
+         raw_path = svm.raw_path(self.path(), self.info.raw_chunk_n)
          os.makedirs(os.path.dirname(self.path()), exist_ok=True)
          with open(raw_path, "a") as fa:
             fa.write(samples)
@@ -84,10 +84,7 @@ class SvmTrains(Trains):
       logger.info(
          f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) "
       )
-      if svm.israwchunked(self.path()):
-         svm.rawcompress(self.path(), cores=cores)
-      else:
-         svm.compress(self.path(), chunk_size=chunk_size or self.info.chunk_size)
+      svm.compress(self.path(), chunk_size=chunk_size or self.info.chunk_size, cores=cores)
 
    def merge(
       self,

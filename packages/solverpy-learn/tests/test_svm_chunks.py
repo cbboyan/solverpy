@@ -32,7 +32,7 @@ def svm_file(tmp_path):
 
 def test_compress_creates_chunks(svm_file):
    svm.compress(svm_file, chunk_size=100)
-   assert len(svm.chunkfiles(svm_file)) == 3  # 100 + 100 + 50
+   assert len(svm.chunk_files(svm_file)) == 3  # 100 + 100 + 50
 
 
 def test_compress_removes_text_file(svm_file):
@@ -47,18 +47,18 @@ def test_compress_keep_text_file(svm_file):
 
 def test_compress_skips_if_already_chunked(svm_file):
    svm.compress(svm_file, chunk_size=100)
-   n_chunks = len(svm.chunkfiles(svm_file))
+   n_chunks = len(svm.chunk_files(svm_file))
    svm.compress(svm_file, chunk_size=100)  # should be a no-op
-   assert len(svm.chunkfiles(svm_file)) == n_chunks
+   assert len(svm.chunk_files(svm_file)) == n_chunks
 
 
 def test_ischunked_before_compress(svm_file):
-   assert not svm.ischunked(svm_file)
+   assert not svm.chunk_exists(svm_file)
 
 
 def test_ischunked_after_compress(svm_file):
    svm.compress(svm_file, chunk_size=100)
-   assert svm.ischunked(svm_file)
+   assert svm.chunk_exists(svm_file)
 
 
 def test_exists_text(svm_file):
@@ -103,7 +103,7 @@ def test_size_sums_chunks(svm_file):
    svm.compress(svm_file, chunk_size=100)
    expected = sum(
       os.path.getsize(p) + os.path.getsize(q)
-      for (p, q) in svm.chunkfiles(svm_file)
+      for (p, q) in svm.chunk_files(svm_file)
    )
    assert svm.size(svm_file) == expected
 
@@ -112,8 +112,8 @@ def test_link_creates_symlinks(svm_file, tmp_path):
    svm.compress(svm_file, chunk_size=100)
    dst = str(tmp_path / "other" / "train.in")
    svm.link(svm_file, dst)
-   dst_chunks = svm.chunkfiles(dst)
-   assert len(dst_chunks) == len(svm.chunkfiles(svm_file))
+   dst_chunks = svm.chunk_files(dst)
+   assert len(dst_chunks) == len(svm.chunk_files(svm_file))
    for (p, q) in dst_chunks:
       assert os.path.islink(p)
       assert os.path.islink(q)
@@ -127,7 +127,7 @@ def test_merge_chunk_count(svm_file, tmp_path):
    svm.compress(f2, chunk_size=100)  # 2 chunks
    f_out = str(tmp_path / "merged.in")
    svm.merge(svm_file, f2, f_out)
-   assert len(svm.chunkfiles(f_out)) == 5
+   assert len(svm.chunk_files(f_out)) == 5
 
 
 def test_merge_labels_correct(svm_file, tmp_path):
