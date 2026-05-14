@@ -26,6 +26,9 @@ dynamic = ["version"]
 "Bug Tracker" = "https://github.com/cbboyan/solverpy/issues"
 "Changelog" = "https://github.com/cbboyan/solverpy/blob/main/CHANGELOG.md"
 
+[project.scripts]
+solverpy = "solverpy.scripts.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

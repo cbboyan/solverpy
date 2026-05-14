@@ -1,0 +1,125 @@
+import logging
+logger = logging.getLogger(__name__)
+
+
+def register(subparsers):
+   p = subparsers.add_parser(
+      "tune",
+      help="Optuna hyperparameter autotuner for LightGBM models.",
+   )
+   p.add_argument("train",
+                  help="Training examples file in the SVM format (plain or compressed).")
+   p.add_argument("test", nargs="?",
+                  help="Testing examples file in the SVM format (plain or compressed).")
+   p.add_argument("--phases", metavar="p", default="l:b:m:r",
+                  help="LightGBM arguments to tune. (default: 'l:b:m:r')")
+   p.add_argument("--iters", type=int, metavar="it", default=16,
+                  help="Maximal number of trial models to build (default: 16).")
+   p.add_argument("--timeout", type=int, metavar="t", default=None,
+                  help="Overall timeout for tuning in seconds (default: unlimited).")
+   p.add_argument("--min-leaves", type=int, metavar="min", default=16,
+                  help="Minimal number of leaves for the leaves trial phase `l` (default: 16).")
+   p.add_argument("--max-leaves", type=int, metavar="max", default=2048,
+                  help="Maximal number of leaves for the leaves trial phase `l` (default: 2048).")
+   p.add_argument("--posneg-weight", type=float, metavar="w", default=0.0,
+                  help="Positive/negative sample weight ratio; 0 uses is_unbalance instead (default: 0.0).")
+   p.add_argument("--tmp", metavar="dir", default="tune-tmp",
+                  help="Temporary directory for intermediate files (default: 'tune-tmp').")
+   p.add_argument("--model-out", metavar="path", default=None,
+                  help="Copy the best model file to this path (default: no copy).")
+   p.add_argument("--log-file", metavar="filename", default=None,
+                  help="Save stdout log to this file (default: no log file).")
+   p.add_argument("--init-learning-rate", type=float, metavar="f", default=0.15,
+                  help="Initial LightGBM learning rate (default: 0.15).")
+   p.add_argument("--init-objective", metavar="s", default="binary",
+                  help="Initial LightGBM objective (default: 'binary').")
+   p.add_argument("--init-num-round", type=int, metavar="n", default=200,
+                  help="Initial LightGBM num_round (default: 200).")
+   p.add_argument("--init-max-depth", type=int, metavar="n", default=0,
+                  help="Initial LightGBM max_depth (default: 0).")
+   p.add_argument("--init-num-leaves", type=int, metavar="n", default=300,
+                  help="Initial LightGBM num_leaves (default: 300).")
+   p.add_argument("--init-min-data", type=int, metavar="n", default=20,
+                  help="Initial LightGBM min_data (default: 20).")
+   p.add_argument("--init-max-bin", type=int, metavar="n", default=255,
+                  help="Initial LightGBM max_bin (default: 255).")
+   p.add_argument("--init-feature-fraction", type=float, metavar="f", default=1.0,
+                  help="Initial LightGBM feature_fraction (default: 1.0).")
+   p.add_argument("--init-bagging-fraction", type=float, metavar="f", default=1.0,
+                  help="Initial LightGBM bagging_fraction (default: 1.0).")
+   p.add_argument("--init-bagging-freq", type=int, metavar="n", default=0,
+                  help="Initial LightGBM bagging_freq (default: 0).")
+   p.add_argument("--init-lambda-l1", type=float, metavar="f", default=0.0,
+                  help="Initial LightGBM lambda_l1 (default: 0.0).")
+   p.add_argument("--init-lambda-l2", type=float, metavar="f", default=0.0,
+                  help="Initial LightGBM lambda_l2 (default: 0.0).")
+   p.add_argument("--early-stopping", type=int, metavar="n", default=None,
+                  help="Set early_stopping in init_params (default: None).")
+   p.set_defaults(func=main)
+
+
+def main(args):
+   import json
+   import os
+   import shutil
+   from solverpy_learn.builder import autotune
+   from solverpy.tools import human
+
+   console = logging.StreamHandler()
+   console.setLevel(logging.INFO)
+   console.setFormatter(logging.Formatter("%(message)s"))
+   logging.getLogger().setLevel(logging.DEBUG)
+   logging.getLogger().addHandler(console)
+
+   if args.log_file:
+      filehandler = logging.FileHandler(args.log_file)
+      filehandler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+      filehandler.setLevel(logging.DEBUG)
+      logging.getLogger().addHandler(filehandler)
+
+   test = args.test or args.train
+
+   init_params = dict(
+      learning_rate=args.init_learning_rate,
+      objective=args.init_objective,
+      num_round=args.init_num_round,
+      max_depth=args.init_max_depth,
+      num_leaves=args.init_num_leaves,
+      min_data=args.init_min_data,
+      max_bin=args.init_max_bin,
+      feature_fraction=args.init_feature_fraction,
+      bagging_fraction=args.init_bagging_fraction,
+      bagging_freq=args.init_bagging_freq,
+      lambda_l1=args.init_lambda_l1,
+      lambda_l2=args.init_lambda_l2,
+   )
+   if args.early_stopping is not None:
+      init_params["early_stopping"] = args.early_stopping
+
+   best = autotune.prettytuner(
+      f_train=args.train,
+      f_test=test,
+      phases=args.phases,
+      timeout=args.timeout,
+      iters=args.iters,
+      min_leaves=args.min_leaves,
+      max_leaves=args.max_leaves,
+      d_tmp=args.tmp,
+      init_params=init_params,
+      posneg_weight=args.posneg_weight,
+   )
+
+   logger.info(str(best))
+   logger.info(
+      f"Best model score: {best[0]}\n"
+      f"Best model accuracy: {human.humanacc(best[1])}\n"
+      f"Best model file: {best[3]}\n"
+      f"Best model training time: {human.humantime(best[4])}\n"
+      f"Positive training samples: {best[6]:.0f}\n"
+      f"Negative training samples: {best[7]:.0f}\n"
+      f"Best model training parameters: {json.dumps(best[5],indent=2,sort_keys=True)}"
+   )
+
+   if args.model_out and os.path.exists(best[3]):
+      shutil.copy(best[3], args.model_out)
+      logger.info(f"Output model file: {args.model_out}")

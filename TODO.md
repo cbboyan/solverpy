@@ -95,14 +95,27 @@ was introduced.  Address that separately (see Known Issues above).
 - improve total bar ETA by not including skipped problems
 - improve ETA by considering timeout
 - nice ntfy messages
-- solverpy command script
-  - `solverpy init`
-  - `solverpy init eprover`
-  - `solverpy eval sid bid`
-  - `solverpy tune train.in`
-  - `solverpy loop bid-train bid-devel`
-  - `solverpy launch setup.yaml`
-  - launch stuff using command script instead of python scripts
+- solverpy command script (unified CLI, Approach A)
+  - dispatcher `solverpy.scripts.cli:main` in core `solverpy` package
+  - core subcommands registered unconditionally:
+    - `solverpy init` — initialise a new project (create `solverpy_db/`, `strats/`, etc.)
+    - `solverpy init eprover` — init + scaffold eprover-specific files
+    - `solverpy eval sid bid` — run benchmark evaluation
+    - `solverpy loop bid-train bid-devel` — run the iterative eval/build loop
+    - `solverpy launch setup.yaml` — launch a setup from a YAML file
+    - `solverpy esid2strat` — convert eprover `--print-strategy` output to CLI args (was `solverpy-esid2strat.py`)
+  - learn subcommands imported from `solverpy_learn` if installed, graceful error otherwise:
+    - `solverpy tune train.in` — Optuna autotuner (was `solverpy-autotune`)
+    - `solverpy compress file.in` — compress SVM training file (was `solverpy-compress`)
+    - `solverpy decompress file.in` — decompress SVM training file (was `solverpy-decompress`)
+    - `solverpy deconflict input.in` — remove conflicting samples (was `solverpy-deconflict`)
+    - `solverpy filter input.in` — filter pos/neg ratio (was `solverpy-filter`)
+  - implementation steps:
+    1. add `packages/solverpy/src/solverpy/scripts/` with `cli.py` dispatcher + one module per core subcommand
+    2. add `packages/solverpy-learn/src/solverpy_learn/scripts/` with one module per learn subcommand
+    3. register `solverpy = "solverpy.scripts.cli:main"` in core `pyproject.toml [project.scripts]`
+    4. remove old shell scripts from `scripts/` once all subcommands are implemented
+  - replace `scripts/` ad-hoc files; no separate `solverpy-*` entry points kept
 - yaml formatter: use global variables (like `trains`) instead of references `&`
 - scripts update
 - simulated runs from previous outputs

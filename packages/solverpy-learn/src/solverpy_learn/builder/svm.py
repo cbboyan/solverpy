@@ -210,6 +210,14 @@ def decompress(f_in: str, keep: bool = True) -> None:
       f"Trains decompressed to {human.humanbytes(os.path.getsize(f_in))}.")
 
 
+def save(data: "spmatrix", label: "ndarray", f_in: str) -> None:
+   for (p, q) in chunk_files(f_in):
+      os.remove(p)
+      os.remove(q)
+   _chunk_save(data, label, f_in, 0)
+   logger.info(f"Saved {data.shape[0]} samples to `{f_in}`.")
+
+
 def link(src: str, dst: str) -> None:
    if chunk_exists(src):
       for n, (p_src, q_src) in enumerate(chunk_files(src)):
