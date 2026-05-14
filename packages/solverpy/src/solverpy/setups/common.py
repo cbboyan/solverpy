@@ -58,5 +58,8 @@ def solver(setup: Setup, mk_solver: "SolverMaker") -> Setup:
    kwargs = {x: setup[x] for x in setup if x in GENERICS}
    kwargs["static"] = " ".join(setup["static"])
    _solver = mk_solver(setup["limit"], **kwargs)
+   if setup.get("reloader"):
+      from ..solver.reloader import Reloader
+      _solver = Reloader(_solver)
    setup["solver"] = _solver
    return setup

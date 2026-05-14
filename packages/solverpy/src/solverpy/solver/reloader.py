@@ -12,6 +12,7 @@ re-running the (expensive) solver.
 """
 
 from typing import Any, TYPE_CHECKING
+import logging
 
 from .solverpy import SolverPy
 from .plugins.db.outputs import Outputs
@@ -19,6 +20,8 @@ from .plugins.db.outputs import Outputs
 if TYPE_CHECKING:
    from .plugins.plugin import Plugin
    from ..tools.typing import Result
+
+logger = logging.getLogger(__name__)
 
 
 class Reloader(SolverPy):
@@ -45,12 +48,18 @@ class Reloader(SolverPy):
       )
       self.outputs = Outputs()
       self.outputs.register(self.solver)
+      self.solver.call("outputs", "disable")
+      self.outputs.disable()
 
    def run(self, instance: Any, strategy: Any) -> str:
       """Read and return the cached raw output for `(instance, strategy)`."""
-      f = self.outputs.path(instance, strategy)
-      with open(f) as fr:
-         return fr.read()
+      # triggers Time.decorate() to snapshot start time; no subprocess is launched
+      self.decorate("", instance, strategy)
+      try:
+         return self.outputs.read(instance, strategy)
+      except FileNotFoundError:
+         logger.warning(f"No cached output for {instance} / {strategy}")
+         return ""
 
    def process(self, output: str) -> "Result":
       """Delegate output parsing to the wrapped solver."""

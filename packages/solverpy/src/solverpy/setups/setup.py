@@ -138,6 +138,7 @@ class Setup(TypedDict, total=False):
    db: "DB"
    builder: Any  # set by solverpy_learn
    solver: "SolverPy"
+   reloader: bool
    trains: Any  # set by solverpy_learn
    previous_trains: str | tuple[str]
    plugins: list["Plugin"]

@@ -29,7 +29,7 @@ class Outputs(Decorator):
       self,
       flatten: bool = True,
       compress: bool = True,
-      pid: str | None = None,
+      pid: str | None = "outputs",
    ):
       """Args:
          flatten: Replace `/` in problem paths with `_._` so all output files
@@ -79,6 +79,23 @@ class Outputs(Decorator):
          return
       if output and self.solver.valid(result):
          self.write(instance, strategy, output)
+
+   def read(
+      self,
+      instance: tuple[str, str],
+      strategy: str,
+   ) -> str:
+      """Read and return the cached output for *(instance, strategy)*."""
+      f = self.path(instance, strategy)
+      if self._compress:
+         f += ".gz"
+      if not os.path.isfile(f):
+         raise FileNotFoundError(f"No cached output: {f!r}")
+      if self._compress:
+         with gzip.open(f, "rt") as fr:
+            return fr.read()
+      with open(f) as fr:
+         return fr.read()
 
    def write(
       self,

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-14)
+## Unreleased changes (2026-05-15)
 
-* feat: add unified `solverpy` CLI command, migrate scripts into packages [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: complete Reloader implementation with Outputs.read() and setup integration [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: add unified `solverpy` CLI command, migrate scripts into packages [[details](https://github.com/cbboyan/solverpy/commit/2969787) | [browse](https://github.com/cbboyan/solverpy/tree/2969787)]
 * feat: add posneg weight tuning phase 'w' to autotuner [[details](https://github.com/cbboyan/solverpy/commit/660d630) | [browse](https://github.com/cbboyan/solverpy/tree/660d630)]
 * refactor: rename and regroup svm helpers with chunk_/raw_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/0e30802) | [browse](https://github.com/cbboyan/solverpy/tree/0e30802)]
 * fix: resolve pyright type errors in svm._stack_pairs [[details](https://github.com/cbboyan/solverpy/commit/b7b589d) | [browse](https://github.com/cbboyan/solverpy/tree/b7b589d)]
