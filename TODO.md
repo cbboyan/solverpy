@@ -106,3 +106,4 @@ was introduced.  Address that separately (see Known Issues above).
 - yaml formatter: use global variables (like `trains`) instead of references `&`
 - scripts update
 - simulated runs from previous outputs
+- tuning phase for posneg balancing - requires full data storage

@@ -1,5 +1,19 @@
 # DONE
 
+## Posneg Weight Tuning Phase ✓
+
+Added phase `"w"` (weight) to the autotuner that tunes `scale_pos_weight` by
+trying multipliers `[0.5, 1, 2, 3, 5, 10]` against the balanced base ratio
+(`neg/pos`).  Enabled by including `"w"` in the `phases` string, e.g.
+`phases="l:b:m:r:w"`.
+
+- `autotune.py`: registers `"w": tune.posneg_weight`; sets `scale_pos_weight =
+  neg/pos` as the base when `"w"` is active instead of `is_unbalance`.
+- `tune.py`: `posneg_weight()` freezes the base at phase-start time as
+  `posneg_base` to prevent double-multiplication if `"w"` appears twice.
+- `check.py`: `posneg_weight()` suggests the final `scale_pos_weight` value
+  (base × multiplier); logs the human-readable multiplier in the queue.
+
 ## Bug Fixes ✓
 
 - **Debug code in `launcher.launch()`** (`task/launcher.py:57–71`) — wrote to `~/debug.log`
