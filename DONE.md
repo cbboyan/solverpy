@@ -1,5 +1,10 @@
 # DONE
 
+## Re-using Trains ✓
+
+Previously collected training data (`train.in`) is reused across loop iterations
+instead of being regenerated from scratch each time.
+
 ## svm.py Helper Refactoring ✓
 
 Renamed and regrouped private helpers in `builder/svm.py` with `chunk_`/`raw_`

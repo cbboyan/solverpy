@@ -19,5 +19,25 @@ Fixed so far:
 Deferred: ISSUES.md #4 (nested pool → quadratic process blowup) is the root
 cause why `"spawn"` was introduced.  Address that separately.
 
+# Backlog
 
-
+- automated restriction to solvable problems (force implementation)
+- trains regeneration
+- show best iteration in the training report
+- show the initial model in the report
+- reporting
+- progress web api
+- improve total bar ETA by not including skipped problems
+- improve ETA by considering timeout
+- nice ntfy messages
+- solverpy command script
+  - `solverpy init`
+  - `solverpy init eprover`
+  - `solverpy eval sid bid`
+  - `solverpy tune train.in`
+  - `solverpy loop bid-train bid-devel`
+  - `solverpy launch setup.yaml`
+  - launch stuff using command script instead of python scripts
+- yaml formatter: use global variables (like `trains`) instead of references `&`
+- scripts update
+- simulated runs from previous outputs
