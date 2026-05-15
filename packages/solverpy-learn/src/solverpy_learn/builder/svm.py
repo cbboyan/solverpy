@@ -170,7 +170,7 @@ def rawcompress(f_in: str, cores: int | None = None) -> None:
    if len(args) == 1:
       _raw_compress(*args[0])
    else:
-      with multiprocessing.get_context("forkserver").Pool(cores) as pool:
+      with multiprocessing.get_context("fork").Pool(cores) as pool:
          pool.starmap(_raw_compress, args)
    logger.info(
       f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total.")
@@ -184,7 +184,7 @@ def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
       if len(chunks) == 1:
          pairs = [_chunk_load(*chunks[0])]
       else:
-         with multiprocessing.get_context("forkserver").Pool(cores) as pool:
+         with multiprocessing.get_context("fork").Pool(cores) as pool:
             pairs = pool.starmap(_chunk_load, chunks)
       return _chunk_stack(pairs)
    if raw_exists(f_in):
@@ -192,7 +192,7 @@ def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
       if len(raws) == 1:
          pairs = [_raw_load(raws[0])]
       else:
-         with multiprocessing.get_context("forkserver").Pool(cores) as pool:
+         with multiprocessing.get_context("fork").Pool(cores) as pool:
             pairs = pool.map(_raw_load, raws)
       return _chunk_stack(pairs)
    from sklearn.datasets import load_svmlight_file

@@ -218,7 +218,7 @@ The cached result must contain `limit` for simulation to work. The `Jsons` provi
 
 **Indent**: 3 spaces (configured in `pyproject.toml` via `yapf`). Format with `yapf -i <file>`.
 
-**Imports**: standard library first, then package-relative. Avoid star imports.
+**Imports**: `typing` imports first, then standard library, then package-relative. Avoid star imports.
 
 **`**kwargs` forwarding**: every class in the hierarchy passes `**kwargs` up:
 ```python

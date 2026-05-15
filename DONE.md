@@ -1,5 +1,39 @@
 # DONE
 
+## `represent()` for Builder and Trains hierarchies ✓
+
+Added structured YAML representations for ML builder and training-data plugin classes,
+so the setup dump shows readable dicts instead of flat repr strings.
+
+- `Builder.represent()` → `{cls, dataname}`
+- `AutoTuner.represent()` → `{cls, dataname, tuneargs, templates}`
+- `Trains.represent()` → `{cls, dataname, filename}`
+- `SvmTrains.represent()` → adds `chunk_size`
+- `EnigmaTrains.represent()` → adds `features`, `variant`, `ratio`
+
+## Combined setup+devels YAML dump ✓
+
+`evaluation.init()` now accepts a `devels` argument and dumps both as a single YAML
+block `{setup: ..., devels: ...}` using PyYAML's default anchor/alias for shared objects
+(e.g. the same `EnigmaTrains` instance appearing in both `trains` and `plugins`).
+
+- `benchmark/evaluation.py`: `init(setup, devels=None)` passes devels to `markdown.yaml`
+- `benchmark/reports/markdown.py`: `yaml(obj, devels=None)` wraps both under `setup:`/`devels:`
+- `solverpy_learn/setups/loop.py`: `launch()` passes `devels` to `evaluator.init()`
+
+## Fix forkserver-in-fork-child crashes ✓
+
+Two crash sites where `forkserver` pools were started from inside `prettytuner`'s fork
+child, causing `ChildProcessError: No child processes` (forkserver's `os.waitpid` only
+works for direct children of the calling process, not inherited grandchildren).
+
+- `builder/svm.py`: three `forkserver` Pools → `fork` (rawcompress, load×2 — always
+  called from inside the prettytuner fork child; `fork` is cheaper and correct here)
+- `task/launcher.py`: add `pool_context: str = "forkserver"` parameter to `launch()`
+- `builder/autotune/build.py`: atpeval setup sets `pool_context="spawn"` so the
+  evaluation pool launched from inside the fork child uses spawn (safe, clean workers)
+- `setups/setup.py`: add `pool_context` key to `Setup` TypedDict
+
 ## Switch all multiprocessing contexts to `forkserver` ✓
 
 Unified all `multiprocessing` start methods to `"forkserver"` across the codebase,

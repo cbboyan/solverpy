@@ -1,3 +1,4 @@
+from typing import Any
 import os
 import logging
 
@@ -17,6 +18,12 @@ class Builder(SolverPyObj):
       SolverPyObj.__init__(self, dataname=dataname)
       self._strats = []
       self._dataname = dataname
+
+   def represent(self) -> dict[str, Any]:
+      return dict(
+         cls=self.__class__.__name__,
+         dataname=self._dataname,
+      )
 
    def path(self) -> str:
       """Return the model filename."""

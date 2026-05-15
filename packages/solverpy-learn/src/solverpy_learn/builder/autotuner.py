@@ -44,6 +44,14 @@ class AutoTuner(Builder):
       self._templates = templates or []
       self._talker = talker
 
+   def represent(self) -> dict[str, Any]:
+      return dict(
+         cls=self.__class__.__name__,
+         dataname=self._dataname,
+         tuneargs=self._tuneargs,
+         templates=self._templates,
+      )
+
    def path(self, modelfile: str = "model.lgb") -> str:
       if modelfile:
          return os.path.join(super().path(), modelfile)

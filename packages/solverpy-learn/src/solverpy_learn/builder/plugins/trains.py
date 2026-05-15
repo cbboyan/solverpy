@@ -35,6 +35,13 @@ class Trains(Decorator):
       self._enabled = True
       self.reset(dataname, filename)
 
+   def represent(self) -> dict[str, Any]:
+      return dict(
+         cls=self.__class__.__name__,
+         dataname=self._dataname,
+         filename=self._filename,
+      )
+
    def reset(
       self,
       dataname: (str | None) = None,

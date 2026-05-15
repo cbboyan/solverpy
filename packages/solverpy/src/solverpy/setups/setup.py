@@ -152,4 +152,5 @@ class Setup(TypedDict, total=False):
    posneg_weight: float
    templates: list[str]
    chunk_size: int  # rows per NPZ chunk when compressing SVM-Light trains (default 1_000_000)
+   pool_context: str  # multiprocessing start method for the evaluation pool (default "forkserver")
 

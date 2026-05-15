@@ -49,13 +49,15 @@ def text(txt: str) -> "Report":
    return [txt]
 
 
-def yaml(obj: Any) -> "Report":
-   if type(obj) is str:
+def yaml(obj: Any, devels: Any = None) -> "Report":
+   if isinstance(obj, dict) and devels:
+      top = dict(setup=obj, devels=devels)
+      txt = pyyaml.dump(top, default_flow_style=False)
+   elif type(obj) is str:
       txt = obj
    else:
       txt = pyyaml.dump(obj, default_flow_style=False)
-   lines = []
-   lines.append("```yaml")
+   lines: "Report" = ["```yaml"]
    lines.extend(txt.strip().split("\n"))
    lines.append("```")
    return lines

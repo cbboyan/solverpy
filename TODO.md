@@ -119,7 +119,8 @@ not be mutated in-place, but fragile.
      3. register `solverpy = "solverpy.scripts.cli:main"` in core `pyproject.toml [project.scripts]`
      4. remove old shell scripts from `scripts/` once all subcommands are implemented
    - replace `scripts/` ad-hoc files; no separate `solverpy-*` entry points kept
-11. yaml formatter: use global variables (like `trains`) instead of references `&`
+11. yaml formatter: use named globals (like `trains:`) instead of YAML anchors `&id001`
+    (tried `_shared`/`_replace` approach — reverted; setup+devels now combined in one block)
 12. scripts update
 13. simulated runs from previous outputs
 14. tuning phase for posneg balancing - requires full data storage

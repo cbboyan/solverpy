@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-15)
+## Unreleased changes (2026-05-16)
 
-* docs: update TODO and DONE for reporter, prettytuner fork, RemoteTalker fix [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: represent() for Builder/Trains, combined setup+devels YAML, fix forkserver-in-fork-child [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: update TODO and DONE for reporter, prettytuner fork, RemoteTalker fix [[details](https://github.com/cbboyan/solverpy/commit/bd6bf5b) | [browse](https://github.com/cbboyan/solverpy/tree/bd6bf5b)]
 * feat: add Reporter (.md sidecar), fix RemoteTalker pickling, switch prettytuner to fork [[details](https://github.com/cbboyan/solverpy/commit/e34f3bf) | [browse](https://github.com/cbboyan/solverpy/tree/e34f3bf)]
 * fix: switch all multiprocessing contexts to forkserver, lazy-import numpy/scipy/sklearn [[details](https://github.com/cbboyan/solverpy/commit/66db01e) | [browse](https://github.com/cbboyan/solverpy/tree/66db01e)]
 * fix: propagate flatten/compress from setup options to Reloader [[details](https://github.com/cbboyan/solverpy/commit/8a96647) | [browse](https://github.com/cbboyan/solverpy/tree/8a96647)]

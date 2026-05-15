@@ -20,13 +20,13 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def init(setup: Setup | None = None):
+def init(setup: Setup | None = None, devels: Setup | None = None):
    log.init()
    if setup:
       report = []
       report.extend(markdown.heading("Experiments", level=2))
       report.extend(markdown.heading("Setup", level=3))
-      report.extend(markdown.yaml(setup))
+      report.extend(markdown.yaml(setup, devels))
       report.extend(markdown.newline())
       reporter.add(report)
       report = markdown.dump(report, prefix="> ")

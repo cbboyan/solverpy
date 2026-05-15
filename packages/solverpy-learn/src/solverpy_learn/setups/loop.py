@@ -128,7 +128,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    try:
       log.ntfy(setup, "solverpy: init")
-      evaluator.init(setup)
+      evaluator.init(setup, devels)
       if "loops" in setup:
          looping(setup)
          if devels:

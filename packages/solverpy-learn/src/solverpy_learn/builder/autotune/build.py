@@ -150,6 +150,7 @@ def score(
    modelname = f"{builder._dataname}/opt/{nick}"
    sidlist = builder.applies(builder._trains["refs"], modelname)
    setup = Setup(builder._devels, sidlist=sidlist)
+   setup["pool_context"] = "spawn"
    assert "solver" in setup
    assert "trains" in setup
    setup["solver"].call("trains", "disable")

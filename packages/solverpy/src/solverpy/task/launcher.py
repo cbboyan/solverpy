@@ -42,13 +42,14 @@ def launch(
    talker: "Talker | None" = None,
    cores: int = 4,
    chunksize: int = 1,
+   pool_context: str = "forkserver",
    **others: Any,
 ) -> list[Any]:
    del others  # unused argument
    talker = talker or LogTalker()
    ret = {}
    logger.debug(f"launching pool with {cores} workers for {len(tasks)} tasks")
-   with mp.get_context("forkserver").Pool(cores) as pool:
+   with mp.get_context(pool_context).Pool(cores) as pool:
       tids = {}
       for (n,task) in enumerate(tasks):
          task.tid = n

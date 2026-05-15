@@ -27,6 +27,14 @@ class SvmTrains(Trains):
       self.info.raw_chunk_n = 0
       self.info.chunk_size = chunk_size
 
+   def represent(self) -> dict[str, Any]:
+      return dict(
+         cls=self.__class__.__name__,
+         dataname=self._dataname,
+         filename=self._filename,
+         chunk_size=self.info.chunk_size,
+      )
+
    def reset(
       self,
       dataname: (str | None) = None,
