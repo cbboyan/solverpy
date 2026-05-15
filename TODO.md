@@ -93,7 +93,7 @@ not be mutated in-place, but fragile.
 2. trains regeneration
 3. show best iteration in the training report
 4. show the initial model in the report
-5. reporting
+5. reporting: graphs, super-fences (e.g. render graph data → SVG), extend .md output
 6. progress web api
 7. improve total bar ETA by not including skipped problems
 8. improve ETA by considering timeout

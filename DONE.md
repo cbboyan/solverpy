@@ -12,12 +12,61 @@ Files changed:
 - `task/launcher.py` — two `"spawn"` Pools → `"forkserver"`
 - `task/talker.py` — `"spawn"` Manager → `"forkserver"`
 - `task/remotetalker.py` — `"spawn"` Manager → `"forkserver"`
-- `builder/autotune/autotune.py` — `"fork"` Process+Queue → `"forkserver"`
+- `builder/autotune/autotune.py` — `"fork"` Process+Queue → `"forkserver"` *(later reverted, see below)*
 - `builder/plugins/trains.py` — `"fork"` Manager Lock → `"forkserver"`
 - `builder/plugins/svm.py` — `"fork"` Manager Namespace → `"forkserver"`
 - `builder/svm.py` — three `"fork"` Pools → `"forkserver"`
 - `tools/external.py` — `"fork"` → `"forkserver"` (dead code, kept as infrastructure)
 - `grackle/runner/runner.py` — bare `Pool` → `get_context("forkserver").Pool`
+
+## Reporter (.md sidecar) ✓
+
+Added a module-level `reporter` (mirroring how the `logging` module works) that writes
+a `.md` file next to the `.log` file, capturing experiment progress as clean markdown
+without the `"> "` log prefix.
+
+- `tools/reporter.py`: new singleton; `init(logpath)` opens the `.md` file; `add(report)`
+  calls `markdown.dump` and writes it; `close()` flushes on exit; `fence(lang)` decorator
+  stubs a super-fence registry for future handlers (e.g. render graph data → SVG).
+- `tools/log.py`: `init()` calls `reporter.init()` after opening the log file;
+  `terminating()` calls `reporter.close()`; `logfile()` accessor added.
+- Tables written to `.md`: evaluation setup (`benchmark/evaluation.py`), legend and
+  summary (`benchmark/summary.py`), per-job progress (`benchmark/reports/progress.py`),
+  autotune trial results (`builder/autotune/listener.py`).
+
+## `prettytuner` switched back to `"fork"` ✓
+
+`prettytuner` was moved to `"forkserver"` during the multiprocessing unification, but
+investigation showed this was the wrong choice: the builder carries accumulated
+`_trains` and `_devels` data that must be pickled on every call under `forkserver`,
+growing with each loop iteration.  With `"fork"` the child inherits the parent's memory
+and none of this is serialised.
+
+The `"forkserver"` migration also caused a one-time ~3 s daemon startup delay and
+required `RemoteTalker` pickling fixes (see below).  `"fork"` is safe here since
+`prettytuner` is called from the main thread before any worker pools are started.
+
+- `builder/autotune/autotune.py`: `get_context("forkserver")` → `get_context("fork")`
+
+## `RemoteTalker` pickling fix ✓
+
+Under Python 3.14 forkserver, `RemoteTalker` failed to pickle because its
+`_listening_thread` (a `threading.Thread`) and `_stop_listening` (a
+`threading.Event` wrapping a `_contextvars.Context`) are not serialisable.
+
+Fixed with `__getstate__`/`__setstate__`: the thread and event are set to `None` in
+the pickled state and a fresh `Event` is reconstructed on unpickle.  The child only
+needs `_remote_queue` to put events; the listening thread lives in the parent only.
+
+- `task/remotetalker.py`: added `__getstate__` and `__setstate__`.
+
+## `Talker.log_config` log level fix ✓
+
+`log_config()` was setting the root logger to `INFO` in child processes, silently
+dropping all `DEBUG` messages even when the parent's handlers were configured at
+`DEBUG`.  Fixed to `DEBUG`.
+
+- `task/talker.py`: `root.setLevel(logging.INFO)` → `root.setLevel(logging.DEBUG)`
 
 ## Posneg Weight Tuning Phase ✓
 
