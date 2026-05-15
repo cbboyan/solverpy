@@ -6,10 +6,6 @@ import logging
 import multiprocessing
 from collections import defaultdict
 
-import numpy
-import scipy
-from sklearn.datasets import load_svmlight_file, dump_svmlight_file
-
 from solverpy.tools import human
 from .plugins.trains import rellink
 
@@ -35,6 +31,8 @@ def chunk_exists(f_in: str) -> bool:
 
 
 def _chunk_save(data: "spmatrix", label: "ndarray", f_in: str, n: int) -> None:
+   import numpy
+   import scipy.sparse
    (z_data, z_label) = chunk_path(f_in, n)
    d_out = os.path.dirname(z_data)
    if d_out:
@@ -45,18 +43,23 @@ def _chunk_save(data: "spmatrix", label: "ndarray", f_in: str, n: int) -> None:
 
 
 def _chunk_compress(lines: list[str], f_in: str, n: int) -> None:
+   from sklearn.datasets import load_svmlight_file
    buf = io.BytesIO("".join(lines).encode())
    (data, label) = load_svmlight_file(buf, zero_based=True)  # type: ignore
    _chunk_save(data, label, f_in, n)
 
 
 def _chunk_load(p: str, q: str) -> tuple["csr_matrix", "ndarray"]:
+   import numpy
+   import scipy.sparse
    return (scipy.sparse.load_npz(p), numpy.load(q, allow_pickle=True)["label"])
 
 
 def _chunk_stack(
    pairs: list[tuple["csr_matrix", "ndarray"]]
 ) -> tuple["spmatrix", "ndarray"]:
+   import numpy
+   import scipy.sparse
    datas = [d for (d, _) in pairs]
    labels = [lbl for (_, lbl) in pairs]
    shapes: list[tuple[int, int]] = []
@@ -86,6 +89,7 @@ def raw_exists(f_in: str) -> bool:
 
 
 def _raw_compress(raw_path: str, f_in: str, n: int) -> None:
+   from sklearn.datasets import load_svmlight_file
    with open(raw_path) as fh:
       lines = fh.readlines()
    buf = io.BytesIO("".join(lines).encode())
@@ -95,6 +99,7 @@ def _raw_compress(raw_path: str, f_in: str, n: int) -> None:
 
 
 def _raw_load(raw_path: str) -> tuple["csr_matrix", "ndarray"]:
+   from sklearn.datasets import load_svmlight_file
    return load_svmlight_file(raw_path, zero_based=True)  # type: ignore
 
 
@@ -165,7 +170,7 @@ def rawcompress(f_in: str, cores: int | None = None) -> None:
    if len(args) == 1:
       _raw_compress(*args[0])
    else:
-      with multiprocessing.get_context("fork").Pool(cores) as pool:
+      with multiprocessing.get_context("forkserver").Pool(cores) as pool:
          pool.starmap(_raw_compress, args)
    logger.info(
       f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total.")
@@ -179,7 +184,7 @@ def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
       if len(chunks) == 1:
          pairs = [_chunk_load(*chunks[0])]
       else:
-         with multiprocessing.get_context("fork").Pool(cores) as pool:
+         with multiprocessing.get_context("forkserver").Pool(cores) as pool:
             pairs = pool.starmap(_chunk_load, chunks)
       return _chunk_stack(pairs)
    if raw_exists(f_in):
@@ -187,14 +192,16 @@ def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
       if len(raws) == 1:
          pairs = [_raw_load(raws[0])]
       else:
-         with multiprocessing.get_context("fork").Pool(cores) as pool:
+         with multiprocessing.get_context("forkserver").Pool(cores) as pool:
             pairs = pool.map(_raw_load, raws)
       return _chunk_stack(pairs)
+   from sklearn.datasets import load_svmlight_file
    logger.debug("loading plain text svm data")
    return load_svmlight_file(f_in, zero_based=True)  # type: ignore
 
 
 def decompress(f_in: str, keep: bool = True) -> None:
+   from sklearn.datasets import dump_svmlight_file
    if not chunk_exists(f_in):
       logger.warning(f"Trains `{f_in}` are not chunked.  Skipped.")
       return

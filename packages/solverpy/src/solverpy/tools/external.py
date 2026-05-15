@@ -11,7 +11,7 @@ def external(func: Callable) -> Callable:
 
    @wraps(func)
    def wrapper(*args, **kwargs):
-      ctx = multiprocessing.get_context("fork")
+      ctx = multiprocessing.get_context("forkserver")
       queue = ctx.Queue()
 
       def target():

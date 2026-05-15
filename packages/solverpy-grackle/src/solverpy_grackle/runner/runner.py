@@ -62,7 +62,7 @@ class Runner(object):
 
    def runs(self, cis: list[tuple[Any, str]]) -> Any:
       assert "cores" in self.config
-      pool = multiprocessing.Pool(self.config["cores"])
+      pool = multiprocessing.get_context("forkserver").Pool(self.config["cores"])
       try:
          results = pool.map_async(wrapper, zip([self]*len(cis),cis)).get(10000000)
       except BaseException as err:

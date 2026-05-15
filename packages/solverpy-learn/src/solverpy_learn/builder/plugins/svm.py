@@ -19,7 +19,7 @@ class SvmTrains(Trains):
       chunk_size: int = 1_000_000,
    ):
       Trains.__init__(self, dataname, filename=filename)
-      self.info = multiprocessing.get_context("fork").Manager().Namespace()
+      self.info = multiprocessing.get_context("forkserver").Manager().Namespace()
       self.info.total = 0
       self.info.pos = 0
       self.info.neg = 0

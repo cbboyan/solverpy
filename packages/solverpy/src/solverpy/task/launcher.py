@@ -25,7 +25,7 @@ def run(
    :param cores:  number of worker threads (Default value = 4)
    :param chunksize:  chunksize for Pool.map_async (Default value = 1)
    """
-   pool = mp.get_context("spawn").Pool(cores)
+   pool = mp.get_context("forkserver").Pool(cores)
    try:
       runner = pool.map_async(runtask_single, tasks, chunksize=chunksize)
       results = runner.get(WAIT)
@@ -48,7 +48,7 @@ def launch(
    talker = talker or LogTalker()
    ret = {}
    logger.debug(f"launching pool with {cores} workers for {len(tasks)} tasks")
-   with mp.get_context("spawn").Pool(cores) as pool:
+   with mp.get_context("forkserver").Pool(cores) as pool:
       tids = {}
       for (n,task) in enumerate(tasks):
          task.tid = n

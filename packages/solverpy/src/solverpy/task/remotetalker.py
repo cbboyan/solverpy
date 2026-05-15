@@ -28,7 +28,7 @@ class RemoteTalker(Talker):
 
    def __init__(self, local: Talker):
       Talker.__init__(self)
-      manager = multiprocessing.get_context("spawn").Manager()
+      manager = multiprocessing.get_context("forkserver").Manager()
       self._remote_queue: Queue[Any] = manager.Queue()
       self._listening_thread: threading.Thread | None = None
       self._stop_listening: threading.Event = threading.Event()

@@ -1,5 +1,24 @@
 # DONE
 
+## Switch all multiprocessing contexts to `forkserver` ✓
+
+Unified all `multiprocessing` start methods to `"forkserver"` across the codebase,
+replacing the previous mix of `"fork"` (autotune, Managers, SVM pools) and `"spawn"`
+(evaluation pool, log/remote talker Managers).  `forkserver` gives clean workers like
+`spawn` (no unsafe post-thread fork) but fast startup like `fork`, and is now the
+Python 3.14 Linux default.
+
+Files changed:
+- `task/launcher.py` — two `"spawn"` Pools → `"forkserver"`
+- `task/talker.py` — `"spawn"` Manager → `"forkserver"`
+- `task/remotetalker.py` — `"spawn"` Manager → `"forkserver"`
+- `builder/autotune/autotune.py` — `"fork"` Process+Queue → `"forkserver"`
+- `builder/plugins/trains.py` — `"fork"` Manager Lock → `"forkserver"`
+- `builder/plugins/svm.py` — `"fork"` Manager Namespace → `"forkserver"`
+- `builder/svm.py` — three `"fork"` Pools → `"forkserver"`
+- `tools/external.py` — `"fork"` → `"forkserver"` (dead code, kept as infrastructure)
+- `grackle/runner/runner.py` — bare `Pool` → `get_context("forkserver").Pool`
+
 ## Posneg Weight Tuning Phase ✓
 
 Added phase `"w"` (weight) to the autotuner that tunes `scale_pos_weight` by
@@ -13,6 +32,21 @@ trying multipliers `[0.5, 1, 2, 3, 5, 10]` against the balanced base ratio
   `posneg_base` to prevent double-multiplication if `"w"` appears twice.
 - `check.py`: `posneg_weight()` suggests the final `scale_pos_weight` value
   (base × multiplier); logs the human-readable multiplier in the queue.
+
+## Lazy imports in `builder/svm.py` ✓
+
+`builder/svm.py` previously imported `numpy`, `scipy`, and `sklearn` at module
+level.  Because `SvmTrains`/`EnigmaTrains` plugins are pickled into every
+`SolverTask` and sent to spawn pool workers, unpickling in each worker triggered
+the full import chain — initialising an OpenBLAS thread pool (via numpy/scipy)
+and an OpenMP thread pool (via sklearn) in every worker process.  With
+`OMP_NUM_THREADS=64` and `cores=64` this created 64 × ~128 = ~8 000 idle threads
+during evaluation, when none of those libraries are used.
+
+Fixed by moving all three imports inside the functions that actually call them
+(`_chunk_save`, `_chunk_compress`, `_chunk_load`, `_chunk_stack`, `_raw_compress`,
+`_raw_load`, `load`, `decompress`).  Importing the module no longer loads any
+heavy library.
 
 ## Bug Fixes ✓
 
