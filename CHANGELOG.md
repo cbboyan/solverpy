@@ -2,6 +2,7 @@
 
 ## Unreleased changes (2026-05-16)
 
+* feat: bundle strats as package data, implement solverpy init [solver] [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * feat: number legend entries (s1..sN), use refs in summary/statuses/bars [[details](https://github.com/cbboyan/solverpy/commit/e8722b1) | [browse](https://github.com/cbboyan/solverpy/tree/e8722b1)]
 * feat: represent() for Builder/Trains, combined setup+devels YAML, fix forkserver-in-fork-child [[details](https://github.com/cbboyan/solverpy/commit/d9ba556) | [browse](https://github.com/cbboyan/solverpy/tree/d9ba556)]
 * docs: update TODO and DONE for reporter, prettytuner fork, RemoteTalker fix [[details](https://github.com/cbboyan/solverpy/commit/bd6bf5b) | [browse](https://github.com/cbboyan/solverpy/tree/bd6bf5b)]

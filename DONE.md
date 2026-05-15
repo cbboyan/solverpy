@@ -1,5 +1,19 @@
 # DONE
 
+## `solverpy init [solver]` CLI command ✓
+
+Bundles strategy files into the package and adds a `solverpy init` subcommand that
+populates `solverpy_db/strats/` in the current directory from the bundled data.
+
+- `packages/solverpy/src/solverpy/data/strats/` — strategy files moved here from repo
+  root `strats/`; declared as package data via `[tool.setuptools.package-data]`
+  `solverpy = ["data/**/*"]` in `pyproject.toml`
+- `scripts/init.py` — new module; `register()` wires the argparse subcommand; `main()`
+  copies bundled strats to `solverpy_db/strats/`; with no solver arg all files are
+  copied with original names; with solver arg only that solver's files are copied,
+  stripping the `solver-` prefix
+- `scripts/cli.py` — replaces the `init` stub with a real `init.register()` call
+
 ## Legend numbered, summary/statuses/bars use legend references ✓
 
 Legend entries now use `s{n}` (1-indexed) instead of strategy names, so bid is never

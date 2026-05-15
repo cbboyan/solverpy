@@ -32,5 +32,8 @@ solverpy = "solverpy.scripts.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+solverpy = ["data/**/*"]
+
 [tool.setuptools-git-versioning]
 enabled = true

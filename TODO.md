@@ -101,8 +101,7 @@ not be mutated in-place, but fragile.
 10. solverpy command script (unified CLI, Approach A)
    - dispatcher `solverpy.scripts.cli:main` in core `solverpy` package
    - core subcommands registered unconditionally:
-     - `solverpy init` — initialise a new project (create `solverpy_db/`, `strats/`, etc.)
-     - `solverpy init eprover` — init + scaffold eprover-specific files
+     - `solverpy init [solver]` — ✓ implemented (see DONE.md)
      - `solverpy eval sid bid` — run benchmark evaluation
      - `solverpy loop bid-train bid-devel` — run the iterative eval/build loop
      - `solverpy launch setup.yaml` — launch a setup from a YAML file
