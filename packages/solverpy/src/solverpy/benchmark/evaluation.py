@@ -3,7 +3,7 @@ import random
 import logging
 
 from .path import bids
-from ..tools import log
+from ..tools import log, reporter
 from ..task.solvertask import SolverTask
 from ..task.talker import Talker
 from ..task.logtalker import LogTalker
@@ -28,6 +28,7 @@ def init(setup: Setup | None = None):
       report.extend(markdown.heading("Setup", level=3))
       report.extend(markdown.yaml(setup))
       report.extend(markdown.newline())
+      reporter.add(report)
       report = markdown.dump(report, prefix="> ")
    else:
       report = ""

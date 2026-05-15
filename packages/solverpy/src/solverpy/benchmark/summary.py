@@ -2,6 +2,7 @@ from typing import Any, TYPE_CHECKING
 
 from .path import bids
 from .reports import markdown
+from ..tools import reporter
 
 if TYPE_CHECKING:
    from ..tools.typing import SolverJob
@@ -40,6 +41,7 @@ def legend(
    report += markdown.heading("Legend", level=3)
    report += markdown.table(header, rows)
    report += markdown.newline()
+   reporter.add(report)
    report0 = markdown.dump(report, prefix="> ")
 
    return (nicks, totaldesc, report0)
@@ -59,5 +61,6 @@ def summarize(
    report += markdown.statuses(allres, nicks)
    report += markdown.newline()
 
+   reporter.add(report)
    return markdown.dump(report, prefix="> ")
 

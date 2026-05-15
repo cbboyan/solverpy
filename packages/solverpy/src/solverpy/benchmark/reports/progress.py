@@ -3,22 +3,19 @@ import logging
 
 from . import markdown
 from .markdown import *
-from ...tools import human
+from ...tools import human, reporter as _reporter
 
 if TYPE_CHECKING:
    from ...tools.typing import Report
 
 logger = logging.getLogger(__name__)
 
-#def reporter(fun: Callable[..., "Report"]) -> Callable[..., "Report"]:
-#   def wrapper(*args, dump=True, prefix="> ", **kwargs) -> "Report":
-#      rep = fun(*args, **kwargs)
-#      return markdown.dump(rep, prefix=prefix) if dump else rep
 
 def reporter(fun: Callable[..., "Report"]) -> Callable[..., str]:
    def wrapper(*args, prefix="> ", **kwargs) -> str:
       rep = fun(*args, **kwargs)
-      return markdown.dump(rep, prefix=prefix) 
+      _reporter.add(rep)
+      return markdown.dump(rep, prefix=prefix)
 
    return wrapper
 

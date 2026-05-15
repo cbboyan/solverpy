@@ -17,6 +17,12 @@ logger = logging.getLogger(__name__)
 
 NAME = "logs"
 
+_logfile: str | None = None
+
+
+def logfile() -> str | None:
+   return _logfile
+
 
 def ntfy(setup: "Setup", msg: str) -> None:
    if (not setup) or ("ntfy" not in setup):
@@ -57,10 +63,13 @@ def init_yaml() -> None:
 
 
 def init() -> None:
+   global _logfile
+   from . import reporter
    root = logging.getLogger("")
    root.setLevel(logging.DEBUG)
    # set up logging to file
-   fh = logging.FileHandler(filename(), mode="w")
+   _logfile = filename()
+   fh = logging.FileHandler(_logfile, mode="w")
    fh.setLevel(logging.DEBUG)
    fh.setFormatter(
       logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s"))
@@ -75,14 +84,17 @@ def init() -> None:
    logger.info("Logger running.")
    atexit.register(terminating)
    init_yaml()
+   reporter.init(_logfile)
 
 
 def terminating() -> None:
+   from . import reporter
    if "last_traceback" in dir(sys):
       msg = traceback.format_exception(sys.last_type, sys.last_value,
                                        sys.last_traceback)
       msg = "".join(msg)
       logger.error(f"Last exception:\n{msg}")
+   reporter.close()
    for handler in logging.getLogger("").handlers[:]:
       if isinstance(handler, logging.FileHandler):
          try:

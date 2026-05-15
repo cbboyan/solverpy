@@ -2,6 +2,7 @@
 
 ## Unreleased changes (2026-05-15)
 
+* feat: add Reporter (.md sidecar), fix RemoteTalker pickling, switch prettytuner to fork [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * fix: switch all multiprocessing contexts to forkserver, lazy-import numpy/scipy/sklearn [[details](https://github.com/cbboyan/solverpy/commit/66db01e) | [browse](https://github.com/cbboyan/solverpy/tree/66db01e)]
 * fix: propagate flatten/compress from setup options to Reloader [[details](https://github.com/cbboyan/solverpy/commit/8a96647) | [browse](https://github.com/cbboyan/solverpy/tree/8a96647)]
 * feat: complete Reloader implementation with Outputs.read() and setup integration [[details](https://github.com/cbboyan/solverpy/commit/fcfe339) | [browse](https://github.com/cbboyan/solverpy/tree/fcfe339)]

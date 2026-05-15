@@ -2,7 +2,7 @@ from typing import Any, TypeVar, TYPE_CHECKING
 import time
 import logging
 
-from solverpy.tools import human
+from solverpy.tools import human, reporter
 from solverpy.task.bar import BuilderBar
 from solverpy.benchmark.reports import markdown
 
@@ -125,6 +125,7 @@ class AutotuneListener(Listener):
             key=lambda x: float(x[2]),
          ))
       lines.append("")
+      reporter.add(lines)
       logger.info("\n" + markdown.dump(lines, prefix="> "))
 
    def tuning(self, t_start: int) -> None:

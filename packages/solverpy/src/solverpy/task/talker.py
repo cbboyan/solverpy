@@ -79,7 +79,7 @@ class Talker:
       for name in logging.root.manager.loggerDict:
          logging.getLogger(name).handlers.clear()
       root.addHandler(QueueHandler(queue))
-      root.setLevel(logging.INFO)
+      root.setLevel(logging.DEBUG)
       logger.debug("logging redirected")
 
    def log_start(self) -> None:

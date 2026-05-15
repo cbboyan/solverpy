@@ -97,6 +97,16 @@ class RemoteTalker(Talker):
       except Exception as e:
          logger.error(f"Error calling {method}: {e}", exc_info=True)
 
+   def __getstate__(self):
+      state = self.__dict__.copy()
+      state['_listening_thread'] = None
+      state['_stop_listening'] = None
+      return state
+
+   def __setstate__(self, state):
+      self.__dict__.update(state)
+      self._stop_listening = threading.Event()
+
    def terminate(self):
       super().terminate()
       self._local.terminate()
