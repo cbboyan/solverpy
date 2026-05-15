@@ -34,11 +34,15 @@ class Reloader(SolverPy):
       self,
       solver: SolverPy,
       plugins: list["Plugin"] = [],
+      flatten: bool = True,
+      compress: bool = True,
    ):
       """
       Args:
           solver: the wrapped solver whose output cache and processing logic to reuse.
           plugins: additional plugins registered on this reloader instance.
+          flatten: passed to `Outputs` — replace `/` in problem paths with `_._`.
+          compress: passed to `Outputs` — read `.gz` files.
       """
       self.solver = solver
       SolverPy.__init__(
@@ -46,7 +50,7 @@ class Reloader(SolverPy):
          solver._limits,
          plugins,
       )
-      self.outputs = Outputs()
+      self.outputs = Outputs(flatten=flatten, compress=compress)
       self.outputs.register(self.solver)
       self.solver.call("outputs", "disable")
       self.outputs.disable()

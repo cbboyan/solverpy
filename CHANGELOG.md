@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-15)
 
-* feat: complete Reloader implementation with Outputs.read() and setup integration [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: propagate flatten/compress from setup options to Reloader [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: complete Reloader implementation with Outputs.read() and setup integration [[details](https://github.com/cbboyan/solverpy/commit/fcfe339) | [browse](https://github.com/cbboyan/solverpy/tree/fcfe339)]
 * feat: add unified `solverpy` CLI command, migrate scripts into packages [[details](https://github.com/cbboyan/solverpy/commit/2969787) | [browse](https://github.com/cbboyan/solverpy/tree/2969787)]
 * feat: add posneg weight tuning phase 'w' to autotuner [[details](https://github.com/cbboyan/solverpy/commit/660d630) | [browse](https://github.com/cbboyan/solverpy/tree/660d630)]
 * refactor: rename and regroup svm helpers with chunk_/raw_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/0e30802) | [browse](https://github.com/cbboyan/solverpy/tree/0e30802)]

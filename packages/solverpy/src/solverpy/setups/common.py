@@ -60,6 +60,11 @@ def solver(setup: Setup, mk_solver: "SolverMaker") -> Setup:
    _solver = mk_solver(setup["limit"], **kwargs)
    if setup.get("reloader"):
       from ..solver.reloader import Reloader
-      _solver = Reloader(_solver)
+      options = setup.get("options", [])
+      _solver = Reloader(
+         _solver,
+         flatten="flatten" in options,
+         compress="compress" in options,
+      )
    setup["solver"] = _solver
    return setup
