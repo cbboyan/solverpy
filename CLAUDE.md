@@ -43,6 +43,8 @@ Versioning is automated via a `post-commit` git hook (`.git/hooks/post-commit`) 
 
 Do not manually edit `CHANGELOG.md` or version tags — they are managed automatically.
 
+The commit hash shown by `git commit` will differ from the final hash after the hook runs — this is expected. `git push` always pushes the amended commit, and `git log` will show the correct final hash.
+
 ## Code Style
 
 - **Indent width: 3 spaces** (configured in `pyproject.toml` via `[tool.yapf]`)
