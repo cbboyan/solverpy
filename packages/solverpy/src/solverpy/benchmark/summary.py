@@ -14,24 +14,21 @@ def legend(
 ) -> tuple[dict["SolverJob", str], str, str]:
    nicks = {}
    if sidnames:
-      header = ["name", "solver", "benchmark", "problems"]
+      header = ["#", "strategy", "benchmark", "solver", "problems"]
    else:
-      header = ["name", "solver", "benchmark", "strategy", "problems"]
+      header = ["name", "strategy", "benchmark", "solver", "problems"]
    rows = []
    width = 0
    for (n, job) in enumerate(jobs):
       (solver, bid, sid) = job
       if sidnames:
-         nick = sid
-         if job == ref: nick = f"* {nick}"
+         nick = f"s{n+1}"
+         if job == ref: nick = f"* s{n+1}"
       else:
          nick = "ref" if job == ref else f"{n}/{len(jobs)-1}"
       nicks[job] = nick
       width = max(width, len(nick))
-      if sidnames:
-         rows.append([nick, solver.name, bid, len(bids.problems(bid))])
-      else:
-         rows.append([nick, solver.name, bid, sid, len(bids.problems(bid))])
+      rows.append([nick, sid, bid, solver.name, len(bids.problems(bid))])
 
    totaldesc = "total"
    totaldesc = f"{totaldesc:{width}}"

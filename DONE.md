@@ -1,5 +1,17 @@
 # DONE
 
+## Legend numbered, summary/statuses/bars use legend references ✓
+
+Legend entries now use `s{n}` (1-indexed) instead of strategy names, so bid is never
+dropped from the summary.  All three output surfaces updated consistently:
+
+- `benchmark/summary.py`: `legend()` now generates `s1`, `s2`, … nicks (`* s{n}` for
+  ref); legend table always shows all five columns `#`, `strategy`, `benchmark`,
+  `solver`, `problems` regardless of `sidnames` flag.
+- `task/logtalker.py`: `begin()` stores `_total_jobs` and initialises `_job_index = 0`;
+  `next()` increments the index and formats `_job_desc` as `[{i}/{n}] s{k}`, so each
+  per-job progress bar label references the legend number.
+
 ## `represent()` for Builder and Trains hierarchies ✓
 
 Added structured YAML representations for ML builder and training-data plugin classes,

@@ -35,6 +35,8 @@ class LogTalker(Talker):
    ) -> None:
       del kwargs
       self._total_count = sum(len(bids.problems(bid)) for (_, bid, _) in jobs)
+      self._total_jobs = len(jobs)
+      self._job_index = 0
       sum0 = summary.legend(jobs, refjob, sidnames=sidnames)
       (self._total_nicks_full, self._total_desc, self._total_report) = sum0
       self._total_nicks = {k[1:3]:v for (k,v) in self._total_nicks_full.items()}
@@ -60,7 +62,9 @@ class LogTalker(Talker):
    def next(self, job: "SolverJob") -> None:
       jname = jobname(*job)
       self._solved = self._unsolved = self._errors = 0
-      self._job_desc = self._total_nicks[job[1:3]] or jname
+      self._job_index += 1
+      nick = self._total_nicks[job[1:3]].strip()
+      self._job_desc = f"[{self._job_index}/{self._total_jobs}] {nick}"
       if self._log_progress:
          logger.info(f"Evaluating {jname}")
       logger.debug(f"evaluating {self._job_desc}: {jname}")
