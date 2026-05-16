@@ -1,5 +1,22 @@
 # DONE
 
+## `solverpy run file.yml`, `solverpy clean`, options docs ✓
+
+Added two more CLI subcommands and fixed the log filename.
+
+- `scripts/run.py`: new `solverpy run FILE` subcommand; loads YAML, pops `evaluate`
+  key to select solver via `setups.<solver>()`, then calls `setups.evaluation()` and
+  `setups.launch()`; calls `log.init(filename)` early so the log is named after the
+  YAML file (e.g. `eval-eprover.yml.log`) rather than the script path
+- `scripts/clean.py`: new `solverpy clean` subcommand; requires `solverpy_db/` in cwd,
+  deletes all its subdirectories except `strats/`, prompts for confirmation unless `-y`
+- `tools/log.py`: `init()` and `filename()` accept optional `name` parameter; `init()`
+  is now idempotent (returns early if already initialised); falls back to
+  `os.path.basename(sys.argv[0])` when no name given
+- `dust/eval-eprover.yml`: example YAML setup file for the `solverpy run` command
+- `setups/setup.py`, `docs/options.md`: added missing options `proofs`, `premises`,
+  `headless` to the options table
+
 ## `solverpy init [solver]` CLI command ✓
 
 Bundles strategy files into the package and adds a `solverpy init` subcommand that

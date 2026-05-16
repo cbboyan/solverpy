@@ -23,18 +23,17 @@ def main():
    )
    subparsers = parser.add_subparsers(dest="command", metavar="COMMAND")
 
-   from solverpy.scripts import esid2strat, init
+   from solverpy.scripts import esid2strat, init, run, clean
    esid2strat.register(subparsers)
    init.register(subparsers)
+   run.register(subparsers)
+   clean.register(subparsers)
    _add_stub(subparsers, "eval",
              "Run benchmark evaluation.",
              [("sid", "Strategy id."), ("bid", "Benchmark id.")])
    _add_stub(subparsers, "loop",
              "Run the iterative eval/build loop.",
              [("bid-train", "Training benchmark id."), ("bid-devel", "Development benchmark id.")])
-   _add_stub(subparsers, "launch",
-             "Launch a setup from a YAML file.",
-             [("setup", "Path to setup YAML file.")])
 
    try:
       from solverpy_learn.scripts import autotune, compress, decompress, deconflict

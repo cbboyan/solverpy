@@ -104,7 +104,8 @@ not be mutated in-place, but fragile.
      - `solverpy init [solver]` — ✓ implemented (see DONE.md)
      - `solverpy eval sid bid` — run benchmark evaluation
      - `solverpy loop bid-train bid-devel` — run the iterative eval/build loop
-     - `solverpy launch setup.yaml` — launch a setup from a YAML file
+     - `solverpy run file.yml` — ✓ implemented (see DONE.md)
+     - `solverpy clean` — ✓ implemented (see DONE.md)
      - `solverpy esid2strat` — convert eprover `--print-strategy` output to CLI args (was `solverpy-esid2strat.py`)
    - learn subcommands imported from `solverpy_learn` if installed, graceful error otherwise:
      - `solverpy tune train.in` — Optuna autotuner (was `solverpy-autotune`)

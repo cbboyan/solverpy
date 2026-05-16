@@ -52,6 +52,9 @@ class Setup(TypedDict, total=False):
            |`flatten`|Put all output files in a single directory (replace `/` with `_._`).|yes|
            |`compress-trains`|Compress trains.|yes|
            |`debug-trains`|Dump training data for each file separately.|no|
+           |`proofs`|Store proof objects in the database.|no|
+           |`premises`|Store premise selections in the database.|no|
+           |`headless`|Suppress progress bars and interactive UI (for non-terminal use).|no|
 
        plugins: List of additional solver plugins.
        delfix: 

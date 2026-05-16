@@ -35,14 +35,13 @@ def ntfy(setup: "Setup", msg: str) -> None:
       logger.warning(f"> Warning: ntfy I/O error ({e})")
 
 
-def filename() -> str:
+def filename(name: str | None = None) -> str:
    d_logs = bids.dbpath(NAME)
    os.makedirs(d_logs, exist_ok=True)
-   script = sys.argv[0]
-   script = script.lstrip("./").replace("/", "--")
-   now = datetime.now()
-   now = now.strftime("%y-%m-%d__%H:%M:%S")
-   f_log = f"{now}__{script}.log"
+   if name is None:
+      name = os.path.basename(sys.argv[0])
+   now = datetime.now().strftime("%y-%m-%d__%H:%M:%S")
+   f_log = f"{now}__{name}.log"
    return os.path.join(d_logs, f_log)
 
 
@@ -62,13 +61,15 @@ def init_yaml() -> None:
    yaml.add_multi_representer(SolverPyObj, representer)
 
 
-def init() -> None:
+def init(name: str | None = None) -> None:
    global _logfile
+   if _logfile:
+      return
    from . import reporter
    root = logging.getLogger("")
    root.setLevel(logging.DEBUG)
    # set up logging to file
-   _logfile = filename()
+   _logfile = filename(name)
    fh = logging.FileHandler(_logfile, mode="w")
    fh.setLevel(logging.DEBUG)
    fh.setFormatter(
