@@ -104,6 +104,71 @@ The iterative eval/build loop runs: evaluate strategies → collect proofs → t
 
 `task/launcher.py` manages a `multiprocessing` pool. `SolverTask` wraps a single `(solver, bid, sid, problem)` run. `Talker` subclasses report progress (e.g., `LogTalker` logs to console/file).
 
+### Talker Hierarchy and Progress Reporting
+
+Talkers form a single inheritance chain plus one proxy:
+
+```
+Talker (task/talker.py)               — abstract: log queue, lifecycle hooks
+  └─ LogTalker (task/logtalker.py)    — log-based defaults for all events
+       └─ SolverTalker (task/solvertalker.py)  — adds tqdm bars (RunningBar, SolvingBar)
+            └─ TuneTalker (autotune/tunetalker.py)  — self-contained tuning talker
+
+Talker
+  └─ RemoteTalker (task/remotetalker.py)  — cross-process proxy, wraps a local Talker
+```
+
+`LogTalker._log_progress` controls verbosity: `True` → `logger.info`, `False` → `logger.debug`. `SolverTalker` sets it `False` and renders tqdm bars instead. `TuneTalker` overrides it with the `headless` flag after `super().__init__()`.
+
+`LogTalker` has log-based default implementations for all event methods including tuning events (`trials`, `trying`, `tried`, `trialed`, `building`, `iteration`, `built`, `tuning`, `tuned`). These serve as fallbacks in headless mode and as the base for `TuneTalker`'s bar overrides.
+
+### Multiprocessing Process Layers (Tuning Pipeline)
+
+The autotune pipeline uses three process layers:
+
+```
+main process
+  └─ prettytuner child  [fork]
+       └─ ATP eval workers  [spawn]
+```
+
+1. **`prettytuner`** (`builder/autotune/autotune.py`) forks a child with `multiprocessing.Process(target=tuner)`. Fork is used because `TuneTalker` holds a plain `multiprocessing.Queue` which is not picklable — fork shares it via memory copy.
+
+2. **ATP eval workers** (`builder/autotune/build.py`) are spawned via `Pool(context="spawn")`. Spawn is used explicitly (not forkserver) because **forkserver cannot be started from inside a forked child process**.
+
+3. `redirect.call` in `prettytuner` redirects the child's stdout/stderr at the file descriptor level to `autotune.log`. This means any tqdm bars rendered in the child would go to the log file, not the terminal — which is why all progress rendering happens in the parent via the queue.
+
+### TuneTalker Architecture
+
+`TuneTalker` is a self-contained talker for the tuning pipeline that replaces the former `RemoteTalker(SolverTalker()) + AutotuneListener` pair.
+
+**Key design:**
+- Holds a plain `multiprocessing.Queue` (works because the child is forked, not spawned — no pickling needed).
+- `__getattribute__` intercepts every method in `REMOTES` in the child and puts `(name, args, kwargs)` on the queue instead of calling the real method.
+- The parent's listening thread calls `object.__getattribute__(self, name)` to bypass the proxy and invoke the real handler.
+- `wait()` blocks on `_result_event` until the child calls `result(val)`.
+- `listening_start()` does **not** call `log_start()` — no Manager queue, no log queue infrastructure.
+- Worker `task.logqueue` is intentionally `None`; child worker logging is suppressed. To enable: call `self.log_start()` in `listening_start()` and inject `self._log_queue` into tasks in `launching()`.
+
+### Log Queue Mechanism
+
+`Talker._log_queue` / `QueueListener` is built-in infrastructure for routing child process `logging` records to the parent. It is currently **inactive by design**:
+
+- `listening_start()` (which calls `log_start()` to create the queue) is not called in the regular evaluation path.
+- Worker tasks receive `task.logqueue = None`; workers configure their own logging normally.
+- In the tuning pipeline, child output is intentionally redirected to `autotune.log` via `redirect.call` and structured progress events travel via the `TuneTalker` queue — so log records from workers are suppressed.
+
+To enable worker log forwarding: call `self.log_start()` in `listening_start()`, then inject `self._log_queue` into each task in `launching()`.
+
+### RemoteTalker
+
+`RemoteTalker` is a generic cross-process proxy that wraps any local `Talker` and makes its methods callable from a child process. It is not used in the tuning pipeline (replaced by `TuneTalker`) but remains available for other uses.
+
+- `queue=None` (default): creates a Manager queue via forkserver — picklable into spawn workers.
+- `queue=<queue>`: uses the provided queue directly — suitable when the child is forked and pickling is not needed.
+- `_remote_manager` is stored as an instance attribute to prevent GC of the Manager server process.
+- Methods in `REMOTES` must **not** include `log_start`/`log_stop` if you want the log queue to be set on the `RemoteTalker` itself — those names in `REMOTES` would queue the call to `_local` instead.
+
 ### Environment Variables
 
 | Variable | Default | Description |
