@@ -1,5 +1,12 @@
 # DONE
 
+## RemoteTalker fixes ✓
+
+Removed `log_config`, `log_start`, `log_stop` from `RemoteTalker.REMOTES`.
+Having them there caused those calls to be queued to `_local` instead of
+executing locally — so `_log_queue` was never set on the proxy and
+`log_config` never ran in the child process.
+
 ## RemoteTalker queue and Manager lifetime fixes ✓
 
 - `manager` is now stored as `self._remote_manager` (was a local variable that

@@ -56,9 +56,6 @@ class RemoteTalker(Talker):
    """
 
    REMOTES = {
-      "log_config",
-      "log_start",
-      "log_stop",
       "begin",
       "end",
       "next",

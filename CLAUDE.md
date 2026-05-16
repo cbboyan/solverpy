@@ -167,7 +167,7 @@ To enable worker log forwarding: call `self.log_start()` in `listening_start()`,
 - `queue=None` (default): creates a Manager queue via forkserver — picklable into spawn workers.
 - `queue=<queue>`: uses the provided queue directly — suitable when the child is forked and pickling is not needed.
 - `_remote_manager` is stored as an instance attribute to prevent GC of the Manager server process.
-- Methods in `REMOTES` must **not** include `log_start`/`log_stop` if you want the log queue to be set on the `RemoteTalker` itself — those names in `REMOTES` would queue the call to `_local` instead.
+- `log_start`, `log_stop`, `log_config` are **not** in `REMOTES` — they must execute locally on the `RemoteTalker` instance (or in the child process), not be forwarded to `_local`.
 
 ### Environment Variables
 

@@ -25,24 +25,11 @@ never sees the exit code from the subprocess.
 `None`. Tasks receive a `None` logqueue and child process logging is never redirected —
 all log output from workers is silently dropped.
 
-Related: in `RemoteTalker`, `log_start` is listed in `REMOTES`, so calling
-`self.log_start()` from `listening_start()` queues the call to the local talker instead
-of executing it. This means `_log_queue` is never set on the `RemoteTalker` instance,
-and the `log_config` call in `autotune.tuner()` (which checks `builder.talker._log_queue`)
-is never reached — child process logging is silently suppressed there too.
-
-Note: this suppression in `prettytuner` may be intentional. The child runs LightGBM,
+Note: this suppression is intentional in the tuning pipeline. The child runs LightGBM,
 Optuna, and other noisy packages whose internal log output would pollute the log file.
-Progress information from the child is already routed to the parent via the autotune
-queue (messages like `"status"`, `"tried"`, `"trialed"`) and logged there by
-`AutotuneListener` — so meaningful output reaches the log without opening the Python
-logging channel from the child at all.
-
-This reflects a generational design: the structured autotune queue messages came first
-and are still the right mechanism for rich progress reporting (trial tables, scores,
-etc.). The log queue was added later as a general-purpose channel. A future unification
-could route all child logging through the log queue, but the message protocol is
-non-trivial to replace and the two mechanisms serve somewhat different purposes.
+Structured progress events travel via the `TuneTalker` queue and are rendered in the
+parent. To enable worker log forwarding: call `log_start()` in `listening_start()` and
+inject `_log_queue` into tasks in `launching()`.
 
 ### 4. Unreachable `raise` in `redirect.call()` — `tools/redirect.py:73`
 `raise` after an `except` block that already unconditionally re-raises. Dead code that
