@@ -32,7 +32,7 @@ class EnigmaTrains(SvmTrains):
 
    def represent(self) -> dict[str, Any]:
       return dict(
-         cls=self.__class__.__name__,
+         cls=f"{self.__class__.__module__}.{self.__class__.__name__}",
          dataname=self._dataname,
          filename=self._filename,
          chunk_size=self.info.chunk_size,
@@ -104,7 +104,7 @@ class EnigmaTrainsDebug(Outputs):
       self._ratio = ratio
 
    def represent(self) -> dict:
-      return dict(cls=self.__class__.__name__, variant=self._variant, ratio=self._ratio)
+      return dict(cls=f"{self.__class__.__module__}.{self.__class__.__name__}", variant=self._variant, ratio=self._ratio)
 
    def path(
       self,

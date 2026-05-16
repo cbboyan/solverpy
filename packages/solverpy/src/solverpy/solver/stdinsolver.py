@@ -88,8 +88,8 @@ class StdinSolver(SolverPy):
 
    @property
    def name(self) -> str:
-      """Solver name including the resource limit, e.g. `Cvc5:T10`."""
-      return f"{super().name}:{self._limits.limit}"
+      """Solver name including the resource limit, e.g. `Cvc5(limit=T10)`."""
+      return f"{super().name}(limit={self._limits.limit})"
 
    def run(self, instance: Any, strategy: Any) -> str:
       """

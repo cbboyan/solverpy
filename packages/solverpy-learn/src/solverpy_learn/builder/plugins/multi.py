@@ -18,7 +18,7 @@ class MultiTrains(SvmTrains):
 
    def represent(self) -> dict:
       return dict(
-         cls=self.__class__.__name__,
+         cls=f"{self.__class__.__module__}.{self.__class__.__name__}",
          dataname=self._dataname,
          trains=[t.represent() for t in self._trains],
       )

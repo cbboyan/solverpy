@@ -21,7 +21,7 @@ class Builder(SolverPyObj):
 
    def represent(self) -> dict[str, Any]:
       return dict(
-         cls=self.__class__.__name__,
+         cls=f"{self.__class__.__module__}.{self.__class__.__name__}",
          dataname=self._dataname,
       )
 

@@ -39,7 +39,7 @@ class Cvc5TrainsDebug(Outputs):
       self._path = bids.dbpath(NAME)
 
    def represent(self) -> dict:
-      return dict(cls=self.__class__.__name__, ratio=self._ratio)
+      return dict(cls=f"{self.__class__.__module__}.{self.__class__.__name__}", ratio=self._ratio)
 
    def path(self, instance: tuple[str, str], strategy: str) -> str:
       return super().path(instance, strategy) + ".in"

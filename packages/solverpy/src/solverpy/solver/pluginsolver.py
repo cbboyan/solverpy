@@ -93,8 +93,9 @@ class PluginSolver(Solver):
 
    def represent(self):
       """Return a dict representation listing the class name, decorators, and translators."""
+      cls = f"{self.__class__.__module__}.{self.__class__.__name__}"
       return dict(
-         cls=self.name,
+         cls=cls,
          decorators=[repr(x) for x in self.decorators],
          translators=[repr(x) for x in self.translators],
       )
