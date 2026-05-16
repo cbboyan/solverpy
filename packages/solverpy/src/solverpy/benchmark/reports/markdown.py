@@ -83,20 +83,27 @@ def table(
    return lines
 
 
+def _job_cols(results: dict["SolverJob", Any]) -> tuple[bool, bool]:
+   sids = set(sid for (_, _, sid) in results)
+   bids = set(bid for (_, bid, _) in results)
+   return (len(sids) > 1, len(bids) > 1)
+
+
 def summary(
    results: dict["SolverJob", "Result"],
    nicks: dict["SolverJob", str],
    ref: "SolverJob | None" = None,
 ) -> "Report":
    logger.debug(f"creating summary for {len(results)} results")
+   (show_sid, show_bid) = _job_cols(results)
+   extra = (["strategy"] if show_sid else []) + (["benchmark"] if show_bid else [])
    if ref is None:
-      header = ["name", "solved", "PAR2", "unsolved", "timeouts", "errors"]
+      header = ["#"] + extra + ["solved", "PAR2", "unsolved", "timeouts", "errors"]
       refsolved = None
       refpar2 = None
    else:
-      header = [
-         "name", "solved", "ref+", "ref-", "PAR2", "PAR2+", "unsolved",
-         "timeouts", "errors"
+      header = ["#"] + extra + [
+         "solved", "ref+", "ref-", "PAR2", "PAR2+", "unsolved", "timeouts", "errors"
       ]
       refsolved = frozenset(p for (p, r) in results[ref].items()
                             if ref[0].solved(r))
@@ -105,6 +112,8 @@ def summary(
    rows: list[list[Any]] = []
    for ((solver, bid, sid), res) in results.items():
       row: list[Any] = [nicks[(solver, bid, sid)]]
+      if show_sid: row.append(sid)
+      if show_bid: row.append(bid)
       row.extend(data.summary(solver, bid, sid, res, refsolved, refpar2))
       rows.append(row)
    lines = table(header, rows, key=lambda x: x[1:])
@@ -117,6 +126,8 @@ def statuses(
    nicks: dict["SolverJob", str],
 ) -> "Report":
    logger.debug(f"creating statuses for {len(results)} results")
+   (show_sid, show_bid) = _job_cols(results)
+   extra = (["strategy"] if show_sid else []) + (["benchmark"] if show_bid else [])
 
    def safestat(r: "Result | None") -> str:
       if r is None:
@@ -142,10 +153,12 @@ def statuses(
    allstats = frozenset(
       safestat(r) for res in results.values() for r in res.values())
    allstats = sorted(allstats, key=rank)
-   header = ["name"] + allstats
+   header = ["#"] + extra + allstats
    rows = []
    for ((solver, bid, sid), res) in results.items():
       row = [nicks[(solver, bid, sid)]]
+      if show_sid: row.append(sid)
+      if show_bid: row.append(bid)
       row += [count(status, res) for status in allstats]
       rows.append(row)
    lines = table(header, rows, key=lambda x: x[1:])

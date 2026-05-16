@@ -35,8 +35,15 @@ def legend(
    totaldesc = f"{totaldesc:{width}}"
    nicks = {x: f"{y:{width}}" for (x, y) in nicks.items()}
 
+   strats = ", ".join(f"`{row[1]}`" for row in rows)
+   benchmarks = ", ".join(f"`{b}`" for b in dict.fromkeys(row[2] for row in rows))
+
    report = markdown.newline()
-   report += markdown.heading("Legend", level=3)
+   report += markdown.heading("Evaluation", level=3)
+   report += markdown.text(f"- **strategies:** {strats}")
+   report += markdown.text(f"- **benchmarks:** {benchmarks}")
+   report += markdown.newline()
+   report += markdown.heading("Legend", level=4)
    report += markdown.table(header, rows)
    report += markdown.newline()
    reporter.add(report)
@@ -51,11 +58,11 @@ def summarize(
    ref: "SolverJob | None" = None,
 ) -> str:
    report = markdown.newline()
-   report += markdown.heading("Summary", level=3)
+   report += markdown.heading("Summary", level=4)
    report += markdown.summary(allres, nicks, ref=ref)
 
    report += markdown.newline()
-   report += markdown.heading("Statuses", level=3)
+   report += markdown.heading("Statuses", level=4)
    report += markdown.statuses(allres, nicks)
    report += markdown.newline()
 

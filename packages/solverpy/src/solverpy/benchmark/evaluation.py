@@ -24,7 +24,8 @@ def init(setup: Setup | None = None, devels: Setup | None = None):
    log.init()
    if setup:
       report = []
-      report.extend(markdown.heading("Experiments", level=2))
+      dataname = setup.get("dataname", "noname")
+      report.extend(markdown.heading(f"Experiment {dataname}", level=2))
       report.extend(markdown.heading("Setup", level=3))
       report.extend(markdown.yaml(setup, devels))
       report.extend(markdown.newline())
