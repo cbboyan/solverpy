@@ -1,5 +1,16 @@
 # DONE
 
+## RemoteTalker queue and Manager lifetime fixes ✓
+
+- `manager` is now stored as `self._remote_manager` (was a local variable that
+  went out of scope immediately, risking GC of the Manager server process).
+  Shut down in `terminate()`.
+- `__init__` accepts an optional `queue` argument: if provided, uses it
+  directly (no Manager needed — suitable for fork context); otherwise creates
+  a forkserver Manager queue as before (required for spawn workers that need
+  to pickle the queue proxy).
+- `__getstate__` excludes `_remote_manager` from pickle state.
+
 ## TuneTalker — unified tuning progress talker ✓
 
 Replaced `RemoteTalker(SolverTalker()) + AutotuneListener` with a single

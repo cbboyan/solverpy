@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-16)
 
-* feat: replace RemoteTalker+AutotuneListener with TuneTalker [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: RemoteTalker Manager lifetime and optional queue argument [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: replace RemoteTalker+AutotuneListener with TuneTalker [[details](https://github.com/cbboyan/solverpy/commit/26600be) | [browse](https://github.com/cbboyan/solverpy/tree/26600be)]
 * feat: loop YAML support, clean log output, document Talker classes [[details](https://github.com/cbboyan/solverpy/commit/a51418d) | [browse](https://github.com/cbboyan/solverpy/tree/a51418d)]
 * feat: improve report structure and summary/statuses tables [[details](https://github.com/cbboyan/solverpy/commit/6a7d7ed) | [browse](https://github.com/cbboyan/solverpy/tree/6a7d7ed)]
 * feat: solverpy report command, progress bar alignment and style [[details](https://github.com/cbboyan/solverpy/commit/8e226d7) | [browse](https://github.com/cbboyan/solverpy/tree/8e226d7)]
