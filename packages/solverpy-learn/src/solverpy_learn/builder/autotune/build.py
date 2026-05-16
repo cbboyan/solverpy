@@ -9,10 +9,9 @@ from solverpy.setups import Setup
 from solverpy.benchmark import evaluation
 
 if TYPE_CHECKING:
-   from queue import Queue
    from lightgbm import Booster, Dataset
    from ..autotuner import AutoTuner
-   Talker = Queue[tuple[str, tuple[Any, ...]]]
+   from .tunetalker import TuneTalker
 
 POS_ACC_WEIGHT = 2.0
 
@@ -45,15 +44,15 @@ def model(
    dtrain: "Dataset",
    dtest: "Dataset",
    f_mod: str,
-   queue: "Talker | None" = None,
+   talker: "TuneTalker | None" = None,
 ) -> tuple["Booster", dict[str, Any]]:
    callbacks = bst = begin = end = mlscore = acc = trainacc = None
 
    def report(key: str, *content: Any) -> None:
-      if queue:
-         queue.put((key, content))
+      if talker:
+         getattr(talker, key)(*content)
 
-   def queue_callback(env: Any) -> None:
+   def iteration_callback(env: Any) -> None:
       results = env.evaluation_result_list
       report("debug", str(results))
       loss = [r[2] for r in results]
@@ -62,31 +61,24 @@ def model(
    def setup_dirs() -> None:
       d_mod = os.path.dirname(f_mod)
       os.makedirs(d_mod, exist_ok=True)
-      # f_log = f_mod + ".log"
 
    def setup_callbacks() -> None:
       nonlocal callbacks, params
       callbacks = []
       callbacks.append(lgb.log_evaluation(1))
       if "early_stopping" in params:
-         # rounds = params["early_stopping"]
          params = dict(params)
-         rounds = params.pop("early_stopping")  # this also removes it
-         # rounds can be `bool` or `int` (or int-convertable)
-         rounds = 10 if (rounds is True) else int(
-            rounds)  # True => 10; False => 0
+         rounds = params.pop("early_stopping")
+         rounds = 10 if (rounds is True) else int(rounds)
          if rounds:
-            report("debug",
-                   f"activating early stopping: stopping_rounds={rounds}")
+            report("debug", f"activating early stopping: stopping_rounds={rounds}")
             callbacks.append(
-               lgb.early_stopping(rounds, first_metric_only=True,
-                                  verbose=True))
-      if queue:
-         callbacks.append(queue_callback)
+               lgb.early_stopping(rounds, first_metric_only=True, verbose=True))
+      if talker:
+         callbacks.append(iteration_callback)
 
    def build_model() -> "Booster":
       nonlocal bst, begin, end, params, callbacks
-      # build the model
       report("building", f_mod, params["num_round"])
       begin = time.time()
       bst = lgb.train(
@@ -94,19 +86,16 @@ def model(
          dtrain,
          valid_sets=[dtrain, dtest],
          valid_names=["train", "valid"],
-         # valid_sets=[dtest],
          callbacks=callbacks)
       end = time.time()
       if hasattr(bst, "best_iteration"):
-         report("debug",
-                f"early stopping: best_iteration={bst.best_iteration}")
+         report("debug", f"early stopping: best_iteration={bst.best_iteration}")
       bst.save_model(f_mod)
       return bst
 
    def check_model() -> None:
       nonlocal mlscore, acc, trainacc
       assert bst
-      # compute the accuracy on the testing data
       (axs, ays) = (dtest.get_data(), dtest.get_label())
       assert type(axs) is csr_matrix
       assert type(ays) is ndarray
@@ -117,13 +106,12 @@ def model(
       trainacc = accuracy(bst, taxs, tays)
       bst.free_dataset()
       bst.free_network()
-      # compute the mlscore of this model
       mlscore = POS_ACC_WEIGHT * acc[1] + acc[2]
       report("built", mlscore)
 
    setup_dirs()
    setup_callbacks()
-   bst = build_model()  # make typing happy
+   bst = build_model()
    check_model()
 
    assert begin and end
@@ -134,7 +122,6 @@ def model(
       duration=end - begin,
    )
 
-   #return (mlscore, acc, trainacc, end-begin)
    return (bst, stats)
 
 
@@ -156,8 +143,8 @@ def score(
    setup["solver"].call("trains", "disable")
    setup["solver"].call("debug-trains", "disable")
    res = evaluation.launch(talker=builder.talker, **setup)
-   solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r)) 
-   score = sum(solved(s, rs) for ((s,_,_), rs) in res.items())
+   solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r))
+   score = sum(solved(s, rs) for ((s, _, _), rs) in res.items())
    stats["score"] = score
    setup["solver"].call("trains", "enable")
    setup["solver"].call("debug-trains", "enable")

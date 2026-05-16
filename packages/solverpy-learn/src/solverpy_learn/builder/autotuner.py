@@ -8,12 +8,9 @@ from .autotune import autotune
 from solverpy.benchmark.reports import progress, markdown
 from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
-from solverpy.task.solvertalker import SolverTalker
-from solverpy.task.remotetalker import RemoteTalker
-from solverpy.task.logtalker import LogTalker
 
 if TYPE_CHECKING:
-   from solverpy.task.talker import Talker
+   from .autotune.tunetalker import TuneTalker
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +32,7 @@ class AutoTuner(Builder):
       devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
-      talker: "Talker | None" = None,
+      talker: "TuneTalker | None" = None,
    ):
       assert "dataname" in trains
       Builder.__init__(self, trains["dataname"])
@@ -90,11 +87,6 @@ class AutoTuner(Builder):
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
       assert "options" in self._trains
       headless = "headless" in self._trains["options"]
-      if headless:
-         self.talker = LogTalker()
-      else:
-         self.talker = RemoteTalker(SolverTalker())
-      self.talker.listening_start()
       try:
          ret = autotune.prettytuner(
             headless=headless,
@@ -105,12 +97,12 @@ class AutoTuner(Builder):
             **self._tuneargs,
          )
       except KeyboardInterrupt:
-         self.talker.terminate()
+         if self.talker:
+            self.talker.terminate()
          raise
-      self.talker.listening_stop()
 
       #f_best = ret[3]
-      (score, acc, trainacc, f_best, dur, params, pos, neg) = ret
+      (_, _, _, f_best, _, _, pos, neg) = ret
       (pos, neg) = (int(pos), int(neg))
       shutil.copyfile(f_best, f_model)
       #self._models = [f_model]

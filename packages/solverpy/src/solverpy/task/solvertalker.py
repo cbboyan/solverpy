@@ -80,9 +80,9 @@ class SolverTalker(LogTalker):
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
    ) -> None:
-      """Harvest error count from the total bar, then delegate to ``LogTalker.end``."""
-      assert self._total_bar
-      self._total_errors = self._total_bar._errors
+      """Harvest error count from the total bar if present, then delegate to ``LogTalker.end``."""
+      if self._total_bar:
+         self._total_errors = self._total_bar._errors
       super().end(results, refjob=refjob)
 
    def terminate(self) -> None:

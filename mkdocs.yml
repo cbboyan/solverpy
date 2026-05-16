@@ -67,6 +67,13 @@ nav:
         - 🤖 progress: api/solverpy/benchmark/reports/progress.md
       - 🤖 evaluation: api/solverpy/benchmark/evaluation.md
       - 🤖 summary: api/solverpy/benchmark/summary.md
+    - 📁 scripts:
+      - 🤖 clean: api/solverpy/scripts/clean.md
+      - 🤖 cli: api/solverpy/scripts/cli.md
+      - 🤖 esid2strat: api/solverpy/scripts/esid2strat.md
+      - 🤖 init: api/solverpy/scripts/init.md
+      - 🤖 report: api/solverpy/scripts/report.md
+      - 🤖 run: api/solverpy/scripts/run.md
     - 📁 setups:
       - ℹ️ Overview: api/solverpy/setups/index.md
       - 🤖 common: api/solverpy/setups/common.md
@@ -87,13 +94,16 @@ nav:
         - 📁 db:
           - ℹ️ Overview: api/solverpy/solver/plugins/db/index.md
           - 🤖 bid: api/solverpy/solver/plugins/db/bid.md
+          - 🤖 eprovesid: api/solverpy/solver/plugins/db/eprovesid.md
           - 🤖 errors: api/solverpy/solver/plugins/db/errors.md
           - 🤖 outputs: api/solverpy/solver/plugins/db/outputs.md
+          - 🤖 proofs: api/solverpy/solver/plugins/db/proofs.md
           - 🤖 sid: api/solverpy/solver/plugins/db/sid.md
         - 📁 shell:
           - ℹ️ Overview: api/solverpy/solver/plugins/shell/index.md
           - 🤖 limits: api/solverpy/solver/plugins/shell/limits.md
           - 🤖 memory: api/solverpy/solver/plugins/shell/memory.md
+          - 🤖 shelltime: api/solverpy/solver/plugins/shell/shelltime.md
           - 🤖 time: api/solverpy/solver/plugins/shell/time.md
           - 🤖 timeout: api/solverpy/solver/plugins/shell/timeout.md
         - 📁 status:
@@ -101,6 +111,7 @@ nav:
           - 🤖 limiter: api/solverpy/solver/plugins/status/limiter.md
           - 🤖 smt: api/solverpy/solver/plugins/status/smt.md
           - 🤖 tptp: api/solverpy/solver/plugins/status/tptp.md
+        - 🤖 apply: api/solverpy/solver/plugins/apply.md
         - 🤖 decorator: api/solverpy/solver/plugins/decorator.md
         - 🤖 plugin: api/solverpy/solver/plugins/plugin.md
         - 🤖 translator: api/solverpy/solver/plugins/translator.md
@@ -136,6 +147,7 @@ nav:
       - 🤖 log: api/solverpy/tools/log.md
       - 🤖 patterns: api/solverpy/tools/patterns.md
       - 🤖 redirect: api/solverpy/tools/redirect.md
+      - 🤖 reporter: api/solverpy/tools/reporter.md
       - 🤖 timeme: api/solverpy/tools/timeme.md
       - 🤖 typing: api/solverpy/tools/typing.md
   - 📦 solverpy-learn:
@@ -160,6 +172,12 @@ nav:
       - 🤖 cvc5ml: api/solverpy_learn/builder/cvc5ml.md
       - 🤖 enigma: api/solverpy_learn/builder/enigma.md
       - 🤖 svm: api/solverpy_learn/builder/svm.md
+    - 📁 scripts:
+      - 🤖 autotune: api/solverpy_learn/scripts/autotune.md
+      - 🤖 compress: api/solverpy_learn/scripts/compress.md
+      - 🤖 decompress: api/solverpy_learn/scripts/decompress.md
+      - 🤖 deconflict: api/solverpy_learn/scripts/deconflict.md
+      - 🤖 filter: api/solverpy_learn/scripts/filter.md
     - 📁 setups:
       - ℹ️ Overview: api/solverpy_learn/setups/index.md
       - 🤖 loop: api/solverpy_learn/setups/loop.md

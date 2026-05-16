@@ -6,7 +6,7 @@ import optuna
 from . import check
 
 if TYPE_CHECKING:
-   from .build import Talker
+   from .tunetalker import TuneTalker
    from optuna.samplers import BaseSampler
 
 #UserAttrs = tuple[Any, ...]
@@ -20,14 +20,14 @@ def tune(
    iters: int,
    timeout: (int | None),
    d_tmp: str,
-   queue: "Talker | None" = None,
+   talker: "TuneTalker | None" = None,
    sampler: "BaseSampler | None" = None,
    **args: Any,
 ) -> TuneResult:
    d_tmp = os.path.join(d_tmp, nick)
-   if queue: queue.put(("trials", (nick, iters, timeout)))
+   if talker: talker.trials(nick, iters, timeout)
    study = optuna.create_study(direction='maximize', sampler=sampler)
-   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, queue=queue, nick=nick, **args)
+   objective = lambda trial: check_fun(trial, d_tmp=d_tmp, talker=talker, nick=nick, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
    best = tuple(study.best_trial.user_attrs[x] for x in [
       "score",
@@ -36,7 +36,7 @@ def tune(
       "model",
       "time",
    ])
-   if queue: queue.put(("trialed", (nick,)))
+   if talker: talker.trialed(nick)
    return (best, study.best_trial.params)
 
 

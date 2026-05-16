@@ -8,11 +8,9 @@ import multiprocessing
 from solverpy.tools import human, redirect
 from .. import svm
 from . import tune, build
-from .listener import AutotuneListener
-from solverpy.task.talker import Talker
+from .tunetalker import TuneTalker
 
 if TYPE_CHECKING:
-   from queue import Queue
    from .tune import TuneResult
    from ..autotuner import AutoTuner
 
@@ -55,16 +53,14 @@ def tuner(
    init_params: (dict[str, Any] | None) = None,
    min_leaves: int = 16,
    max_leaves: int = 2048,
-   queue: "Queue[Any] | None" = None,
+   talker: "TuneTalker | None" = None,
    atpeval: bool = False,
    posneg_weight: float = 0,
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
-   if builder and builder.talker and builder.talker._log_queue:
-      Talker.log_config(builder.talker._log_queue)
 
-   if queue: queue.put(("tuning", time.time()))
+   if talker: talker.tuning(time.time())
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
    dtrain.construct()
@@ -99,7 +95,7 @@ def tuner(
       d_tmp=d_tmp,
       iters=iters0,
       timeout=timeout0,
-      queue=queue,
+      talker=talker,
       min_leaves=min_leaves,
       max_leaves=max_leaves,
       builder=builder,
@@ -107,8 +103,7 @@ def tuner(
 
    if init_params is not None:
       f_mod = os.path.join(d_tmp, "init", "model.lgb")
-      #(score, acc, trainacc, dur) = build.model(params, dtrain, dtest, f_mod, queue)
-      (_, stats) = build.model(params, dtrain, dtest, f_mod, queue)
+      (_, stats) = build.model(params, dtrain, dtest, f_mod, talker)
       build.score(stats, builder, "init")
       acc = stats["valid_acc"]
       best = (
@@ -128,39 +123,37 @@ def tuner(
          best = best0
          params.update(params0)
 
-   if queue: queue.put(("tuned", time.time()))
+   if talker: talker.tuned(time.time())
    ret = best + (params, pos, neg)
-   if queue:
-      queue.put(("result", (ret, )))
+   if talker:
+      talker.result(ret)
    else:
       return ret
 
 
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
-   
-   listener = AutotuneListener(headless=headless)
+   builder = kwargs.get("builder")
+   talker = TuneTalker(headless=headless)
+   if builder:
+      builder.talker = talker
 
-   d_tmp = kwargs["d_tmp"] if (("d_tmp" in kwargs) and kwargs["d_tmp"]) else "tune-tmp"
+   d_tmp = kwargs.get("d_tmp") or "tune-tmp"
    os.makedirs(d_tmp, exist_ok=True)
    ctx = multiprocessing.get_context("fork")
-   queue = ctx.Queue()
-   kwargs["queue"] = queue
+   kwargs["talker"] = talker
    kwargs["f_log"] = os.path.join(d_tmp, "autotune.log")
    kwargs["target"] = tuner
    p = ctx.Process(target=redirect.call, args=args, kwargs=kwargs)
 
+   talker.listening_start()
    try:
       p.start()
-      while True:
-         msg = queue.get()
-         result = listener.listen(msg)
-         if result:
-            break
-   #except (Exception, KeyboardInterrupt) as e:
+      result = talker.wait()
    except Exception:
       p.terminate()
-      raise 
+      talker.terminate()
+      raise
    finally:
       p.join()
-
+   talker.listening_stop()
    return result

@@ -1,5 +1,31 @@
 # DONE
 
+## TuneTalker — unified tuning progress talker ✓
+
+Replaced `RemoteTalker(SolverTalker()) + AutotuneListener` with a single
+self-contained `TuneTalker(SolverTalker)` in `builder/autotune/tunetalker.py`.
+
+- `TuneTalker` has its own plain `multiprocessing.Queue` (fork-compatible,
+  no Manager needed) and a background listening thread.  `__getattribute__`
+  intercepts `REMOTES` calls in the forked child and queues them; the parent
+  thread dispatches to the real handlers.  `wait()` blocks until the child
+  sends `result(val)`.
+- All tuning event log-based defaults (`trials`, `trying`, `tried`,
+  `trialed`, `building`, `iteration`, `built`, `result`, `tuning`, `tuned`,
+  `info`, `debug`) added to `LogTalker`, so headless behavior is inherited
+  automatically.  `TuneTalker` overrides only `building`/`iteration`/`built`
+  to show a `BuilderBar` in interactive mode.
+- `SolverTalker.end()` made defensive (`if self._total_bar:` instead of
+  `assert`) so it works correctly when no bar exists (headless mode).
+- `prettytuner()` simplified: creates `TuneTalker`, sets `builder.talker`,
+  calls `talker.wait()` — the `while True: queue.get()` loop is gone.
+- `autotuner.build()` simplified: no more `RemoteTalker`/`LogTalker` import
+  or `listening_start()`/`listening_stop()` calls.
+- `queue` → `talker` rename throughout `autotune.py`, `build.py`, `check.py`,
+  `tune.py`; `queue.put((key, content))` replaced with `talker.key(*content)`
+  direct calls.
+- `listener.py` (`AutotuneListener`, `Listener`) deleted.
+
 ## `solverpy report` — offline HTML from .md report ✓
 
 New CLI subcommand `solverpy report FILE.md [-o FILE.html]` converts a solverpy

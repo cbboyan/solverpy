@@ -72,6 +72,17 @@ rather than useful error messages.
 
 ## Low / Design
 
+### 12. RemoteTalker queue and Manager lifetime — `task/remotetalker.py:78–79`
+Two issues:
+1. `manager` is a local variable in `__init__` and goes out of scope immediately after;
+   the Manager server process may be garbage-collected, invalidating the queue proxy.
+   Fix: store as `self._manager` and shut it down in `terminate()`/`log_stop()`.
+2. `RemoteTalker` always creates a forkserver Manager queue, even when the consumer is
+   a forked child (e.g. `prettytuner`). A plain `fork`-context `Queue` would suffice there.
+   Fix: accept an optional `queue` argument; if provided, use it directly; otherwise
+   fall back to creating the Manager queue (default behavior, for forkserver workers).
+
+
 ### 9. Scheduler state not reset between loop iterations — `setups/loop.py`
 `LogTalker`/`SolverTalker` instances created once and reused across loop iterations.
 Their internal counters (`_solved`, `_unsolved`, `_errors`) are only reset per job, not
