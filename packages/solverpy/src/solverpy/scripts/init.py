@@ -1,10 +1,13 @@
-import sys
 from pathlib import Path
 from importlib.resources import files
 
 
 def _data_strats():
    return files("solverpy") / "data" / "strats"
+
+
+def _data_setups():
+   return files("solverpy") / "data" / "setups"
 
 
 def _copy(src, dest, prefix=""):
@@ -18,6 +21,10 @@ def _copy(src, dest, prefix=""):
       target.write_bytes(f.read_bytes())
 
 
+def _solvers():
+   return sorted(d.name for d in _data_strats().iterdir() if d.is_dir())
+
+
 def main(args):
    solver = args.solver
    strats_dir = Path("solverpy_db") / "strats"
@@ -26,13 +33,12 @@ def main(args):
    data = _data_strats()
 
    if solver:
-      src = data / solver
-      if not src.is_dir():
-         solvers = [d.name for d in data.iterdir() if d.is_dir()]
-         print(f"error: unknown solver '{solver}'. Available: {', '.join(sorted(solvers))}",
-               file=sys.stderr)
-         sys.exit(1)
-      _copy(src, strats_dir, prefix=f"{solver}-")
+      _copy(data / solver, strats_dir, prefix=f"{solver}-")
+      setup_src = _data_setups() / f"eval-{solver}.yml"
+      if setup_src.is_file():
+         dest = Path(f"eval-{solver}.yml")
+         dest.write_bytes(setup_src.read_bytes())
+         print(f"Created {dest}")
    else:
       for solver_dir in data.iterdir():
          if solver_dir.is_dir():
@@ -42,11 +48,12 @@ def main(args):
 
 
 def register(subparsers):
+   solvers = _solvers()
    p = subparsers.add_parser(
       "init",
       help="Initialize a new solverpy project.",
       description="Create solverpy_db/strats/ in the current directory and populate it with bundled strategies.",
    )
-   p.add_argument("solver", nargs="?", metavar="SOLVER",
-                  help="Solver to initialize for (e.g. eprover). Omit to copy all solvers.")
+   p.add_argument("solver", nargs="?", choices=solvers, metavar="SOLVER",
+                  help=f"Solver to initialize for. Available: {', '.join(solvers)}. Omit to copy all.")
    p.set_defaults(func=main)

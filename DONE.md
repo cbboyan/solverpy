@@ -1,5 +1,14 @@
 # DONE
 
+## Bundled setup YAML files, copied by `solverpy init` ✓
+
+Added `data/setups/` alongside `data/strats/` for bundled example YAML setup files.
+`solverpy init <solver>` now copies `data/setups/eval-<solver>.yml` to cwd if it exists.
+
+- `data/setups/eval-eprover.yml`: example YAML for eprover evaluation
+- `scripts/init.py`: after copying strats, checks for `data/setups/eval-{solver}.yml`
+  and copies it to cwd; covered by the existing `data/**/*` package-data glob
+
 ## `solverpy run file.yml`, `solverpy clean`, options docs ✓
 
 Added two more CLI subcommands and fixed the log filename.
