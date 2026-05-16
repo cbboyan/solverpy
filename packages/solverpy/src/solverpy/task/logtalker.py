@@ -1,3 +1,12 @@
+"""
+# LogTalker — text-only progress reporter
+
+Reports evaluation progress through Python `logging` calls and writes
+Legend/Summary/Statuses to the markdown report via
+[`summary`][solverpy.benchmark.summary].  Used in headless or non-interactive
+contexts where tqdm bars are not appropriate.
+"""
+
 from typing import Any, Sequence, TYPE_CHECKING
 import logging
 import time
@@ -19,8 +28,41 @@ def jobname(solver: Any, bid: str, sid: str) -> str:
 
 
 class LogTalker(Talker):
-   
+   """
+   Progress reporter that writes to the Python logger and markdown report.
+
+   ```plantuml name="task-logtalker"
+   abstract class solverpy.task.talker.Talker
+   class solverpy.task.logtalker.LogTalker extends solverpy.task.talker.Talker {
+      - _log_progress: bool
+      --
+      + begin(jobs, refjob, sidnames, **kwargs)
+      + end(results, refjob)
+      + next(job)
+      + launching(tasks)
+      + finished(task, result)
+      + done()
+      + status(new, n)
+   }
+   class solverpy.task.solvertalker.SolverTalker extends solverpy.task.logtalker.LogTalker
+   ```
+
+   Calls `summary.legend` in `begin` and `summary.summarize` in `end` to
+   write structured tables to the `.md` report file.  Periodic progress
+   updates are emitted via `logger.info` at exponentially growing intervals
+   so long runs stay observable without flooding the log.
+
+   Set ``log_progress=False`` (as `SolverTalker` does) to demote the
+   per-job info lines to ``DEBUG`` — the tqdm bars carry that role instead.
+   """
+
    def __init__(self, log_progress: bool = True):
+      """
+      Args:
+          log_progress: if ``True``, emit ``INFO`` log lines for each job
+              and periodic progress updates.  Set to ``False`` when a
+              visual progress bar (`SolverTalker`) handles that role.
+      """
       super().__init__()
       self._log_progress = log_progress
       self._last_time = None
@@ -33,34 +75,34 @@ class LogTalker(Talker):
       sidnames: bool = True,
       **kwargs,
    ) -> None:
+      """Set up counters, build nick map, write Legend to report, log job count."""
       del kwargs
       self._total_count = sum(len(bids.problems(bid)) for (_, bid, _) in jobs)
       self._total_jobs = len(jobs)
       self._nick_dw = len(str(self._total_jobs))
       self._job_index = 0
-      sum0 = summary.legend(jobs, refjob, sidnames=sidnames)
-      (self._total_nicks_full, self._total_desc, self._total_report) = sum0
+      (self._total_nicks_full, self._total_desc) = summary.legend(jobs, refjob, sidnames=sidnames)
       self._total_nicks = {k[1:3]:v for (k,v) in self._total_nicks_full.items()}
       self._total_errors = 0
 
-      logger.info(
-         f"Evaluating {len(jobs)} jobs with {self._total_count} tasks together:\n{self._total_report}"
-      )
+      logger.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
 
    def end(
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
    ) -> None:
+      """Write Summary/Statuses to report, log error count and completion."""
       super().end(results, refjob=refjob)
       if self._total_errors:
          logger.error(
             f"There were errors: {self._total_errors} tasks failed to evaluate."
          )
-      report = summary.summarize(results, self._total_nicks_full, refjob)
-      logger.info(f"Evaluation done:\n{report}")
+      summary.summarize(results, self._total_nicks_full, refjob)
+      logger.info("Evaluation done.")
 
    def next(self, job: "SolverJob") -> None:
+      """Reset per-job counters and log the start of the next job."""
       jname = jobname(*job)
       self._solved = self._unsolved = self._errors = 0
       self._job_index += 1
@@ -73,6 +115,7 @@ class LogTalker(Talker):
       super().next(job)
    
    def launching(self, tasks: Sequence["Task"]) -> None:
+      """Record start time and inject log queue into tasks."""
       self._last_time = time.perf_counter()
       self._start_time = time.perf_counter()
       self._wait_time = 1.0
@@ -84,10 +127,12 @@ class LogTalker(Talker):
       task: "SolverTask",
       result: "Result",
    ) -> None:
+      """Update solved/unsolved/error counters based on the task result."""
       super().finished(task, result)
       self.status(task.status(result))
    
    def done(self) -> None:
+      """Log solved/unsolved/error summary for the completed job."""
       bar = f"+{self._solved} -{self._unsolved} !{self._errors}"
       if self._log_progress:
          logger.info(f"Evaluation done: {bar}")
@@ -95,6 +140,13 @@ class LogTalker(Talker):
          logger.debug(f"evaluation done: {bar}")
 
    def status(self, new: bool | None, n: int = 1) -> None:
+      """
+      Update counters and emit periodic progress log lines.
+
+      Args:
+          new: ``True`` = solved, ``False`` = unsolved, ``None`` = error.
+          n: number of tasks to count (default 1).
+      """
       if new is True:
          self._solved += n
       elif new is False:

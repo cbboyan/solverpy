@@ -30,10 +30,8 @@ def init(setup: Setup | None = None, devels: Setup | None = None):
       report.extend(markdown.yaml(setup, devels))
       report.extend(markdown.newline())
       reporter.add(report)
-      report = markdown.dump(report, prefix="> ")
-   else:
-      report = ""
-   logger.info(f"Experiments running.\n{report}")
+   dataname = setup.get("dataname", "noname") if setup else "noname"
+   logger.info(f"Experiments running: {dataname}")
 
 
 def run(

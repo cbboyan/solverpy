@@ -11,7 +11,7 @@ def legend(
    jobs: list["SolverJob"],
    ref: "SolverJob | None" = None,
    sidnames: bool = False,
-) -> tuple[dict["SolverJob", str], str, str]:
+) -> tuple[dict["SolverJob", str], str]:
    nicks = {}
    if sidnames:
       header = ["#", "strategy", "benchmark", "solver", "problems"]
@@ -47,16 +47,15 @@ def legend(
    report += markdown.table(header, rows)
    report += markdown.newline()
    reporter.add(report)
-   report0 = markdown.dump(report, prefix="> ")
 
-   return (nicks, totaldesc, report0)
+   return (nicks, totaldesc)
 
 
 def summarize(
    allres: dict["SolverJob", Any],
    nicks: dict["SolverJob", str],
    ref: "SolverJob | None" = None,
-) -> str:
+) -> None:
    report = markdown.newline()
    report += markdown.heading("Summary", level=4)
    report += markdown.summary(allres, nicks, ref=ref)
@@ -67,5 +66,4 @@ def summarize(
    report += markdown.newline()
 
    reporter.add(report)
-   return markdown.dump(report, prefix="> ")
 

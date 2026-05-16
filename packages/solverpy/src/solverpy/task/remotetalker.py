@@ -1,3 +1,17 @@
+"""
+# RemoteTalker — cross-process talker proxy
+
+Wraps a local [`Talker`][solverpy.task.talker.Talker] and makes its lifecycle
+methods callable from a child process.  Methods listed in `REMOTES` are
+intercepted by `__getattribute__` and queued instead of executed directly;
+a background listening thread in the parent dequeues them and calls the real
+method on the wrapped local talker.
+
+Used by [`autotuner`][solverpy_learn.builder.autotuner] to let the tuner child
+process drive a `SolverTalker` that runs (and renders progress bars) entirely
+in the parent.
+"""
+
 from typing import Any, TYPE_CHECKING
 import logging
 import multiprocessing
@@ -12,6 +26,34 @@ logger = logging.getLogger(__name__)
 
 
 class RemoteTalker(Talker):
+   """
+   Proxy talker that forwards method calls from a child process to the parent.
+
+   ```plantuml name="task-remotetalker"
+   abstract class solverpy.task.talker.Talker
+   class solverpy.task.remotetalker.RemoteTalker extends solverpy.task.talker.Talker {
+      + REMOTES: set[str]
+      - _remote_queue: Queue[Any]
+      - _listening_thread: Thread | None
+      - _local: Talker
+      --
+      + listening_start()
+      + listening_stop()
+      + listening_handle(method, args, kwargs)
+      + terminate()
+   }
+   class solverpy.task.logtalker.LogTalker extends solverpy.task.talker.Talker
+   class solverpy.task.solvertalker.SolverTalker extends solverpy.task.logtalker.LogTalker
+   solverpy.task.remotetalker.RemoteTalker o-- solverpy.task.talker.Talker : wraps
+   ```
+
+   Any attribute named in `REMOTES` is intercepted by `__getattribute__`
+   and replaced with a wrapper that puts ``(name, args, kwargs)`` on
+   ``_remote_queue``.  The listening thread in the parent picks up each
+   message and calls the real method on ``_local``.
+
+   All other attributes (not in `REMOTES`) pass through to `Talker` normally.
+   """
 
    REMOTES = {
       "log_config",
@@ -25,8 +67,13 @@ class RemoteTalker(Talker):
       "finished",
       "done",
    }
+   """Set of method names that are queued instead of called directly."""
 
    def __init__(self, local: Talker):
+      """
+      Args:
+          local: the real talker whose methods are called in the parent process.
+      """
       Talker.__init__(self)
       manager = multiprocessing.get_context("forkserver").Manager()
       self._remote_queue: Queue[Any] = manager.Queue()
@@ -46,7 +93,7 @@ class RemoteTalker(Talker):
       return super().__getattribute__(name)
 
    def listening_start(self):
-      """Start listening thread (non-blocking)."""
+      """Start the log queue listener and the ``_remote_queue`` listening thread."""
       super().listening_start()
       if self._listening_thread and self._listening_thread.is_alive():
          logger.warning("Listening thread already running")
@@ -60,7 +107,7 @@ class RemoteTalker(Talker):
       self._listening_thread.start()
 
    def listening_stop(self):
-      """Stop the listening thread."""
+      """Signal the listening thread to stop and wait for it to join."""
       super().listening_stop()
       if not (self._listening_thread and self._listening_thread.is_alive()):
          logger.warning("No listening thread to stop")
@@ -71,7 +118,7 @@ class RemoteTalker(Talker):
       self._listening_thread = None
 
    def _listen_loop(self):
-      """Internal method that runs in the listening thread."""
+      """Drain ``_remote_queue`` and dispatch each message to ``listening_handle``."""
       while not self._stop_listening.is_set():
          try:
             # Block until item arrives or timeout
@@ -82,7 +129,7 @@ class RemoteTalker(Talker):
             pass
 
    def listening_handle(self, method, args, kwargs):
-      """Handle received method calls by delegating to local talker."""
+      """Call ``method`` on the local talker with the given args and kwargs."""
       assert method in RemoteTalker.REMOTES
       handler = None
       try:
@@ -108,6 +155,7 @@ class RemoteTalker(Talker):
       self._stop_listening = threading.Event()
 
    def terminate(self):
+      """Terminate the local talker and stop the listening thread."""
       super().terminate()
       self._local.terminate()
       if self._listening_thread and self._listening_thread.is_alive():

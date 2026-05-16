@@ -5,7 +5,8 @@ import gc
 
 from solverpy.benchmark import db
 from solverpy.benchmark import evaluation as evaluator
-from solverpy.tools import log
+from solverpy.tools import log, reporter
+from solverpy.benchmark.reports import markdown
 from solverpy.setups.common import default
 from solverpy.benchmark.path import bids, sids
 from solverpy.setups.setup import Setup
@@ -93,9 +94,9 @@ def oneloop(setup: Setup) -> Setup:
 
    assert "dataname" in setup
    it = setup['it'] if 'it' in setup else 0
-   logger.info(
-      f"Running evaluation loop {it} on data {setup['dataname']}.\n> \n> ## Evaluation `{setup['dataname']}` ##\n> "
-   )
+   report = markdown.newline() + markdown.heading(f"Evaluation `{setup['dataname']}`", level=2)
+   reporter.add(report)
+   logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.")
    if (it > 0) or ("start_dataname" not in setup):
       if "headless" in options:
          talker = LogTalker()

@@ -5,7 +5,8 @@ import logging
 
 from .builder import Builder
 from .autotune import autotune
-from solverpy.benchmark.reports import progress
+from solverpy.benchmark.reports import progress, markdown
+from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
 from solverpy.task.solvertalker import SolverTalker
 from solverpy.task.remotetalker import RemoteTalker
@@ -70,9 +71,9 @@ class AutoTuner(Builder):
       assert "trains" in self._trains
       assert "trains" in self._devels
       assert "refs" in self._trains
-      logger.info(
-         f"Building model: {self._dataname}\n> \n> ## Building model `{self._dataname}` ##\n> "
-      )
+      report = markdown.newline() + markdown.heading(f"Building model `{self._dataname}`", level=2)
+      reporter.add(report)
+      logger.info(f"Building model: {self._dataname}")
       logger.debug(f'using trains: {self._trains["trains"].path()}')
 
       f_model = self.path()
@@ -115,5 +116,5 @@ class AutoTuner(Builder):
       #self._models = [f_model]
       self._strats = self.applies(self._trains["refs"], self._dataname)
 
-      report = progress.build(self._dataname, *ret)
-      logger.info(f"Model {self._dataname} built.\n{report}")
+      progress.build(self._dataname, *ret)
+      logger.info(f"Model {self._dataname} built.")
