@@ -17,10 +17,10 @@ BuilderMaker = Callable[..., "Builder"]
 def defaultrefs(trains: Setup) -> None:
    if "refs" not in trains:
       assert "ref" in trains
-      assert "sidlist" in trains
+      assert "strategies" in trains
       ref = trains["ref"]
       idx = ref if (type(ref) is int) else 0
-      trains["refs"] = [trains["sidlist"][idx]]
+      trains["refs"] = [trains["strategies"][idx]]
 
 def defaultweight(trains: Setup, tune: dict[str, Any] | None) -> None:
    if not tune:

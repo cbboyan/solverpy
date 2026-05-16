@@ -37,15 +37,15 @@ def evaluation(setup: Setup) -> Setup:
    assert "delfix" in setup
    default(setup, "db", db.default(delfix=setup["delfix"]))
    default(setup, "ntfy", None)
-   if "sidlist" not in setup:
+   if "strategies" not in setup:
       with open(setup["sidfile"]) as f:
-         setup["sidlist"] = f.read().strip().split("\n")
-   if "bidlist" not in setup:
+         setup["strategies"] = f.read().strip().split("\n")
+   if "benchmarks" not in setup:
       with open(setup["bidfile"]) as f:
-         setup["bidlist"] = f.read().strip().split("\n")
-   check_list(setup, "sidlist", sids.load)
+         setup["benchmarks"] = f.read().strip().split("\n")
+   check_list(setup, "strategies", sids.load)
    check_list(setup, "refs", sids.load)
-   check_list(setup, "bidlist", bids.problems)
+   check_list(setup, "benchmarks", bids.problems)
    return setup
 
 

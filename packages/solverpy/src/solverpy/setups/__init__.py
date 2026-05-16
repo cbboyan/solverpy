@@ -10,7 +10,7 @@ setup functions and then executed by
 ```python
 from solverpy import setups
 
-setup = setups.Setup(limit="T10", bidlist=["myproblems"], sidlist=["default"])
+setup = setups.Setup(limit="T10", benchmarks=["myproblems"], strategies=["default"])
 setups.eprover(setup)      # choose solver and fill in defaults
 setups.evaluation(setup)   # configure benchmark evaluation
 setups.launch(setup)       # run everything

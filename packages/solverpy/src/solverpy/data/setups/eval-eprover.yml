@@ -1,9 +1,9 @@
 evaluate: eprover
 limit: T1        # resource limit (T=time, M=memory, e.g. T10-M4096)
 dataname: eval   # label for output directories
-bidlist:
+benchmarks:
   - problems/bushy010
-sidlist:
+strategies:
   - eprover-default
 options:
   - outputs      # keep raw solver output files

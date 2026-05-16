@@ -1,5 +1,17 @@
 # DONE
 
+## Rename `bidlist`/`sidlist` → `benchmarks`/`strategies` ✓
+
+Renamed the two core Setup keys throughout the codebase and all documentation.
+
+- `setups/setup.py`: TypedDict fields and docstring updated
+- `benchmark/evaluation.py`: `launch()` signature updated
+- `setups/loop.py`: all `setup["sidlist"]` / `setup["bidlist"]` references updated
+- `data/setups/eval-eprover.yml`: uses new key names
+- `docs/tutorial.md`, `docs/index.md`: code examples and table updated
+- `docs/dia/solverpy-benchmark.puml`, `docs/dia/solverpy-ml.puml`: field names updated
+- `docs/dia/solverpy-benchmark.svg`, `docs/dia/solverpy-ml.svg`: inline text updated
+
 ## Plugin repr audit and fixes ✓
 
 Audited all plugins in `solverpy` and `solverpy-learn` for constructor args reaching

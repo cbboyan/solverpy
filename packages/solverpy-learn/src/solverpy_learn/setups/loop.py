@@ -122,7 +122,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    def do_iter(col: Setup | None) -> None:
       if not col: return
-      col["sidlist"].extend(setup["news"] if "news" in setup else [])
+      col["strategies"].extend(setup["news"] if "news" in setup else [])
       loopinit(col)
       oneloop(col)
 

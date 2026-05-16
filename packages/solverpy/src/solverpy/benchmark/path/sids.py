@@ -19,7 +19,7 @@ Example:
    ```
 
    Then `--auto-schedule` is the strategy definition while `auto` is its
-   strategy id. You can now use `auto` in `sidlist` to reference the strategy
+   strategy id. You can now use `auto` in `strategies` to reference the strategy
    in experiment setup [`Setup`][solverpy.setups.setup.Setup] with
    [`E`][solverpy.solver.atp.eprover.E] Prover.
 

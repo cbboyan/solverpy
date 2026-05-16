@@ -176,8 +176,8 @@ def run(
 
 def launch(
    solver: "SolverPy",
-   bidlist: list[str],
-   sidlist: list[str],
+   benchmarks: list[str],
+   strategies: list[str],
    ref: (bool | int | str | None) = None,
    sidnames: bool = True,
    cores: int = 4,
@@ -194,10 +194,10 @@ def launch(
       nonlocal jobs, nicks, refjob
       logger.debug("evaluation started")
       if ref is True:
-         refjob = (solver, bidlist[0], sidlist[0])
+         refjob = (solver, benchmarks[0], strategies[0])
       elif type(ref) is int:
-         refjob = (solver, bidlist[0], sidlist[ref])
-      jobs = [(solver, bid, sid) for bid in bidlist for sid in sidlist]
+         refjob = (solver, benchmarks[0], strategies[ref])
+      jobs = [(solver, bid, sid) for bid in benchmarks for sid in strategies]
       talker.begin(jobs, refjob=refjob, sidnames=sidnames)
 
    def launch_jobs() -> dict["SolverJob", "Result"]:

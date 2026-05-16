@@ -47,10 +47,10 @@ class Builder(SolverPyObj):
       """Return all created strategies."""
       return self._strats
 
-   def applies(self, sidlist: list[str], model: str) -> list[str]:
-      """Combine the `model` with several strategies `sidlist`."""
+   def applies(self, strategies: list[str], model: str) -> list[str]:
+      """Combine the `model` with several strategies `strategies`."""
       new = []
-      for ref in sidlist:
+      for ref in strategies:
          new.extend(self.apply(ref, model))
       return new
 

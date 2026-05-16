@@ -27,8 +27,8 @@ class Setup(TypedDict, total=False):
    Attributes: 
        limit: Resource limit for solvers.
        cores: Number of CPU cores for parallel evaluation.
-       bidlist: List of benchmark ids. 
-       sidlist: List of strategy ids.
+       benchmarks: List of benchmark ids. 
+       strategies: List of strategy ids.
        complete: Complete use of the solver (sat/Satisfiable are successes).
    
    The following parameters additional parameters for an evaluation run:
@@ -119,8 +119,8 @@ class Setup(TypedDict, total=False):
    ref: (bool | int | str | None)
    bidfile: str
    sidfile: str
-   bidlist: list[str]
-   sidlist: list[str]
+   benchmarks: list[str]
+   strategies: list[str]
    binary: str
    static: list[str]
    ntfy: str

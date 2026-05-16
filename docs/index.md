@@ -82,8 +82,8 @@ It auromatically connects to database [`DB`][solverpy.benchmark.db.db] to store 
 
 ```plantuml name="solverpy-benchmark"
 dataclass solverpy.setups.Setup {
-   + bidlist : list[Bid] 
-   + sidlist : list[Sid] 
+   + benchmarks : list[Bid] 
+   + strategies : list[Sid] 
    + cores : int
    + limit : str
    --
@@ -126,8 +126,8 @@ from solverpy import setups
 
 mysetup = setups.Setup(
     cores=4,
-    bidlist=["problems"],
-    sidlist=["default"],
+    benchmarks=["problems"],
+    strategies=["default"],
     limit='T10',
 )
 
@@ -151,7 +151,7 @@ interleaved evaluation and model training.
 
 ```plantuml name="solverpy-ml"
 dataclass solverpy.setups.Setup {
-   + sidlist : list[Sid]
+   + strategies : list[Sid]
    + dataname : str
    + loops : int
    ...

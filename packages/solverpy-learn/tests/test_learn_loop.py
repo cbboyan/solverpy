@@ -187,15 +187,15 @@ def loop_result(request, learn_env):
       )
       setup = setups.Setup(
          common,
-         sidlist=[sid],
-         bidlist=[p["train_bid"]],
+         strategies=[sid],
+         benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
          refs=[sid],
       )
       devel = setups.Setup(
          common,
-         sidlist=[sid],
-         bidlist=[p["devel_bid"]],
+         strategies=[sid],
+         benchmarks=[p["devel_bid"]],
          dataname=p["devel_dataname"],
          refs=[sid],
       )
@@ -223,15 +223,15 @@ def loop_result(request, learn_env):
       )
       setup = setups.Setup(
          common,
-         sidlist=[sid],
-         bidlist=[p["train_bid"]],
+         strategies=[sid],
+         benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
          refs=[sid],
       )
       devel = setups.Setup(
          common,
-         sidlist=[sid],
-         bidlist=[p["devel_bid"]],
+         strategies=[sid],
+         benchmarks=[p["devel_bid"]],
          dataname=p["devel_dataname"],
          refs=[sid],
       )

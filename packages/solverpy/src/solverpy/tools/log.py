@@ -47,7 +47,7 @@ def filename(name: str | None = None) -> str:
 
 def init_yaml() -> None:
 
-   def representer(dumper, obj: SolverPyObj):
+   def representer(dumper: yaml.Dumper, obj: SolverPyObj):
       r = obj.represent()
       if type(r) is str:
          return dumper.represent_str(r)
