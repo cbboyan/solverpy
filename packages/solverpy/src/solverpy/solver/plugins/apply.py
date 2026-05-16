@@ -29,7 +29,7 @@ class Apply(Decorator):
    """
 
    def __init__(self, fn: "Callable[[Result], dict]", **kwargs: Any):
-      Decorator.__init__(self, **kwargs)
+      Decorator.__init__(self, fn=fn.__name__, **kwargs)
       self._fn = fn
 
    def update(

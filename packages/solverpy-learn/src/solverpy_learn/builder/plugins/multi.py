@@ -16,6 +16,13 @@ class MultiTrains(SvmTrains):
       self._dataname = dataname
       self._pid = "trains"
 
+   def represent(self) -> dict:
+      return dict(
+         cls=self.__class__.__name__,
+         dataname=self._dataname,
+         trains=[t.represent() for t in self._trains],
+      )
+
    def dispatch(self, t: "SvmTrains"):
       self._trains.append(t)
 

@@ -17,8 +17,9 @@ class SvmTrains(Trains):
       dataname: str,
       filename: str = "train.in",
       chunk_size: int = 1_000_000,
+      **kwargs: Any,
    ):
-      Trains.__init__(self, dataname, filename=filename)
+      Trains.__init__(self, dataname, filename=filename, chunk_size=chunk_size, **kwargs)
       self.info = multiprocessing.get_context("forkserver").Manager().Namespace()
       self.info.total = 0
       self.info.pos = 0

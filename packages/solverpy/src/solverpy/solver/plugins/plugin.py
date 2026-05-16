@@ -25,6 +25,8 @@ class Plugin(SolverPyObj):
             to dispatch method calls to this plugin.
          **kwargs: Forwarded to `SolverPyObj` for repr support.
       """
+      if pid is not None:
+         kwargs["pid"] = pid
       SolverPyObj.__init__(self, **kwargs)
       self._enabled = True
       self._id = pid

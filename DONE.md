@@ -1,5 +1,24 @@
 # DONE
 
+## Plugin repr audit and fixes ✓
+
+Audited all plugins in `solverpy` and `solverpy-learn` for constructor args reaching
+`SolverPyObj.__repr__`. Fixed gaps so `repr()` and `represent()` are consistent.
+
+- `solver/plugins/plugin.py`: forward `pid` to `SolverPyObj.__init__` when set, so
+  named plugins (e.g. `Outputs(pid="outputs")`) show their id in repr
+- `solver/plugins/apply.py`: forward `fn.__name__` so `Apply(fn=foo)` shows in repr
+- `builder/plugins/trains.py`: add `**kwargs` to `Trains.__init__` and forward to
+  `Decorator.__init__`, allowing subclasses to pass extra params through to repr
+- `builder/plugins/svm.py`: add `**kwargs`, pass `chunk_size` to `Trains.__init__`
+- `builder/plugins/enigma.py`: pass `features`, `variant`, `ratio` to `SvmTrains.__init__`;
+  add `EnigmaTrainsDebug.represent()` returning `cls`, `variant`, `ratio`
+- `builder/plugins/cvc5.py`: pass `ratio` to `SvmTrains.__init__`;
+  add `Cvc5Trains.represent()` extending parent with `ratio`;
+  add `Cvc5TrainsDebug.represent()` returning `cls`, `ratio`
+- `builder/plugins/multi.py`: add `MultiTrains.represent()` returning `cls`, `dataname`,
+  `trains` (list of sub-train reprs); `EnigmaMultiTrains` inherits this
+
 ## Bundled setup YAML files, copied by `solverpy init` ✓
 
 Added `data/setups/` alongside `data/strats/` for bundled example YAML setup files.

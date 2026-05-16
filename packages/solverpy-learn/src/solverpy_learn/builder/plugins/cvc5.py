@@ -15,7 +15,10 @@ class Cvc5Trains(SvmTrains):
 
    def __init__(self, dataname: str, ratio: float = 0, chunk_size: int = 1_000_000):
       self._ratio = ratio
-      SvmTrains.__init__(self, dataname, chunk_size=chunk_size)
+      SvmTrains.__init__(self, dataname, chunk_size=chunk_size, ratio=ratio)
+
+   def represent(self) -> dict:
+      return dict(**super().represent(), ratio=self._ratio)
 
    def extract(
       self,
@@ -34,6 +37,9 @@ class Cvc5TrainsDebug(Outputs):
       self._ratio = ratio
       Outputs.__init__(self, flatten, pid="debug-trains")
       self._path = bids.dbpath(NAME)
+
+   def represent(self) -> dict:
+      return dict(cls=self.__class__.__name__, ratio=self._ratio)
 
    def path(self, instance: tuple[str, str], strategy: str) -> str:
       return super().path(instance, strategy) + ".in"

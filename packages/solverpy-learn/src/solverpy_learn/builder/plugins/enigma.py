@@ -28,7 +28,7 @@ class EnigmaTrains(SvmTrains):
       self._features = features
       self._variant = variant
       self._ratio = ratio
-      SvmTrains.__init__(self, dataname, chunk_size=chunk_size)
+      SvmTrains.__init__(self, dataname, chunk_size=chunk_size, features=features, variant=variant, ratio=ratio)
 
    def represent(self) -> dict[str, Any]:
       return dict(
@@ -102,6 +102,9 @@ class EnigmaTrainsDebug(Outputs):
       )
       self._variant = variant
       self._ratio = ratio
+
+   def represent(self) -> dict:
+      return dict(cls=self.__class__.__name__, variant=self._variant, ratio=self._ratio)
 
    def path(
       self,

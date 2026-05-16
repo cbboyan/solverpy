@@ -24,12 +24,13 @@ def rellink(f_src: str, f_dst: str):
 
 class Trains(Decorator):
 
-   def __init__(self, dataname: str, filename: str = "train.in"):
+   def __init__(self, dataname: str, filename: str = "train.in", **kwargs: Any):
       Decorator.__init__(
          self,
          pid="trains",
          dataname=dataname,
          filename=filename,
+         **kwargs,
       )
       self._lock = multiprocessing.get_context("forkserver").Manager().Lock()
       self._enabled = True
