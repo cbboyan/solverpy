@@ -93,32 +93,16 @@ not be mutated in-place, but fragile.
 2. trains regeneration
 3. show best iteration in the training report
 4. show the initial model in the report
-5. reporting: graphs, super-fences (e.g. render graph data → SVG), extend .md output
+5. reporting: graphs, super-fences (e.g. render graph data → SVG); `solverpy report` HTML conversion done, superfences not yet wired
 6. progress web api
 7. improve total bar ETA by not including skipped problems
 8. improve ETA by considering timeout
 9. nice ntfy messages
-10. solverpy command script (unified CLI, Approach A)
-   - dispatcher `solverpy.scripts.cli:main` in core `solverpy` package
-   - core subcommands registered unconditionally:
-     - `solverpy init [solver]` — ✓ implemented (see DONE.md)
-     - `solverpy eval sid bid` — run benchmark evaluation
-     - `solverpy loop bid-train bid-devel` — run the iterative eval/build loop
-     - `solverpy run file.yml` — ✓ implemented (see DONE.md)
-     - `solverpy clean` — ✓ implemented (see DONE.md)
-     - `solverpy esid2strat` — convert eprover `--print-strategy` output to CLI args (was `solverpy-esid2strat.py`)
-   - learn subcommands imported from `solverpy_learn` if installed, graceful error otherwise:
-     - `solverpy tune train.in` — Optuna autotuner (was `solverpy-autotune`)
-     - `solverpy compress file.in` — compress SVM training file (was `solverpy-compress`)
-     - `solverpy decompress file.in` — decompress SVM training file (was `solverpy-decompress`)
-     - `solverpy deconflict input.in` — remove conflicting samples (was `solverpy-deconflict`)
-     - `solverpy filter input.in` — filter pos/neg ratio (was `solverpy-filter`)
-   - implementation steps:
-     1. add `packages/solverpy/src/solverpy/scripts/` with `cli.py` dispatcher + one module per core subcommand
-     2. add `packages/solverpy-learn/src/solverpy_learn/scripts/` with one module per learn subcommand
-     3. register `solverpy = "solverpy.scripts.cli:main"` in core `pyproject.toml [project.scripts]`
-     4. remove old shell scripts from `scripts/` once all subcommands are implemented
-   - replace `scripts/` ad-hoc files; no separate `solverpy-*` entry points kept
+10. solverpy command script (unified CLI, Approach A) — mostly done
+   - core subcommands: `init` ✓, `run` ✓, `clean` ✓, `esid2strat` ✓, `report` ✓
+   - stubs remaining: `eval sid bid`, `loop bid-train bid-devel`
+   - learn subcommands: `tune` ✓, `compress` ✓, `decompress` ✓, `deconflict` ✓, `filter` ✓
+   - remaining: remove old `scripts/` shell scripts once stubs are implemented
 11. yaml formatter: use named globals (like `trains:`) instead of YAML anchors `&id001`
     (tried `_shared`/`_replace` approach — reverted; setup+devels now combined in one block)
 12. scripts update

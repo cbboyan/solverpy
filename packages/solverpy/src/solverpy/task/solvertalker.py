@@ -2,7 +2,8 @@ import logging
 from typing import TYPE_CHECKING, Sequence
 
 from .logtalker import LogTalker
-from .bar import SolvingBar, RunningBar
+from ..benchmark.path import bids as _bids
+from .bar import SolvingBar, RunningBar, _postfix_width
 
 if TYPE_CHECKING:
    from ..tools.typing import Result, SolverJob
@@ -28,10 +29,15 @@ class SolverTalker(LogTalker):
       **kwargs,
    ) -> None:
       super().begin(jobs, refjob=refjob, sidnames=sidnames, **kwargs)
+      dw = self._nick_dw
+      prefix_len = 2 * dw + 3  # "[n/m] " without trailing space
+      total_desc = f"{' ' * prefix_len} {self._total_desc}"
+      max_job = max(len(_bids.problems(bid)) for (_, bid, _) in jobs)
       self._total_bar = RunningBar(
          total=self._total_count,
-         desc=self._total_desc,
+         desc=total_desc,
          miniters=miniters,
+         postfix_width=_postfix_width(max_job),
       )
 
    def end(

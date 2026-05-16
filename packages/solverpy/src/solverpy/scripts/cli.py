@@ -23,11 +23,12 @@ def main():
    )
    subparsers = parser.add_subparsers(dest="command", metavar="COMMAND")
 
-   from solverpy.scripts import esid2strat, init, run, clean
+   from solverpy.scripts import esid2strat, init, run, clean, report
    esid2strat.register(subparsers)
    init.register(subparsers)
    run.register(subparsers)
    clean.register(subparsers)
+   report.register(subparsers)
    _add_stub(subparsers, "eval",
              "Run benchmark evaluation.",
              [("sid", "Strategy id."), ("bid", "Benchmark id.")])

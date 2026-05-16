@@ -1,5 +1,48 @@
 # DONE
 
+## `solverpy report` — offline HTML from .md report ✓
+
+New CLI subcommand `solverpy report FILE.md [-o FILE.html]` converts a solverpy
+report Markdown file (written next to the `.log` by `reporter.py`) into a
+self-contained offline HTML page.
+
+- `scripts/report.py`: `convert()` runs Python-Markdown with the same extensions
+  as `mkdocs.yml` (`pymdownx.highlight`, `pymdownx.inlinehilite`,
+  `pymdownx.superfences`, `tables`); `noclasses=True` so syntax highlighting is
+  fully inline (no external CSS dependency); wraps output in a minimal HTML shell
+  with embedded CSS (tables, code blocks, headings, max-width layout).
+- `scripts/cli.py`: imports and registers `report` subcommand.
+
+## Progress bar improvements ✓
+
+Multiple alignment and style improvements to `SolvingBar`/`RunningBar` displayed
+during benchmark evaluation.
+
+**Label alignment** (`benchmark/summary.py`, `task/logtalker.py`, `task/solvertalker.py`):
+- Nick width now includes `"total"` in the max calculation, plus `+1` so every
+  nick always has at least one trailing space before the tqdm `:` separator.
+- `[n/m]` prefix pads the job index to the digit width of the total job count.
+- `"total"` bar desc is prefixed with the same number of spaces as `[n/m] ` so
+  all descs are the same width and the `|bar|` column starts at the same position.
+- Removed `.strip()` on nick in `logtalker.next()` that was discarding padding.
+- Nick format changed from `* s1` to `s1*` (star suffix instead of prefix).
+
+**Fixed inner bar width** (`task/bar.py`):
+- Replaced tqdm's dynamic `{bar}` with a custom `{bar_fixed}` field injected via
+  `format_dict`.  `_build_bar(n, total, colour)` renders exactly `BAR_WIDTH = 46`
+  characters using `BAR_CHARS`, with optional ANSI colour wrapping.  tqdm no
+  longer resizes the bar based on terminal width or postfix length.
+
+**Postfix alignment** (`task/bar.py`, `task/solvertalker.py`):
+- `_postfix_width(total)` computes the maximum visible width of
+  `+s/u/!e/?eta` for a given problem count (`6 + 4 * digit_width`).
+- `SolvingBar.format_dict` injects `{pad}` spaces to reach that width.
+- `RunningBar` accepts a `postfix_width` parameter; `solvertalker` passes
+  `_postfix_width(max_job)` so the total bar's `!errors` is padded to the same
+  width, aligning the `[elapsed<remaining]` timestamp across all bars.
+
+**Bar characters**: changed from `┈─═━` to `░▒▓█` (block shading style).
+
 ## Rename `bidlist`/`sidlist` → `benchmarks`/`strategies` ✓
 
 Renamed the two core Setup keys throughout the codebase and all documentation.

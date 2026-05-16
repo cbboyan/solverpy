@@ -23,7 +23,7 @@ def legend(
       (solver, bid, sid) = job
       if sidnames:
          nick = f"s{n+1}"
-         if job == ref: nick = f"* s{n+1}"
+         if job == ref: nick = f"s{n+1}*"
       else:
          nick = "ref" if job == ref else f"{n}/{len(jobs)-1}"
       nicks[job] = nick
@@ -31,6 +31,7 @@ def legend(
       rows.append([nick, sid, bid, solver.name, len(bids.problems(bid))])
 
    totaldesc = "total"
+   width = max(width, len(totaldesc)) + 1
    totaldesc = f"{totaldesc:{width}}"
    nicks = {x: f"{y:{width}}" for (x, y) in nicks.items()}
 

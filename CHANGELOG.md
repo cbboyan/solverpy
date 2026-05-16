@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-16)
 
-* feat: use fully qualified class names in represent() and solver.name format [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: solverpy report command, progress bar alignment and style [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: use fully qualified class names in represent() and solver.name format [[details](https://github.com/cbboyan/solverpy/commit/f362ff6) | [browse](https://github.com/cbboyan/solverpy/tree/f362ff6)]
 * fix: align repr() with represent() across all plugin classes [[details](https://github.com/cbboyan/solverpy/commit/21cea9f) | [browse](https://github.com/cbboyan/solverpy/tree/21cea9f)]
 * feat: bundle setup YAMLs in data/setups/, copy to cwd on solverpy init [[details](https://github.com/cbboyan/solverpy/commit/e3a78ba) | [browse](https://github.com/cbboyan/solverpy/tree/e3a78ba)]
 * feat: solverpy run/clean commands, fix log filename, document options [[details](https://github.com/cbboyan/solverpy/commit/3d31999) | [browse](https://github.com/cbboyan/solverpy/tree/3d31999)]
