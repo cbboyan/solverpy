@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def rellink(f_src: str, f_dst: str):
    d_dst = os.path.dirname(f_dst)
    os.makedirs(d_dst, exist_ok=True)
-   rel = os.path.relpath(f_src, d_dst)
+   rel = os.path.relpath(os.path.realpath(f_src), os.path.realpath(d_dst))
    logger.debug(f"linking {f_src} to {f_dst} via {rel}")
    os.symlink(rel, f_dst)
 
