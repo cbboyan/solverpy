@@ -1,5 +1,16 @@
 # DONE
 
+## Nested multiprocessing pools — not an issue ✓
+
+The originally suspected problem (quadratic process spawning when `build.score()` calls
+`evaluation.launch()` inside an Optuna trial) does not occur: Optuna always runs a
+single trial at a time, never inside a worker pool, so no nested pools arise.
+
+The observed symptom of ~128 idle threads per evaluation worker was a separate issue:
+numpy/scipy/sklearn module-level imports in `builder/svm.py` triggered OpenBLAS+OpenMP
+thread pool initialisation in every spawn worker at unpickle time. Fixed by making those
+imports lazy.
+
 ## RemoteTalker fixes ✓
 
 Removed `log_config`, `log_start`, `log_stop` from `RemoteTalker.REMOTES`.
