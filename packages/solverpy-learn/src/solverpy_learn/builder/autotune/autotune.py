@@ -60,7 +60,10 @@ def tuner(
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
 
-   if talker: talker.tuning(time.time())
+   _n_phases = len(phases.split(":"))
+   _iters0 = (iters // _n_phases) if iters else 0
+   _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
+   if talker: talker.tuning(time.time(), _total)
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
    dtrain.construct()

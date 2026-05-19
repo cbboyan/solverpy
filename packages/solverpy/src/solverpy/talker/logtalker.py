@@ -292,8 +292,8 @@ class LogTalker(Talker):
       """Store the tuning result."""
       self._result = val
 
-   def tuning(self, t_start: float) -> None:
-      del t_start
+   def tuning(self, t_start: float, total: int = 0) -> None:
+      del t_start, total
 
    def tuned(self, t_end: float) -> None:
       del t_end
