@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-19)
 
-* fix: normalize symlinks in rellink to avoid chain links across loops [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: use fork (not forkserver) in @external decorator [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: normalize symlinks in rellink to avoid chain links across loops [[details](https://github.com/cbboyan/solverpy/commit/1b400be) | [browse](https://github.com/cbboyan/solverpy/tree/1b400be)]
 * fix: run svm.compress() in external process to free scipy/numpy memory [[details](https://github.com/cbboyan/solverpy/commit/628fe8d) | [browse](https://github.com/cbboyan/solverpy/tree/628fe8d)]
 * feat: complete talker package move, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/b386dc4) | [browse](https://github.com/cbboyan/solverpy/tree/b386dc4)]
 * feat: move talkers to solverpy.talker package, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/b6bebe1) | [browse](https://github.com/cbboyan/solverpy/tree/b6bebe1)]

@@ -4,12 +4,12 @@ from typing import Callable
 
 def external(func: Callable) -> Callable:
    """
-   Decorator that runs a function in a separate forkserver process to free memory on return.
+   Decorator that runs a function in a separate forked process to free memory on return.
    """
 
    @wraps(func)
    def wrapper(*args, **kwargs):
-      ctx = multiprocessing.get_context("forkserver")
+      ctx = multiprocessing.get_context("fork")
       queue = ctx.Queue()
 
       def target():
