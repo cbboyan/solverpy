@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-16)
+## Unreleased changes (2026-05-19)
 
-* fix: remove log_config/log_start/log_stop from RemoteTalker.REMOTES [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: move talkers to solverpy.talker package, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: remove log_config/log_start/log_stop from RemoteTalker.REMOTES [[details](https://github.com/cbboyan/solverpy/commit/3932248) | [browse](https://github.com/cbboyan/solverpy/tree/3932248)]
 * docs: document Talker hierarchy, process layers, and log queue in CLAUDE.md [[details](https://github.com/cbboyan/solverpy/commit/1a61237) | [browse](https://github.com/cbboyan/solverpy/tree/1a61237)]
 * fix: RemoteTalker Manager lifetime and optional queue argument [[details](https://github.com/cbboyan/solverpy/commit/1c45c76) | [browse](https://github.com/cbboyan/solverpy/tree/1c45c76)]
 * feat: replace RemoteTalker+AutotuneListener with TuneTalker [[details](https://github.com/cbboyan/solverpy/commit/26600be) | [browse](https://github.com/cbboyan/solverpy/tree/26600be)]
