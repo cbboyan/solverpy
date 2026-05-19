@@ -4,9 +4,7 @@ from typing import Callable
 
 def external(func: Callable) -> Callable:
    """
-   Decorator that runs a function in a separate process to free memory on return.
-   Uses fork explicitly so the inner closure does not need to be picklable
-   (Python 3.14 changed the default start method on Linux to forkserver).
+   Decorator that runs a function in a separate forkserver process to free memory on return.
    """
 
    @wraps(func)

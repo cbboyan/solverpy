@@ -7,6 +7,7 @@ import multiprocessing
 from collections import defaultdict
 
 from solverpy.tools import human
+from solverpy.tools.external import external
 from .plugins.trains import rellink
 
 if TYPE_CHECKING:
@@ -128,6 +129,7 @@ def format(f_in: str) -> str:
    return "unknown"
 
 
+@external
 def compress(f_in: str, keep: bool = False, chunk_size: int = 1_000_000, cores: int | None = None) -> None:
    if raw_exists(f_in):
       rawcompress(f_in, cores=cores)

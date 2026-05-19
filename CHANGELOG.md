@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-19)
 
-* feat: complete talker package move, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: run svm.compress() in external process to free scipy/numpy memory [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: complete talker package move, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/b386dc4) | [browse](https://github.com/cbboyan/solverpy/tree/b386dc4)]
 * feat: move talkers to solverpy.talker package, suppress atpeval report sections, add report extras [[details](https://github.com/cbboyan/solverpy/commit/b6bebe1) | [browse](https://github.com/cbboyan/solverpy/tree/b6bebe1)]
 * fix: remove log_config/log_start/log_stop from RemoteTalker.REMOTES [[details](https://github.com/cbboyan/solverpy/commit/3932248) | [browse](https://github.com/cbboyan/solverpy/tree/3932248)]
 * docs: document Talker hierarchy, process layers, and log queue in CLAUDE.md [[details](https://github.com/cbboyan/solverpy/commit/1a61237) | [browse](https://github.com/cbboyan/solverpy/tree/1a61237)]
