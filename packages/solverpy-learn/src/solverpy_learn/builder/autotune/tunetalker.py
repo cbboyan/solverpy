@@ -20,12 +20,12 @@ import multiprocessing
 import threading
 from typing import Any, Sequence, TYPE_CHECKING
 
-from solverpy.task.solvertalker import SolverTalker
-from solverpy.task.logtalker import LogTalker
-from solverpy.task.bar import BuilderBar
+from solverpy.talker.solvertalker import SolverTalker
+from solverpy.talker.logtalker import LogTalker
+from solverpy.talker.bar import BuilderBar
 
 if TYPE_CHECKING:
-   from solverpy.task.task import Task
+   from solverpy.talker.task import Task
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +35,10 @@ class TuneTalker(SolverTalker):
    Self-contained progress talker for the hyperparameter tuning pipeline.
 
    ```plantuml name="autotune-tunetalker"
-   abstract class solverpy.task.talker.Talker
-   class solverpy.task.logtalker.LogTalker extends solverpy.task.talker.Talker
-   class solverpy.task.solvertalker.SolverTalker extends solverpy.task.logtalker.LogTalker
-   class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.task.solvertalker.SolverTalker {
+   abstract class solverpy.talker.talker.Talker
+   class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
+   class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker
+   class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.talker.solvertalker.SolverTalker {
       + REMOTES: set[str]
       - _queue: Queue
       - _listening_thread: Thread | None
@@ -61,9 +61,9 @@ class TuneTalker(SolverTalker):
 
    Log-based defaults for all tuning events (`trials`, `trying`, `tried`,
    `trialed`, etc.) are inherited from
-   [`LogTalker`][solverpy.task.logtalker.LogTalker].  In non-headless mode,
+   [`LogTalker`][solverpy.talker.logtalker.LogTalker].  In non-headless mode,
    `TuneTalker` overrides the model-building handlers to use a
-   [`BuilderBar`][solverpy.task.bar.BuilderBar] instead.
+   [`BuilderBar`][solverpy.talker.bar.BuilderBar] instead.
 
    Set ``headless=True`` for non-interactive use: all tuning handlers use
    ``logger.info`` and no tqdm bars are created.
@@ -148,11 +148,15 @@ class TuneTalker(SolverTalker):
    # --- ATP evaluation overrides ---
 
    def begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
-      """Create the total ``RunningBar`` if not headless, else log only."""
+      """Create the total ``RunningBar`` if not headless, else log only. Skips Evaluation/Legend report."""
       if self._log_progress:
-         LogTalker.begin(self, jobs, refjob=refjob, sidnames=sidnames, **kwargs)
+         LogTalker.begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
       else:
-         super().begin(jobs, refjob=refjob, sidnames=sidnames, miniters=miniters, **kwargs)
+         super().begin(jobs, refjob=refjob, sidnames=sidnames, miniters=miniters, report=False, **kwargs)
+
+   def end(self, results, refjob=None, **kwargs) -> None:
+      """Delegate to parent but skip Summary/Statuses report sections."""
+      super().end(results, refjob=refjob, report=False, **kwargs)
 
    def launching(self, tasks: Sequence["Task"]) -> None:
       """Record start time and create the per-job bar if not headless.
@@ -163,7 +167,7 @@ class TuneTalker(SolverTalker):
       """
       LogTalker.launching(self, tasks)
       if not self._log_progress:
-         from solverpy.task.bar import SolvingBar
+         from solverpy.talker.bar import SolvingBar
          self._job_bar = SolvingBar(len(tasks), self._job_desc, miniters=1)
 
    # --- Tuning event overrides (bars when not headless) ---

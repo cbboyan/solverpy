@@ -57,7 +57,7 @@ class solverpy.setups.loop << (M,skyblue) >> {
    # evaluation.launch()
 }
 
-class solverpy.task.remotetalker.RemoteTalker {
+class solverpy.talker.remotetalker.RemoteTalker {
    + listening_start()
    ~ Thread.start()
    --
@@ -65,7 +65,7 @@ class solverpy.task.remotetalker.RemoteTalker {
    ~ Thread.join()
 }
 
-class solverpy.task.talker.Talker {
+class solverpy.talker.talker.Talker {
    + listening_start()
    ~ QueueListener.start()
    --

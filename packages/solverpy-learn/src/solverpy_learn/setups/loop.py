@@ -10,8 +10,8 @@ from solverpy.benchmark.reports import markdown
 from solverpy.setups.common import default
 from solverpy.benchmark.path import bids, sids
 from solverpy.setups.setup import Setup
-from solverpy.task.solvertalker import SolverTalker
-from solverpy.task.logtalker import LogTalker
+from solverpy.talker.solvertalker import SolverTalker
+from solverpy.talker.logtalker import LogTalker
 from ..builder.builder import Builder
 
 logger = logging.getLogger(__name__)

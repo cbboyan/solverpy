@@ -5,8 +5,8 @@ import logging
 from .path import bids
 from ..tools import log, reporter
 from ..task.solvertask import SolverTask
-from ..task.talker import Talker
-from ..task.logtalker import LogTalker
+from ..talker.talker import Talker
+from ..talker.logtalker import LogTalker
 from ..task import launcher
 from .reports import markdown
 from .db.providers.solved import Solved

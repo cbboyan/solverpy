@@ -11,6 +11,7 @@ def legend(
    jobs: list["SolverJob"],
    ref: "SolverJob | None" = None,
    sidnames: bool = False,
+   report: bool = True,
 ) -> tuple[dict["SolverJob", str], str]:
    nicks = {}
    if sidnames:
@@ -38,15 +39,16 @@ def legend(
    strats = ", ".join(f"`{row[1]}`" for row in rows)
    benchmarks = ", ".join(f"`{b}`" for b in dict.fromkeys(row[2] for row in rows))
 
-   report = markdown.newline()
-   report += markdown.heading("Evaluation", level=3)
-   report += markdown.text(f"- **strategies:** {strats}")
-   report += markdown.text(f"- **benchmarks:** {benchmarks}")
-   report += markdown.newline()
-   report += markdown.heading("Legend", level=4)
-   report += markdown.table(header, rows)
-   report += markdown.newline()
-   reporter.add(report)
+   if report:
+      report0 = markdown.newline()
+      report0 += markdown.heading("Evaluation", level=3)
+      report0 += markdown.text(f"- **strategies:** {strats}")
+      report0 += markdown.text(f"- **benchmarks:** {benchmarks}")
+      report0 += markdown.newline()
+      report0 += markdown.heading("Legend", level=4)
+      report0 += markdown.table(header, rows)
+      report0 += markdown.newline()
+      reporter.add(report0)
 
    return (nicks, totaldesc)
 

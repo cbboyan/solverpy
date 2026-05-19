@@ -8,8 +8,8 @@ from ..tools import log
 from .common import default
 from ..benchmark.path import bids, sids
 from .setup import Setup
-from ..task.solvertalker import SolverTalker
-from ..task.logtalker import LogTalker
+from ..talker.solvertalker import SolverTalker
+from ..talker.logtalker import LogTalker
 
 logger = logging.getLogger(__name__)
 

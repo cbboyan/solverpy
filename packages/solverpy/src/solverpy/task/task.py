@@ -4,7 +4,7 @@ import logging
 
 if TYPE_CHECKING:
    from queue import Queue
-   from ..task.talker import Talker
+   from ..talker.talker import Talker
 
 logger = logging.getLogger(__name__)
 
