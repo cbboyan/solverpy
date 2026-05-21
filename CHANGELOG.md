@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-05-22)
 
-* feat: add -f/--force alias to solverpy clean [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: add talkers.md — method summary, per-talker behaviour, and call sites [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: add -f/--force alias to solverpy clean [[details](https://github.com/cbboyan/solverpy/commit/f9b9129) | [browse](https://github.com/cbboyan/solverpy/tree/f9b9129)]
 * fix: route console logging through tqdm.write, fix tune bar and bar format [[details](https://github.com/cbboyan/solverpy/commit/33b4b17) | [browse](https://github.com/cbboyan/solverpy/tree/33b4b17)]
 * refactor: move solverpy/tools/log and solverpy/talker into new solverpy/report [[details](https://github.com/cbboyan/solverpy/commit/bf23138) | [browse](https://github.com/cbboyan/solverpy/tree/bf23138)]
 * docs: update TODO/DONE — RemoteTalker refactor plan, triage fixes [[details](https://github.com/cbboyan/solverpy/commit/6c5e19a) | [browse](https://github.com/cbboyan/solverpy/tree/6c5e19a)]
