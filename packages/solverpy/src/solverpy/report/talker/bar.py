@@ -18,10 +18,10 @@ BLUE = '\033[94m'
 PURPLE = '\033[95m'
 END = '\033[0m'
 
-BAR_DEFAULT = "{desc}: {percentage:6.2f}%|{bar_fixed}| {n_fmt}/{total_fmt} [{elapsed}<{speta}]{postfix}"
-BAR_BUILDER = "{desc}: {percentage:6.2f}%|{bar_fixed}| {n_fmt}/{total_fmt} {loss} [{elapsed}<{remaining}]{postfix}"
-BAR_RUNNING = "{desc}: {percentage:6.2f}%|{bar_fixed}| {n_fmt}/{total_fmt} {errors}{pad} [{elapsed}<{speta}]{postfix}"
-BAR_SOLVING = "{desc}: {percentage:6.2f}%|{bar_fixed}| {n_fmt}/{total_fmt} {solved}/{unsolved}/{errors}/{solved_eta}{pad} [{elapsed}<{speta}]{postfix}"
+BAR_DEFAULT = "{desc}: {percentage:6.2f}%|{bar_fixed}| [{elapsed}<{speta}] {n_fmt}/{total_fmt}{postfix}"
+BAR_BUILDER = "{desc}: {percentage:6.2f}%|{bar_fixed}| [{elapsed}<{remaining}] {n_fmt}/{total_fmt} {loss}{postfix}"
+BAR_RUNNING = "{desc}: {percentage:6.2f}%|{bar_fixed}| [{elapsed}<{speta}] {n_fmt}/{total_fmt} {errors}{pad}{postfix}"
+BAR_SOLVING = "{desc}: {percentage:6.2f}%|{bar_fixed}| [{elapsed}<{speta}] {n_fmt}/{total_fmt} {solved}/{unsolved}/{errors}/{solved_eta}{pad}{postfix}"
 
 
 def _build_bar(n: int, total: int, colour: str = "") -> str:

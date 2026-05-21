@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-import os, sys, io
+import os, sys
 import atexit, traceback
 from datetime import datetime
 import requests
@@ -61,6 +61,12 @@ def init_yaml() -> None:
    yaml.add_multi_representer(SolverPyObj, representer)
 
 
+class TqdmHandler(logging.Handler):
+   def emit(self, record):
+      from tqdm import tqdm
+      tqdm.write(self.format(record), file=sys.stderr)
+
+
 def init(name: str | None = None) -> None:
    global _logfile
    if _logfile:
@@ -75,9 +81,8 @@ def init(name: str | None = None) -> None:
    fh.setFormatter(
       logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s"))
    root.addHandler(fh)
-   # define a Handler which writes INFO messages or higher to the sys.stderr
-   console = logging.StreamHandler(
-      io.TextIOWrapper(os.fdopen(sys.stderr.fileno(), "wb")))
+   # route console output through tqdm.write to avoid bar corruption
+   console = TqdmHandler()
    console.setLevel(logging.INFO)
    console.setFormatter(
       logging.Formatter("%(asctime)-12s: %(levelname)-8s %(message)s"))

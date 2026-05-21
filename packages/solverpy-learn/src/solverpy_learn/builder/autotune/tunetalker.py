@@ -164,10 +164,7 @@ class TuneTalker(SolverTalker):
       return self._result
 
    def terminate(self) -> None:
-      """Close tune bar then delegate to parent."""
-      if self._tune_bar:
-         self._tune_bar.close()
-         self._tune_bar = None
+      """Delegate to parent; _tune_bar is closed by tuned()."""
       super().terminate()
 
    # --- Helpers ---
@@ -198,6 +195,8 @@ class TuneTalker(SolverTalker):
             total=self._total_count,
             desc=self._trial_desc("eval "),
             miniters=miniters,
+            colour="blue",
+            leave=False,
             postfix_width=_postfix_width(max_job),
          )
 
@@ -261,7 +260,7 @@ class TuneTalker(SolverTalker):
       """Open a ``BuilderBar`` with [N/M] build label if not headless."""
       LogTalker.building(self, f_mod, total)
       if not self._log_progress:
-         self._builder_bar = BuilderBar(total, self._trial_desc("build"))
+         self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=False)
 
    def iteration(self, n: int, total: int, loss: list[float]) -> None:
       """Update the builder bar and emit periodic log lines."""
