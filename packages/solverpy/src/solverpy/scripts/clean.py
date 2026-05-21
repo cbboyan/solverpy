@@ -32,6 +32,6 @@ def register(subparsers):
       help="Delete all solverpy_db subdirectories except strats/.",
       description="Delete all subdirectories of solverpy_db/ in the current directory, except strats/.",
    )
-   p.add_argument("-y", "--yes", action="store_true",
-                  help="Skip confirmation prompt.")
+   p.add_argument("-y", "-f", "--yes", "--force", dest="yes",
+                  action="store_true", help="Skip confirmation prompt.")
    p.set_defaults(func=main)
