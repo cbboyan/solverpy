@@ -65,7 +65,7 @@ def init(name: str | None = None) -> None:
    global _logfile
    if _logfile:
       return
-   from . import reporter
+   from ..tools import reporter
    root = logging.getLogger("")
    root.setLevel(logging.DEBUG)
    # set up logging to file
@@ -89,7 +89,7 @@ def init(name: str | None = None) -> None:
 
 
 def terminating() -> None:
-   from . import reporter
+   from ..tools import reporter
    if "last_traceback" in dir(sys):
       msg = traceback.format_exception(sys.last_type, sys.last_value,
                                        sys.last_traceback)

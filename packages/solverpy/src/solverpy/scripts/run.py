@@ -62,7 +62,7 @@ def _run_loop(loop_type, yaml_data):
 
 
 def main(args):
-   from solverpy.tools import log
+   from solverpy.report import log
    log.init(Path(args.file).name)
 
    with open(args.file) as f:

@@ -3,11 +3,11 @@ import logging
 import multiprocessing as mp
 
 from .task import runtask, runtask_single
-from ..talker.logtalker import LogTalker
+from ..report.talker.logtalker import LogTalker
 
 if TYPE_CHECKING:
    from .task import Task
-   from ..talker.talker import Talker
+   from ..report.talker.talker import Talker
 
 logger = logging.getLogger(__name__)
 

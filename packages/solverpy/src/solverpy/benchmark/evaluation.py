@@ -3,10 +3,11 @@ import random
 import logging
 
 from .path import bids
-from ..tools import log, reporter
+from ..report import log
+from ..tools import reporter
 from ..task.solvertask import SolverTask
-from ..talker.talker import Talker
-from ..talker.logtalker import LogTalker
+from ..report.talker.talker import Talker
+from ..report.talker.logtalker import LogTalker
 from ..task import launcher
 from .reports import markdown
 from .db.providers.solved import Solved

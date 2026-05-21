@@ -1,7 +1,7 @@
 """
 # RemoteTalker — cross-process talker proxy
 
-Wraps a local [`Talker`][solverpy.talker.talker.Talker] and makes its lifecycle
+Wraps a local [`Talker`][solverpy.report.talker.talker.Talker] and makes its lifecycle
 methods callable from a child process.  Methods listed in `REMOTES` are
 intercepted by `__getattribute__` and queued instead of executed directly;
 a background listening thread in the parent dequeues them and calls the real
@@ -30,8 +30,8 @@ class RemoteTalker(Talker):
    Proxy talker that forwards method calls from a child process to the parent.
 
    ```plantuml name="task-remotetalker"
-   abstract class solverpy.talker.talker.Talker
-   class solverpy.talker.remotetalker.RemoteTalker extends solverpy.talker.talker.Talker {
+   abstract class solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker {
       + REMOTES: set[str]
       - _remote_queue: Queue[Any]
       - _listening_thread: Thread | None
@@ -42,9 +42,9 @@ class RemoteTalker(Talker):
       + listening_handle(method, args, kwargs)
       + terminate()
    }
-   class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
-   class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker
-   solverpy.talker.remotetalker.RemoteTalker o-- solverpy.talker.talker.Talker : wraps
+   class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+   solverpy.report.talker.remotetalker.RemoteTalker o-- solverpy.report.talker.talker.Talker : wraps
    ```
 
    Any attribute named in `REMOTES` is intercepted by `__getattribute__`

@@ -4,12 +4,12 @@ import logging
 
 from ..benchmark import db
 from ..benchmark import evaluation as evaluator
-from ..tools import log
+from ..report import log
 from .common import default
 from ..benchmark.path import bids, sids
 from .setup import Setup
-from ..talker.solvertalker import SolverTalker
-from ..talker.logtalker import LogTalker
+from ..report.talker.solvertalker import SolverTalker
+from ..report.talker.logtalker import LogTalker
 
 logger = logging.getLogger(__name__)
 

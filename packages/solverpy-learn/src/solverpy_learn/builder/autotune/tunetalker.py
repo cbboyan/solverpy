@@ -20,13 +20,13 @@ import multiprocessing
 import threading
 from typing import Any, Sequence, TYPE_CHECKING
 
-from solverpy.talker.solvertalker import SolverTalker
-from solverpy.talker.logtalker import LogTalker
-from solverpy.talker.bar import BuilderBar, DefaultBar, RunningBar, _postfix_width
+from solverpy.report.talker.solvertalker import SolverTalker
+from solverpy.report.talker.logtalker import LogTalker
+from solverpy.report.talker.bar import BuilderBar, DefaultBar, RunningBar, _postfix_width
 from solverpy.benchmark.path import bids as _bids
 
 if TYPE_CHECKING:
-   from solverpy.talker.task import Task
+   from solverpy.task.task import Task
 
 logger = logging.getLogger(__name__)
 
@@ -36,10 +36,10 @@ class TuneTalker(SolverTalker):
    Self-contained progress talker for the hyperparameter tuning pipeline.
 
    ```plantuml name="autotune-tunetalker"
-   abstract class solverpy.talker.talker.Talker
-   class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
-   class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker
-   class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.talker.solvertalker.SolverTalker {
+   abstract class solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+   class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.report.talker.solvertalker.SolverTalker {
       + REMOTES: set[str]
       - _queue: Queue
       - _listening_thread: Thread | None
@@ -75,9 +75,9 @@ class TuneTalker(SolverTalker):
 
    Log-based defaults for all tuning events (`trials`, `trying`, `tried`,
    `trialed`, etc.) are inherited from
-   [`LogTalker`][solverpy.talker.logtalker.LogTalker].  In non-headless mode,
+   [`LogTalker`][solverpy.report.talker.logtalker.LogTalker].  In non-headless mode,
    `TuneTalker` overrides the model-building handlers to use a
-   [`BuilderBar`][solverpy.talker.bar.BuilderBar] instead.
+   [`BuilderBar`][solverpy.report.talker.bar.BuilderBar] instead.
 
    Set ``headless=True`` for non-interactive use: all tuning handlers use
    ``logger.info`` and no tqdm bars are created.

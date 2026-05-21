@@ -15,16 +15,16 @@ from typing import Any, Sequence, TYPE_CHECKING
 import logging
 import time
 
-from ..benchmark.path import bids
-from ..benchmark import summary
-from ..tools import human, reporter
-from ..benchmark.reports import markdown
+from ...benchmark.path import bids
+from ...benchmark import summary
+from ...tools import human, reporter
+from ...benchmark.reports import markdown
 from .talker import Talker
 
 if TYPE_CHECKING:
-   from ..tools.typing import Result, SolverJob
-   from ..task.solvertask import SolverTask
-   from ..task.task import Task
+   from ...tools.typing import Result, SolverJob
+   from ...task.solvertask import SolverTask
+   from ...task.task import Task
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +38,8 @@ class LogTalker(Talker):
    Progress reporter that writes to the Python logger and markdown report.
 
    ```plantuml name="task-logtalker"
-   abstract class solverpy.talker.talker.Talker
-   class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker {
+   abstract class solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker {
       - _log_progress: bool
       --
       + begin(jobs, refjob, sidnames, **kwargs)
@@ -62,7 +62,7 @@ class LogTalker(Talker):
       + info(msg)
       + debug(msg)
    }
-   class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker
+   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
    ```
 
    Calls `summary.legend` in `begin` and `summary.summarize` in `end` to

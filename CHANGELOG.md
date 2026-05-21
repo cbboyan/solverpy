@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-19)
+## Unreleased changes (2026-05-21)
 
-* docs: update TODO/DONE — RemoteTalker refactor plan, triage fixes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: move solverpy/tools/log and solverpy/talker into new solverpy/report [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: update TODO/DONE — RemoteTalker refactor plan, triage fixes [[details](https://github.com/cbboyan/solverpy/commit/6c5e19a) | [browse](https://github.com/cbboyan/solverpy/tree/6c5e19a)]
 * feat: normalize tuning progress bars to two aligned bars [[details](https://github.com/cbboyan/solverpy/commit/d6086ce) | [browse](https://github.com/cbboyan/solverpy/tree/d6086ce)]
 * fix: use fork (not forkserver) in @external decorator [[details](https://github.com/cbboyan/solverpy/commit/2d0d8de) | [browse](https://github.com/cbboyan/solverpy/tree/2d0d8de)]
 * fix: normalize symlinks in rellink to avoid chain links across loops [[details](https://github.com/cbboyan/solverpy/commit/1b400be) | [browse](https://github.com/cbboyan/solverpy/tree/1b400be)]

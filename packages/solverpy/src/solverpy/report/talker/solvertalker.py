@@ -1,9 +1,9 @@
 """
 # SolverTalker — interactive progress bar reporter
 
-Extends [`LogTalker`][solverpy.talker.logtalker.LogTalker] with tqdm progress
-bars: a per-job [`SolvingBar`][solverpy.talker.bar.SolvingBar] and a cumulative
-[`RunningBar`][solverpy.talker.bar.RunningBar] across all jobs.  Used in
+Extends [`LogTalker`][solverpy.report.talker.logtalker.LogTalker] with tqdm progress
+bars: a per-job [`SolvingBar`][solverpy.report.talker.bar.SolvingBar] and a cumulative
+[`RunningBar`][solverpy.report.talker.bar.RunningBar] across all jobs.  Used in
 interactive (terminal) mode; falls back to `LogTalker` text output in
 headless mode.
 """
@@ -12,12 +12,12 @@ import logging
 from typing import TYPE_CHECKING, Sequence
 
 from .logtalker import LogTalker
-from ..benchmark.path import bids as _bids
+from ...benchmark.path import bids as _bids
 from .bar import SolvingBar, RunningBar, _postfix_width
 
 if TYPE_CHECKING:
-   from ..tools.typing import Result, SolverJob
-   from ..task.task import Task
+   from ...tools.typing import Result, SolverJob
+   from ...task.task import Task
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ class SolverTalker(LogTalker):
    Interactive progress reporter with tqdm bars.
 
    ```plantuml name="task-solvertalker"
-   abstract class solverpy.talker.talker.Talker
-   class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
-   class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker {
+   abstract class solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker {
       - _job_bar: SolvingBar | None
       - _total_bar: RunningBar | None
       --

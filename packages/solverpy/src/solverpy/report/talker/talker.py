@@ -3,9 +3,9 @@
 
 Base class for progress reporting during benchmark evaluation.
 Subclasses receive lifecycle events (`begin`, `next`, `launching`, `finished`, `done`, `end`)
-and decide how to surface them — as log messages ([`LogTalker`][solverpy.talker.logtalker.LogTalker]),
-progress bars ([`SolverTalker`][solverpy.talker.solvertalker.SolverTalker]),
-or forwarded across processes ([`RemoteTalker`][solverpy.talker.remotetalker.RemoteTalker]).
+and decide how to surface them — as log messages ([`LogTalker`][solverpy.report.talker.logtalker.LogTalker]),
+progress bars ([`SolverTalker`][solverpy.report.talker.solvertalker.SolverTalker]),
+or forwarded across processes ([`RemoteTalker`][solverpy.report.talker.remotetalker.RemoteTalker]).
 
 Also owns the log queue machinery that lets worker processes route Python
 `logging` records back to the parent's handlers.
@@ -17,11 +17,11 @@ import multiprocessing as mp
 from queue import Queue
 from logging.handlers import QueueHandler, QueueListener
 
-from ..task.task import Task
+from ...task.task import Task
 
 if TYPE_CHECKING:
-   from ..tools.typing import Result, SolverJob
-   from ..task.solvertask import SolverTask  # TODO: generalize to Task
+   from ...tools.typing import Result, SolverJob
+   from ...task.solvertask import SolverTask  # TODO: generalize to Task
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class Talker:
    Abstract base for evaluation progress reporters.
 
    ```plantuml name="task-talker"
-   abstract class solverpy.talker.talker.Talker {
+   abstract class solverpy.report.talker.talker.Talker {
       - _log_queue: Queue[Any] | None
       - _listener: QueueListener | None
       - _manager: SyncManager | None
@@ -49,8 +49,8 @@ class Talker:
       + finished(task, result)
       + done()
    }
-   abstract class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
-   abstract class solverpy.talker.remotetalker.RemoteTalker extends solverpy.talker.talker.Talker
+   abstract class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+   abstract class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker
    ```
 
    Subclasses receive lifecycle events fired by the evaluation pipeline and

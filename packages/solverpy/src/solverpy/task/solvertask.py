@@ -4,7 +4,7 @@ Defines the [`SolverTask`][solverpy.task.solvertask.SolverTask] class.
 
 from typing import TYPE_CHECKING, Any
 from .task import Task
-from ..talker.talker import Talker
+from ..report.talker.talker import Talker
 
 if TYPE_CHECKING:
    from ..solver.solverpy import SolverPy

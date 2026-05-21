@@ -5,13 +5,14 @@ import gc
 
 from solverpy.benchmark import db
 from solverpy.benchmark import evaluation as evaluator
-from solverpy.tools import log, reporter
+from solverpy.report import log
+from solverpy.tools import reporter
 from solverpy.benchmark.reports import markdown
 from solverpy.setups.common import default
 from solverpy.benchmark.path import bids, sids
 from solverpy.setups.setup import Setup
-from solverpy.talker.solvertalker import SolverTalker
-from solverpy.talker.logtalker import LogTalker
+from solverpy.report.talker.solvertalker import SolverTalker
+from solverpy.report.talker.logtalker import LogTalker
 from ..builder.builder import Builder
 
 logger = logging.getLogger(__name__)

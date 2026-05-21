@@ -6,8 +6,8 @@ The `task` module handles parallel execution of solver runs.  A
 `(solver, bid, sid, problem)` job.  The
 [`Launcher`][solverpy.task.launcher] runs a pool of tasks in parallel
 using Python's `multiprocessing`.  Progress is reported through a
-[`Talker`][solverpy.talker.talker.Talker] from the
-[`solverpy.talker`][solverpy.talker] package.
+[`Talker`][solverpy.report.talker.talker.Talker] from the
+[`solverpy.report.talker`][solverpy.report.talker] package.
 
 ```plantuml name="task-overview"
 
@@ -16,7 +16,7 @@ class solverpy.task.launcher << (M,skyblue) >> {
   ~ Pool(cores)
 }
 
-abstract class solverpy.talker.talker.Talker {
+abstract class solverpy.report.talker.talker.Talker {
   + begin(jobs)
   + next(job)
   + launching(tasks)
@@ -25,8 +25,8 @@ abstract class solverpy.talker.talker.Talker {
   + end(results)
 }
 
-class solverpy.talker.logtalker.LogTalker extends solverpy.talker.talker.Talker
-class solverpy.talker.solvertalker.SolverTalker extends solverpy.talker.logtalker.LogTalker
+class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
 
 abstract class solverpy.task.task.Task {
   + run() : Any
@@ -36,7 +36,7 @@ abstract class solverpy.task.task.Task {
 class solverpy.task.solvertask.SolverTask extends solverpy.task.task.Task
 
 solverpy.task.launcher ..> solverpy.task.solvertask.SolverTask
-solverpy.talker.solvertalker.SolverTalker ..> solverpy.talker.bar.SolvingBar
+solverpy.report.talker.solvertalker.SolverTalker ..> solverpy.report.talker.bar.SolvingBar
 
 ```
 
