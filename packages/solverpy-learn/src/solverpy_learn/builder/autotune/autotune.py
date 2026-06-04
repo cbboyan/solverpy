@@ -107,7 +107,7 @@ def tuner(
    if init_params is not None:
       f_mod = os.path.join(d_tmp, "init", "model.lgb")
       (_, stats) = build.model(params, dtrain, dtest, f_mod, talker)
-      build.score(stats, builder, "init")
+      build.score(stats, builder, "init", talker)
       acc = stats["valid_acc"]
       best = (
          stats["score"],
@@ -137,8 +137,6 @@ def tuner(
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
    builder = kwargs.get("builder")
    talker = TuneTalker(headless=headless)
-   if builder:
-      builder.talker = talker
 
    d_tmp = kwargs.get("d_tmp") or "tune-tmp"
    os.makedirs(d_tmp, exist_ok=True)

@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-04)
 
-* refactor: rename all Talker event methods with eval_/tune_/build_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: pass talker explicitly to build.score(), remove builder.talker [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename all Talker event methods with eval_/tune_/build_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/4f93801) | [browse](https://github.com/cbboyan/solverpy/tree/4f93801)]
 * docs: add talkers.md — method summary, per-talker behaviour, and call sites [[details](https://github.com/cbboyan/solverpy/commit/2affb52) | [browse](https://github.com/cbboyan/solverpy/tree/2affb52)]
 * feat: add -f/--force alias to solverpy clean [[details](https://github.com/cbboyan/solverpy/commit/f9b9129) | [browse](https://github.com/cbboyan/solverpy/tree/f9b9129)]
 * fix: route console logging through tqdm.write, fix tune bar and bar format [[details](https://github.com/cbboyan/solverpy/commit/33b4b17) | [browse](https://github.com/cbboyan/solverpy/tree/33b4b17)]

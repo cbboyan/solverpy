@@ -24,7 +24,7 @@ def check(
    del args  # unused argument
    f_mod = os.path.join(d_tmp, "model%04d" % trial.number, "model.lgb")
    (_, stats) = build.model(params, dtrain, dtest, f_mod, talker)
-   build.score(stats, builder, f"{nick}/model{trial.number:04d}")
+   build.score(stats, builder, f"{nick}/model{trial.number:04d}", talker)
 
    trial.set_user_attr(key="model", value=f_mod)
    trial.set_user_attr(key="mlscore", value=stats["mlscore"])

@@ -9,8 +9,6 @@ from solverpy.benchmark.reports import progress, markdown
 from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
 
-if TYPE_CHECKING:
-   from .autotune.tunetalker import TuneTalker
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,6 @@ class AutoTuner(Builder):
       devels: (Setup | None) = None,
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
-      talker: "TuneTalker | None" = None,
    ):
       assert "dataname" in trains
       Builder.__init__(self, trains["dataname"])
@@ -40,7 +37,6 @@ class AutoTuner(Builder):
       self._devels = devels or trains
       self._tuneargs: dict[str, Any] = TUNEARGS | (tuneargs or {})
       self._templates = templates or []
-      self._talker = talker
 
    def represent(self) -> dict[str, Any]:
       return dict(
@@ -55,14 +51,6 @@ class AutoTuner(Builder):
          return os.path.join(super().path(), modelfile)
       else:
          return super().path()
-
-   @property
-   def talker(self):
-      return self._talker
-
-   @talker.setter
-   def talker(self, talker):
-      self._talker = talker
 
    def build(self) -> None:
       assert "trains" in self._trains
@@ -97,8 +85,6 @@ class AutoTuner(Builder):
             **self._tuneargs,
          )
       except KeyboardInterrupt:
-         if self.talker:
-            self.talker.terminate()
          raise
 
       #f_best = ret[3]
