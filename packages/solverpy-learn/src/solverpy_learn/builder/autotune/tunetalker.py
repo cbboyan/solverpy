@@ -85,13 +85,13 @@ class TuneTalker(SolverTalker):
 
    REMOTES = {
       # ATP evaluation lifecycle (called from evaluation.launch in child)
-      "begin", "end", "next", "launching", "finished", "done",
+      "eval_begin", "eval_end", "eval_next", "eval_launch", "eval_taskdone", "eval_done",
       # LightGBM model building (called from build.py in child)
-      "building", "iteration", "built",
+      "build_begin", "build_step", "build_done",
       # Optuna phase events (called from tune.py / check.py in child)
-      "trials", "trying", "tried", "trialed",
+      "tune_phase_begin", "tune_trial_begin", "tune_trial_done", "tune_phase_done",
       # Tuning lifecycle (called from tuner() in child)
-      "tuning", "tuned", "result",
+      "tune_begin", "tune_end", "tune_result",
       # Logging helpers
       "info", "debug",
    }
@@ -158,8 +158,8 @@ class TuneTalker(SolverTalker):
       except Exception as e:
          logger.error(f"Error dispatching {name}: {e}", exc_info=True)
 
-   def wait(self) -> Any:
-      """Block until the child sends a ``result`` message and return it."""
+   def tune_wait(self) -> Any:
+      """Block until the child sends a ``tune_result`` message and return it."""
       self._result_event.wait()
       return self._result
 
@@ -186,9 +186,9 @@ class TuneTalker(SolverTalker):
 
    # --- ATP evaluation overrides ---
 
-   def begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
+   def eval_begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
       """Create a single cumulative eval RunningBar if not headless. Skips report."""
-      LogTalker.begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
+      LogTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
       if not self._log_progress:
          max_job = max(len(_bids.problems(bid)) for (_, bid, _) in jobs)
          self._total_bar = RunningBar(
@@ -200,29 +200,29 @@ class TuneTalker(SolverTalker):
             postfix_width=_postfix_width(max_job),
          )
 
-   def end(self, results, refjob=None, **kwargs) -> None:
+   def eval_end(self, results, refjob=None, **kwargs) -> None:
       """Close eval bar, update tune bar for init model, skip report."""
       if self._total_bar:
          self._total_errors = self._total_bar._errors
          self._total_bar.close()
          self._total_bar = None
-      LogTalker.end(self, results, refjob=refjob, report=False)
+      LogTalker.eval_end(self, results, refjob=refjob, report=False)
       if not self._in_optuna_trial:
          self._current_trial += 1
          if self._tune_bar:
             self._tune_bar.update(1)
 
-   def launching(self, tasks: Sequence["Task"]) -> None:
+   def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """Record start time only; no per-job bar in tuning mode."""
-      LogTalker.launching(self, tasks)
+      LogTalker.eval_launch(self, tasks)
 
-   def done(self) -> None:
+   def eval_done(self) -> None:
       """Log job completion without closing any bar."""
-      LogTalker.done(self)
+      LogTalker.eval_done(self)
 
    # --- Tuning lifecycle overrides ---
 
-   def tuning(self, t_start: float, total: int = 0) -> None:
+   def tune_begin(self, t_start: float, total: int = 0) -> None:
       """Create the outer tune bar if not headless."""
       self._total_trials = total
       self._current_trial = 0
@@ -230,47 +230,47 @@ class TuneTalker(SolverTalker):
          return
       self._tune_bar = DefaultBar(total, "tune".ljust(self._inner_width()))
 
-   def tuned(self, t_end: float) -> None:
+   def tune_end(self, t_end: float) -> None:
       """Close the tune bar on tuning completion."""
       if self._tune_bar:
          self._tune_bar.close()
          self._tune_bar = None
 
-   def trying(self, nick: str, it: int, values: list) -> None:
+   def tune_trial_begin(self, nick: str, it: int, values: list) -> None:
       """Mark start of Optuna trial and delegate to LogTalker."""
       self._in_optuna_trial = True
-      LogTalker.trying(self, nick, it, values)
+      LogTalker.tune_trial_begin(self, nick, it, values)
 
-   def tried(self, stats: dict[str, Any]) -> None:
+   def tune_trial_done(self, stats: dict[str, Any]) -> None:
       """Increment tune bar at end of Optuna trial."""
-      LogTalker.tried(self, stats)
+      LogTalker.tune_trial_done(self, stats)
       self._in_optuna_trial = False
       self._current_trial += 1
       if self._tune_bar:
          self._tune_bar.update(1)
 
-   def result(self, val: Any) -> None:
-      """Store the tuning result and unblock ``wait()``."""
+   def tune_result(self, val: Any) -> None:
+      """Store the tuning result and unblock ``tune_wait()``."""
       self._result = val
       self._result_event.set()
 
    # --- Model build overrides ---
 
-   def building(self, f_mod: str, total: int) -> None:
+   def build_begin(self, f_mod: str, total: int) -> None:
       """Open a ``BuilderBar`` with [N/M] build label if not headless."""
-      LogTalker.building(self, f_mod, total)
+      LogTalker.build_begin(self, f_mod, total)
       if not self._log_progress:
          self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=False)
 
-   def iteration(self, n: int, total: int, loss: list[float]) -> None:
+   def build_step(self, n: int, total: int, loss: list[float]) -> None:
       """Update the builder bar and emit periodic log lines."""
       if self._builder_bar:
          self._builder_bar.status(loss)
-      LogTalker.iteration(self, n, total, loss)
+      LogTalker.build_step(self, n, total, loss)
 
-   def built(self, score: float) -> None:
+   def build_done(self, score: float) -> None:
       """Close the builder bar."""
       if self._builder_bar:
          self._builder_bar.close()
          self._builder_bar = None
-      LogTalker.built(self, score)
+      LogTalker.build_done(self, score)

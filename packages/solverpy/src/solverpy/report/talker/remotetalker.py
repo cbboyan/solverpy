@@ -56,13 +56,13 @@ class RemoteTalker(Talker):
    """
 
    REMOTES = {
-      "begin",
-      "end",
-      "next",
+      "eval_begin",
+      "eval_end",
+      "eval_next",
       "terminate",
-      "launching",
-      "finished",
-      "done",
+      "eval_launch",
+      "eval_taskdone",
+      "eval_done",
    }
    """Set of method names that are queued instead of called directly."""
 
@@ -136,7 +136,7 @@ class RemoteTalker(Talker):
 
    def listening_handle(self, method, args, kwargs):
       """Call ``method`` on the local talker with the given args and kwargs."""
-      assert method in RemoteTalker.REMOTES
+      assert method in RemoteTalker.REMOTES, method
       handler = None
       try:
          handler = getattr(self._local, method)

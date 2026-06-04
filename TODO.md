@@ -26,6 +26,64 @@ The pipe buffer fills, the feeder thread blocks, and the forked child cannot exi
   `wait()` needed, no event signaling.
 - `listening_start()` / `listening_stop()` remain on `RemoteTalker` only, with their
   original meaning (log queue + dispatch thread). Regular talkers never need them.
+- `RemoteTalker` uses a `LOCALS` set (not `REMOTES`) to list the small number of methods
+  that execute directly in the calling process (`log_start`, `log_stop`, `log_config`,
+  `listening_start`, `listening_stop`). Everything else is forwarded via queue. This is
+  the inverse of the current `REMOTES` approach and avoids enumerating every talker method.
+
+**Method names** (already renamed as of this commit):
+
+| Group | Methods |
+|---|---|
+| Eval events | `eval_begin`, `eval_end`, `eval_next`, `eval_launch`, `eval_taskdone`, `eval_done`, `eval_status` |
+| Tune lifecycle | `tune_begin`, `tune_end`, `tune_result`, `tune_wait` |
+| Tune phase | `tune_phase_begin`, `tune_phase_done` |
+| Tune trial | `tune_trial_begin`, `tune_trial_done` |
+| Build events | `build_begin`, `build_step`, `build_done` |
+| Infrastructure | `terminate`, `log_config`, `log_start`, `log_stop`, `listening_start`, `listening_stop`, `info`, `debug` |
+
+### 1a. Refactor Talker hierarchy to multiple inheritance — `report/talker/`
+
+After task 1 removes the REMOTES proxy from `TuneTalker`, refactor the talker hierarchy
+from a single inheritance chain into composable mixins using cooperative `super()`.
+
+**Proposed structure:**
+
+```
+Talker                  — abstract base: all lifecycle hooks as no-ops
+  EvalTalker            — log-based eval methods (begin/end/next/launching/finished/done/status)
+  TuneEventTalker       — log-based tune methods (trials/trying/tried/trialed/building/iteration/built/tuning/tuned/result)
+  EvalBarTalker(Talker) — bar overrides for eval events; owns _total_bar / _task_bar slots
+  TuneBarTalker(Talker) — bar overrides for tune events; shares _total_bar / _task_bar slots
+  RemoteTalker          — cross-process proxy (unchanged)
+
+# Concrete classes (via MI):
+SolverTalker(EvalBarTalker, EvalTalker)                         — solverpy (eval only)
+FullTalker(EvalBarTalker, TuneBarTalker, EvalTalker, TuneEventTalker) — solverpy-learn (eval + tuning)
+```
+
+**Bar model:** exactly two slots, `_total_bar` and `_task_bar`, defined on a shared
+`BarTalker` base (slots only, no logic). The assigned bar type changes by context:
+
+| Context | `_total_bar` | `_task_bar` |
+|---|---|---|
+| Normal eval | `RunningBar` | `SolvingBar` |
+| Tuning (eval phase) | `DefaultBar` (trial counter) | `RunningBar` (leave=False) |
+| Tuning (build phase) | `DefaultBar` (trial counter) | `BuilderBar` |
+
+**Handler pattern:** store a callable alongside each bar at creation time so callers
+never need to know the bar type:
+
+```python
+self._task_bar = BuilderBar(...)
+self._task_update = lambda v: self._task_bar.status(v)
+# finished() and iteration() both call self._task_update(v)
+```
+
+**New events:** add `tune_eval_begin(jobs)` and `tune_eval_end(results)` called from
+`prettytuner()` to bracket the ATP evaluation phase inside tuning. This lets
+`EvalBarTalker` distinguish "create normal eval bars" from "create inner eval bar
+(leave=False)" without overriding `eval_begin`/`eval_end` with `report=False` hacks.
 
 ## Medium
 

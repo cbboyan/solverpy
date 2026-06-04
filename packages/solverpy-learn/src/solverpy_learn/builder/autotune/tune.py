@@ -25,7 +25,7 @@ def tune(
    **args: Any,
 ) -> TuneResult:
    d_tmp = os.path.join(d_tmp, nick)
-   if talker: talker.trials(nick, iters, timeout)
+   if talker: talker.tune_phase_begin(nick, iters, timeout)
    study = optuna.create_study(direction='maximize', sampler=sampler)
    objective = lambda trial: check_fun(trial, d_tmp=d_tmp, talker=talker, nick=nick, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
@@ -36,7 +36,7 @@ def tune(
       "model",
       "time",
    ])
-   if talker: talker.trialed(nick)
+   if talker: talker.tune_phase_done(nick)
    return (best, study.best_trial.params)
 
 

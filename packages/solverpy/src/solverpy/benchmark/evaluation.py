@@ -49,7 +49,7 @@ def run(
    **others: Any,
 ) -> "Result":
    others = dict(others, force=force, it=it, solvedby=solvedby)
-   talker.next(job)
+   talker.eval_next(job)
    (solver, bid, sid) = job
    #logger.debug(f"evaluating {jobname(solver, bid, sid)}")
 
@@ -73,7 +73,7 @@ def run(
       )
       skipped = {p: dict(simulate) for p in (set(ps) - solvable)}
       for (problem, result) in skipped.items():
-         talker.finished(SolverTask(solver, bid, sid, problem), result)
+         talker.eval_taskdone(SolverTask(solver, bid, sid, problem), result)
       if db:
          tasks0 = [SolverTask(solver, bid, sid, p) for p in skipped]
          results = [simulate] * len(tasks0)
@@ -117,7 +117,7 @@ def run(
          done0 = db.query(tasks)
          todo = [t for t in tasks if t not in done0]
          for (task, result) in done0.items():
-            talker.finished(task, result)
+            talker.eval_taskdone(task, result)
          done = {t.problem: res for (t, res) in done0.items()}
       else:
          done = {}
@@ -198,7 +198,7 @@ def launch(
       elif type(ref) is int:
          refjob = (solver, benchmarks[0], strategies[ref])
       jobs = [(solver, bid, sid) for bid in benchmarks for sid in strategies]
-      talker.begin(jobs, refjob=refjob, sidnames=sidnames)
+      talker.eval_begin(jobs, refjob=refjob, sidnames=sidnames)
 
    def launch_jobs() -> dict["SolverJob", "Result"]:
       nonlocal nicks, jobs, refjob, talker
@@ -213,7 +213,7 @@ def launch(
                **others,
             )
             allres[job] = result1  # (bid,sid) should be a primary key
-         talker.end(allres, refjob=refjob)
+         talker.eval_end(allres, refjob=refjob)
       except KeyboardInterrupt:
          talker.terminate()
          raise

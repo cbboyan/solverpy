@@ -53,7 +53,7 @@ class SolverTalker(LogTalker):
       self._job_bar: SolvingBar | None = None
       self._total_bar: RunningBar | None = None
 
-   def begin(
+   def eval_begin(
       self,
       jobs: list["SolverJob"],
       *,
@@ -63,7 +63,7 @@ class SolverTalker(LogTalker):
       **kwargs,
    ) -> None:
       """Create the total ``RunningBar`` spanning all jobs."""
-      super().begin(jobs, refjob=refjob, sidnames=sidnames, **kwargs)
+      super().eval_begin(jobs, refjob=refjob, sidnames=sidnames, **kwargs)
       dw = self._nick_dw
       prefix_len = 2 * dw + 3  # "[n/m] " without trailing space
       total_desc = f"{' ' * prefix_len} {self._total_desc}"
@@ -75,16 +75,16 @@ class SolverTalker(LogTalker):
          postfix_width=_postfix_width(max_job),
       )
 
-   def end(
+   def eval_end(
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
       **kwargs,
    ) -> None:
-      """Harvest error count from the total bar if present, then delegate to ``LogTalker.end``."""
+      """Harvest error count from the total bar if present, then delegate to ``LogTalker.eval_end``."""
       if self._total_bar:
          self._total_errors = self._total_bar._errors
-      super().end(results, refjob=refjob, **kwargs)
+      super().eval_end(results, refjob=refjob, **kwargs)
 
    def terminate(self) -> None:
       """Close and discard both bars, then stop the log queue."""
@@ -96,25 +96,25 @@ class SolverTalker(LogTalker):
          self._job_bar.close()
          self._job_bar = None
 
-   def next(self, job: "SolverJob") -> None:
-      super().next(job)
+   def eval_next(self, job: "SolverJob") -> None:
+      super().eval_next(job)
 
-   def launching(self, tasks: Sequence["Task"]) -> None:
+   def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """Create the per-job ``SolvingBar`` and inject the log queue into tasks."""
-      super().launching(tasks)
+      super().eval_launch(tasks)
       self._job_bar = SolvingBar(len(tasks), self._job_desc, miniters=1)
 
-   def done(self) -> None:
+   def eval_done(self) -> None:
       """Close the per-job bar and log the completion summary."""
       if not self._job_bar:
          return
       self._job_bar.close()
       self._job_bar = None
-      super().done()
+      super().eval_done()
 
-   def status(self, new: bool | None, n: int = 1) -> None:
+   def eval_status(self, new: bool | None, n: int = 1) -> None:
       """Forward status update to both the total bar and the per-job bar."""
-      super().status(new, n)
+      super().eval_status(new, n)
       if self._total_bar:
          self._total_bar.status(new)
       if self._job_bar:

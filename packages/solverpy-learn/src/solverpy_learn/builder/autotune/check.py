@@ -32,7 +32,7 @@ def check(
    trial.set_user_attr(key="acc", value=stats["valid_acc"])
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])
    trial.set_user_attr(key="time", value=stats["duration"])
-   if talker: talker.tried(stats)
+   if talker: talker.tune_trial_done(stats)
    return stats["score"]
 
 
@@ -46,7 +46,7 @@ def leaves(
 ) -> float:
    args = dict(args, talker=talker)
    num_leaves = trial.suggest_int('num_leaves', min_leaves, max_leaves)
-   if talker: talker.trying("leaves", trial.number, (num_leaves, ))
+   if talker: talker.tune_trial_begin("leaves", trial.number, (num_leaves, ))
    params = dict(params, num_leaves=num_leaves)
    score = check(trial, params, **args)
    return score
@@ -61,7 +61,7 @@ def bagging(
    bagging_freq = trial.suggest_int("bagging_freq", 1, 7)
    bagging_fraction = min(
       trial.suggest_float("bagging_fraction", 0.4, 1.0 + 1e-12), 1.0)
-   if talker: talker.trying("bagging", trial.number, (bagging_freq, bagging_fraction))
+   if talker: talker.tune_trial_begin("bagging", trial.number, (bagging_freq, bagging_fraction))
    params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -74,7 +74,7 @@ def min_data(
    **args: Any,
 ) -> float:
    min_data = trial.suggest_int("min_data", 5, 10000)
-   if talker: talker.trying("min_data", trial.number, (min_data, ))
+   if talker: talker.tune_trial_begin("min_data", trial.number, (min_data, ))
    params = dict(params, min_data=min_data)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -88,7 +88,7 @@ def regular(
 ) -> float:
    lambda_l1 = trial.suggest_float("lambda_l1", 1e-8, 10.0)
    lambda_l2 = trial.suggest_float("lambda_l2", 1e-8, 10.0)
-   if talker: talker.trying("regular", trial.number, (lambda_l1, lambda_l2))
+   if talker: talker.tune_trial_begin("regular", trial.number, (lambda_l1, lambda_l2))
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -101,7 +101,7 @@ def depth(
    **args: Any,
 ) -> float:
    max_depth = trial.suggest_int("max_depth", 3, 50)
-   if talker: talker.trying("depth", trial.number, (max_depth, ))
+   if talker: talker.tune_trial_begin("depth", trial.number, (max_depth, ))
    params = dict(params, max_depth=max_depth)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -114,7 +114,7 @@ def learning_rate(
    **args: Any,
 ) -> float:
    learning_rate = trial.suggest_float("learning_rate", 0.01, 0.25)
-   if talker: talker.trying("learning_rate", trial.number, (learning_rate, ))
+   if talker: talker.tune_trial_begin("learning_rate", trial.number, (learning_rate, ))
    params = dict(params, learning_rate=learning_rate)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -129,6 +129,6 @@ def posneg_weight(
 ) -> float:
    values = [posneg_base * m for m in [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]]
    spw = trial.suggest_categorical("scale_pos_weight", values)
-   if talker: talker.trying("posneg", trial.number, (spw / posneg_base, ))
+   if talker: talker.tune_trial_begin("posneg", trial.number, (spw / posneg_base, ))
    params = dict(params, scale_pos_weight=spw)
    return check(trial, params, talker=talker, **args)

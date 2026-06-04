@@ -56,7 +56,7 @@ def model(
       results = env.evaluation_result_list
       report("debug", str(results))
       loss = [r[2] for r in results]
-      report("iteration", env.iteration, env.end_iteration, loss)
+      report("build_step", env.iteration, env.end_iteration, loss)
 
    def setup_dirs() -> None:
       d_mod = os.path.dirname(f_mod)
@@ -79,7 +79,7 @@ def model(
 
    def build_model() -> "Booster":
       nonlocal bst, begin, end, params, callbacks
-      report("building", f_mod, params["num_round"])
+      report("build_begin", f_mod, params["num_round"])
       begin = time.time()
       bst = lgb.train(
          params,
@@ -107,7 +107,7 @@ def model(
       bst.free_dataset()
       bst.free_network()
       mlscore = POS_ACC_WEIGHT * acc[1] + acc[2]
-      report("built", mlscore)
+      report("build_done", mlscore)
 
    setup_dirs()
    setup_callbacks()

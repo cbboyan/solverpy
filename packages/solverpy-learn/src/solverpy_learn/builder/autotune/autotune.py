@@ -63,7 +63,7 @@ def tuner(
    _n_phases = len(phases.split(":"))
    _iters0 = (iters // _n_phases) if iters else 0
    _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
-   if talker: talker.tuning(time.time(), _total)
+   if talker: talker.tune_begin(time.time(), _total)
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
    dtrain.construct()
@@ -126,10 +126,10 @@ def tuner(
          best = best0
          params.update(params0)
 
-   if talker: talker.tuned(time.time())
+   if talker: talker.tune_end(time.time())
    ret = best + (params, pos, neg)
    if talker:
-      talker.result(ret)
+      talker.tune_result(ret)
    else:
       return ret
 
@@ -151,7 +151,7 @@ def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
    talker.listening_start()
    try:
       p.start()
-      result = talker.wait()
+      result = talker.tune_wait()
    except Exception:
       p.terminate()
       talker.terminate()

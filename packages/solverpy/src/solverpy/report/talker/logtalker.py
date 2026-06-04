@@ -101,7 +101,7 @@ class LogTalker(Talker):
       self._builder_last: float = 0.0
       self._builder_wait: float = 5.0
 
-   def begin(
+   def eval_begin(
       self,
       jobs: list["SolverJob"],
       *,
@@ -122,14 +122,14 @@ class LogTalker(Talker):
 
       logger.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
 
-   def end(
+   def eval_end(
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
       report: bool = True,
    ) -> None:
       """Write Summary/Statuses to report, log error count and completion."""
-      super().end(results, refjob=refjob)
+      super().eval_end(results, refjob=refjob)
       if self._total_errors:
          logger.error(
             f"There were errors: {self._total_errors} tasks failed to evaluate."
@@ -138,7 +138,7 @@ class LogTalker(Talker):
          summary.summarize(results, self._total_nicks_full, refjob)
       logger.info("Evaluation done.")
 
-   def next(self, job: "SolverJob") -> None:
+   def eval_next(self, job: "SolverJob") -> None:
       """Reset per-job counters and log the start of the next job."""
       jname = jobname(*job)
       self._solved = self._unsolved = self._errors = 0
@@ -149,26 +149,26 @@ class LogTalker(Talker):
       if self._log_progress:
          logger.info(f"Evaluating {jname}")
       logger.debug(f"evaluating {self._job_desc}: {jname}")
-      super().next(job)
+      super().eval_next(job)
 
-   def launching(self, tasks: Sequence["Task"]) -> None:
+   def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """Record start time and inject log queue into tasks."""
       self._last_time = time.perf_counter()
       self._start_time = time.perf_counter()
       self._wait_time = 1.0
       self._wait_total = 1
-      super().launching(tasks)
+      super().eval_launch(tasks)
 
-   def finished(
+   def eval_taskdone(
       self,
       task: "SolverTask",
       result: "Result",
    ) -> None:
       """Update solved/unsolved/error counters based on the task result."""
-      super().finished(task, result)
-      self.status(task.status(result))
+      super().eval_taskdone(task, result)
+      self.eval_status(task.status(result))
 
-   def done(self) -> None:
+   def eval_done(self) -> None:
       """Log solved/unsolved/error summary for the completed job."""
       bar = f"+{self._solved} -{self._unsolved} !{self._errors}"
       if self._log_progress:
@@ -176,7 +176,7 @@ class LogTalker(Talker):
       else:
          logger.debug(f"evaluation done: {bar}")
 
-   def status(self, new: bool | None, n: int = 1) -> None:
+   def eval_status(self, new: bool | None, n: int = 1) -> None:
       """
       Update counters and emit periodic progress log lines.
 
@@ -211,7 +211,7 @@ class LogTalker(Talker):
 
    # --- Tuning event defaults (log-based) ---
 
-   def trials(self, nick: str, iters: int, timeout: int) -> None:
+   def tune_phase_begin(self, nick: str, iters: int, timeout: int) -> None:
       """Start a tuning phase: write heading to report and reset trial table."""
       del timeout
       report = markdown.newline() + markdown.heading(f"Tuning `{nick}`", level=3)
@@ -221,7 +221,7 @@ class LogTalker(Talker):
       self._tune_header = ["it", nick, "score", "test.acc", "train.acc", "time"]
       self._tune_table = []
 
-   def trying(self, nick: str, it: int, values: list) -> None:
+   def tune_trial_begin(self, nick: str, it: int, values: list) -> None:
       """Record the current trial description; log if ``_log_progress``."""
       del nick
       self._tune_it = it + 1
@@ -231,7 +231,7 @@ class LogTalker(Talker):
       if self._log_progress:
          logger.info(f"Trying {self._tune_desc}")
 
-   def tried(self, stats: dict[str, Any]) -> None:
+   def tune_trial_done(self, stats: dict[str, Any]) -> None:
       """Append the completed trial's stats to the phase table."""
       assert self._tune_table is not None
       self._tune_table.append((
@@ -243,7 +243,7 @@ class LogTalker(Talker):
          human.humantime(stats["duration"]),
       ))
 
-   def trialed(self, nick: str) -> None:
+   def tune_phase_done(self, nick: str) -> None:
       """Write the completed phase's trial table to the report."""
       del nick
       assert self._tune_table and self._tune_header
@@ -261,7 +261,7 @@ class LogTalker(Talker):
          f"Tuning phase '{self._tune_header[1]}' done: {len(self._tune_table)} trials."
       )
 
-   def building(self, f_mod: str, total: int) -> None:
+   def build_begin(self, f_mod: str, total: int) -> None:
       """Log the start of a model build."""
       del total
       self._builder_start = time.perf_counter()
@@ -271,7 +271,7 @@ class LogTalker(Talker):
       if self._log_progress:
          logger.info(f"Building model: {f_mod}")
 
-   def iteration(self, n: int, total: int, loss: list[float]) -> None:
+   def build_step(self, n: int, total: int, loss: list[float]) -> None:
       """Emit periodic progress log lines during model training."""
       if n > 3 and (n % 10 != 0):
          return
@@ -284,18 +284,18 @@ class LogTalker(Talker):
       logme(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
       self._builder_last = time.perf_counter()
 
-   def built(self, score: float) -> None:
+   def build_done(self, score: float) -> None:
       """Log completion of model training."""
       logger.debug(f"model built: score={score:.4f}")
 
-   def result(self, val: Any) -> None:
+   def tune_result(self, val: Any) -> None:
       """Store the tuning result."""
       self._result = val
 
-   def tuning(self, t_start: float, total: int = 0) -> None:
+   def tune_begin(self, t_start: float, total: int = 0) -> None:
       del t_start, total
 
-   def tuned(self, t_end: float) -> None:
+   def tune_end(self, t_end: float) -> None:
       del t_end
 
    def info(self, msg: str) -> None:

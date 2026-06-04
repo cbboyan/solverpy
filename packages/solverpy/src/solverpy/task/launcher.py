@@ -54,7 +54,7 @@ def launch(
       for (n,task) in enumerate(tasks):
          task.tid = n
          tids[n] = task
-      talker.launching(tasks)
+      talker.eval_launch(tasks)
       try:
          # TODO: eliminate runtask and make it runtask2
          results = pool.imap_unordered(
@@ -65,7 +65,7 @@ def launch(
          count = 0
          logger.debug("pool started")
          for (tid, result) in results:
-            talker.finished(tids[tid], result)
+            talker.eval_taskdone(tids[tid], result)
             ret[tid] = result
             count += 1
          logger.debug(f"all tasks done: {len(tasks)} total")
@@ -80,5 +80,5 @@ def launch(
          logger.debug(f"pool join")
          pool.join()
          logger.debug(f"pool closed")
-         talker.done()
+         talker.eval_done()
    return [ret[task.tid] for task in tasks]  # TODO: make it return ret directly

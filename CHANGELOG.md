@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-05-22)
+## Unreleased changes (2026-06-04)
 
-* docs: add talkers.md — method summary, per-talker behaviour, and call sites [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename all Talker event methods with eval_/tune_/build_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: add talkers.md — method summary, per-talker behaviour, and call sites [[details](https://github.com/cbboyan/solverpy/commit/2affb52) | [browse](https://github.com/cbboyan/solverpy/tree/2affb52)]
 * feat: add -f/--force alias to solverpy clean [[details](https://github.com/cbboyan/solverpy/commit/f9b9129) | [browse](https://github.com/cbboyan/solverpy/tree/f9b9129)]
 * fix: route console logging through tqdm.write, fix tune bar and bar format [[details](https://github.com/cbboyan/solverpy/commit/33b4b17) | [browse](https://github.com/cbboyan/solverpy/tree/33b4b17)]
 * refactor: move solverpy/tools/log and solverpy/talker into new solverpy/report [[details](https://github.com/cbboyan/solverpy/commit/bf23138) | [browse](https://github.com/cbboyan/solverpy/tree/bf23138)]

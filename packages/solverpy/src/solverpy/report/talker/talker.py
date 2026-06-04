@@ -110,7 +110,7 @@ class Talker:
       """Stop the log queue listener. Subclasses extend this to stop additional threads."""
       self.log_stop()
 
-   def begin(
+   def eval_begin(
       self,
       jobs: list["SolverJob"],
       *,
@@ -128,9 +128,9 @@ class Talker:
       """
       del jobs, refjob, sidnames, kwargs
       raise NotImplementedError(
-         "Talker.begin: abstract method not implemented.")
+         "Talker.eval_begin: abstract method not implemented.")
 
-   def end(
+   def eval_end(
       self,
       results: dict["SolverJob", "Result"],
       refjob: "SolverJob | None" = None,
@@ -145,7 +145,7 @@ class Talker:
       del results, refjob
       self.terminate()
 
-   def next(self, job: "SolverJob") -> None:
+   def eval_next(self, job: "SolverJob") -> None:
       """Called when evaluation moves to the next job."""
       del job
 
@@ -153,7 +153,7 @@ class Talker:
       """Clean up: stop the log queue listener."""
       self.log_stop()
 
-   def launching(self, tasks: Sequence["Task"]) -> None:
+   def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """
       Called just before a batch of tasks is dispatched to worker processes.
 
@@ -165,10 +165,10 @@ class Talker:
       for task in tasks:
          task.logqueue = self._log_queue
 
-   def finished(self, task: "SolverTask", result: "Result") -> None:
+   def eval_taskdone(self, task: "SolverTask", result: "Result") -> None:
       """Called each time a single task completes."""
       del task, result
 
-   def done(self) -> None:
+   def eval_done(self) -> None:
       """Called after all tasks in the current job have finished."""
       pass
