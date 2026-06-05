@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-05)
 
-* refactor: move child-side logger calls to talker.debug(), promote LogTalker.debug [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: keep tuning task bars visible after completion (leave=True) [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: move child-side logger calls to talker.debug(), promote LogTalker.debug [[details](https://github.com/cbboyan/solverpy/commit/20dace5) | [browse](https://github.com/cbboyan/solverpy/tree/20dace5)]
 * feat: route child/worker logging through queue to parent handlers [[details](https://github.com/cbboyan/solverpy/commit/68cdf4a) | [browse](https://github.com/cbboyan/solverpy/tree/68cdf4a)]
 * refactor: replace TuneTalker proxy with RemoteTalker in tuning pipeline [[details](https://github.com/cbboyan/solverpy/commit/3c055cc) | [browse](https://github.com/cbboyan/solverpy/tree/3c055cc)]
 * refactor: pass talker explicitly to build.score(), remove builder.talker [[details](https://github.com/cbboyan/solverpy/commit/250841b) | [browse](https://github.com/cbboyan/solverpy/tree/250841b)]

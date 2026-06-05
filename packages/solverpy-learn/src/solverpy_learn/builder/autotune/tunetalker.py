@@ -108,7 +108,7 @@ class TuneTalker(SolverTalker):
             desc=self._trial_desc("eval "),
             miniters=miniters,
             colour="blue",
-            leave=False,
+            leave=True,
             postfix_width=_postfix_width(max_job),
          )
 
@@ -171,7 +171,7 @@ class TuneTalker(SolverTalker):
       """Open a ``BuilderBar`` with [N/M] build label if not headless."""
       LogTalker.build_begin(self, f_mod, total)
       if not self._log_progress:
-         self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=False)
+         self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=True)
 
    def build_step(self, n: int, total: int, loss: list[float]) -> None:
       """Update the builder bar and emit periodic log lines."""
