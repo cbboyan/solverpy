@@ -90,7 +90,7 @@ class Talker:
       assert self._manager
       self._log_queue = self._manager.Queue()
       assert self._log_queue
-      self._listener = QueueListener(self._log_queue, *root.handlers)
+      self._listener = QueueListener(self._log_queue, *root.handlers, respect_handler_level=True)
       self._listener.start()
 
    def log_stop(self) -> None:

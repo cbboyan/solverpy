@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-05)
 
-* refactor: replace TuneTalker proxy with RemoteTalker in tuning pipeline [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat: route child/worker logging through queue to parent handlers [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: replace TuneTalker proxy with RemoteTalker in tuning pipeline [[details](https://github.com/cbboyan/solverpy/commit/3c055cc) | [browse](https://github.com/cbboyan/solverpy/tree/3c055cc)]
 * refactor: pass talker explicitly to build.score(), remove builder.talker [[details](https://github.com/cbboyan/solverpy/commit/250841b) | [browse](https://github.com/cbboyan/solverpy/tree/250841b)]
 * refactor: rename all Talker event methods with eval_/tune_/build_ prefixes [[details](https://github.com/cbboyan/solverpy/commit/4f93801) | [browse](https://github.com/cbboyan/solverpy/tree/4f93801)]
 * docs: add talkers.md — method summary, per-talker behaviour, and call sites [[details](https://github.com/cbboyan/solverpy/commit/2affb52) | [browse](https://github.com/cbboyan/solverpy/tree/2affb52)]

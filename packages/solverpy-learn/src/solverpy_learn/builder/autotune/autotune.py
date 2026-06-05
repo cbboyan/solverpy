@@ -6,13 +6,13 @@ import lightgbm as lgb
 import multiprocessing
 
 from solverpy.tools import human, redirect
+from solverpy.report.talker.talker import Talker
 from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
 from . import tune, build
 from .tunetalker import TuneTalker
 
 if TYPE_CHECKING:
-   from solverpy.report.talker.talker import Talker
    from .tune import TuneResult
    from ..autotuner import AutoTuner
 
@@ -61,6 +61,7 @@ def tuner(
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
+   Talker.log_config(talker._log_queue if talker else None)
 
    _n_phases = len(phases.split(":"))
    _iters0 = (iters // _n_phases) if iters else 0
@@ -149,6 +150,7 @@ def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
    p = ctx.Process(target=redirect.call, args=args, kwargs=kwargs)
 
    remote.listening_start()
+   talker._log_queue = remote._log_queue  # propagate so eval_launch injects into ATP workers
    try:
       p.start()
       p.join()
