@@ -1,23 +1,15 @@
 """
-# TuneTalker — unified progress reporter for hyperparameter tuning
+# TuneTalker — progress reporter for hyperparameter tuning
 
 Combines ATP evaluation progress (tqdm bars or log lines) and LightGBM
-tuning progress into a single self-contained talker for
+tuning progress into a single talker for
 [`AutoTuner`][solverpy_learn.builder.autotuner.AutoTuner].
 
-The tuner child process (forked by
-[`prettytuner`][solverpy_learn.builder.autotune.autotune.prettytuner]) calls
-methods on its inherited copy of `TuneTalker`.  Methods listed in `REMOTES`
-are intercepted by `__getattribute__` and put on a plain
-`multiprocessing.Queue`; a background listening thread in the parent
-dequeues them and dispatches to the real handlers.
-
-Replaces the former `RemoteTalker(SolverTalker()) + AutotuneListener` pair.
+Runs entirely in the parent process; cross-process forwarding is handled by
+[`RemoteTalker`][solverpy.report.talker.remotetalker.RemoteTalker] wrapping it.
 """
 
 import logging
-import multiprocessing
-import threading
 from typing import Any, Sequence, TYPE_CHECKING
 
 from solverpy.report.talker.solvertalker import SolverTalker
@@ -33,69 +25,46 @@ logger = logging.getLogger(__name__)
 
 class TuneTalker(SolverTalker):
    """
-   Self-contained progress talker for the hyperparameter tuning pipeline.
+   Progress talker for the hyperparameter tuning pipeline.
 
    ```plantuml name="autotune-tunetalker"
    abstract class solverpy.report.talker.talker.Talker
    class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
    class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
    class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.report.talker.solvertalker.SolverTalker {
-      + REMOTES: set[str]
-      - _queue: Queue
-      - _listening_thread: Thread | None
-      - _result_event: Event
       - _tune_bar: DefaultBar | None
+      - _builder_bar: BuilderBar | None
       - _total_trials: int
       - _current_trial: int
       - _in_optuna_trial: bool
       --
-      + listening_start()
-      + listening_stop()
-      + wait() : Any
-      + result(val)
-      + tuning(t_start, total)
-      + tuned(t_end)
-      + trying(nick, it, values)
-      + tried(stats)
-      + building(f_mod, total)
-      + iteration(n, total, loss)
-      + built(score)
+      + eval_begin(jobs, *, refjob, sidnames, miniters, **kwargs)
+      + eval_end(results, refjob, **kwargs)
+      + eval_launch(tasks)
+      + eval_done()
+      + tune_begin(t_start, total)
+      + tune_end(t_end)
+      + tune_trial_begin(nick, it, values)
+      + tune_trial_done(stats)
+      + build_begin(f_mod, total)
+      + build_step(n, total, loss)
+      + build_done(score)
    }
    ```
 
    Two tqdm bars are shown at any time: an outer ``tune`` bar counting
-   completed trials, and an inner ``[N/M] build`` or ``[N/M] eval `` bar
+   completed trials, and an inner ``[N/M] build`` or ``[N/M] eval`` bar
    showing progress of the current LightGBM training or ATP evaluation.
    All desc strings are padded to the same width for alignment.
 
-   Methods in `REMOTES` are intercepted by `__getattribute__` in the child
-   and queued; the parent's listening thread dispatches them to the real
-   handlers.  ATP evaluation events and tuning events share one queue and
-   thread.
-
-   Log-based defaults for all tuning events (`trials`, `trying`, `tried`,
-   `trialed`, etc.) are inherited from
-   [`LogTalker`][solverpy.report.talker.logtalker.LogTalker].  In non-headless mode,
-   `TuneTalker` overrides the model-building handlers to use a
+   Log-based defaults for all tuning events are inherited from
+   [`LogTalker`][solverpy.report.talker.logtalker.LogTalker].  In non-headless
+   mode, `TuneTalker` overrides the model-building handlers to use a
    [`BuilderBar`][solverpy.report.talker.bar.BuilderBar] instead.
 
    Set ``headless=True`` for non-interactive use: all tuning handlers use
    ``logger.info`` and no tqdm bars are created.
    """
-
-   REMOTES = {
-      # ATP evaluation lifecycle (called from evaluation.launch in child)
-      "eval_begin", "eval_end", "eval_next", "eval_launch", "eval_taskdone", "eval_done",
-      # LightGBM model building (called from build.py in child)
-      "build_begin", "build_step", "build_done",
-      # Optuna phase events (called from tune.py / check.py in child)
-      "tune_phase_begin", "tune_trial_begin", "tune_trial_done", "tune_phase_done",
-      # Tuning lifecycle (called from tuner() in child)
-      "tune_begin", "tune_end", "tune_result",
-      # Logging helpers
-      "info", "debug",
-   }
-   """Methods intercepted in the child and forwarded to the parent via queue."""
 
    def __init__(self, headless: bool = False) -> None:
       """
@@ -104,68 +73,11 @@ class TuneTalker(SolverTalker):
       """
       super().__init__()
       self._log_progress = headless  # override SolverTalker's False
-      self._queue: multiprocessing.Queue = multiprocessing.Queue()
-      self._listening_thread: threading.Thread | None = None
-      self._stop_event: threading.Event = threading.Event()
-      self._result_event: threading.Event = threading.Event()
       self._builder_bar: BuilderBar | None = None
       self._tune_bar: DefaultBar | None = None
       self._total_trials: int = 0
       self._current_trial: int = 0
       self._in_optuna_trial: bool = False
-
-   def __getattribute__(self, name: str):
-      if name in TuneTalker.REMOTES:
-         def wrapper(*args, **kwargs):
-            queue = object.__getattribute__(self, '_queue')
-            queue.put((name, args, kwargs))
-         return wrapper
-      return super().__getattribute__(name)
-
-   # --- Listening thread ---
-
-   def listening_start(self) -> None:
-      """Start the listening thread. No log queue Manager is started."""
-      self._stop_event.clear()
-      self._listening_thread = threading.Thread(
-         target=self._listen_loop,
-         daemon=True,
-      )
-      self._listening_thread.start()
-
-   def listening_stop(self) -> None:
-      """Signal the listening thread to stop and wait for it to join."""
-      if not (self._listening_thread and self._listening_thread.is_alive()):
-         return
-      self._stop_event.set()
-      self._listening_thread.join(timeout=2.0)
-      self._listening_thread = None
-
-   def _listen_loop(self) -> None:
-      """Drain the queue and dispatch each message to the real handler."""
-      while not self._stop_event.is_set():
-         try:
-            (name, args, kwargs) = self._queue.get(timeout=0.2)
-            self._dispatch(name, args, kwargs)
-         except:
-            pass
-
-   def _dispatch(self, name: str, args: tuple, kwargs: dict) -> None:
-      """Call the actual handler method, bypassing ``__getattribute__``."""
-      try:
-         handler = object.__getattribute__(self, name)
-         handler(*args, **kwargs)
-      except Exception as e:
-         logger.error(f"Error dispatching {name}: {e}", exc_info=True)
-
-   def tune_wait(self) -> Any:
-      """Block until the child sends a ``tune_result`` message and return it."""
-      self._result_event.wait()
-      return self._result
-
-   def terminate(self) -> None:
-      """Delegate to parent; _tune_bar is closed by tuned()."""
-      super().terminate()
 
    # --- Helpers ---
 
@@ -249,10 +161,9 @@ class TuneTalker(SolverTalker):
       if self._tune_bar:
          self._tune_bar.update(1)
 
-   def tune_result(self, val: Any) -> None:
-      """Store the tuning result and unblock ``tune_wait()``."""
-      self._result = val
-      self._result_event.set()
+   def terminate(self) -> None:
+      """Delegate to parent; _tune_bar is closed by tune_end()."""
+      super().terminate()
 
    # --- Model build overrides ---
 

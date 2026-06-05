@@ -6,7 +6,7 @@ from . import build
 if TYPE_CHECKING:
    from optuna import Trial
    from lightgbm import Dataset
-   from .tunetalker import TuneTalker
+   from solverpy.report.talker.talker import Talker
    from ..autotuner import AutoTuner
 
 
@@ -16,7 +16,7 @@ def check(
    dtrain: "Dataset",
    dtest: "Dataset",
    d_tmp: str,
-   talker: "TuneTalker | None" = None,
+   talker: "Talker | None" = None,
    builder: "AutoTuner | None" = None,
    nick: str = "nick",
    **args: Any,
@@ -41,7 +41,7 @@ def leaves(
    params: dict[str, Any],
    min_leaves: int,
    max_leaves: int,
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    args = dict(args, talker=talker)
@@ -55,7 +55,7 @@ def leaves(
 def bagging(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    bagging_freq = trial.suggest_int("bagging_freq", 1, 7)
@@ -70,7 +70,7 @@ def bagging(
 def min_data(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    min_data = trial.suggest_int("min_data", 5, 10000)
@@ -83,7 +83,7 @@ def min_data(
 def regular(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    lambda_l1 = trial.suggest_float("lambda_l1", 1e-8, 10.0)
@@ -97,7 +97,7 @@ def regular(
 def depth(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    max_depth = trial.suggest_int("max_depth", 3, 50)
@@ -110,7 +110,7 @@ def depth(
 def learning_rate(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    learning_rate = trial.suggest_float("learning_rate", 0.01, 0.25)
@@ -124,7 +124,7 @@ def posneg_weight(
    trial: "Trial",
    params: dict[str, Any],
    posneg_base: float,
-   talker: "TuneTalker | None",
+   talker: "Talker | None",
    **args: Any,
 ) -> float:
    values = [posneg_base * m for m in [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]]

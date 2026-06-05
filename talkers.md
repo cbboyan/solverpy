@@ -1,3 +1,4 @@
+
 # Talker Methods
 
 ## Method summary
@@ -6,29 +7,29 @@
 
 | Method | Description |
 |---|---|
-| `begin(jobs, refjob, sidnames)` | Evaluation is starting; full job list is known. Set up counters, bars, report header. |
-| `end(results, refjob)` | All jobs finished normally. Write summary, close bars, clean up. |
+| `eval_begin(jobs, refjob, sidnames)` | Evaluation is starting; full job list is known. Set up counters, bars, report header. |
+| `eval_end(results, refjob)` | All jobs finished normally. Write summary, close bars, clean up. |
 | `terminate()` | Abort in progress (keyboard interrupt or exception). Close bars, stop queues. |
-| `next(job)` | Moving to the next `(solver, bid, sid)` job. Reset per-job state. |
-| `launching(tasks)` | A batch of tasks is about to be dispatched to the worker pool. |
-| `finished(task, result)` | A single task completed (cached or live). Update progress. |
-| `done()` | All tasks in the current job finished. Log/display per-job summary. |
-| `status(new, n)` | One task result classified: `True` = solved, `False` = unsolved, `None` = error. |
+| `eval_next(job)` | Moving to the next `(solver, bid, sid)` job. Reset per-job state. |
+| `eval_launch(tasks)` | A batch of tasks is about to be dispatched to the worker pool. |
+| `eval_taskdone(task, result)` | A single task completed (cached or live). Update progress. |
+| `eval_done()` | All tasks in the current job finished. Log/display per-job summary. |
+| `eval_status(new, n)` | One task result classified: `True` = solved, `False` = unsolved, `None` = error. |
 
 ### Tuning lifecycle
 
 | Method | Description |
 |---|---|
-| `tuning(t_start, total)` | Hyperparameter tuning session starting; total trial count known. |
-| `tuned(t_end)` | Tuning session finished. Close outer progress bar. |
-| `trials(nick, iters, timeout)` | A new tuning phase starting (e.g. `"leaves"`). |
-| `trying(nick, it, values)` | An Optuna trial starting; parameter values being evaluated are known. |
-| `tried(stats)` | An Optuna trial finished; scores and accuracies are known. |
-| `trialed(nick)` | A tuning phase finished; write phase results table to report. |
-| `building(f_mod, total)` | LightGBM model training starting; total iteration count known. |
-| `iteration(n, total, loss)` | One LightGBM training iteration completed; current loss values known. |
-| `built(score)` | Model training finished; final ML score known. |
-| `result(val)` | Tuning produced a final result tuple; unblocks the parent `wait()`. |
+| `tune_begin(t_start, total)` | Hyperparameter tuning session starting; total trial count known. |
+| `tune_end(t_end)` | Tuning session finished. Close outer progress bar. |
+| `tune_phase_begin(nick, iters, timeout)` | A new tuning phase starting (e.g. `"leaves"`). |
+| `tune_trial_begin(nick, it, values)` | An Optuna trial starting; parameter values being evaluated are known. |
+| `tune_trial_done(stats)` | An Optuna trial finished; scores and accuracies are known. |
+| `tune_phase_done(nick)` | A tuning phase finished; write phase results table to report. |
+| `build_begin(f_mod, total)` | LightGBM model training starting; total iteration count known. |
+| `build_step(n, total, loss)` | One LightGBM training iteration completed; current loss values known. |
+| `build_done(score)` | Model training finished; final ML score known. |
+| `tune_result(val)` | Tuning produced a final result tuple; unblocks the parent `wait()`. |
 
 ### Logging helpers
 
@@ -45,29 +46,29 @@
 
 | Method | Talker | LogTalker | SolverTalker | TuneTalker |
 |---|---|---|---|---|
-| `begin(jobs, refjob, sidnames)` | abstract | counters, legend, log | + RunningBar (green) | + RunningBar (blue, leave=False), no report |
-| `end(results, refjob)` | → `terminate()` | log summary, report | harvest errors | close eval bar, update tune bar, no report |
-| `terminate()` | `log_stop()` | — | close both bars | skip (_tune_bar owned by `tuned()`) |
-| `next(job)` | no-op | reset counters, log | — | — |
-| `launching(tasks)` | inject log queue | record start time | + SolvingBar (blue) | skip bar, LogTalker only |
-| `finished(task, result)` | no-op | → `status()` | — | — |
-| `done()` | no-op | log job summary | close SolvingBar | LogTalker only (no bar) |
-| `status(new, n)` | — | counters + periodic log | + update both bars | — |
+| `eval_begin(jobs, refjob, sidnames)` | abstract | counters, legend, log | + RunningBar (green) | + RunningBar (blue, leave=False), no report |
+| `eval_end(results, refjob)` | → `terminate()` | log summary, report | harvest errors | close eval bar, update tune bar, no report |
+| `terminate()` | `log_stop()` | — | close both bars | skip (_tune_bar owned by `tune_end()`) |
+| `eval_next(job)` | no-op | reset counters, log | — | — |
+| `eval_launch(tasks)` | inject log queue | record start time | + SolvingBar (blue) | skip bar, LogTalker only |
+| `eval_taskdone(task, result)` | no-op | → `eval_status()` | — | — |
+| `eval_done()` | no-op | log job summary | close SolvingBar | LogTalker only (no bar) |
+| `eval_status(new, n)` | — | counters + periodic log | + update both bars | — |
 
 ### Tuning lifecycle
 
 | Method | LogTalker | TuneTalker |
 |---|---|---|
-| `tuning(t_start, total)` | no-op | create tune bar (green) |
-| `tuned(t_end)` | no-op | close tune bar |
-| `trials(nick, iters, timeout)` | report heading, reset table | inherited |
-| `trying(nick, it, values)` | record desc, log if verbose | + set `_in_optuna_trial=True` |
-| `tried(stats)` | append to table | + clear flag, increment, update tune bar |
-| `trialed(nick)` | write table to report, log | inherited |
-| `building(f_mod, total)` | log start | + create BuilderBar (blue, leave=False) |
-| `iteration(n, total, loss)` | periodic log | + update BuilderBar |
-| `built(score)` | log debug | + close BuilderBar |
-| `result(val)` | store `_result` | + set `_result_event` (unblocks `wait()`) |
+| `tune_begin(t_start, total)` | no-op | create tune bar (green) |
+| `tune_end(t_end)` | no-op | close tune bar |
+| `tune_phase_begin(nick, iters, timeout)` | report heading, reset table | inherited |
+| `tune_trial_begin(nick, it, values)` | record desc, log if verbose | + set `_in_optuna_trial=True` |
+| `tune_trial_done(stats)` | append to table | + clear flag, increment, update tune bar |
+| `tune_phase_done(nick)` | write table to report, log | inherited |
+| `build_begin(f_mod, total)` | log start | + create BuilderBar (blue, leave=False) |
+| `build_step(n, total, loss)` | periodic log | + update BuilderBar |
+| `build_done(score)` | log debug | + close BuilderBar |
+| `tune_result(val)` | store `_result` | + set `_result_event` (unblocks `tune_wait()`) |
 
 ### Logging helpers
 
@@ -86,7 +87,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ## Evaluation lifecycle
 
-### `begin(jobs, refjob, sidnames)`
+### `eval_begin(jobs, refjob, sidnames)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -94,7 +95,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `end(results, refjob)`
+### `eval_end(results, refjob)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -106,15 +107,14 @@ For each method: where it is called, from which file, and with what arguments.
 
 | Caller | File | Context |
 |---|---|---|
-| `Talker.end()` | `report/talker/talker.py:146` | Called at end of normal evaluation |
+| `Talker.eval_end()` | `report/talker/talker.py:146` | Called at end of normal evaluation |
 | `evaluation.launch()` → `launch_jobs()` | `benchmark/evaluation.py:218` | `KeyboardInterrupt` handler |
 | `task/launcher.launch()` | `task/launcher.py:76` | `KeyboardInterrupt` handler inside pool |
-| `prettytuner()` | `builder/autotune/autotune.py:157` | Exception handler around child process |
-| `AutoTuner.tune()` | `builder/autotuner.py:101` | `KeyboardInterrupt` handler around `prettytuner()` |
+| `prettytuner()` | `builder/autotune/autotune.py:155` | Exception handler around child process |
 
 ---
 
-### `next(job)`
+### `eval_next(job)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -122,7 +122,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `launching(tasks)`
+### `eval_launch(tasks)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -130,7 +130,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `finished(task, result)`
+### `eval_taskdone(task, result)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -140,7 +140,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `done()`
+### `eval_done()`
 
 | Caller | File | Context |
 |---|---|---|
@@ -148,17 +148,17 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `status(new, n)`
+### `eval_status(new, n)`
 
 | Caller | File | Args |
 |---|---|---|
-| `LogTalker.finished()` | `report/talker/logtalker.py:169` | `task.status(result)` → `True`/`False`/`None` |
+| `LogTalker.eval_taskdone()` | `report/talker/logtalker.py:169` | `task.status(result)` → `True`/`False`/`None` |
 
 ---
 
 ## Tuning lifecycle
 
-### `tuning(t_start, total)`
+### `tune_begin(t_start, total)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -166,7 +166,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `tuned(t_end)`
+### `tune_end(t_end)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -174,7 +174,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `trials(nick, iters, timeout)`
+### `tune_phase_begin(nick, iters, timeout)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -182,7 +182,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `trying(nick, it, values)`
+### `tune_trial_begin(nick, it, values)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -196,7 +196,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `tried(stats)`
+### `tune_trial_done(stats)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -204,15 +204,15 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `trialed(nick)`
+### `tune_phase_done(nick)`
 
 | Caller | File | Args |
 |---|---|---|
-| `tune.tune()` | `builder/autotune/tune.py:39` | `nick` (phase name, same as passed to `trials()`) |
+| `tune.tune()` | `builder/autotune/tune.py:39` | `nick` (phase name, same as passed to `tune_phase_begin()`) |
 
 ---
 
-### `building(f_mod, total)`
+### `build_begin(f_mod, total)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -220,7 +220,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `iteration(n, total, loss)`
+### `build_step(n, total, loss)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -228,7 +228,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `built(score)`
+### `build_done(score)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -236,7 +236,7 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `result(val)`
+### `tune_result(val)`
 
 | Caller | File | Args |
 |---|---|---|
@@ -252,4 +252,4 @@ For each method: where it is called, from which file, and with what arguments.
 |---|---|---|
 | `build.model()` via `report()` | `builder/autotune/build.py:57,74,92` | Debug strings (results list, early-stopping config, best iteration) |
 
-These are only queued through `REMOTES` in the child process; in the parent they resolve to `logger.info` / no-op respectively.
+These are only queued through the `TuneTalker` queue in the child process; in the parent they resolve to `logger.info` / no-op respectively.

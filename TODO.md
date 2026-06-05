@@ -4,48 +4,75 @@
 
 ### 1. Refactor tuning pipeline to use `RemoteTalker` — `builder/autotune/autotune.py`
 
-The current `LoopTalker` bakes a cross-process proxy directly into the talker via
-`__getattribute__` intercepting a `REMOTES` set and routing calls to a
-`multiprocessing.Queue`. This causes a freeze: the parent also goes through the same
-`__getattribute__` override, piling eval events into the queue with nobody reading them.
-The pipe buffer fills, the feeder thread blocks, and the forked child cannot exit.
+**✓ Subtask 1a done:** `RemoteTalker` revival — proxy machinery stripped from `TuneTalker`;
+`prettytuner()` wraps the real talker in `RemoteTalker(talker, queue=multiprocessing.Queue())`,
+forks the child with `remote` as the talker, does `p.join()` then `remote.listening_stop()`
+(which drains the queue to guarantee `tune_result` is dispatched), and returns `talker._result`.
+`RemoteTalker` uses a `LOCALS` set (inverse of the old `REMOTES`): every public method not
+in `LOCALS` is queued; `LOCALS` contains only `log_*`, `listening_*`, and `listening_handle`.
+`_local` is excluded from pickling so spawn workers only carry the queue.
+`Talker` now defines no-op stubs for all tuning/build methods so `Talker | None` is the
+correct type throughout `tune.py`, `check.py`, `build.py`, and `autotune.py`.
 
-**Plan:**
-- Strip the `__getattribute__` / REMOTES proxy out of `LoopTalker` entirely. Talkers are
-  pure UI components that always run in the main process.
-- In `prettytuner()`, before forking, create `RemoteTalker(talker)` wrapping the real
-  talker. Set `builder._devels["talker"] = remote` so ATP eval inside `build.score()`
-  also routes through the single queue.
-- The forked child calls methods on `remote`; `RemoteTalker`'s listening thread in the
-  parent dispatches them to the real talker. One queue, no overflow.
-- `tuner()` calls `talker.result(ret)` at the end; `RemoteTalker` forwards it to the
-  real talker which stores the value (e.g. `self._result = val`).
-- `prettytuner()` does `p.join()` then `remote.listening_stop()`. `listening_stop()`
-  drains the queue fully before stopping the thread, so `result()` is guaranteed
-  dispatched. The caller reads the stored value off the real talker directly — no
-  `wait()` needed, no event signaling.
-- `listening_start()` / `listening_stop()` remain on `RemoteTalker` only, with their
-  original meaning (log queue + dispatch thread). Regular talkers never need them.
-- `RemoteTalker` uses a `LOCALS` set (not `REMOTES`) to list the small number of methods
-  that execute directly in the calling process (`log_start`, `log_stop`, `log_config`,
-  `listening_start`, `listening_stop`). Everything else is forwarded via queue. This is
-  the inverse of the current `REMOTES` approach and avoids enumerating every talker method.
+---
 
-**Method names** (already renamed as of this commit):
+**Subtask 1b: Logging refactor — route child and worker logging through the queue**
 
-| Group | Methods |
-|---|---|
-| Eval events | `eval_begin`, `eval_end`, `eval_next`, `eval_launch`, `eval_taskdone`, `eval_done`, `eval_status` |
-| Tune lifecycle | `tune_begin`, `tune_end`, `tune_result`, `tune_wait` |
-| Tune phase | `tune_phase_begin`, `tune_phase_done` |
-| Tune trial | `tune_trial_begin`, `tune_trial_done` |
-| Build events | `build_begin`, `build_step`, `build_done` |
-| Infrastructure | `terminate`, `log_config`, `log_start`, `log_stop`, `listening_start`, `listening_stop`, `info`, `debug` |
+Goal: all Python `logging` records from the child (tuner) process and from ATP spawn
+workers travel through the log queue to the parent's handlers.  Child stdout/stderr
+(LightGBM output) continues to be captured by `redirect.call` into `autotune.log`.
 
-### 1a. Refactor Talker hierarchy to multiple inheritance — `report/talker/`
+Files: `autotune/autotune.py`, `report/talker/remotetalker.py`, `report/talker/talker.py`
 
-After task 1 removes the REMOTES proxy from `TuneTalker`, refactor the talker hierarchy
-from a single inheritance chain into composable mixins using cooperative `super()`.
+- `prettytuner()` already calls `remote.listening_start()` which calls `super().listening_start()`
+  → `log_start()`, creating a forkserver Manager queue at `remote._log_queue` and starting
+  the `QueueListener` in the parent.  Since the child is forked *after* this, it inherits
+  the queue object.
+- After `remote.listening_start()`, set `talker._log_queue = remote._log_queue` so that
+  when `eval_launch` is dispatched to `TuneTalker`, it injects the queue into ATP spawn
+  worker tasks (the existing `Talker.eval_launch` already does this if `_log_queue` is
+  set).
+- Pass `logqueue=remote._log_queue` to the child via `kwargs` (or read it from the
+  forked `remote` object), and call `Talker.log_config(logqueue)` at the top of `tuner()`
+  to redirect the child's root logger through the queue.
+- After this change: child `logger.*` calls → `QueueHandler` → pipe → parent
+  `QueueListener` → parent handlers (console / file).  ATP worker `logger.*` calls →
+  same path (injected via `eval_launch`).  LightGBM stdout → `redirect.call` fd
+  redirect → `autotune.log` (unchanged).
+- `Talker.listening_start()` currently always calls `log_start()` (forkserver Manager).
+  Consider whether a plain `multiprocessing.Queue` is sufficient here too (avoids a
+  forkserver process), or keep the Manager for picklability into spawn workers.
+
+---
+
+**Subtask 1c: Move child-side logging to talker methods**
+
+Goal: remove scattered `logger.debug/info` calls from child-process code (`tuner()`,
+`build.py`, `tune.py`, `check.py`) and replace them with `talker.info/debug` calls or
+new talker events.  After 1b these calls already reach the parent via the queue, but
+routing through the talker makes the interface explicit and avoids depending on the log
+queue being set up correctly.
+
+Files: `autotune/autotune.py`, `autotune/build.py`
+
+- `tuner()`: replace `logger.debug(f"posneg balancing: ...")` with `talker.debug(...)`.
+  Replace `logger.debug("- initial model: ...")` with `talker.debug(...)` or fold into
+  the existing `build_done` / `tune_trial_done` flow.
+- `build.py`: the `report("debug", ...)` calls already go through the talker.  Any
+  remaining bare `logger.*` calls in the child path should become `talker.debug/info`.
+- After both 1b and 1c, `talker.info/debug` in `LogTalker` can be promoted from no-ops
+  to real `logger.info/debug` calls in the parent, replacing the current `info()`/`debug()`
+  stubs in `Talker`.
+- ATP spawn workers (`task/task.py`, `task/runtask.py`) should have no direct logging;
+  all their log records are already captured by the worker's own root logger which will
+  route through the injected queue after subtask 1b.
+
+---
+
+### 1d. Refactor Talker hierarchy to multiple inheritance — `report/talker/`
+
+After subtasks 1a–1c, the `TuneTalker` is a pure UI class inheriting a long chain
+`Talker → LogTalker → SolverTalker → TuneTalker`.  Refactor to composable mixins.
 
 **Proposed structure:**
 

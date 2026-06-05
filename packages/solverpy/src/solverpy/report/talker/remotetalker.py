@@ -1,15 +1,19 @@
 """
 # RemoteTalker — cross-process talker proxy
 
-Wraps a local [`Talker`][solverpy.report.talker.talker.Talker] and makes its lifecycle
-methods callable from a child process.  Methods listed in `REMOTES` are
-intercepted by `__getattribute__` and queued instead of executed directly;
-a background listening thread in the parent dequeues them and calls the real
-method on the wrapped local talker.
+Wraps a local [`Talker`][solverpy.report.talker.talker.Talker] and makes its
+lifecycle methods callable from a child process.  Every public method that is
+**not** listed in `LOCALS` is intercepted by `__getattribute__` and put on a
+queue instead of executing directly; a background listening thread in the parent
+dequeues each message and calls the real method on the wrapped local talker.
 
-Used by [`autotuner`][solverpy_learn.builder.autotuner] to let the tuner child
-process drive a `SolverTalker` that runs (and renders progress bars) entirely
-in the parent.
+`LOCALS` names the small set of methods that must execute in the calling
+process (queue/thread lifecycle); everything else is forwarded automatically —
+no need to enumerate every talker method.
+
+When the `RemoteTalker` is pickled into a spawn worker only the queue is
+needed: `_local` is excluded from the pickled state so that UI objects (tqdm
+bars, etc.) are not serialised unnecessarily.
 """
 
 from typing import Any, TYPE_CHECKING
@@ -32,7 +36,7 @@ class RemoteTalker(Talker):
    ```plantuml name="task-remotetalker"
    abstract class solverpy.report.talker.talker.Talker
    class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker {
-      + REMOTES: set[str]
+      + LOCALS: set[str]
       - _remote_queue: Queue[Any]
       - _listening_thread: Thread | None
       - _local: Talker
@@ -47,24 +51,24 @@ class RemoteTalker(Talker):
    solverpy.report.talker.remotetalker.RemoteTalker o-- solverpy.report.talker.talker.Talker : wraps
    ```
 
-   Any attribute named in `REMOTES` is intercepted by `__getattribute__`
-   and replaced with a wrapper that puts ``(name, args, kwargs)`` on
-   ``_remote_queue``.  The listening thread in the parent picks up each
-   message and calls the real method on ``_local``.
+   Any public attribute **not** listed in `LOCALS` is intercepted by
+   `__getattribute__` and replaced with a wrapper that puts
+   ``(name, args, kwargs)`` on ``_remote_queue``.  The listening thread in the
+   parent picks up each message and calls the real method on ``_local``.
 
-   All other attributes (not in `REMOTES`) pass through to `Talker` normally.
+   Methods listed in `LOCALS` execute directly in the calling process (queue
+   and thread lifecycle helpers that must not be forwarded).
    """
 
-   REMOTES = {
-      "eval_begin",
-      "eval_end",
-      "eval_next",
-      "terminate",
-      "eval_launch",
-      "eval_taskdone",
-      "eval_done",
+   LOCALS = {
+      "log_start",
+      "log_stop",
+      "log_config",
+      "listening_start",
+      "listening_stop",
+      "listening_handle",
    }
-   """Set of method names that are queued instead of called directly."""
+   """Methods that execute locally in the calling process (not forwarded via queue)."""
 
    def __init__(self, local: Talker, queue: "Queue[Any] | None" = None):
       """
@@ -88,14 +92,11 @@ class RemoteTalker(Talker):
       self._local: Talker = local
 
    def __getattribute__(self, name):
-      if name in RemoteTalker.REMOTES:
-
+      if not name.startswith('_') and name not in RemoteTalker.LOCALS:
          def wrapper(*args, **kwargs):
             queue = object.__getattribute__(self, '_remote_queue')
             queue.put((name, args, kwargs))
-
          return wrapper
-
       return super().__getattribute__(name)
 
    def listening_start(self):
@@ -113,62 +114,66 @@ class RemoteTalker(Talker):
       self._listening_thread.start()
 
    def listening_stop(self):
-      """Signal the listening thread to stop and wait for it to join."""
-      super().listening_stop()
+      """Signal the listening thread to stop, drain remaining queue items, then join."""
       if not (self._listening_thread and self._listening_thread.is_alive()):
-         logger.warning("No listening thread to stop")
+         super().listening_stop()
          return
 
       self._stop_listening.set()
       self._listening_thread.join(timeout=2.0)
       self._listening_thread = None
 
+      try:
+         while True:
+            method, args, kwargs = self._remote_queue.get_nowait()
+            self.listening_handle(method, args, kwargs)
+      except Exception:
+         pass
+
+      super().listening_stop()
+
    def _listen_loop(self):
       """Drain ``_remote_queue`` and dispatch each message to ``listening_handle``."""
       while not self._stop_listening.is_set():
          try:
-            # Block until item arrives or timeout
             method, args, kwargs = self._remote_queue.get(timeout=0.2)
             self.listening_handle(method, args, kwargs)
          except:
-            # Timeout occurred, check stop flag and loop again
             pass
 
    def listening_handle(self, method, args, kwargs):
       """Call ``method`` on the local talker with the given args and kwargs."""
-      assert method in RemoteTalker.REMOTES, method
+      local = object.__getattribute__(self, '_local')
+      if local is None:
+         return
       handler = None
       try:
-         handler = getattr(self._local, method)
+         handler = getattr(local, method)
       except AttributeError:
          logger.error(
-            f"Method '{method}' not found on local talker\n{self._local}\n{dir(self._local)}"
+            f"Method '{method}' not found on local talker\n{local}\n{dir(local)}"
          )
-      assert handler
+      if not handler:
+         return
       try:
          handler(*args, **kwargs)
       except Exception as e:
          logger.error(f"Error calling {method}: {e}", exc_info=True)
+
+   def terminate(self):
+      """Terminate the local talker (dispatched from child via queue)."""
+      local = object.__getattribute__(self, '_local')
+      if local:
+         local.terminate()
 
    def __getstate__(self):
       state = self.__dict__.copy()
       state['_listening_thread'] = None
       state['_stop_listening'] = None
       state['_remote_manager'] = None
+      state['_local'] = None  # only the queue is needed in spawn workers
       return state
 
    def __setstate__(self, state):
       self.__dict__.update(state)
       self._stop_listening = threading.Event()
-
-   def terminate(self):
-      """Terminate the local talker, stop the listening thread, and shut down the Manager."""
-      super().terminate()
-      self._local.terminate()
-      if self._listening_thread and self._listening_thread.is_alive():
-         self._stop_listening.set()
-         self._listening_thread.join(timeout=2.0)
-         self._listening_thread = None
-      if self._remote_manager:
-         self._remote_manager.shutdown()
-         self._remote_manager = None

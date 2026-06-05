@@ -11,7 +11,7 @@ from solverpy.benchmark import evaluation
 if TYPE_CHECKING:
    from lightgbm import Booster, Dataset
    from ..autotuner import AutoTuner
-   from .tunetalker import TuneTalker
+   from solverpy.report.talker.talker import Talker
 
 POS_ACC_WEIGHT = 2.0
 
@@ -44,7 +44,7 @@ def model(
    dtrain: "Dataset",
    dtest: "Dataset",
    f_mod: str,
-   talker: "TuneTalker | None" = None,
+   talker: "Talker | None" = None,
 ) -> tuple["Booster", dict[str, Any]]:
    callbacks = bst = begin = end = mlscore = acc = trainacc = None
 
@@ -129,7 +129,7 @@ def score(
    stats: dict[str, Any],
    builder: "AutoTuner | None",
    nick: str,
-   talker: "TuneTalker | None" = None,
+   talker: "Talker | None" = None,
 ) -> None:
    if not builder:
       stats["score"] = stats["mlscore"]

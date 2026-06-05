@@ -172,3 +172,55 @@ class Talker:
    def eval_done(self) -> None:
       """Called after all tasks in the current job have finished."""
       pass
+
+   def eval_status(self, new: "bool | None", n: int = 1) -> None:
+      """Called when a task result is classified (True=solved, False=unsolved, None=error)."""
+      del new, n
+
+   def tune_begin(self, t_start: float, total: int = 0) -> None:
+      """Hyperparameter tuning session starting; total trial count known."""
+      del t_start, total
+
+   def tune_end(self, t_end: float) -> None:
+      """Tuning session finished."""
+      del t_end
+
+   def tune_result(self, val: Any) -> None:
+      """Tuning produced a final result value."""
+      del val
+
+   def tune_phase_begin(self, nick: str, iters: int, timeout: "int | None") -> None:
+      """A new tuning phase starting (e.g. ``"leaves"``)."""
+      del nick, iters, timeout
+
+   def tune_phase_done(self, nick: str) -> None:
+      """A tuning phase finished."""
+      del nick
+
+   def tune_trial_begin(self, nick: str, it: int, values: "list[Any]") -> None:
+      """An Optuna trial starting; parameter values being evaluated are known."""
+      del nick, it, values
+
+   def tune_trial_done(self, stats: "dict[str, Any]") -> None:
+      """An Optuna trial finished; scores and accuracies are known."""
+      del stats
+
+   def build_begin(self, f_mod: str, total: int) -> None:
+      """LightGBM model training starting; total iteration count known."""
+      del f_mod, total
+
+   def build_step(self, n: int, total: int, loss: "list[float]") -> None:
+      """One LightGBM training iteration completed; current loss values known."""
+      del n, total, loss
+
+   def build_done(self, score: float) -> None:
+      """Model training finished; final ML score known."""
+      del score
+
+   def info(self, msg: str) -> None:
+      """Log an info-level message."""
+      del msg
+
+   def debug(self, msg: str) -> None:
+      """Log a debug-level message."""
+      del msg

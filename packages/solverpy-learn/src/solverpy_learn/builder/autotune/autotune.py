@@ -6,11 +6,13 @@ import lightgbm as lgb
 import multiprocessing
 
 from solverpy.tools import human, redirect
+from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
 from . import tune, build
 from .tunetalker import TuneTalker
 
 if TYPE_CHECKING:
+   from solverpy.report.talker.talker import Talker
    from .tune import TuneResult
    from ..autotuner import AutoTuner
 
@@ -53,7 +55,7 @@ def tuner(
    init_params: (dict[str, Any] | None) = None,
    min_leaves: int = 16,
    max_leaves: int = 2048,
-   talker: "TuneTalker | None" = None,
+   talker: "Talker | None" = None,
    atpeval: bool = False,
    posneg_weight: float = 0,
    builder: "AutoTuner | None" = None,
@@ -135,26 +137,25 @@ def tuner(
 
 
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
-   builder = kwargs.get("builder")
    talker = TuneTalker(headless=headless)
+   remote = RemoteTalker(talker, queue=multiprocessing.Queue())
 
    d_tmp = kwargs.get("d_tmp") or "tune-tmp"
    os.makedirs(d_tmp, exist_ok=True)
    ctx = multiprocessing.get_context("fork")
-   kwargs["talker"] = talker
+   kwargs["talker"] = remote
    kwargs["f_log"] = os.path.join(d_tmp, "autotune.log")
    kwargs["target"] = tuner
    p = ctx.Process(target=redirect.call, args=args, kwargs=kwargs)
 
-   talker.listening_start()
+   remote.listening_start()
    try:
       p.start()
-      result = talker.tune_wait()
-   except Exception:
+      p.join()
+   except BaseException:
       p.terminate()
       talker.terminate()
       raise
    finally:
-      p.join()
-   talker.listening_stop()
-   return result
+      remote.listening_stop()
+   return talker._result

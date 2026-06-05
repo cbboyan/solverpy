@@ -6,7 +6,7 @@ import optuna
 from . import check
 
 if TYPE_CHECKING:
-   from .tunetalker import TuneTalker
+   from solverpy.report.talker.talker import Talker
    from optuna.samplers import BaseSampler
 
 #UserAttrs = tuple[Any, ...]
@@ -20,7 +20,7 @@ def tune(
    iters: int,
    timeout: (int | None),
    d_tmp: str,
-   talker: "TuneTalker | None" = None,
+   talker: "Talker | None" = None,
    sampler: "BaseSampler | None" = None,
    **args: Any,
 ) -> TuneResult:
