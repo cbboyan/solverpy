@@ -11,7 +11,7 @@ from solverpy.benchmark.reports import markdown
 from solverpy.setups.common import default
 from solverpy.benchmark.path import bids, sids
 from solverpy.setups.setup import Setup
-from solverpy.report.talker.solvertalker import SolverTalker
+from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.logtalker import LogTalker
 from ..builder.builder import Builder
 
@@ -102,7 +102,7 @@ def oneloop(setup: Setup) -> Setup:
       if "headless" in options:
          talker = LogTalker()
       else:
-         talker = SolverTalker()
+         talker = EvalTalker()
       evaluator.launch(talker=talker, **setup)
       if "trains" not in setup:
          return setup

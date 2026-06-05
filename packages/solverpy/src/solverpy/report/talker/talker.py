@@ -4,7 +4,7 @@
 Base class for progress reporting during benchmark evaluation.
 Subclasses receive lifecycle events (`begin`, `next`, `launching`, `finished`, `done`, `end`)
 and decide how to surface them — as log messages ([`LogTalker`][solverpy.report.talker.logtalker.LogTalker]),
-progress bars ([`SolverTalker`][solverpy.report.talker.solvertalker.SolverTalker]),
+progress bars ([`EvalTalker`][solverpy.report.talker.evaltalker.EvalTalker]),
 or forwarded across processes ([`RemoteTalker`][solverpy.report.talker.remotetalker.RemoteTalker]).
 
 Also owns the log queue machinery that lets worker processes route Python

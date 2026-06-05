@@ -1,5 +1,5 @@
 """
-# SolverTalker — interactive progress bar reporter
+# EvalTalker — interactive progress bar reporter
 
 Extends [`LogTalker`][solverpy.report.talker.logtalker.LogTalker] with tqdm progress
 bars: a per-job [`SolvingBar`][solverpy.report.talker.bar.SolvingBar] and a cumulative
@@ -22,14 +22,14 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SolverTalker(LogTalker):
+class EvalTalker(LogTalker):
    """
    Interactive progress reporter with tqdm bars.
 
-   ```plantuml name="task-solvertalker"
+   ```plantuml name="task-evaltalker"
    abstract class solverpy.report.talker.talker.Talker
    class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker {
+   class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker {
       - _job_bar: SolvingBar | None
       - _total_bar: RunningBar | None
       --
@@ -49,7 +49,7 @@ class SolverTalker(LogTalker):
    """
 
    def __init__(self) -> None:
-      super().__init__(log_progress=False)
+      super().__init__(headless=False)
       self._job_bar: SolvingBar | None = None
       self._total_bar: RunningBar | None = None
 
@@ -119,4 +119,3 @@ class SolverTalker(LogTalker):
          self._total_bar.status(new)
       if self._job_bar:
          self._job_bar.status(new)
-

@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-05)
 
-* fix: suppress eval log messages during ATP evaluation inside tuning [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: rename SolverTalker→EvalTalker, TuneTalker→LoopTalker, move LoopTalker to solverpy-learn [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: suppress eval log messages during ATP evaluation inside tuning [[details](https://github.com/cbboyan/solverpy/commit/c835bbf) | [browse](https://github.com/cbboyan/solverpy/tree/c835bbf)]
 * fix: keep tuning task bars visible after completion (leave=True) [[details](https://github.com/cbboyan/solverpy/commit/cca13c3) | [browse](https://github.com/cbboyan/solverpy/tree/cca13c3)]
 * refactor: move child-side logger calls to talker.debug(), promote LogTalker.debug [[details](https://github.com/cbboyan/solverpy/commit/20dace5) | [browse](https://github.com/cbboyan/solverpy/tree/20dace5)]
 * feat: route child/worker logging through queue to parent handlers [[details](https://github.com/cbboyan/solverpy/commit/68cdf4a) | [browse](https://github.com/cbboyan/solverpy/tree/68cdf4a)]

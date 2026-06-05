@@ -9,7 +9,7 @@ from solverpy.report.talker.talker import Talker
 from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
 from . import tune, build
-from .tunetalker import TuneTalker
+from solverpy_learn.report.talker.looptalker import LoopTalker
 
 if TYPE_CHECKING:
    from .tune import TuneResult
@@ -135,7 +135,7 @@ def tuner(
 
 
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:
-   talker = TuneTalker(headless=headless)
+   talker = LoopTalker(headless=headless)
    remote = RemoteTalker(talker, queue=multiprocessing.Queue())
 
    d_tmp = kwargs.get("d_tmp") or "tune-tmp"

@@ -40,7 +40,7 @@ class LogTalker(Talker):
    ```plantuml name="task-logtalker"
    abstract class solverpy.report.talker.talker.Talker
    class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker {
-      - _log_progress: bool
+      - _headless: bool
       --
       + begin(jobs, refjob, sidnames, **kwargs)
       + end(results, refjob)
@@ -62,7 +62,7 @@ class LogTalker(Talker):
       + info(msg)
       + debug(msg)
    }
-   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+   class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
    ```
 
    Calls `summary.legend` in `begin` and `summary.summarize` in `end` to
@@ -70,26 +70,26 @@ class LogTalker(Talker):
    updates are emitted via `logger.info` at exponentially growing intervals
    so long runs stay observable without flooding the log.
 
-   Set ``log_progress=False`` (as `SolverTalker` does) to demote the
+   Set ``headless=False`` (as `EvalTalker` does) to demote the
    per-job info lines to ``DEBUG`` — the tqdm bars carry that role instead.
 
    Tuning event methods (`trials`, `building`, etc.) provide log-based
-   default implementations.  `TuneTalker` inherits these and overrides the
+   default implementations.  `LoopTalker` inherits these and overrides the
    ones that should display tqdm bars instead.
    """
 
-   def __init__(self, log_progress: bool = True):
+   def __init__(self, headless: bool = True):
       """
       Args:
-          log_progress: if ``True``, emit ``INFO`` log lines for each job
+          headless: if ``True``, emit ``INFO`` log lines for each job
               and periodic progress updates.  Set to ``False`` when a
-              visual progress bar (`SolverTalker`) handles that role.
+              visual progress bar (`EvalTalker`) handles that role.
       """
       super().__init__()
-      self._log_progress = log_progress
+      self._headless = headless
       self._last_time = None
-      self._in_tune_eval: bool = False
-      # Tuning state shared with TuneTalker
+      self._suspend_info: bool = False
+      # Tuning state shared with LoopTalker
       self._tune_iters: str = ""
       self._tune_header: list[str] | None = None
       self._tune_table: list | None = None
@@ -121,8 +121,7 @@ class LogTalker(Talker):
       self._total_nicks = {k[1:3]:v for (k,v) in self._total_nicks_full.items()}
       self._total_errors = 0
 
-      if not self._in_tune_eval:
-         logger.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
+      self.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
 
    def eval_end(
       self,
@@ -138,8 +137,7 @@ class LogTalker(Talker):
          )
       if report:
          summary.summarize(results, self._total_nicks_full, refjob)
-      if not self._in_tune_eval:
-         logger.info("Evaluation done.")
+      self.info("Evaluation done.")
 
    def eval_next(self, job: "SolverJob") -> None:
       """Reset per-job counters and log the start of the next job."""
@@ -149,8 +147,8 @@ class LogTalker(Talker):
       nick = self._total_nicks[job[1:3]]
       dw = self._nick_dw
       self._job_desc = f"[{self._job_index:>{dw}}/{self._total_jobs}] {nick}"
-      if self._log_progress:
-         logger.info(f"Evaluating {jname}")
+      if self._headless:
+         self.info(f"Evaluating {jname}")
       logger.debug(f"evaluating {self._job_desc}: {jname}")
       super().eval_next(job)
 
@@ -174,8 +172,8 @@ class LogTalker(Talker):
    def eval_done(self) -> None:
       """Log solved/unsolved/error summary for the completed job."""
       bar = f"+{self._solved} -{self._unsolved} !{self._errors}"
-      if self._log_progress:
-         logger.info(f"Evaluation done: {bar}")
+      if self._headless:
+         self.info(f"Evaluation done: {bar}")
       else:
          logger.debug(f"evaluation done: {bar}")
 
@@ -195,7 +193,7 @@ class LogTalker(Talker):
          self._errors += n
       if not self._last_time:
          return
-      logme = logger.info if self._log_progress else logger.debug
+      logme = logger.info if self._headless else logger.debug
       elapsed = time.perf_counter() - self._last_time
       after = time.perf_counter() - self._start_time
       bar = f"+{self._solved} -{self._unsolved} !{self._errors}"
@@ -219,20 +217,20 @@ class LogTalker(Talker):
       del timeout
       report = markdown.newline() + markdown.heading(f"Tuning `{nick}`", level=3)
       reporter.add(report)
-      logger.info(f"Running tuning phase: {nick}")
+      self.info(f"Running tuning phase: {nick}")
       self._tune_iters = f"/{iters}" if iters else ""
       self._tune_header = ["it", nick, "score", "test.acc", "train.acc", "time"]
       self._tune_table = []
 
    def tune_trial_begin(self, nick: str, it: int, values: list) -> None:
-      """Record the current trial description; log if ``_log_progress``."""
+      """Record the current trial description; log if ``_headless``."""
       del nick
       self._tune_it = it + 1
       vals = ", ".join("%.4f" % v if type(v) is float else str(v) for v in values)
       self._tune_desc = f"[{it+1}{self._tune_iters}] {vals:8s}"
       self._tune_values = vals
-      if self._log_progress:
-         logger.info(f"Trying {self._tune_desc}")
+      if self._headless:
+         self.info(f"Trying {self._tune_desc}")
 
    def tune_trial_done(self, stats: dict[str, Any]) -> None:
       """Append the completed trial's stats to the phase table."""
@@ -260,7 +258,7 @@ class LogTalker(Talker):
       ))
       lines.append("")
       reporter.add(lines)
-      logger.info(
+      self.info(
          f"Tuning phase '{self._tune_header[1]}' done: {len(self._tune_table)} trials."
       )
 
@@ -271,8 +269,8 @@ class LogTalker(Talker):
       self._builder_last = time.perf_counter()
       self._builder_wait = 5.0
       logger.debug(f"building model: {f_mod}")
-      if self._log_progress:
-         logger.info(f"Building model: {f_mod}")
+      if self._headless:
+         self.info(f"Building model: {f_mod}")
 
    def build_step(self, n: int, total: int, loss: list[float]) -> None:
       """Emit periodic progress log lines during model training."""
@@ -281,10 +279,12 @@ class LogTalker(Talker):
       elapsed = time.perf_counter() - self._builder_last
       if n > 3 and elapsed < self._builder_wait:
          return
-      logme = logger.info if self._log_progress else logger.debug
       msg = "/".join(f"{x:.4f}" for x in loss)
       runtime = time.perf_counter() - self._builder_start
-      logme(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
+      if self._headless:
+         self.info(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
+      else:
+         logger.debug(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
       self._builder_last = time.perf_counter()
 
    def build_done(self, score: float) -> None:
@@ -302,7 +302,7 @@ class LogTalker(Talker):
       del t_end
 
    def info(self, msg: str) -> None:
-      logger.info(msg)
+      (logger.debug if self._suspend_info else logger.info)(msg)
 
    def debug(self, msg: str) -> None:
       logger.debug(msg)

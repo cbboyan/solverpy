@@ -8,7 +8,7 @@ from ..report import log
 from .common import default
 from ..benchmark.path import bids, sids
 from .setup import Setup
-from ..report.talker.solvertalker import SolverTalker
+from ..report.talker.evaltalker import EvalTalker
 from ..report.talker.logtalker import LogTalker
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
       if "headless" in setup.get("options", []):
          talker = LogTalker()
       else:
-         talker = SolverTalker()
+         talker = EvalTalker()
       evaluator.launch(talker=talker, **setup)
       log.ntfy(setup, "solverpy: done")
       return setup

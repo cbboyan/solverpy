@@ -26,7 +26,7 @@ abstract class solverpy.report.talker.talker.Talker {
 }
 
 class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
 
 abstract class solverpy.task.task.Task {
   + run() : Any
@@ -36,7 +36,7 @@ abstract class solverpy.task.task.Task {
 class solverpy.task.solvertask.SolverTask extends solverpy.task.task.Task
 
 solverpy.task.launcher ..> solverpy.task.solvertask.SolverTask
-solverpy.report.talker.solvertalker.SolverTalker ..> solverpy.report.talker.bar.SolvingBar
+solverpy.report.talker.evaltalker.EvalTalker ..> solverpy.report.talker.bar.SolvingBar
 
 ```
 

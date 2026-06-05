@@ -16,15 +16,15 @@ abstract class solverpy.report.talker.talker.Talker {
 }
 
 class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
 class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker
 
-solverpy.report.talker.solvertalker.SolverTalker ..> solverpy.report.talker.bar.SolvingBar
+solverpy.report.talker.evaltalker.EvalTalker ..> solverpy.report.talker.bar.SolvingBar
 
 ```
 
 [`LogTalker`][solverpy.report.talker.logtalker.LogTalker] logs progress to the
-console/file. [`SolverTalker`][solverpy.report.talker.solvertalker.SolverTalker]
+console/file. [`EvalTalker`][solverpy.report.talker.evaltalker.EvalTalker]
 additionally displays a live progress bar using `tqdm`.
 [`RemoteTalker`][solverpy.report.talker.remotetalker.RemoteTalker] is a cross-process
 proxy that forwards method calls from a child process to the parent.

@@ -47,7 +47,7 @@ class RemoteTalker(Talker):
       + terminate()
    }
    class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
+   class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
    solverpy.report.talker.remotetalker.RemoteTalker o-- solverpy.report.talker.talker.Talker : wraps
    ```
 

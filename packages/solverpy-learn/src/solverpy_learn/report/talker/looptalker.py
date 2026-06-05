@@ -1,5 +1,5 @@
 """
-# TuneTalker — progress reporter for hyperparameter tuning
+# LoopTalker — progress reporter for hyperparameter tuning
 
 Combines ATP evaluation progress (tqdm bars or log lines) and LightGBM
 tuning progress into a single talker for
@@ -12,7 +12,7 @@ Runs entirely in the parent process; cross-process forwarding is handled by
 import logging
 from typing import Any, Sequence, TYPE_CHECKING
 
-from solverpy.report.talker.solvertalker import SolverTalker
+from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.logtalker import LogTalker
 from solverpy.report.talker.bar import BuilderBar, DefaultBar, RunningBar, _postfix_width
 from solverpy.benchmark.path import bids as _bids
@@ -23,15 +23,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class TuneTalker(SolverTalker):
+class LoopTalker(EvalTalker):
    """
    Progress talker for the hyperparameter tuning pipeline.
 
-   ```plantuml name="autotune-tunetalker"
+   ```plantuml name="autotune-looptalker"
    abstract class solverpy.report.talker.talker.Talker
    class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-   class solverpy.report.talker.solvertalker.SolverTalker extends solverpy.report.talker.logtalker.LogTalker
-   class solverpy_learn.builder.autotune.tunetalker.TuneTalker extends solverpy.report.talker.solvertalker.SolverTalker {
+   class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
+   class solverpy_learn.report.talker.looptalker.LoopTalker extends solverpy.report.talker.evaltalker.EvalTalker {
       - _tune_bar: DefaultBar | None
       - _builder_bar: BuilderBar | None
       - _total_trials: int
@@ -59,7 +59,7 @@ class TuneTalker(SolverTalker):
 
    Log-based defaults for all tuning events are inherited from
    [`LogTalker`][solverpy.report.talker.logtalker.LogTalker].  In non-headless
-   mode, `TuneTalker` overrides the model-building handlers to use a
+   mode, `LoopTalker` overrides the model-building handlers to use a
    [`BuilderBar`][solverpy.report.talker.bar.BuilderBar] instead.
 
    Set ``headless=True`` for non-interactive use: all tuning handlers use
@@ -72,7 +72,7 @@ class TuneTalker(SolverTalker):
           headless: if ``True``, use log lines instead of tqdm bars.
       """
       super().__init__()
-      self._log_progress = headless  # override SolverTalker's False
+      self._headless = headless  # override EvalTalker's False
       self._builder_bar: BuilderBar | None = None
       self._tune_bar: DefaultBar | None = None
       self._total_trials: int = 0
@@ -102,7 +102,7 @@ class TuneTalker(SolverTalker):
    def eval_begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
       """Create a single cumulative eval RunningBar if not headless. Skips report."""
       LogTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
-      if not self._log_progress:
+      if not self._headless:
          max_job = max(len(_bids.problems(bid)) for (_, bid, _) in jobs)
          self._total_bar = RunningBar(
             total=self._total_count,
@@ -125,6 +125,12 @@ class TuneTalker(SolverTalker):
          if self._tune_bar:
             self._tune_bar.update(1)
 
+   def eval_status(self, new: "bool | None", n: int = 1) -> None:
+      """Update eval bar and refresh tune bar to keep it visible."""
+      super().eval_status(new, n)
+      if self._tune_bar:
+         self._tune_bar.refresh()
+
    def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """Record start time only; no per-job bar in tuning mode."""
       LogTalker.eval_launch(self, tasks)
@@ -136,15 +142,17 @@ class TuneTalker(SolverTalker):
    # --- Tuning lifecycle overrides ---
 
    def tune_begin(self, t_start: float, total: int = 0) -> None:
-      """Create the outer tune bar if not headless."""
+      """Create the outer tune bar if not headless; suspend info logs in bar mode."""
       self._total_trials = total
       self._current_trial = 0
-      if self._log_progress or not total:
+      self._suspend_info = not self._headless
+      if self._headless or not total:
          return
       self._tune_bar = DefaultBar(total, "tune".ljust(self._inner_width()))
 
    def tune_end(self, t_end: float) -> None:
-      """Close the tune bar on tuning completion."""
+      """Close the tune bar on tuning completion; restore info logs."""
+      self._suspend_info = False
       if self._tune_bar:
          self._tune_bar.close()
          self._tune_bar = None
@@ -179,13 +187,15 @@ class TuneTalker(SolverTalker):
    def build_begin(self, f_mod: str, total: int) -> None:
       """Open a ``BuilderBar`` with [N/M] build label if not headless."""
       LogTalker.build_begin(self, f_mod, total)
-      if not self._log_progress:
+      if not self._headless:
          self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=True)
 
    def build_step(self, n: int, total: int, loss: list[float]) -> None:
-      """Update the builder bar and emit periodic log lines."""
+      """Update the builder bar, refresh tune bar, and emit periodic log lines."""
       if self._builder_bar:
          self._builder_bar.status(loss)
+      if self._tune_bar:
+         self._tune_bar.refresh()
       LogTalker.build_step(self, n, total, loss)
 
    def build_done(self, score: float) -> None:
