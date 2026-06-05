@@ -88,6 +88,7 @@ class LogTalker(Talker):
       super().__init__()
       self._log_progress = log_progress
       self._last_time = None
+      self._in_tune_eval: bool = False
       # Tuning state shared with TuneTalker
       self._tune_iters: str = ""
       self._tune_header: list[str] | None = None
@@ -120,7 +121,8 @@ class LogTalker(Talker):
       self._total_nicks = {k[1:3]:v for (k,v) in self._total_nicks_full.items()}
       self._total_errors = 0
 
-      logger.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
+      if not self._in_tune_eval:
+         logger.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
 
    def eval_end(
       self,
@@ -136,7 +138,8 @@ class LogTalker(Talker):
          )
       if report:
          summary.summarize(results, self._total_nicks_full, refjob)
-      logger.info("Evaluation done.")
+      if not self._in_tune_eval:
+         logger.info("Evaluation done.")
 
    def eval_next(self, job: "SolverJob") -> None:
       """Reset per-job counters and log the start of the next job."""

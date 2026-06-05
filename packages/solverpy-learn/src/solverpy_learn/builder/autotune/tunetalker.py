@@ -78,6 +78,7 @@ class TuneTalker(SolverTalker):
       self._total_trials: int = 0
       self._current_trial: int = 0
       self._in_optuna_trial: bool = False
+      self._in_tune_eval: bool = False
 
    # --- Helpers ---
 
@@ -160,6 +161,14 @@ class TuneTalker(SolverTalker):
       self._current_trial += 1
       if self._tune_bar:
          self._tune_bar.update(1)
+
+   def tune_eval_begin(self) -> None:
+      """Suppress eval log messages while ATP evaluation runs inside a tuning trial."""
+      self._in_tune_eval = True
+
+   def tune_eval_end(self, results: dict) -> None:
+      """Re-enable eval log messages after tuning ATP evaluation."""
+      self._in_tune_eval = False
 
    def terminate(self) -> None:
       """Delegate to parent; _tune_bar is closed by tune_end()."""

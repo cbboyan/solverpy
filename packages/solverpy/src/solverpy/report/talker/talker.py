@@ -205,6 +205,13 @@ class Talker:
       """An Optuna trial finished; scores and accuracies are known."""
       del stats
 
+   def tune_eval_begin(self) -> None:
+      """ATP evaluation phase inside a tuning trial is starting."""
+
+   def tune_eval_end(self, results: "dict") -> None:
+      """ATP evaluation phase inside a tuning trial finished."""
+      del results
+
    def build_begin(self, f_mod: str, total: int) -> None:
       """LightGBM model training starting; total iteration count known."""
       del f_mod, total

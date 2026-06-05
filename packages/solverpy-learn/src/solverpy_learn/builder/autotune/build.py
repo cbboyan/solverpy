@@ -143,7 +143,9 @@ def score(
    assert "trains" in setup
    setup["solver"].call("trains", "disable")
    setup["solver"].call("debug-trains", "disable")
+   if talker: talker.tune_eval_begin()
    res = evaluation.launch(talker=talker, **setup)
+   if talker: talker.tune_eval_end(res)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r))
    score = sum(solved(s, rs) for ((s, _, _), rs) in res.items())
    stats["score"] = score
