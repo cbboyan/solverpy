@@ -63,6 +63,7 @@ def main(args):
    import os
    import shutil
    from solverpy_learn.builder import autotune
+   from solverpy_learn.report.talker.looptalker import LoopTalker
    from solverpy.tools import human
 
    console = logging.StreamHandler()
@@ -97,6 +98,7 @@ def main(args):
       init_params["early_stopping"] = args.early_stopping
 
    best = autotune.prettytuner(
+      talker=LoopTalker(),
       f_train=args.train,
       f_test=test,
       phases=args.phases,

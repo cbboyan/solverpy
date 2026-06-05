@@ -48,8 +48,8 @@ class EvalTalker(LogTalker):
    cleared on `terminate`.
    """
 
-   def __init__(self) -> None:
-      super().__init__(headless=False)
+   def __init__(self, headless: bool = False) -> None:
+      super().__init__(headless=headless)
       self._job_bar: SolvingBar | None = None
       self._total_bar: RunningBar | None = None
 
@@ -64,6 +64,8 @@ class EvalTalker(LogTalker):
    ) -> None:
       """Create the total ``RunningBar`` spanning all jobs."""
       super().eval_begin(jobs, refjob=refjob, sidnames=sidnames, **kwargs)
+      if self._headless:
+         return
       dw = self._nick_dw
       prefix_len = 2 * dw + 3  # "[n/m] " without trailing space
       total_desc = f"{' ' * prefix_len} {self._total_desc}"
@@ -102,7 +104,8 @@ class EvalTalker(LogTalker):
    def eval_launch(self, tasks: Sequence["Task"]) -> None:
       """Create the per-job ``SolvingBar`` and inject the log queue into tasks."""
       super().eval_launch(tasks)
-      self._job_bar = SolvingBar(len(tasks), self._job_desc, miniters=1)
+      if not self._headless:
+         self._job_bar = SolvingBar(len(tasks), self._job_desc, miniters=1)
 
    def eval_done(self) -> None:
       """Close the per-job bar and log the completion summary."""

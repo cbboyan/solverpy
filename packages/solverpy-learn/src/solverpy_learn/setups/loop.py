@@ -1,18 +1,16 @@
-from typing import Callable
 import sys
 import logging
 import gc
 
-from solverpy.benchmark import db
 from solverpy.benchmark import evaluation as evaluator
 from solverpy.report import log
 from solverpy.tools import reporter
 from solverpy.benchmark.reports import markdown
 from solverpy.setups.common import default
-from solverpy.benchmark.path import bids, sids
 from solverpy.setups.setup import Setup
 from solverpy.report.talker.evaltalker import EvalTalker
-from solverpy.report.talker.logtalker import LogTalker
+from solverpy.report.talker.talker import Talker
+from solverpy_learn.report.talker.looptalker import LoopTalker
 from ..builder.builder import Builder
 
 logger = logging.getLogger(__name__)
@@ -50,7 +48,18 @@ def looping(setup: Setup) -> Setup:
    return setup
 
 
-def oneloop(setup: Setup) -> Setup:
+def make_talker(setup: Setup) -> Talker:
+   headless = "headless" in setup.get("options", [])
+   has_builder = "builder" in setup
+   if has_builder:
+      return LoopTalker(headless=headless)
+   elif headless:
+      return EvalTalker(headless=True)
+   else:
+      return EvalTalker()
+
+
+def oneloop(setup: Setup, talker: Talker) -> Setup:
 
    assert "options" in setup
    options = setup["options"]
@@ -89,7 +98,7 @@ def oneloop(setup: Setup) -> Setup:
          return
       builder = setup["builder"]
       if builder and not is_last(setup):
-         builder.build()
+         builder.build(talker)
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
@@ -99,10 +108,6 @@ def oneloop(setup: Setup) -> Setup:
    reporter.add(report)
    logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.")
    if (it > 0) or ("start_dataname" not in setup):
-      if "headless" in options:
-         talker = LogTalker()
-      else:
-         talker = EvalTalker()
       evaluator.launch(talker=talker, **setup)
       if "trains" not in setup:
          return setup
@@ -118,15 +123,17 @@ def oneloop(setup: Setup) -> Setup:
 
 def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
+   talker = make_talker(setup)
+
    def do_loop(col: Setup | None) -> None:
       if not col: return
-      oneloop(col)
+      oneloop(col, talker)
 
    def do_iter(col: Setup | None) -> None:
       if not col: return
       col["strategies"].extend(setup["news"] if "news" in setup else [])
       loopinit(col)
-      oneloop(col)
+      oneloop(col, talker)
 
    try:
       log.ntfy(setup, "solverpy: init")

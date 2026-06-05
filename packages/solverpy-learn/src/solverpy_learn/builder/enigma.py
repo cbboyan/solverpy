@@ -5,6 +5,7 @@ import logging
 
 from .builder import Builder, NAME
 from .autotuner import AutoTuner
+from solverpy.report.talker.talker import Talker
 from solverpy.benchmark.path import sids, bids
 from .plugins import enigma
 from solverpy.setups.setup import Setup
@@ -52,8 +53,8 @@ class EnigmaModel(AutoTuner):
       )
       return sidml
 
-   def build(self) -> None:
-      super().build()
+   def build(self, talker: Talker = Talker()) -> None:
+      super().build(talker)
       self.makemap()
 
    def makemap(self, mapfile: str | None = None) -> None:
@@ -190,13 +191,13 @@ class Enigma(EnigmaModel):
          self._gen.reset(dataname)
       Builder.reset(self, dataname)
 
-   def build(self) -> None:
+   def build(self, talker: Talker = Talker()) -> None:
       self._strats = []
       if self._sel:
-         self._sel.build()
+         self._sel.build(talker)
          self._strats.extend(self._sel.strategies)
       if self._gen:
-         self._gen.build()
+         self._gen.build(talker)
          self._strats.extend(self._gen.strategies)
       if self._sel and self._gen:
          assert "refs" in self._trains

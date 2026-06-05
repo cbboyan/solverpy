@@ -291,10 +291,6 @@ class LogTalker(Talker):
       """Log completion of model training."""
       logger.debug(f"model built: score={score:.4f}")
 
-   def tune_result(self, val: Any) -> None:
-      """Store the tuning result."""
-      self._result = val
-
    def tune_begin(self, t_start: float, total: int = 0) -> None:
       del t_start, total
 

@@ -8,6 +8,7 @@ from .autotune import autotune
 from solverpy.benchmark.reports import progress, markdown
 from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
+from solverpy.report.talker.talker import Talker
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +53,7 @@ class AutoTuner(Builder):
       else:
          return super().path()
 
-   def build(self) -> None:
+   def build(self, talker: Talker = Talker()) -> None:
       assert "trains" in self._trains
       assert "trains" in self._devels
       assert "refs" in self._trains
@@ -73,11 +74,9 @@ class AutoTuner(Builder):
       use_builder = ("atpeval" in self._tuneargs) and self._tuneargs["atpeval"]
 
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
-      assert "options" in self._trains
-      headless = "headless" in self._trains["options"]
       try:
          ret = autotune.prettytuner(
-            headless=headless,
+            talker=talker,
             f_train=f_train,
             f_test=f_test,
             d_tmp=self.path("opt"),

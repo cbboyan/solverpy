@@ -36,6 +36,7 @@ class LoopTalker(EvalTalker):
       - _builder_bar: BuilderBar | None
       - _total_trials: int
       - _current_trial: int
+      - _in_tuning: bool
       - _in_optuna_trial: bool
       --
       + eval_begin(jobs, *, refjob, sidnames, miniters, **kwargs)
@@ -52,17 +53,17 @@ class LoopTalker(EvalTalker):
    }
    ```
 
-   Two tqdm bars are shown at any time: an outer ``tune`` bar counting
-   completed trials, and an inner ``[N/M] build`` or ``[N/M] eval`` bar
-   showing progress of the current LightGBM training or ATP evaluation.
-   All desc strings are padded to the same width for alignment.
+   Outside a tuning phase, behaves identically to
+   [`EvalTalker`][solverpy.report.talker.evaltalker.EvalTalker] (per-job
+   ``SolvingBar`` + cumulative ``RunningBar``).
 
-   Log-based defaults for all tuning events are inherited from
-   [`LogTalker`][solverpy.report.talker.logtalker.LogTalker].  In non-headless
-   mode, `LoopTalker` overrides the model-building handlers to use a
-   [`BuilderBar`][solverpy.report.talker.bar.BuilderBar] instead.
+   Inside a tuning phase (between ``tune_begin`` / ``tune_end``), switches to
+   two-bar tuning mode: an outer ``tune`` bar counting completed trials, and
+   an inner ``[N/M] build`` or ``[N/M] eval`` bar for the current LightGBM
+   training or ATP evaluation.  All desc strings are padded to the same width
+   for alignment.
 
-   Set ``headless=True`` for non-interactive use: all tuning handlers use
+   Set ``headless=True`` for non-interactive use: all handlers use
    ``logger.info`` and no tqdm bars are created.
    """
 
@@ -71,12 +72,12 @@ class LoopTalker(EvalTalker):
       Args:
           headless: if ``True``, use log lines instead of tqdm bars.
       """
-      super().__init__()
-      self._headless = headless  # override EvalTalker's False
+      super().__init__(headless=headless)
       self._builder_bar: BuilderBar | None = None
       self._tune_bar: DefaultBar | None = None
       self._total_trials: int = 0
       self._current_trial: int = 0
+      self._in_tuning: bool = False
       self._in_optuna_trial: bool = False
       self._in_tune_eval: bool = False
 
@@ -100,7 +101,10 @@ class LoopTalker(EvalTalker):
    # --- ATP evaluation overrides ---
 
    def eval_begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
-      """Create a single cumulative eval RunningBar if not headless. Skips report."""
+      """Outside tuning: full EvalTalker bars. Inside tuning: single RunningBar, skips report."""
+      if not self._in_tuning:
+         EvalTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, miniters=miniters, **kwargs)
+         return
       LogTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
       if not self._headless:
          max_job = max(len(_bids.problems(bid)) for (_, bid, _) in jobs)
@@ -114,7 +118,10 @@ class LoopTalker(EvalTalker):
          )
 
    def eval_end(self, results, refjob=None, **kwargs) -> None:
-      """Close eval bar, update tune bar for init model, skip report."""
+      """Outside tuning: full EvalTalker end. Inside tuning: close eval bar, update tune bar."""
+      if not self._in_tuning:
+         EvalTalker.eval_end(self, results, refjob=refjob, **kwargs)
+         return
       if self._total_bar:
          self._total_errors = self._total_bar._errors
          self._total_bar.close()
@@ -132,17 +139,24 @@ class LoopTalker(EvalTalker):
          self._tune_bar.refresh()
 
    def eval_launch(self, tasks: Sequence["Task"]) -> None:
-      """Record start time only; no per-job bar in tuning mode."""
-      LogTalker.eval_launch(self, tasks)
+      """Outside tuning: per-job SolvingBar. Inside tuning: record time only."""
+      if not self._in_tuning:
+         EvalTalker.eval_launch(self, tasks)
+      else:
+         LogTalker.eval_launch(self, tasks)
 
    def eval_done(self) -> None:
-      """Log job completion without closing any bar."""
-      LogTalker.eval_done(self)
+      """Outside tuning: close job bar. Inside tuning: log without closing any bar."""
+      if not self._in_tuning:
+         EvalTalker.eval_done(self)
+      else:
+         LogTalker.eval_done(self)
 
    # --- Tuning lifecycle overrides ---
 
    def tune_begin(self, t_start: float, total: int = 0) -> None:
-      """Create the outer tune bar if not headless; suspend info logs in bar mode."""
+      """Enter tuning mode; create outer tune bar if not headless."""
+      self._in_tuning = True
       self._total_trials = total
       self._current_trial = 0
       self._suspend_info = not self._headless
@@ -151,8 +165,11 @@ class LoopTalker(EvalTalker):
       self._tune_bar = DefaultBar(total, "tune".ljust(self._inner_width()))
 
    def tune_end(self, t_end: float) -> None:
-      """Close the tune bar on tuning completion; restore info logs."""
+      """Leave tuning mode; close tune bar and restore info logs."""
+      self._in_tuning = False
       self._suspend_info = False
+      self._total_trials = 0
+      self._current_trial = 0
       if self._tune_bar:
          self._tune_bar.close()
          self._tune_bar = None

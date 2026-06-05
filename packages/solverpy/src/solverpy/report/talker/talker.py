@@ -68,6 +68,7 @@ class Talker:
       self._log_queue: Queue[Any] | None = None
       self._listener: QueueListener | None = None
       self._manager: mp.managers.SyncManager | None = None
+      self._result: Any = None
 
    @staticmethod
    def log_config(queue: "Queue[Any] | None") -> None:
@@ -178,7 +179,7 @@ class Talker:
 
    def tune_result(self, val: Any) -> None:
       """Tuning produced a final result value."""
-      del val
+      self._result = val
 
    def tune_phase_begin(self, nick: str, iters: int, timeout: "int | None") -> None:
       """A new tuning phase starting (e.g. ``"leaves"``)."""

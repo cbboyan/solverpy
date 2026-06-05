@@ -4,6 +4,7 @@ import logging
 
 from solverpy.benchmark.path import bids
 from solverpy.solver.object import SolverPyObj
+from solverpy.report.talker.talker import Talker
 
 NAME = "models"
 
@@ -33,7 +34,7 @@ class Builder(SolverPyObj):
       """Reset the dataname, for example, when a new loop is initiated."""
       self._dataname = dataname
 
-   def build(self) -> None:
+   def build(self, talker: Talker = Talker()) -> None:
       """Build the model(s). Save the list of new strategies `self._strats`."""
       raise NotImplementedError()
 
