@@ -302,4 +302,4 @@ class LogTalker(Talker):
       logger.info(msg)
 
    def debug(self, msg: str) -> None:
-      del msg
+      logger.debug(msg)

@@ -16,56 +16,19 @@ correct type throughout `tune.py`, `check.py`, `build.py`, and `autotune.py`.
 
 ---
 
-**Subtask 1b: Logging refactor — route child and worker logging through the queue**
-
-Goal: all Python `logging` records from the child (tuner) process and from ATP spawn
-workers travel through the log queue to the parent's handlers.  Child stdout/stderr
-(LightGBM output) continues to be captured by `redirect.call` into `autotune.log`.
-
-Files: `autotune/autotune.py`, `report/talker/remotetalker.py`, `report/talker/talker.py`
-
-- `prettytuner()` already calls `remote.listening_start()` which calls `super().listening_start()`
-  → `log_start()`, creating a forkserver Manager queue at `remote._log_queue` and starting
-  the `QueueListener` in the parent.  Since the child is forked *after* this, it inherits
-  the queue object.
-- After `remote.listening_start()`, set `talker._log_queue = remote._log_queue` so that
-  when `eval_launch` is dispatched to `TuneTalker`, it injects the queue into ATP spawn
-  worker tasks (the existing `Talker.eval_launch` already does this if `_log_queue` is
-  set).
-- Pass `logqueue=remote._log_queue` to the child via `kwargs` (or read it from the
-  forked `remote` object), and call `Talker.log_config(logqueue)` at the top of `tuner()`
-  to redirect the child's root logger through the queue.
-- After this change: child `logger.*` calls → `QueueHandler` → pipe → parent
-  `QueueListener` → parent handlers (console / file).  ATP worker `logger.*` calls →
-  same path (injected via `eval_launch`).  LightGBM stdout → `redirect.call` fd
-  redirect → `autotune.log` (unchanged).
-- `Talker.listening_start()` currently always calls `log_start()` (forkserver Manager).
-  Consider whether a plain `multiprocessing.Queue` is sufficient here too (avoids a
-  forkserver process), or keep the Manager for picklability into spawn workers.
+**✓ Subtask 1b done:** Logging refactor — child process logging routed through the
+forkserver Manager queue to the parent's `QueueListener`.  `Talker.log_config()` called
+at the top of `tuner()` to redirect the child's root logger; `talker._log_queue` set on
+`TuneTalker` after `listening_start()` so `eval_launch` injects it into ATP spawn workers.
+`QueueListener` uses `respect_handler_level=True` so DEBUG records from child are
+suppressed by the console handler (INFO) and only reach the file handler.
 
 ---
 
-**Subtask 1c: Move child-side logging to talker methods**
-
-Goal: remove scattered `logger.debug/info` calls from child-process code (`tuner()`,
-`build.py`, `tune.py`, `check.py`) and replace them with `talker.info/debug` calls or
-new talker events.  After 1b these calls already reach the parent via the queue, but
-routing through the talker makes the interface explicit and avoids depending on the log
-queue being set up correctly.
-
-Files: `autotune/autotune.py`, `autotune/build.py`
-
-- `tuner()`: replace `logger.debug(f"posneg balancing: ...")` with `talker.debug(...)`.
-  Replace `logger.debug("- initial model: ...")` with `talker.debug(...)` or fold into
-  the existing `build_done` / `tune_trial_done` flow.
-- `build.py`: the `report("debug", ...)` calls already go through the talker.  Any
-  remaining bare `logger.*` calls in the child path should become `talker.debug/info`.
-- After both 1b and 1c, `talker.info/debug` in `LogTalker` can be promoted from no-ops
-  to real `logger.info/debug` calls in the parent, replacing the current `info()`/`debug()`
-  stubs in `Talker`.
-- ATP spawn workers (`task/task.py`, `task/runtask.py`) should have no direct logging;
-  all their log records are already captured by the worker's own root logger which will
-  route through the injected queue after subtask 1b.
+**✓ Subtask 1c done:** Child-side logging moved to talker methods — all `logger.debug`
+calls in `tuner()` (`autotune.py`) replaced with `talker.debug(...)`.  `logging` import
+and `logger` instance removed from `autotune.py`.  `LogTalker.debug()` promoted from
+no-op to `logger.debug(msg)`.
 
 ---
 

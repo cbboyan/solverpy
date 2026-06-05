@@ -1,7 +1,6 @@
 from typing import Any, Callable, TYPE_CHECKING
 import os
 import time
-import logging
 import lightgbm as lgb
 import multiprocessing
 
@@ -15,8 +14,6 @@ from .tunetalker import TuneTalker
 if TYPE_CHECKING:
    from .tune import TuneResult
    from ..autotuner import AutoTuner
-
-logger = logging.getLogger(__name__)
 
 PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "l": tune.leaves_grid,
@@ -83,13 +80,13 @@ def tuner(
    neg = len(ys) - pos
    if "w" in phases0:
       params["scale_pos_weight"] = neg / pos
-      logger.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
+      if talker: talker.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
    elif posneg_weight == 0:
       params["is_unbalance"] = "true" if neg != pos else "false"
-      logger.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
+      if talker: talker.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
    else:
       params["scale_pos_weight"] = posneg_weight * (neg / pos)
-      logger.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
+      if talker: talker.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
 
    if "m" in phases:
       params["feature_pre_filter"] = "false"
@@ -119,7 +116,7 @@ def tuner(
          f_mod,
          stats["duration"],
       )
-      logger.debug("- initial model: %s" % human.humanacc(acc))
+      if talker: talker.debug("- initial model: %s" % human.humanacc(acc))
    else:
       best = (-1, None, None, None, None)
 
