@@ -2,11 +2,11 @@ from typing import Any, TYPE_CHECKING
 import os
 
 from . import build
+from solverpy.report.talker.talker import Talker
 
 if TYPE_CHECKING:
    from optuna import Trial
    from lightgbm import Dataset
-   from solverpy.report.talker.talker import Talker
    from ..autotuner import AutoTuner
 
 
@@ -16,7 +16,7 @@ def check(
    dtrain: "Dataset",
    dtest: "Dataset",
    d_tmp: str,
-   talker: "Talker | None" = None,
+   talker: Talker = Talker(),
    builder: "AutoTuner | None" = None,
    nick: str = "nick",
    **args: Any,
@@ -32,7 +32,7 @@ def check(
    trial.set_user_attr(key="acc", value=stats["valid_acc"])
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])
    trial.set_user_attr(key="time", value=stats["duration"])
-   if talker: talker.tune_trial_done(stats)
+   talker.tune_trial_done(stats)
    return stats["score"]
 
 
@@ -41,12 +41,12 @@ def leaves(
    params: dict[str, Any],
    min_leaves: int,
    max_leaves: int,
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    args = dict(args, talker=talker)
    num_leaves = trial.suggest_int('num_leaves', min_leaves, max_leaves)
-   if talker: talker.tune_trial_begin("leaves", trial.number, (num_leaves, ))
+   talker.tune_trial_begin("leaves", trial.number, (num_leaves, ))
    params = dict(params, num_leaves=num_leaves)
    score = check(trial, params, **args)
    return score
@@ -55,13 +55,13 @@ def leaves(
 def bagging(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    bagging_freq = trial.suggest_int("bagging_freq", 1, 7)
    bagging_fraction = min(
       trial.suggest_float("bagging_fraction", 0.4, 1.0 + 1e-12), 1.0)
-   if talker: talker.tune_trial_begin("bagging", trial.number, (bagging_freq, bagging_fraction))
+   talker.tune_trial_begin("bagging", trial.number, (bagging_freq, bagging_fraction))
    params = dict(params, bagging_freq=bagging_freq, bagging_fraction=bagging_fraction)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -70,11 +70,11 @@ def bagging(
 def min_data(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    min_data = trial.suggest_int("min_data", 5, 10000)
-   if talker: talker.tune_trial_begin("min_data", trial.number, (min_data, ))
+   talker.tune_trial_begin("min_data", trial.number, (min_data, ))
    params = dict(params, min_data=min_data)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -83,12 +83,12 @@ def min_data(
 def regular(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    lambda_l1 = trial.suggest_float("lambda_l1", 1e-8, 10.0)
    lambda_l2 = trial.suggest_float("lambda_l2", 1e-8, 10.0)
-   if talker: talker.tune_trial_begin("regular", trial.number, (lambda_l1, lambda_l2))
+   talker.tune_trial_begin("regular", trial.number, (lambda_l1, lambda_l2))
    params = dict(params, lambda_l1=lambda_l1, lambda_l2=lambda_l2)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -97,11 +97,11 @@ def regular(
 def depth(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    max_depth = trial.suggest_int("max_depth", 3, 50)
-   if talker: talker.tune_trial_begin("depth", trial.number, (max_depth, ))
+   talker.tune_trial_begin("depth", trial.number, (max_depth, ))
    params = dict(params, max_depth=max_depth)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -110,11 +110,11 @@ def depth(
 def learning_rate(
    trial: "Trial",
    params: dict[str, Any],
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    learning_rate = trial.suggest_float("learning_rate", 0.01, 0.25)
-   if talker: talker.tune_trial_begin("learning_rate", trial.number, (learning_rate, ))
+   talker.tune_trial_begin("learning_rate", trial.number, (learning_rate, ))
    params = dict(params, learning_rate=learning_rate)
    score = check(trial, params, talker=talker, **args)
    return score
@@ -124,11 +124,11 @@ def posneg_weight(
    trial: "Trial",
    params: dict[str, Any],
    posneg_base: float,
-   talker: "Talker | None",
+   talker: Talker,
    **args: Any,
 ) -> float:
    values = [posneg_base * m for m in [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]]
    spw = trial.suggest_categorical("scale_pos_weight", values)
-   if talker: talker.tune_trial_begin("posneg", trial.number, (spw / posneg_base, ))
+   talker.tune_trial_begin("posneg", trial.number, (spw / posneg_base, ))
    params = dict(params, scale_pos_weight=spw)
    return check(trial, params, talker=talker, **args)

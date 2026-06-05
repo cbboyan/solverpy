@@ -7,7 +7,6 @@ from ..report import log
 from ..tools import reporter
 from ..task.solvertask import SolverTask
 from ..report.talker.talker import Talker
-from ..report.talker.logtalker import LogTalker
 from ..task import launcher
 from .reports import markdown
 from .db.providers.solved import Solved
@@ -181,14 +180,13 @@ def launch(
    ref: (bool | int | str | None) = None,
    sidnames: bool = True,
    cores: int = 4,
-   talker: Talker | None = None,
+   talker: Talker = Talker(),
    **others: Any,
 ) -> dict["SolverJob", "Result"]:
 
    jobs: list["SolverJob"] = []
    nicks: dict["SolverJob", str] = {}
    refjob = None
-   talker = talker or LogTalker()
 
    def initialize_jobs():
       nonlocal jobs, nicks, refjob
@@ -202,7 +200,6 @@ def launch(
 
    def launch_jobs() -> dict["SolverJob", "Result"]:
       nonlocal nicks, jobs, refjob, talker
-      assert talker
       allres = {}
       try:
          for job in jobs:

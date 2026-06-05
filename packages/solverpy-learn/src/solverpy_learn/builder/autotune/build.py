@@ -7,11 +7,11 @@ from scipy.sparse import csr_matrix
 
 from solverpy.setups import Setup
 from solverpy.benchmark import evaluation
+from solverpy.report.talker.talker import Talker
 
 if TYPE_CHECKING:
    from lightgbm import Booster, Dataset
    from ..autotuner import AutoTuner
-   from solverpy.report.talker.talker import Talker
 
 POS_ACC_WEIGHT = 2.0
 
@@ -44,13 +44,12 @@ def model(
    dtrain: "Dataset",
    dtest: "Dataset",
    f_mod: str,
-   talker: "Talker | None" = None,
+   talker: Talker = Talker(),
 ) -> tuple["Booster", dict[str, Any]]:
    callbacks = bst = begin = end = mlscore = acc = trainacc = None
 
    def report(key: str, *content: Any) -> None:
-      if talker:
-         getattr(talker, key)(*content)
+      getattr(talker, key)(*content)
 
    def iteration_callback(env: Any) -> None:
       results = env.evaluation_result_list
@@ -74,8 +73,7 @@ def model(
             report("debug", f"activating early stopping: stopping_rounds={rounds}")
             callbacks.append(
                lgb.early_stopping(rounds, first_metric_only=True, verbose=True))
-      if talker:
-         callbacks.append(iteration_callback)
+      callbacks.append(iteration_callback)
 
    def build_model() -> "Booster":
       nonlocal bst, begin, end, params, callbacks
@@ -129,7 +127,7 @@ def score(
    stats: dict[str, Any],
    builder: "AutoTuner | None",
    nick: str,
-   talker: "Talker | None" = None,
+   talker: Talker = Talker(),
 ) -> None:
    if not builder:
       stats["score"] = stats["mlscore"]
@@ -143,9 +141,9 @@ def score(
    assert "trains" in setup
    setup["solver"].call("trains", "disable")
    setup["solver"].call("debug-trains", "disable")
-   if talker: talker.tune_eval_begin()
+   talker.tune_eval_begin()
    res = evaluation.launch(talker=talker, **setup)
-   if talker: talker.tune_eval_end(res)
+   talker.tune_eval_end(res)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r))
    score = sum(solved(s, rs) for ((s, _, _), rs) in res.items())
    stats["score"] = score

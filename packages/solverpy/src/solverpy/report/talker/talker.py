@@ -31,7 +31,7 @@ class Talker:
    Abstract base for evaluation progress reporters.
 
    ```plantuml name="task-talker"
-   abstract class solverpy.report.talker.talker.Talker {
+   class solverpy.report.talker.talker.Talker {
       - _log_queue: Queue[Any] | None
       - _listener: QueueListener | None
       - _manager: SyncManager | None
@@ -41,7 +41,7 @@ class Talker:
       + log_stop()
       + listening_start()
       + listening_stop()
-      + {abstract} begin(jobs, refjob, sidnames, **kwargs)
+      + begin(jobs, refjob, sidnames, **kwargs)
       + end(results, refjob)
       + next(job)
       + terminate()
@@ -49,14 +49,14 @@ class Talker:
       + finished(task, result)
       + done()
    }
-   abstract class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
-   abstract class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+   class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker
    ```
 
    Subclasses receive lifecycle events fired by the evaluation pipeline and
-   decide how to surface them.  The base class provides no-op default
-   implementations for all optional hooks, and raises `NotImplementedError`
-   for `begin` which every concrete subclass must implement.
+   decide how to surface them.  The base class is a silent no-op talker;
+   every hook has a default no-op implementation so `Talker()` can be used
+   as a drop-in "null" reporter wherever a talker is required.
 
    Also owns the cross-process log queue: `log_start` creates a
    `QueueListener` in the parent; worker processes call `log_config` to
@@ -118,17 +118,8 @@ class Talker:
       sidnames: bool = True,
       **kwargs,
    ) -> None:
-      """
-      Called once before evaluation starts with the full list of jobs.
-
-      Args:
-          jobs: all ``(solver, bid, sid)`` jobs that will be evaluated.
-          refjob: the reference job for relative reporting, or ``None``.
-          sidnames: if ``True``, use ``s1``/``s2`` style nick names.
-      """
+      """Called once before evaluation starts with the full list of jobs."""
       del jobs, refjob, sidnames, kwargs
-      raise NotImplementedError(
-         "Talker.eval_begin: abstract method not implemented.")
 
    def eval_end(
       self,

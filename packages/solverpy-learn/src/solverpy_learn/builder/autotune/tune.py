@@ -4,9 +4,9 @@ import math
 import optuna
 
 from . import check
+from solverpy.report.talker.talker import Talker
 
 if TYPE_CHECKING:
-   from solverpy.report.talker.talker import Talker
    from optuna.samplers import BaseSampler
 
 #UserAttrs = tuple[Any, ...]
@@ -20,12 +20,12 @@ def tune(
    iters: int,
    timeout: (int | None),
    d_tmp: str,
-   talker: "Talker | None" = None,
+   talker: Talker = Talker(),
    sampler: "BaseSampler | None" = None,
    **args: Any,
 ) -> TuneResult:
    d_tmp = os.path.join(d_tmp, nick)
-   if talker: talker.tune_phase_begin(nick, iters, timeout)
+   talker.tune_phase_begin(nick, iters, timeout)
    study = optuna.create_study(direction='maximize', sampler=sampler)
    objective = lambda trial: check_fun(trial, d_tmp=d_tmp, talker=talker, nick=nick, **args)
    study.optimize(objective, n_trials=iters, timeout=timeout)
@@ -36,7 +36,7 @@ def tune(
       "model",
       "time",
    ])
-   if talker: talker.tune_phase_done(nick)
+   talker.tune_phase_done(nick)
    return (best, study.best_trial.params)
 
 

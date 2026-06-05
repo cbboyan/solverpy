@@ -52,18 +52,18 @@ def tuner(
    init_params: (dict[str, Any] | None) = None,
    min_leaves: int = 16,
    max_leaves: int = 2048,
-   talker: "Talker | None" = None,
+   talker: "Talker" = Talker(),
    atpeval: bool = False,
    posneg_weight: float = 0,
    builder: "AutoTuner | None" = None,
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
-   Talker.log_config(talker._log_queue if talker else None)
+   Talker.log_config(talker._log_queue)
 
    _n_phases = len(phases.split(":"))
    _iters0 = (iters // _n_phases) if iters else 0
    _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
-   if talker: talker.tune_begin(time.time(), _total)
+   talker.tune_begin(time.time(), _total)
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
    dtrain.construct()
@@ -80,13 +80,13 @@ def tuner(
    neg = len(ys) - pos
    if "w" in phases0:
       params["scale_pos_weight"] = neg / pos
-      if talker: talker.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
+      talker.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
    elif posneg_weight == 0:
       params["is_unbalance"] = "true" if neg != pos else "false"
-      if talker: talker.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
+      talker.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
    else:
       params["scale_pos_weight"] = posneg_weight * (neg / pos)
-      if talker: talker.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
+      talker.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
 
    if "m" in phases:
       params["feature_pre_filter"] = "false"
@@ -116,7 +116,7 @@ def tuner(
          f_mod,
          stats["duration"],
       )
-      if talker: talker.debug("- initial model: %s" % human.humanacc(acc))
+      talker.debug("- initial model: %s" % human.humanacc(acc))
    else:
       best = (-1, None, None, None, None)
 
@@ -126,12 +126,10 @@ def tuner(
          best = best0
          params.update(params0)
 
-   if talker: talker.tune_end(time.time())
+   talker.tune_end(time.time())
    ret = best + (params, pos, neg)
-   if talker:
-      talker.tune_result(ret)
-   else:
-      return ret
+   talker.tune_result(ret)
+   return ret
 
 
 def prettytuner(headless: bool = False, *args, **kwargs) -> Any:

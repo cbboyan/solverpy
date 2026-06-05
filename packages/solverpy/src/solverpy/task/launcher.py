@@ -3,11 +3,10 @@ import logging
 import multiprocessing as mp
 
 from .task import runtask, runtask_single
-from ..report.talker.logtalker import LogTalker
+from ..report.talker.talker import Talker
 
 if TYPE_CHECKING:
    from .task import Task
-   from ..report.talker.talker import Talker
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +38,13 @@ def run(
 
 def launch(
    tasks: Sequence["Task"],
-   talker: "Talker | None" = None,
+   talker: Talker = Talker(),
    cores: int = 4,
    chunksize: int = 1,
    pool_context: str = "forkserver",
    **others: Any,
 ) -> list[Any]:
    del others  # unused argument
-   talker = talker or LogTalker()
    ret = {}
    logger.debug(f"launching pool with {cores} workers for {len(tasks)} tasks")
    with mp.get_context(pool_context).Pool(cores) as pool:
