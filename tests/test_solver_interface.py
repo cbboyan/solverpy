@@ -11,12 +11,10 @@ from solverpy.solver.plugins.shell.limits import Limits
 # --- instantiation & identity ---
 
 def test_name_format(solver):
-   # Expected: "ClassName:T5"
+   # Expected: "ClassName(limit=T5)"
    name = str(solver)
-   assert ":" in name
-   classname, limit = name.split(":", 1)
-   assert classname
-   assert limit.startswith("T")
+   assert name.startswith(solver.__class__.__name__)
+   assert name.endswith("(limit=T5)")
 
 
 def test_hash_stable(solver):

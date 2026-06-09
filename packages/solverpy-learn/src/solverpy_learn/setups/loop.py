@@ -1,6 +1,8 @@
 import sys
 import logging
 import gc
+import multiprocessing
+from typing import Iterable
 
 from solverpy.benchmark import evaluation as evaluator
 from solverpy.report import log
@@ -14,6 +16,44 @@ from solverpy_learn.report.talker.looptalker import LoopTalker
 from ..builder.builder import Builder
 
 logger = logging.getLogger(__name__)
+
+
+class Runtime:
+   """Process resources owned by one complete learning-loop session."""
+
+   def __init__(self, trains: Iterable) -> None:
+      unique = {id(train): train for train in trains}
+      self._trains = list(unique.values())
+      self._manager = None
+      if self._trains:
+         self._manager = multiprocessing.get_context("forkserver").Manager()
+         try:
+            for train in self._trains:
+               train.connect(self._manager)
+         except BaseException:
+            self.shutdown()
+            raise
+
+   def shutdown(self) -> None:
+      """Disconnect proxies and stop the shared Manager process."""
+      if self._manager is None:
+         return
+      try:
+         for train in self._trains:
+            train.disconnect()
+      finally:
+         self._manager.shutdown()
+         self._manager = None
+
+
+def initialize(setup: Setup, devels: Setup | None = None) -> Runtime:
+   """Initialize process resources shared by the complete learning session."""
+   trains = [
+      col["trains"]
+      for col in (setup, devels)
+      if col and "trains" in col
+   ]
+   return Runtime(trains)
 
 
 def loopinit(setup: Setup) -> Setup:
@@ -124,6 +164,7 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
 def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    talker = make_talker(setup)
+   runtime = None
 
    def do_loop(col: Setup | None) -> None:
       if not col: return
@@ -136,6 +177,7 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
       oneloop(col, talker)
 
    try:
+      runtime = initialize(setup, devels)
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup, devels)
       if "loops" in setup:
@@ -157,3 +199,6 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
    except KeyboardInterrupt:
       print("Terminated (keyboard interrupt)")
       sys.exit(0)
+   finally:
+      if runtime:
+         runtime.shutdown()

@@ -1,11 +1,14 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import os
 import random
 import logging
-import multiprocessing
+from types import SimpleNamespace
 
 from .. import svm
 from .trains import Trains
+
+if TYPE_CHECKING:
+   from multiprocessing.managers import SyncManager
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +23,43 @@ class SvmTrains(Trains):
       **kwargs: Any,
    ):
       Trains.__init__(self, dataname, filename=filename, chunk_size=chunk_size, **kwargs)
-      self.info = multiprocessing.get_context("forkserver").Manager().Namespace()
-      self.info.total = 0
-      self.info.pos = 0
-      self.info.neg = 0
-      self.info.line_count = 0
-      self.info.raw_chunk_n = 0
-      self.info.chunk_size = chunk_size
+      self.info = SimpleNamespace(
+         total=0,
+         pos=0,
+         neg=0,
+         line_count=0,
+         raw_chunk_n=0,
+         chunk_size=chunk_size,
+      )
+
+   def connect(self, manager: "SyncManager") -> None:
+      """Move local statistics into a namespace owned by the session Manager."""
+      if self._lock is not None:
+         return
+      local = self.info
+      super().connect(manager)
+      self.info = manager.Namespace()
+      self.info.total = local.total
+      self.info.pos = local.pos
+      self.info.neg = local.neg
+      self.info.line_count = local.line_count
+      self.info.raw_chunk_n = local.raw_chunk_n
+      self.info.chunk_size = local.chunk_size
+
+   def disconnect(self) -> None:
+      """Copy shared statistics locally before discarding Manager proxies."""
+      if self._lock is None:
+         return
+      shared = self.info
+      self.info = SimpleNamespace(
+         total=shared.total,
+         pos=shared.pos,
+         neg=shared.neg,
+         line_count=shared.line_count,
+         raw_chunk_n=shared.raw_chunk_n,
+         chunk_size=shared.chunk_size,
+      )
+      super().disconnect()
 
    def represent(self) -> dict[str, Any]:
       return dict(
@@ -74,6 +107,8 @@ class SvmTrains(Trains):
       if (not samples) or (not self._enabled):
          return
       new_lines = samples.count("\n")
+      if self._lock is None:
+         raise RuntimeError("SvmTrains must be connected before evaluation")
       self._lock.acquire()
       try:
          if self.info.line_count + new_lines > self.info.chunk_size and \

@@ -4,6 +4,7 @@ import logging
 from .svm import SvmTrains
 
 if TYPE_CHECKING:
+   from multiprocessing.managers import SyncManager
    from ...solver.solverpy import SolverPy
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,14 @@ class MultiTrains(SvmTrains):
    def apply(self, function: Callable[["SvmTrains"], None]) -> None:
       for t in self._trains:
          function(t)
+
+   def connect(self, manager: "SyncManager") -> None:
+      """Connect every underlying training-data collector."""
+      self.apply(lambda x: x.connect(manager))
+
+   def disconnect(self) -> None:
+      """Disconnect every underlying training-data collector."""
+      self.apply(lambda x: x.disconnect())
 
    def register(self, solver: "SolverPy") -> None:
       super().register(solver)

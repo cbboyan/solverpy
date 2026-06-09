@@ -1,5 +1,4 @@
 from typing import Any, Sequence, TYPE_CHECKING
-import signal
 import logging
 
 if TYPE_CHECKING:
@@ -112,7 +111,6 @@ class Task:
       :param task: the task to be ran
 
       """
-      signal.signal(signal.SIGINT, signal.SIG_IGN)
       try:
          res = task.run()
          status = task.status(res)
@@ -123,9 +121,6 @@ class Task:
          logger.warning(f"Error:: {traceback.format_exc()}")
          status = None
          res = None
-      #except KeyboardInterrupt as e:
-      #   raise e
-      #   #return None
       if status is None:
          logger.debug(f"failed task: {task}")
       #if task.queue is not None:
@@ -160,4 +155,3 @@ def runtask(task: Task) -> tuple[int, Any]:
 #   """
 #   for task in tasks:
 #      task.queue = queue
-

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-05)
+## Unreleased changes (2026-06-09)
 
-* refactor: single shared talker per session; EvalTalker/LoopTalker replace LogTalker headless [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: clean up multiprocessing lifecycle [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor: single shared talker per session; EvalTalker/LoopTalker replace LogTalker headless [[details](https://github.com/cbboyan/solverpy/commit/e128be9) | [browse](https://github.com/cbboyan/solverpy/tree/e128be9)]
 * refactor: make Talker() a concrete no-op, remove Talker|None and if talker: guards [[details](https://github.com/cbboyan/solverpy/commit/f315271) | [browse](https://github.com/cbboyan/solverpy/tree/f315271)]
 * refactor: rename SolverTalker→EvalTalker, TuneTalker→LoopTalker, move LoopTalker to solverpy-learn [[details](https://github.com/cbboyan/solverpy/commit/d22de98) | [browse](https://github.com/cbboyan/solverpy/tree/d22de98)]
 * fix: suppress eval log messages during ATP evaluation inside tuning [[details](https://github.com/cbboyan/solverpy/commit/c835bbf) | [browse](https://github.com/cbboyan/solverpy/tree/c835bbf)]

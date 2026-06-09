@@ -3,7 +3,7 @@ from solverpy.setups import launch as _launch_base
 
 from .solver import eprover, cvc5
 from .tuner import cvc5ml, enigma
-from .loop import loopinit, looping, oneloop, launch
+from .loop import initialize, loopinit, looping, oneloop, launch
 
 __all__ = [
    "Setup",
@@ -18,6 +18,7 @@ __all__ = [
    "evaluation",
    # ML loop
    "launch",
+   "initialize",
    "loopinit",
    "looping",
    "oneloop",

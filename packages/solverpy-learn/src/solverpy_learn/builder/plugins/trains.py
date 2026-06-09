@@ -1,12 +1,12 @@
 from typing import Any, TYPE_CHECKING
 import os
 import logging
-import multiprocessing
 
 from solverpy.solver.plugins.decorator import Decorator
 from solverpy.benchmark.path import bids
 
 if TYPE_CHECKING:
+   from multiprocessing.managers import SyncManager
    from solverpy.solver.solverpy import SolverPy
 
 NAME = "trains"
@@ -32,9 +32,18 @@ class Trains(Decorator):
          filename=filename,
          **kwargs,
       )
-      self._lock = multiprocessing.get_context("forkserver").Manager().Lock()
+      self._lock = None
       self._enabled = True
       self.reset(dataname, filename)
+
+   def connect(self, manager: "SyncManager") -> None:
+      """Create process-shared state from the session-owned Manager."""
+      if self._lock is None:
+         self._lock = manager.Lock()
+
+   def disconnect(self) -> None:
+      """Discard process-shared proxies before their Manager is shut down."""
+      self._lock = None
 
    def represent(self) -> dict[str, Any]:
       return dict(
@@ -105,6 +114,8 @@ class Trains(Decorator):
    ) -> None:
       if (not samples) or (not self._enabled):
          return
+      if self._lock is None:
+         raise RuntimeError("Trains must be connected before evaluation")
       self._lock.acquire()
       try:
          os.makedirs(os.path.dirname(self.path()), exist_ok=True)
