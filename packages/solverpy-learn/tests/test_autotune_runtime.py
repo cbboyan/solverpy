@@ -1,6 +1,8 @@
 import signal
 from types import SimpleNamespace
 
+import pytest
+
 from solverpy_learn.builder.autotune import autotune
 
 
@@ -78,3 +80,132 @@ def test_terminate_tuner_ignores_unstarted_process():
    process = SimpleNamespace(pid=None)
 
    autotune._terminate_tuner(process)
+
+
+def test_prettytuner_starts_process_before_listeners(monkeypatch, tmp_path):
+   calls = []
+
+   class LocalTalker:
+
+      def __init__(self):
+         self._log_queue = None
+         self._result = "result"
+
+      def terminate(self):
+         calls.append("talker terminate")
+
+   class FakeRemote:
+
+      def __init__(self, local, queue):
+         del local, queue
+         self._log_queue = None
+
+      def log_prepare(self):
+         calls.append("log prepare")
+         self._log_queue = "log queue"
+
+      def listening_start(self):
+         calls.append("listeners start")
+
+      def listening_stop(self):
+         calls.append("listeners stop")
+
+   class TuneProcess:
+      pid = 123
+
+      def start(self):
+         calls.append("process start")
+
+      def join(self):
+         calls.append("process join")
+
+   class FakeContext:
+
+      def Process(self, **kwargs):
+         calls.append("process create")
+         assert kwargs["target"] is autotune._tuner_process
+         assert kwargs["kwargs"]["talker"]._log_queue is None
+         return TuneProcess()
+
+   monkeypatch.setattr(autotune, "RemoteTalker", FakeRemote)
+   monkeypatch.setattr(autotune.multiprocessing, "Queue", lambda: object())
+   monkeypatch.setattr(
+      autotune.multiprocessing,
+      "get_context",
+      lambda method: FakeContext(),
+   )
+   talker = LocalTalker()
+
+   result = autotune.prettytuner(talker=talker, d_tmp=str(tmp_path))
+
+   assert result == "result"
+   assert calls == [
+      "process create",
+      "log prepare",
+      "process start",
+      "listeners start",
+      "process join",
+      "listeners stop",
+   ]
+   assert talker._log_queue is None
+
+
+def test_prettytuner_cleans_up_when_process_start_fails(monkeypatch, tmp_path):
+   calls = []
+
+   class LocalTalker:
+
+      def __init__(self):
+         self._log_queue = None
+
+      def terminate(self):
+         calls.append("talker terminate")
+
+   class FakeRemote:
+
+      def __init__(self, local, queue):
+         del local, queue
+         self._log_queue = None
+
+      def log_prepare(self):
+         calls.append("log prepare")
+         self._log_queue = "log queue"
+
+      def listening_start(self):
+         calls.append("listeners start")
+
+      def listening_stop(self):
+         calls.append("listeners stop")
+
+   class TuneProcess:
+      pid = None
+
+      def start(self):
+         calls.append("process start")
+         raise RuntimeError("start failed")
+
+   class FakeContext:
+
+      def Process(self, **kwargs):
+         del kwargs
+         return TuneProcess()
+
+   monkeypatch.setattr(autotune, "RemoteTalker", FakeRemote)
+   monkeypatch.setattr(autotune.multiprocessing, "Queue", lambda: object())
+   monkeypatch.setattr(
+      autotune.multiprocessing,
+      "get_context",
+      lambda method: FakeContext(),
+   )
+   talker = LocalTalker()
+
+   with pytest.raises(RuntimeError, match="start failed"):
+      autotune.prettytuner(talker=talker, d_tmp=str(tmp_path))
+
+   assert calls == [
+      "log prepare",
+      "process start",
+      "talker terminate",
+      "listeners stop",
+   ]
+   assert talker._log_queue is None

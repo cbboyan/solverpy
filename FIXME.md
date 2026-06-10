@@ -62,14 +62,14 @@ has a clear reason to change it.
 - Relevant code:
   `packages/solverpy-learn/src/solverpy_learn/builder/autotune/autotune.py:148`
 
-### 5. Autotuner forks after starting threads
+### 5. Autotuner forks after starting threads - resolved 2026-06-10
 
-- `remote.listening_start()` starts a `QueueListener` and a remote-listener
-  thread before the forked tuner process is started.
-- Forking a multithreaded process can inherit locked logging or runtime state
-  and cause intermittent deadlocks.
-- Relevant code:
-  `packages/solverpy-learn/src/solverpy_learn/builder/autotune/autotune.py:145`
+- Talker logging now separates queue preparation from listener-thread startup.
+- `prettytuner()` prepares the cross-process log queue, forks the tuner, and
+  only then starts the log and remote-event listener threads.
+- Messages produced in the short startup gap remain buffered in their queues.
+- The tuner stays on the `fork` context, avoiding serialization of accumulated
+  builder and training state.
 
 ### 6. The `external` decorator has no interrupt cleanup
 

@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-10)
 
-* fix: clean up interrupted tuner process groups [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: fork tuner before starting listener threads [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: clean up interrupted tuner process groups [[details](https://github.com/cbboyan/solverpy/commit/2a86410) | [browse](https://github.com/cbboyan/solverpy/tree/2a86410)]
 * feat: log resource usage during learning loops [[details](https://github.com/cbboyan/solverpy/commit/8441118) | [browse](https://github.com/cbboyan/solverpy/tree/8441118)]
 * fix: clean up multiprocessing lifecycle [[details](https://github.com/cbboyan/solverpy/commit/082fd52) | [browse](https://github.com/cbboyan/solverpy/tree/082fd52)]
 * refactor: single shared talker per session; EvalTalker/LoopTalker replace LogTalker headless [[details](https://github.com/cbboyan/solverpy/commit/e128be9) | [browse](https://github.com/cbboyan/solverpy/tree/e128be9)]

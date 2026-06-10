@@ -186,10 +186,11 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
    kwargs["target"] = tuner
    p = ctx.Process(target=_tuner_process, args=args, kwargs=kwargs)
 
-   remote.listening_start()
+   remote.log_prepare()
    talker._log_queue = remote._log_queue  # propagate so eval_launch injects into ATP workers
    try:
       p.start()
+      remote.listening_start()
       p.join()
    except BaseException:
       try:

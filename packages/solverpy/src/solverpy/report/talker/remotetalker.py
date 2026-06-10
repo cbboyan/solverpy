@@ -61,6 +61,7 @@ class RemoteTalker(Talker):
    """
 
    LOCALS = {
+      "log_prepare",
       "log_start",
       "log_stop",
       "log_config",

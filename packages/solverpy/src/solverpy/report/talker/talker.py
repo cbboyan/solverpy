@@ -37,6 +37,7 @@ class Talker:
       - _manager: SyncManager | None
       --
       + {static} log_config(queue)
+      + log_prepare()
       + log_start()
       + log_stop()
       + listening_start()
@@ -58,10 +59,10 @@ class Talker:
    every hook has a default no-op implementation so `Talker()` can be used
    as a drop-in "null" reporter wherever a talker is required.
 
-   Also owns the cross-process log queue: `log_start` creates a
-   `QueueListener` in the parent; worker processes call `log_config` to
-   redirect their root logger through the queue so records arrive at the
-   parent's handlers.
+   Also owns the cross-process log queue: `log_prepare` creates the queue,
+   while `log_start` starts a `QueueListener` in the parent. Worker processes
+   call `log_config` to redirect their root logger through the queue so records
+   arrive at the parent's handlers.
    """
 
    def __init__(self):
@@ -84,13 +85,22 @@ class Talker:
       root.setLevel(logging.DEBUG)
       logger.debug("logging redirected")
 
-   def log_start(self) -> None:
-      """Start parent logging from the queue."""
-      root = logging.getLogger()
+   def log_prepare(self) -> None:
+      """Create the cross-process log queue without starting listener threads."""
+      if self._log_queue is not None:
+         return
       self._manager = mp.get_context("forkserver").Manager()
       assert self._manager
       self._log_queue = self._manager.Queue()
       assert self._log_queue
+
+   def log_start(self) -> None:
+      """Start parent logging from the prepared queue."""
+      if self._listener is not None:
+         return
+      self.log_prepare()
+      assert self._log_queue
+      root = logging.getLogger()
       self._listener = QueueListener(self._log_queue, *root.handlers, respect_handler_level=True)
       self._listener.start()
 
@@ -102,6 +112,7 @@ class Talker:
       if self._manager:
          self._manager.shutdown()
          self._manager = None
+      self._log_queue = None
 
    def listening_start(self) -> None:
       """Start the log queue listener. Subclasses extend this to start additional threads."""
