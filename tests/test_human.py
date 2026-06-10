@@ -52,6 +52,19 @@ def test_humanbytes_megabytes():
    assert humanbytes(1024 * 1024) == "1.00 MB"
 
 
+def test_humanbytes_custom_format():
+   assert humanbytes(
+      1024 * 1024,
+      precision=1,
+      separator="",
+      binary_units=True,
+   ) == "1.0MiB"
+
+
+def test_humanbytes_negative():
+   assert humanbytes(-1024) == "-1.00 KB"
+
+
 def test_humanexp_power_of_two():
    assert humanexp(1) == "2e0"
    assert humanexp(2) == "2e1"

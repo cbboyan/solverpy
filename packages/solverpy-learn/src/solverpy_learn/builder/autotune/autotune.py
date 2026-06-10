@@ -5,6 +5,7 @@ import lightgbm as lgb
 import multiprocessing
 
 from solverpy.tools import human, redirect
+from solverpy.tools.resources import usage
 from solverpy.report.talker.talker import Talker
 from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
@@ -63,6 +64,7 @@ def tuner(
    _iters0 = (iters // _n_phases) if iters else 0
    _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
    talker.tune_begin(time.time(), _total)
+   talker.debug(usage("tuner start"))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
    dtrain.construct()
@@ -128,6 +130,7 @@ def tuner(
    talker.tune_end(time.time())
    ret = best + (params, pos, neg)
    talker.tune_result(ret)
+   talker.debug(usage("tuner end"))
    return ret
 
 

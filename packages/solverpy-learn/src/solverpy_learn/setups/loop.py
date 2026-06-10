@@ -12,6 +12,7 @@ from solverpy.setups.common import default
 from solverpy.setups.setup import Setup
 from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.talker import Talker
+from solverpy.tools.resources import usage
 from solverpy_learn.report.talker.looptalker import LoopTalker
 from ..builder.builder import Builder
 
@@ -147,24 +148,30 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
    report = markdown.newline() + markdown.heading(f"Evaluation `{setup['dataname']}`", level=2)
    reporter.add(report)
    logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.")
-   if (it > 0) or ("start_dataname" not in setup):
-      evaluator.launch(talker=talker, **setup)
-      if "trains" not in setup:
-         return setup
-      trains_compress(setup)
-      trains_merge(setup)
-   elif "trains" in setup:
-      logger.info(
-         f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
-      setup["trains"].reset(setup["start_dataname"])
-   model_build(setup)
-   return setup
+   logger.debug(usage(f"loop {it} start: {setup['dataname']}"))
+   try:
+      if (it > 0) or ("start_dataname" not in setup):
+         evaluator.launch(talker=talker, **setup)
+         if "trains" not in setup:
+            return setup
+         trains_compress(setup)
+         trains_merge(setup)
+      elif "trains" in setup:
+         logger.info(
+            f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
+         setup["trains"].reset(setup["start_dataname"])
+      model_build(setup)
+      return setup
+   finally:
+      logger.debug(usage(f"loop {it} end: {setup['dataname']}"))
 
 
 def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    talker = make_talker(setup)
    runtime = None
+   dataname = setup.get("dataname", "unknown")
+   logger.debug(usage(f"run start: {dataname}"))
 
    def do_loop(col: Setup | None) -> None:
       if not col: return
@@ -200,5 +207,8 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
       print("Terminated (keyboard interrupt)")
       sys.exit(0)
    finally:
-      if runtime:
-         runtime.shutdown()
+      try:
+         if runtime:
+            runtime.shutdown()
+      finally:
+         logger.debug(usage(f"run end: {dataname}"))

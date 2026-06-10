@@ -3,6 +3,7 @@ import os
 
 from . import build
 from solverpy.report.talker.talker import Talker
+from solverpy.tools.resources import usage
 
 if TYPE_CHECKING:
    from optuna import Trial
@@ -33,6 +34,7 @@ def check(
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])
    trial.set_user_attr(key="time", value=stats["duration"])
    talker.tune_trial_done(stats)
+   talker.debug(usage(f"tuning trial {trial.number} end: {nick}"))
    return stats["score"]
 
 

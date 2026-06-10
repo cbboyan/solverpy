@@ -108,10 +108,17 @@ def test_multi_trains_share_session_manager(monkeypatch):
 def test_launch_shuts_runtime_down_on_failure(monkeypatch):
    runtime = SimpleNamespace(stopped=False)
    runtime.shutdown = lambda: setattr(runtime, "stopped", True)
+   messages = []
 
    monkeypatch.setattr(loop, "initialize", lambda setup, devels: runtime)
    monkeypatch.setattr(loop, "make_talker", lambda setup: Talker())
    monkeypatch.setattr(loop.log, "ntfy", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop, "usage", lambda label: label)
+   monkeypatch.setattr(
+      loop.logger,
+      "debug",
+      lambda message: messages.append((message, runtime.stopped)),
+   )
 
    def fail(*args, **kwargs):
       raise RuntimeError("evaluation initialization failed")
@@ -122,3 +129,7 @@ def test_launch_shuts_runtime_down_on_failure(monkeypatch):
       loop.launch({})
 
    assert runtime.stopped
+   assert messages == [
+      ("run start: unknown", False),
+      ("run end: unknown", True),
+   ]

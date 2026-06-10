@@ -29,14 +29,28 @@ def format(key: str, val: Any) -> str:
    return UNITS[unit](val) if unit in UNITS else str(val)
 
 
-def humanbytes(b: float) -> str:
-   units = {0: 'Bytes', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB', 5: 'PB'}
-   power = 1024
-   n = 0
-   while b >= power:
-      b /= power
-      n += 1
-   return "%.2f %s" % (b, units[n])
+def humanbytes(
+   b: float,
+   precision: int = 2,
+   separator: str = " ",
+   binary_units: bool = False,
+) -> str:
+   """Format a byte count using powers of 1024.
+
+   Defaults preserve the established display format. Set ``binary_units`` for
+   explicit IEC labels such as ``KiB`` and ``MiB``.
+   """
+   units = (
+      ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB")
+      if binary_units else
+      ("Bytes", "KB", "MB", "GB", "TB", "PB", "EB")
+   )
+   value = float(b)
+   unit = 0
+   while abs(value) >= 1024 and unit < len(units) - 1:
+      value /= 1024
+      unit += 1
+   return f"{value:.{precision}f}{separator}{units[unit]}"
 
 
 def humanint(n: int) -> str:

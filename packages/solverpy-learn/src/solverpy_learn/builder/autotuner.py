@@ -9,6 +9,7 @@ from solverpy.benchmark.reports import progress, markdown
 from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
 from solverpy.report.talker.talker import Talker
+from solverpy.tools.resources import usage
 
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,7 @@ class AutoTuner(Builder):
       use_builder = ("atpeval" in self._tuneargs) and self._tuneargs["atpeval"]
 
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
+      logger.debug(usage(f"before tuning: {self._dataname}"))
       try:
          ret = autotune.prettytuner(
             talker=talker,
@@ -85,6 +87,8 @@ class AutoTuner(Builder):
          )
       except KeyboardInterrupt:
          raise
+      finally:
+         logger.debug(usage(f"after tuning: {self._dataname}"))
 
       #f_best = ret[3]
       (_, _, _, f_best, _, _, pos, neg) = ret
