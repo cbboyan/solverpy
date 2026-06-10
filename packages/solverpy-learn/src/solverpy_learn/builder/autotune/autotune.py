@@ -1,11 +1,12 @@
 from typing import Any, Callable, TYPE_CHECKING
 import os
+import signal
 import time
 import lightgbm as lgb
 import multiprocessing
 
 from solverpy.tools import human, redirect
-from solverpy.tools.resources import usage
+from solverpy.tools.resources import summary as resource_summary, usage
 from solverpy.report.talker.talker import Talker
 from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
@@ -41,6 +42,43 @@ DEFAULTS: dict[str, Any] = {
    'lambda_l2': 0.0,
 }
 
+TERMINATE_TIMEOUT = 5.0
+
+
+def _tuner_process(*args: Any, **kwargs: Any) -> None:
+   """Run the tuner as leader of a process group containing all descendants."""
+   os.setsid()
+   redirect.call(*args, **kwargs)
+
+
+def _terminate_tuner(process: multiprocessing.Process) -> None:
+   """Terminate the tuner process group and wait until its leader exits."""
+   if process.pid is None:
+      return
+
+   try:
+      isolated = os.getpgid(process.pid) == process.pid
+   except ProcessLookupError:
+      isolated = False
+
+   if isolated:
+      try:
+         os.killpg(process.pid, signal.SIGTERM)
+      except ProcessLookupError:
+         pass
+   elif process.is_alive():
+      process.terminate()
+
+   process.join(TERMINATE_TIMEOUT)
+   if isolated:
+      try:
+         os.killpg(process.pid, signal.SIGKILL)
+      except ProcessLookupError:
+         pass
+   elif process.is_alive():
+      process.kill()
+   process.join()
+
 
 def tuner(
    f_train: str,
@@ -59,11 +97,13 @@ def tuner(
 ) -> tuple[Any, ...] | None:
    assert bool(atpeval) == bool(builder)
    Talker.log_config(talker._log_queue)
+   started_at = time.monotonic()
 
    _n_phases = len(phases.split(":"))
    _iters0 = (iters // _n_phases) if iters else 0
    _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
    talker.tune_begin(time.time(), _total)
+   talker.info(resource_summary("tuner", started_at))
    talker.debug(usage("tuner start"))
    (xs, ys) = svm.load(f_train)
    dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
@@ -130,6 +170,7 @@ def tuner(
    talker.tune_end(time.time())
    ret = best + (params, pos, neg)
    talker.tune_result(ret)
+   talker.info(resource_summary("tuner", started_at))
    talker.debug(usage("tuner end"))
    return ret
 
@@ -143,7 +184,7 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
    kwargs["talker"] = remote
    kwargs["f_log"] = os.path.join(d_tmp, "autotune.log")
    kwargs["target"] = tuner
-   p = ctx.Process(target=redirect.call, args=args, kwargs=kwargs)
+   p = ctx.Process(target=_tuner_process, args=args, kwargs=kwargs)
 
    remote.listening_start()
    talker._log_queue = remote._log_queue  # propagate so eval_launch injects into ATP workers
@@ -151,8 +192,10 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
       p.start()
       p.join()
    except BaseException:
-      p.terminate()
-      talker.terminate()
+      try:
+         _terminate_tuner(p)
+      finally:
+         talker.terminate()
       raise
    finally:
       remote.listening_stop()

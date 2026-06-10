@@ -2,6 +2,7 @@ from typing import Any, TYPE_CHECKING
 import os
 import shutil
 import logging
+import time
 
 from .builder import Builder
 from .autotune import autotune
@@ -9,7 +10,7 @@ from solverpy.benchmark.reports import progress, markdown
 from solverpy.tools import reporter
 from solverpy.setups.setup import Setup
 from solverpy.report.talker.talker import Talker
-from solverpy.tools.resources import usage
+from solverpy.tools.resources import summary as resource_summary, usage
 
 
 logger = logging.getLogger(__name__)
@@ -73,8 +74,10 @@ class AutoTuner(Builder):
       f_test = self._devels["trains"].path()
 
       use_builder = ("atpeval" in self._tuneargs) and self._tuneargs["atpeval"]
+      started_at = time.monotonic()
 
       logger.info(f"Tunning learning params: train={f_train} test={f_test}")
+      logger.info(resource_summary("main", started_at))
       logger.debug(usage(f"before tuning: {self._dataname}"))
       try:
          ret = autotune.prettytuner(
@@ -88,6 +91,7 @@ class AutoTuner(Builder):
       except KeyboardInterrupt:
          raise
       finally:
+         logger.info(resource_summary("main", started_at))
          logger.debug(usage(f"after tuning: {self._dataname}"))
 
       #f_best = ret[3]

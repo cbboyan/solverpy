@@ -2,6 +2,7 @@ import sys
 import logging
 import gc
 import multiprocessing
+import time
 from typing import Iterable
 
 from solverpy.benchmark import evaluation as evaluator
@@ -12,7 +13,7 @@ from solverpy.setups.common import default
 from solverpy.setups.setup import Setup
 from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.talker import Talker
-from solverpy.tools.resources import usage
+from solverpy.tools.resources import summary as resource_summary, usage
 from solverpy_learn.report.talker.looptalker import LoopTalker
 from ..builder.builder import Builder
 
@@ -101,6 +102,7 @@ def make_talker(setup: Setup) -> Talker:
 
 
 def oneloop(setup: Setup, talker: Talker) -> Setup:
+   started_at = time.monotonic()
 
    assert "options" in setup
    options = setup["options"]
@@ -148,6 +150,7 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
    report = markdown.newline() + markdown.heading(f"Evaluation `{setup['dataname']}`", level=2)
    reporter.add(report)
    logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.")
+   logger.info(resource_summary("main", started_at))
    logger.debug(usage(f"loop {it} start: {setup['dataname']}"))
    try:
       if (it > 0) or ("start_dataname" not in setup):
@@ -163,6 +166,7 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
       model_build(setup)
       return setup
    finally:
+      logger.info(resource_summary("main", started_at))
       logger.debug(usage(f"loop {it} end: {setup['dataname']}"))
 
 
@@ -170,7 +174,9 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
    talker = make_talker(setup)
    runtime = None
+   started_at = time.monotonic()
    dataname = setup.get("dataname", "unknown")
+   logger.info(resource_summary("main", started_at))
    logger.debug(usage(f"run start: {dataname}"))
 
    def do_loop(col: Setup | None) -> None:
@@ -211,4 +217,5 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
          if runtime:
             runtime.shutdown()
       finally:
+         logger.info(resource_summary("main", started_at))
          logger.debug(usage(f"run end: {dataname}"))

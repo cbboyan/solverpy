@@ -1,9 +1,10 @@
 from typing import Any, TYPE_CHECKING
 import os
+import time
 
 from . import build
 from solverpy.report.talker.talker import Talker
-from solverpy.tools.resources import usage
+from solverpy.tools.resources import summary as resource_summary, usage
 
 if TYPE_CHECKING:
    from optuna import Trial
@@ -23,6 +24,7 @@ def check(
    **args: Any,
 ) -> float:
    del args  # unused argument
+   started_at = time.monotonic()
    f_mod = os.path.join(d_tmp, "model%04d" % trial.number, "model.lgb")
    (_, stats) = build.model(params, dtrain, dtest, f_mod, talker)
    build.score(stats, builder, f"{nick}/model{trial.number:04d}", talker)
@@ -34,6 +36,7 @@ def check(
    trial.set_user_attr(key="trainacc", value=stats["train_acc"])
    trial.set_user_attr(key="time", value=stats["duration"])
    talker.tune_trial_done(stats)
+   talker.info(resource_summary("tuner", started_at))
    talker.debug(usage(f"tuning trial {trial.number} end: {nick}"))
    return stats["score"]
 

@@ -43,15 +43,15 @@ has a clear reason to change it.
 
 ## High
 
-### 3. Autotuner interruption kills only its direct child
+### 3. Autotuner interruption kills only its direct child - resolved 2026-06-10
 
-- `packages/solverpy-learn/src/solverpy_learn/builder/autotune/autotune.py:150`
-  calls `p.terminate()` but does not subsequently join it or terminate its
-  descendants.
-- The tuner may own spawn evaluation pools, fork data-loading pools, Manager
-  connections, and solver subprocesses.
-- This compounds the orphaning problem and likely contributes to requiring
-  repeated `Ctrl+C`.
+- The forked tuner now starts a new session before any tuning work, making it
+  the leader of a process group inherited by evaluation pools, data-loading
+  pools, and solver subprocesses.
+- Interruption sends `SIGTERM` to the complete group, waits for the tuner, then
+  sends `SIGKILL` to any remaining descendants and joins the tuner.
+- If interruption races with `setsid()`, cleanup falls back to terminating and
+  joining the direct child without risking a signal to the parent's group.
 
 ### 4. Tuner child failure is silently accepted
 
