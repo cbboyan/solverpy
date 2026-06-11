@@ -321,6 +321,57 @@ class LogTalker(Talker):
       """Log completion of model training."""
       logger.debug(f"model built: score={score:.4f}")
 
+   def train_data(self, stats: list[dict[str, Any]]) -> None:
+      """Write training-file statistics to the report."""
+      if not stats:
+         return
+
+      def count(value: Any) -> str:
+         return human.humanint(value) if value is not None else "?"
+
+      def label_ratio(stat: dict[str, Any]) -> str:
+         pos = stat.get("positive")
+         neg = stat.get("negative")
+         if pos is None or neg is None:
+            return "?"
+         if pos == 0:
+            return "inf" if neg else "-"
+         return f"{neg / pos:.2f}:1"
+
+      def compression_ratio(stat: dict[str, Any]) -> str:
+         raw = stat.get("raw_bytes")
+         stored = stat.get("stored_bytes")
+         if raw is None or not stored:
+            return "?"
+         return f"{raw / stored:.2f}x"
+
+      report = markdown.newline() + markdown.heading("Training data", level=3)
+      for stat in stats:
+         title = f"{stat['dataset']} `{stat['path']}`"
+         report.extend(markdown.heading(title, level=4))
+         rows = [
+            ["dataset", stat["dataset"]],
+            ["file", f"`{stat['path']}`"],
+            ["format", stat["format"]],
+            ["vectors", count(stat.get("vectors"))],
+            ["positive", count(stat.get("positive"))],
+            ["negative", count(stat.get("negative"))],
+            ["neg/pos", label_ratio(stat)],
+            [
+               "raw",
+               human.humanbytes(stat["raw_bytes"])
+               if stat.get("raw_bytes") is not None else "?"
+            ],
+            ["stored", human.humanbytes(stat["stored_bytes"])],
+            ["ratio", compression_ratio(stat)],
+            ["chunks", stat["chunks"]],
+            ["files", stat["files"]],
+         ]
+         report.extend(markdown.table(["key", "val"], rows))
+         report.append("")
+      reporter.add(report)
+      self.info(f"Training data ready: {len(stats)} file(s).")
+
    def tune_begin(self, t_start: float, total: int = 0) -> None:
       del t_start, total
 

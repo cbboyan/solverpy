@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-11)
 
-* fix(autotune): avoid retaining raw training data [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(report): add training data stats [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix(autotune): avoid retaining raw training data [[details](https://github.com/cbboyan/solverpy/commit/04a44aa) | [browse](https://github.com/cbboyan/solverpy/tree/04a44aa)]
 * fix: fork tuner before starting listener threads [[details](https://github.com/cbboyan/solverpy/commit/7198dab) | [browse](https://github.com/cbboyan/solverpy/tree/7198dab)]
 * fix: clean up interrupted tuner process groups [[details](https://github.com/cbboyan/solverpy/commit/2a86410) | [browse](https://github.com/cbboyan/solverpy/tree/2a86410)]
 * feat: log resource usage during learning loops [[details](https://github.com/cbboyan/solverpy/commit/8441118) | [browse](https://github.com/cbboyan/solverpy/tree/8441118)]

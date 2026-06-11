@@ -243,6 +243,10 @@ class Talker:
       """Model training finished; final ML score known."""
       del score
 
+   def train_data(self, stats: "list[dict[str, Any]]") -> None:
+      """Training-data files are ready; storage and sample statistics are known."""
+      del stats
+
    def info(self, msg: str) -> None:
       """Log an info-level message."""
       del msg

@@ -85,7 +85,8 @@ def test_format_unknown(tmp_path):
 
 def test_load_reproduces_labels(svm_file):
    orig_text = open(svm_file).read()
-   (_, orig_label) = load_svmlight_file(io.BytesIO(orig_text.encode()), zero_based=True)
+   (_, orig_label) = load_svmlight_file(io.BytesIO(orig_text.encode()),
+                                        zero_based=True)
    svm.compress(svm_file, chunk_size=100)
    (_, label) = svm.load(svm_file)
    assert np.array_equal(label, orig_label)
@@ -93,7 +94,8 @@ def test_load_reproduces_labels(svm_file):
 
 def test_load_reproduces_shape(svm_file):
    orig_text = open(svm_file).read()
-   (orig_data, _) = load_svmlight_file(io.BytesIO(orig_text.encode()), zero_based=True)
+   (orig_data, _) = load_svmlight_file(io.BytesIO(orig_text.encode()),
+                                       zero_based=True)
    svm.compress(svm_file, chunk_size=100)
    (data, _) = svm.load(svm_file)
    assert data.shape == orig_data.shape
@@ -103,9 +105,56 @@ def test_size_sums_chunks(svm_file):
    svm.compress(svm_file, chunk_size=100)
    expected = sum(
       os.path.getsize(p) + os.path.getsize(q)
-      for (p, q) in svm.chunk_files(svm_file)
-   )
+      for (p, q) in svm.chunk_files(svm_file))
    assert svm.size(svm_file) == expected
+
+
+def test_storage_describes_chunk_files(svm_file):
+   svm.compress(svm_file, chunk_size=100)
+
+   assert svm.storage(svm_file) == {
+      "format": "binary/chunks",
+      "stored_bytes": svm.size(svm_file),
+      "chunks": 3,
+      "files": 6,
+   }
+
+
+def test_metadata_merge_sums_complete_statistics(tmp_path):
+   first = str(tmp_path / "first.in")
+   second = str(tmp_path / "second.in")
+   merged = str(tmp_path / "merged.in")
+   svm.metadata_save(first, {
+      "vectors": 3,
+      "positive": 1,
+      "negative": 2,
+      "raw_bytes": 30,
+   })
+   svm.metadata_save(second, {
+      "vectors": 5,
+      "positive": 2,
+      "negative": 3,
+      "raw_bytes": 50,
+   })
+
+   svm.metadata_merge(first, second, merged)
+
+   assert svm.metadata_load(merged) == {
+      "vectors": 8,
+      "positive": 3,
+      "negative": 5,
+      "raw_bytes": 80,
+   }
+
+
+def test_metadata_link_creates_symlink(svm_file, tmp_path):
+   svm.metadata_save(svm_file, {"vectors": 250})
+   dst = str(tmp_path / "other" / "train.in")
+
+   svm.link(svm_file, dst)
+
+   assert os.path.islink(svm.metadata_path(dst))
+   assert svm.metadata_load(dst) == {"vectors": 250}
 
 
 def test_link_creates_symlinks(svm_file, tmp_path):

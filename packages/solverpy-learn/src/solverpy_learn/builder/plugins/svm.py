@@ -22,7 +22,11 @@ class SvmTrains(Trains):
       chunk_size: int = 1_000_000,
       **kwargs: Any,
    ):
-      Trains.__init__(self, dataname, filename=filename, chunk_size=chunk_size, **kwargs)
+      Trains.__init__(self,
+                      dataname,
+                      filename=filename,
+                      chunk_size=chunk_size,
+                      **kwargs)
       self.info = SimpleNamespace(
          total=0,
          pos=0,
@@ -76,6 +80,9 @@ class SvmTrains(Trains):
    ) -> None:
       super().reset(dataname=dataname, filename=filename)
       if hasattr(self, "info"):
+         self.info.total = 0
+         self.info.pos = 0
+         self.info.neg = 0
          self.info.line_count = 0
          self.info.raw_chunk_n = 0
 
@@ -124,11 +131,55 @@ class SvmTrains(Trains):
       finally:
          self._lock.release()
 
-   def compress(self, chunk_size: int | None = None, cores: int | None = None) -> None:
+   def compress(self,
+                chunk_size: int | None = None,
+                cores: int | None = None) -> None:
       logger.info(
          f"Training vectors count: {self.info.total} ({self.info.pos} / {self.info.neg}) "
       )
-      svm.compress(self.path(), chunk_size=chunk_size or self.info.chunk_size, cores=cores)
+      svm.compress(self.path(),
+                   chunk_size=chunk_size or self.info.chunk_size,
+                   cores=cores)
+
+   def train_data_snapshot(self) -> None:
+      """Persist counts and uncompressed bytes for the current logical file."""
+      path = self.path()
+      if not svm.exists(path):
+         return
+      metadata = svm.metadata_load(path)
+      if svm.format(path).startswith("text/"):
+         raw_bytes = svm.size(path)
+      else:
+         raw_bytes = metadata.get("raw_bytes")
+      if self.info.total or "vectors" not in metadata:
+         metadata.update({
+            "vectors": self.info.total,
+            "positive": self.info.pos,
+            "negative": self.info.neg,
+         })
+      if raw_bytes is not None:
+         metadata["raw_bytes"] = raw_bytes
+      svm.metadata_save(path, metadata)
+
+   def train_data_stats(
+      self,
+      dataset: str,
+      path: str | None = None,
+   ) -> dict[str, Any] | None:
+      """Return report-ready statistics without loading vector data."""
+      path = path or self.path()
+      if not svm.exists(path):
+         return None
+      storage = svm.storage(path)
+      metadata = svm.metadata_load(path)
+      if "raw_bytes" not in metadata and storage["format"].startswith("text/"):
+         metadata["raw_bytes"] = storage["stored_bytes"]
+      return {
+         "dataset": dataset,
+         "path": path,
+         **metadata,
+         **storage,
+      }
 
    def merge(
       self,

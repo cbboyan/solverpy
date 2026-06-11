@@ -51,9 +51,7 @@ class Runtime:
 def initialize(setup: Setup, devels: Setup | None = None) -> Runtime:
    """Initialize process resources shared by the complete learning session."""
    trains = [
-      col["trains"]
-      for col in (setup, devels)
-      if col and "trains" in col
+      col["trains"] for col in (setup, devels) if col and "trains" in col
    ]
    return Runtime(trains)
 
@@ -101,7 +99,11 @@ def make_talker(setup: Setup) -> Talker:
       return EvalTalker()
 
 
-def oneloop(setup: Setup, talker: Talker) -> Setup:
+def oneloop(
+   setup: Setup,
+   talker: Talker,
+   dataset: str = "training",
+) -> Setup:
    started_at = time.monotonic()
 
    assert "options" in setup
@@ -112,6 +114,8 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
 
    def trains_compress(setup: Setup) -> None:
       nonlocal options
+      if "trains" in setup:
+         setup["trains"].train_data_snapshot()
       if ("trains" in setup) and ("compress" in options) and \
          ("no-compress-trains" not in options):
          assert "chunk_size" in setup
@@ -145,9 +149,14 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
          setup["news"] = builder.strategies
          logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
+   def train_data_stats(trains, paths=None) -> list[dict]:
+      stats = trains.train_data_stats(dataset, paths)
+      return [stats] if isinstance(stats, dict) else stats
+
    assert "dataname" in setup
    it = setup['it'] if 'it' in setup else 0
-   report = markdown.newline() + markdown.heading(f"Evaluation `{setup['dataname']}`", level=2)
+   report = markdown.newline() + markdown.heading(
+      f"Evaluation `{setup['dataname']}`", level=2)
    reporter.add(report)
    logger.info(f"Running evaluation loop {it} on data {setup['dataname']}.")
    logger.info(resource_summary("main", started_at))
@@ -157,12 +166,20 @@ def oneloop(setup: Setup, talker: Talker) -> Setup:
          evaluator.launch(talker=talker, **setup)
          if "trains" not in setup:
             return setup
+         generated_paths = setup["trains"].path()
          trains_compress(setup)
          trains_merge(setup)
+         generated = train_data_stats(setup["trains"], generated_paths)
+         current = train_data_stats(setup["trains"])
+         seen = {stat["path"] for stat in generated}
+         talker.train_data(
+            generated + [stat for stat in current if stat["path"] not in seen])
       elif "trains" in setup:
          logger.info(
-            f"Evaluation skipped.  Starting with data {setup['start_dataname']}")
+            f"Evaluation skipped.  Starting with data {setup['start_dataname']}"
+         )
          setup["trains"].reset(setup["start_dataname"])
+         talker.train_data(train_data_stats(setup["trains"]))
       model_build(setup)
       return setup
    finally:
@@ -179,15 +196,15 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
    logger.info(resource_summary("main", started_at))
    logger.debug(usage(f"run start: {dataname}"))
 
-   def do_loop(col: Setup | None) -> None:
+   def do_loop(col: Setup | None, dataset: str) -> None:
       if not col: return
-      oneloop(col, talker)
+      oneloop(col, talker, dataset)
 
-   def do_iter(col: Setup | None) -> None:
+   def do_iter(col: Setup | None, dataset: str) -> None:
       if not col: return
       col["strategies"].extend(setup["news"] if "news" in setup else [])
       loopinit(col)
-      oneloop(col, talker)
+      oneloop(col, talker, dataset)
 
    try:
       runtime = initialize(setup, devels)
@@ -197,16 +214,16 @@ def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
          looping(setup)
          if devels:
             looping(devels)
-      do_loop(devels)
-      do_loop(setup)
+      do_loop(devels, "development")
+      do_loop(setup, "training")
       if "loops" in setup:
          while setup["it"] < setup["loops"]:
             gc.collect()
             log.ntfy(setup, f"solverpy: iter #{setup['it']}")
-            do_iter(devels)
+            do_iter(devels, "development")
             if devels and (setup['it'] + 1 == setup["loops"]):
                break
-            do_iter(setup)
+            do_iter(setup, "training")
       log.ntfy(setup, "solverpy: done")
       return setup
    except KeyboardInterrupt:

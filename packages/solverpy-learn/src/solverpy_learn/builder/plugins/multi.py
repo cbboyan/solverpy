@@ -91,6 +91,21 @@ class MultiTrains(SvmTrains):
    def compress(self, *args: Any, **kwargs: Any) -> None:
       self.apply(lambda x: x.compress(*args, **kwargs))
 
+   def train_data_snapshot(self) -> None:
+      self.apply(lambda x: x.train_data_snapshot())
+
+   def train_data_stats(
+      self,
+      dataset: str,
+      paths: tuple[str, ...] | None = None,
+   ) -> list[dict[str, Any]]:
+      paths = paths or self.path()
+      stats = [
+         train.train_data_stats(dataset, path)
+         for (train, path) in zip(self._trains, paths)
+      ]
+      return [stat for stat in stats if stat is not None]
+
    def merge(
       self,
       previous: str | tuple[str, ...],

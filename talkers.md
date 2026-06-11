@@ -32,6 +32,12 @@
 | `build_done(score)` | Model training finished; final ML score known. |
 | `tune_result(val)` | Tuning produced a final result tuple; unblocks the parent `wait()`. |
 
+### Training-data reporting
+
+| Method | Description |
+|---|---|
+| `train_data(stats)` | Training files are finalized; storage size, format, chunk, vector, and label statistics are known. |
+
 ### Logging helpers
 
 | Method | Description |
@@ -71,6 +77,12 @@
 | `build_selected(iteration, metrics)` | selected metrics log | inherited |
 | `build_done(score)` | log debug | + close BuilderBar |
 | `tune_result(val)` | store `_result` | + set `_result_event` (unblocks `tune_wait()`) |
+
+### Training-data reporting
+
+| Method | Talker | LogTalker | LoopTalker |
+|---|---|---|---|
+| `train_data(stats)` | no-op | write Markdown table and log completion | inherited |
 
 ### Logging helpers
 
@@ -251,6 +263,16 @@ For each method: where it is called, from which file, and with what arguments.
 | Caller | File | Args |
 |---|---|---|
 | `tuner()` | `builder/autotune/autotune.py:132` | `ret` = `(score, acc, trainacc, f_mod, duration, params, pos, neg)` |
+
+---
+
+## Training-data reporting
+
+### `train_data(stats)`
+
+| Caller | File | Args |
+|---|---|---|
+| `oneloop()` | `solverpy_learn/setups/loop.py` | Finalized generated and cumulative training-file records for the current training or development dataset |
 
 ---
 

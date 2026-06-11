@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import os
 import glob
 import io
+import json
 import logging
 import multiprocessing
 from collections import defaultdict
@@ -57,8 +58,8 @@ def _chunk_load(p: str, q: str) -> tuple["csr_matrix", "ndarray"]:
 
 
 def _chunk_stack(
-   pairs: list[tuple["csr_matrix", "ndarray"]]
-) -> tuple["spmatrix", "ndarray"]:
+   pairs: list[tuple["csr_matrix",
+                     "ndarray"]]) -> tuple["spmatrix", "ndarray"]:
    import numpy
    import scipy.sparse
    datas = [d for (d, _) in pairs]
@@ -70,8 +71,8 @@ def _chunk_stack(
    max_cols = max(s[1] for s in shapes)
    normalized = [
       scipy.sparse.csr_matrix(
-         (d.data, d.indices, d.indptr), shape=(s[0], max_cols)
-      ) if s[1] < max_cols else d
+         (d.data, d.indices,
+          d.indptr), shape=(s[0], max_cols)) if s[1] < max_cols else d
       for d, s in zip(datas, shapes)
    ]
    return (scipy.sparse.vstack(normalized), numpy.concatenate(labels))
@@ -87,6 +88,28 @@ def raw_files(f_in: str) -> list[str]:
 
 def raw_exists(f_in: str) -> bool:
    return len(raw_files(f_in)) > 0
+
+
+def metadata_path(f_in: str) -> str:
+   return f"{f_in}-meta.json"
+
+
+def metadata_load(f_in: str) -> dict[str, Any]:
+   path = metadata_path(f_in)
+   if not os.path.isfile(path):
+      return {}
+   with open(path) as fh:
+      return json.load(fh)
+
+
+def metadata_save(f_in: str, stats: dict[str, Any]) -> None:
+   path = metadata_path(f_in)
+   directory = os.path.dirname(path)
+   if directory:
+      os.makedirs(directory, exist_ok=True)
+   with open(path, "w") as fh:
+      json.dump(stats, fh, indent=2, sort_keys=True)
+      fh.write("\n")
 
 
 def _raw_compress(raw_path: str, f_in: str, n: int) -> None:
@@ -112,8 +135,7 @@ def size(f_in: str) -> int:
    if chunk_exists(f_in):
       return sum(
          os.path.getsize(p) + os.path.getsize(q)
-         for (p, q) in chunk_files(f_in)
-      )
+         for (p, q) in chunk_files(f_in))
    if raw_exists(f_in):
       return sum(os.path.getsize(p) for p in raw_files(f_in))
    return os.path.getsize(f_in)
@@ -129,8 +151,34 @@ def format(f_in: str) -> str:
    return "unknown"
 
 
+def storage(f_in: str) -> dict[str, Any]:
+   chunks = chunk_files(f_in)
+   raws = raw_files(f_in)
+   if chunks:
+      file_count = 2 * len(chunks)
+      chunk_count = len(chunks)
+   elif raws:
+      file_count = len(raws)
+      chunk_count = len(raws)
+   elif os.path.isfile(f_in):
+      file_count = 1
+      chunk_count = 1
+   else:
+      file_count = 0
+      chunk_count = 0
+   return {
+      "format": format(f_in),
+      "stored_bytes": size(f_in) if exists(f_in) else 0,
+      "chunks": chunk_count,
+      "files": file_count,
+   }
+
+
 @external
-def compress(f_in: str, keep: bool = False, chunk_size: int = 1_000_000, cores: int | None = None) -> None:
+def compress(f_in: str,
+             keep: bool = False,
+             chunk_size: int = 1_000_000,
+             cores: int | None = None) -> None:
    if raw_exists(f_in):
       rawcompress(f_in, cores=cores)
       return
@@ -141,7 +189,8 @@ def compress(f_in: str, keep: bool = False, chunk_size: int = 1_000_000, cores: 
       logger.warning(f"No trains to compress: {f_in}.")
       return
    logger.info(
-      f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
+      f"Compressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
+   )
    n = 0
    batch: list[str] = []
    with open(f_in) as fh:
@@ -157,7 +206,8 @@ def compress(f_in: str, keep: bool = False, chunk_size: int = 1_000_000, cores: 
    if not keep:
       os.remove(f_in)
    logger.info(
-      f"Trains compressed to {n} chunks, {human.humanbytes(size(f_in))} total.")
+      f"Trains compressed to {n} chunks, {human.humanbytes(size(f_in))} total."
+   )
 
 
 def rawcompress(f_in: str, cores: int | None = None) -> None:
@@ -175,7 +225,8 @@ def rawcompress(f_in: str, cores: int | None = None) -> None:
       with multiprocessing.get_context("fork").Pool(cores) as pool:
          pool.starmap(_raw_compress, args)
    logger.info(
-      f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total.")
+      f"Compressed to {len(raws)} NPZ chunks, {human.humanbytes(size(f_in))} total."
+   )
 
 
 def load(f_in: str, cores: int | None = None) -> tuple["spmatrix", "ndarray"]:
@@ -208,7 +259,8 @@ def decompress(f_in: str, keep: bool = True) -> None:
       logger.warning(f"Trains `{f_in}` are not chunked.  Skipped.")
       return
    logger.info(
-      f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`.")
+      f"Decompressing trains of size {human.humanbytes(size(f_in))} from `{f_in}`."
+   )
    (data, label) = load(f_in)
    dump_svmlight_file(data, label, f_in)
    if not keep:
@@ -238,6 +290,19 @@ def link(src: str, dst: str) -> None:
          rellink(raw, raw_path(dst, n))
    else:
       rellink(src, dst)
+   if os.path.isfile(metadata_path(src)):
+      rellink(metadata_path(src), metadata_path(dst))
+
+
+def metadata_merge(f_in1: str, f_in2: str, f_out: str) -> None:
+   inputs = [metadata_load(f_in1), metadata_load(f_in2)]
+   keys = ("vectors", "positive", "negative", "raw_bytes")
+   merged = {
+      key: sum(item[key] for item in inputs)
+      for key in keys if all(key in item for item in inputs)
+   }
+   if merged:
+      metadata_save(f_out, merged)
 
 
 def merge(f_in1: str, f_in2: str, f_out: str) -> None:
@@ -249,6 +314,7 @@ def merge(f_in1: str, f_in2: str, f_out: str) -> None:
       for raw in raw_files(f_in2):
          rellink(raw, raw_path(f_out, n))
          n += 1
+      metadata_merge(f_in1, f_in2, f_out)
       logger.info(f"Merged {n} raw chunks into {f_out}.")
       return
    n = 0
@@ -262,6 +328,7 @@ def merge(f_in1: str, f_in2: str, f_out: str) -> None:
       rellink(p_src, p_dst)
       rellink(q_src, q_dst)
       n += 1
+   metadata_merge(f_in1, f_in2, f_out)
    logger.info(f"Merged {n} chunks into {f_out}.")
 
 
