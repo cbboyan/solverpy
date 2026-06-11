@@ -8,8 +8,8 @@ BAR_CHARS = "░▒▓█"
 
 COLOUR_MAP = {
    "green": "\033[32m",
-   "blue":  "\033[34m",
-   "red":   "\033[31m",
+   "blue": "\033[34m",
+   "red": "\033[31m",
 }
 COLOUR_END = "\033[0m"
 
@@ -77,7 +77,7 @@ class DefaultBar(tqdm):
       return d
 
    def status(self, status: Any, n: int = 1) -> None:
-      del status # unused argument
+      del status  # unused argument
       self.update(n)
 
 
@@ -117,10 +117,11 @@ class BuilderBar(tqdm):
 
    def status(
       self,
-      loss: list[float],
+      metrics: dict[str, dict[str, float]],
       n: int = 1,
    ) -> None:
-      self._loss = "/".join(f"{x:.4f}" for x in loss)
+      self._loss = "/".join(f"{value:.4f}" for values in metrics.values()
+                            for value in values.values())
       self.update(n)
 
 
@@ -199,8 +200,8 @@ class SolvingBar(RunningBar):
       total = d["total"] or 0
       solved_eta = int(self._solved * (total / max(d["n"], 1)))
       pw = _postfix_width(total)
-      vis = (1 + len(str(self._solved)) + 1 + len(str(self._unsolved)) +
-             2 + len(str(self._errors)) + 2 + len(str(solved_eta)))
+      vis = (1 + len(str(self._solved)) + 1 + len(str(self._unsolved)) + 2 +
+             len(str(self._errors)) + 2 + len(str(solved_eta)))
       pad = " " * max(0, pw - vis)
       d.update(
          solved=f"{PURPLE}+{self._solved}{END}",

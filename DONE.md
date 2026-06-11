@@ -1,5 +1,31 @@
 # DONE
 
+## Memory-efficient tuning accuracy and dataset reuse ✓
+
+Autotuning no longer retains complete train/development CSR matrices alongside
+LightGBM's native datasets.
+
+- Datasets use `free_raw_data=True`; each CSR input is released immediately
+  after native construction.
+- Development data is constructed with the training dataset as its LightGBM
+  reference, preserving compatible feature bins without retaining raw data.
+- Dataset parameters are applied during construction. The `min_data` tuning
+  phase sets `feature_pre_filter=false` before construction so later trials can
+  change the threshold without rebuilding from raw data.
+- When train and validation filenames are identical, one native dataset is
+  reused. Validation statistics mirror training statistics and early stopping
+  is disabled because there is no independent validation set.
+- Threshold accuracy is vectorized and evaluated once on the selected native
+  model iteration through LightGBM's custom evaluation API. The booster is
+  rolled back to the selected iteration before evaluation and saving.
+- `build_step()` now forwards labeled per-dataset metrics to the talker.
+  `build_selected()` reports the selected iteration and its train/validation
+  overall, positive, and negative accuracy. Only scalar values cross process
+  boundaries, enabling logs, reports, and future training graphs.
+
+Focused tests cover raw-input release, same-file reuse, validation references,
+structured events, selected-iteration evaluation, and early-stopping behavior.
+
 ## Nested multiprocessing pools — not an issue ✓
 
 The originally suspected problem (quadratic process spawning when `build.score()` calls
@@ -18,16 +44,67 @@ Having them there caused those calls to be queued to `_local` instead of
 executing locally — so `_log_queue` was never set on the proxy and
 `log_config` never ran in the child process.
 
-## RemoteTalker queue and Manager lifetime fixes ✓
+## RemoteTalker queue ownership fixes ✓
 
 - `manager` is now stored as `self._remote_manager` (was a local variable that
-  went out of scope immediately, risking GC of the Manager server process).
-  Shut down in `terminate()`.
+  went out of scope immediately, risking premature GC of the Manager server
+  process). Explicit shutdown of a default-owned Manager remains tracked in
+  `TODO.md`.
 - `__init__` accepts an optional `queue` argument: if provided, uses it
   directly (no Manager needed — suitable for fork context); otherwise creates
   a forkserver Manager queue as before (required for spawn workers that need
   to pickle the queue proxy).
 - `__getstate__` excludes `_remote_manager` from pickle state.
+
+## Tuning pipeline uses RemoteTalker ✓
+
+The tuning pipeline now wraps the session talker in
+`RemoteTalker(talker, queue=multiprocessing.Queue())`. Public talker events are
+forwarded to the parent, while queue and logging lifecycle methods execute
+locally. Child-side autotuning logging uses talker methods, and the parent
+listener drains queued events before returning the tuning result.
+
+## Evaluation interruption propagation ✓
+
+Removed worker-side `SIGINT` suppression. `KeyboardInterrupt` now propagates
+out of evaluation workers and the launcher terminates and joins its pool.
+Solver subprocesses can briefly outlive terminated workers, but configured
+resource limits bound their lifetime.
+
+## Shared training Manager lifecycle ✓
+
+Training collectors now defer shared state creation until a learning session
+starts. One forkserver Manager is shared by train and development collectors,
+and loop shutdown copies statistics back, disconnects proxies, and explicitly
+shuts down the Manager.
+
+## Tuner process-group cleanup ✓
+
+The forked tuner becomes a process-group leader. Interruption terminates the
+whole group, waits for the tuner, escalates to `SIGKILL` if needed, and joins
+the tuner. This covers nested evaluation pools, data-loading pools, and solver
+subprocesses.
+
+## Fork tuner before listener threads ✓
+
+Autotuning now prepares communication queues, forks the tuner, and starts
+listener threads only afterwards. Messages produced during startup remain
+buffered, avoiding a post-thread fork while retaining the required fork-based
+tuner process.
+
+## Talker counters reset per evaluation ✓
+
+`LogTalker.eval_begin()` resets evaluation totals and errors, while
+`eval_next()` resets solved, unsolved, and failed task counters for each job.
+Reusing one session talker across loop iterations no longer carries these
+counters forward.
+
+## Audited process-local solver state ✓
+
+`Solver._output` and `SolverPy._exitcode` are intentionally worker-local.
+Evaluation workers return processed results, and no parent behavior relies on
+those mutable solver attributes. Normal evaluation also intentionally leaves
+worker log forwarding disabled unless a caller explicitly starts it.
 
 ## TuneTalker — unified tuning progress talker ✓
 
@@ -98,9 +175,11 @@ during benchmark evaluation.
 
 **Bar characters**: changed from `┈─═━` to `░▒▓█` (block shading style).
 
-## Rename `bidlist`/`sidlist` → `benchmarks`/`strategies` ✓
+## Production setup-key rename ✓
 
-Renamed the two core Setup keys throughout the codebase and all documentation.
+Renamed the two core Setup keys throughout production code and maintained
+documentation. The legacy root README and benchmark tests still need updating
+and are tracked in `TODO.md`.
 
 - `setups/setup.py`: TypedDict fields and docstring updated
 - `benchmark/evaluation.py`: `launch()` signature updated

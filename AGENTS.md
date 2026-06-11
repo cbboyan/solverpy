@@ -13,8 +13,7 @@ This repository contains three Python packages:
 Before changing code, read the guidance relevant to the task:
 
 - Root [`CLAUDE.md`](CLAUDE.md) for repository architecture and conventions.
-- [`FIXME.md`](FIXME.md) for current process/lifecycle constraints and known issues.
-- [`TODO.md`](TODO.md) and [`DONE.md`](DONE.md) for planned and completed work.
+- [`TODO.md`](TODO.md) and [`DONE.md`](DONE.md) for current and completed work.
 - [`COMMITS.md`](COMMITS.md) for commit-message structure.
 - [`BUILD.md`](BUILD.md) for package and documentation commands.
 - [`talkers.md`](talkers.md) for talker lifecycle methods and call sites.
@@ -45,8 +44,8 @@ Source edits are immediately active. Do not reinstall packages after changes.
 - Slow, learning, and Grackle tests are excluded by default through root pytest
   configuration; run them explicitly when the task requires them.
 - `SOLVERPY_DB` should remain relative for ENIGMA/eprover workflows.
-- Preserve the intentional multiprocessing context split documented in
-  `FIXME.md`: normal evaluation uses `forkserver`, ATP evaluation inside tuning
+- Preserve the intentional multiprocessing context split: normal evaluation
+  uses `forkserver`, ATP evaluation inside tuning
   uses `spawn`, and selected data-loading/compression paths use `fork`.
 
 For documentation work, follow the mkdocs/mkdocstrings conventions in the

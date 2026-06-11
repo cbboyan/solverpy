@@ -27,7 +27,8 @@
 | `tune_trial_done(stats)` | An Optuna trial finished; scores and accuracies are known. |
 | `tune_phase_done(nick)` | A tuning phase finished; write phase results table to report. |
 | `build_begin(f_mod, total)` | LightGBM model training starting; total iteration count known. |
-| `build_step(n, total, loss)` | One LightGBM training iteration completed; current loss values known. |
+| `build_step(n, total, metrics)` | One LightGBM training iteration completed; labeled metrics by dataset are known. |
+| `build_selected(iteration, metrics)` | The selected LightGBM iteration and its final threshold metrics are known. |
 | `build_done(score)` | Model training finished; final ML score known. |
 | `tune_result(val)` | Tuning produced a final result tuple; unblocks the parent `wait()`. |
 
@@ -66,7 +67,8 @@
 | `tune_trial_done(stats)` | append to table | + clear flag, increment, update tune bar |
 | `tune_phase_done(nick)` | write table to report, log | inherited |
 | `build_begin(f_mod, total)` | log start | + create BuilderBar (blue, leave=False) |
-| `build_step(n, total, loss)` | periodic log | + update BuilderBar |
+| `build_step(n, total, metrics)` | periodic log | + update BuilderBar |
+| `build_selected(iteration, metrics)` | selected metrics log | inherited |
 | `build_done(score)` | log debug | + close BuilderBar |
 | `tune_result(val)` | store `_result` | + set `_result_event` (unblocks `tune_wait()`) |
 
@@ -220,11 +222,19 @@ For each method: where it is called, from which file, and with what arguments.
 
 ---
 
-### `build_step(n, total, loss)`
+### `build_step(n, total, metrics)`
 
 | Caller | File | Args |
 |---|---|---|
-| `build.model()` → `iteration_callback()` via `report()` | `builder/autotune/build.py:59` | `env.iteration` (current step), `env.end_iteration` (total steps), `[r[2] for r in env.evaluation_result_list]` (loss values) |
+| `build.model()` → `iteration_callback()` via `report()` | `builder/autotune/build.py` | 1-based iteration, total steps, nested dataset/metric/value mapping from `env.evaluation_result_list` |
+
+---
+
+### `build_selected(iteration, metrics)`
+
+| Caller | File | Args |
+|---|---|---|
+| `build.model()` → `check_model()` via `report()` | `builder/autotune/build.py` | selected iteration and train/valid overall, positive, and negative threshold accuracy |
 
 ---
 

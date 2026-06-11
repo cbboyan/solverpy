@@ -2,8 +2,7 @@ from typing import Any, TYPE_CHECKING
 import os
 import time
 import lightgbm as lgb
-from numpy import ndarray
-from scipy.sparse import csr_matrix
+import numpy as np
 
 from solverpy.setups import Setup
 from solverpy.benchmark import evaluation
@@ -14,39 +13,83 @@ if TYPE_CHECKING:
    from ..autotuner import AutoTuner
 
 POS_ACC_WEIGHT = 2.0
+ACCURACY_METRICS = (
+   "accuracy",
+   "positive_accuracy",
+   "negative_accuracy",
+)
 
 
 def accuracy(
+   preds: np.ndarray,
+   data: "Dataset",
+) -> list[tuple[str, float, bool]]:
+   labels = data.get_label()
+   assert isinstance(labels, np.ndarray)
+   correct = (preds > 0.5) == labels
+
+   def mean(mask: np.ndarray | None = None) -> float:
+      selected = correct if mask is None else correct[mask]
+      return float(selected.mean()) if selected.size else 0.0
+
+   return [
+      ("accuracy", mean(), True),
+      ("positive_accuracy", mean(labels == 1), True),
+      ("negative_accuracy", mean(labels == 0), True),
+   ]
+
+
+def metrics(
+   results: list[tuple[Any, ...]] | None, ) -> dict[str, dict[str, float]]:
+   values: dict[str, dict[str, float]] = {}
+   for result in results or []:
+      (dataset, metric, value) = result[:3]
+      values.setdefault(dataset, {})[metric] = float(value)
+   return values
+
+
+def selected_metrics(
    bst: "Booster",
-   xs: "csr_matrix",
-   ys: "ndarray",
-) -> tuple[float, float, float]:
+   same_data: bool,
+) -> tuple[int, dict[str, dict[str, float]]]:
+   current = bst.current_iteration()
+   selected = bst.best_iteration if bst.best_iteration > 0 else current
+   while bst.current_iteration() > selected:
+      bst.rollback_one_iter()
 
-   def getacc(pairs: list[tuple[float, float]]) -> float:
-      if not pairs: return 0
-      return sum([1 for (x, y) in pairs if int(x > 0.5) == y]) / len(pairs)
-
-   if hasattr(bst, "best_iteration"):
-      preds = bst.predict(xs, num_iteration=bst.best_iteration)
+   values = metrics(bst.eval_train(feval=accuracy))
+   if same_data:
+      values["valid"] = dict(values["train"])
    else:
-      preds = bst.predict(xs)
+      values.update(metrics(bst.eval_valid(feval=accuracy)))
 
-   assert type(preds) is ndarray
-   preds0 = list(zip(preds, ys))
-   acc = getacc(preds0)
-   posacc = getacc([(x, y) for (x, y) in preds0 if y == 1])
-   negacc = getacc([(x, y) for (x, y) in preds0 if y == 0])
-   return (acc, posacc, negacc)
+   selected_values = {
+      dataset: {
+         metric: dataset_values[metric]
+         for metric in ACCURACY_METRICS
+      }
+      for (dataset, dataset_values) in values.items()
+   }
+   return (selected, selected_values)
+
+
+def accuracy_tuple(values: dict[str, float]) -> tuple[float, float, float]:
+   return (
+      values["accuracy"],
+      values["positive_accuracy"],
+      values["negative_accuracy"],
+   )
 
 
 def model(
-   params: dict[str, Any],
-   dtrain: "Dataset",
-   dtest: "Dataset",
-   f_mod: str,
-   talker: Talker = Talker(),
+      params: dict[str, Any],
+      dtrain: "Dataset",
+      dtest: "Dataset",
+      f_mod: str,
+      talker: Talker = Talker(),
 ) -> tuple["Booster", dict[str, Any]]:
    callbacks = bst = begin = end = mlscore = acc = trainacc = None
+   same_data = dtrain is dtest
 
    def report(key: str, *content: Any) -> None:
       getattr(talker, key)(*content)
@@ -54,8 +97,12 @@ def model(
    def iteration_callback(env: Any) -> None:
       results = env.evaluation_result_list
       report("debug", str(results))
-      loss = [r[2] for r in results]
-      report("build_step", env.iteration, env.end_iteration, loss)
+      report(
+         "build_step",
+         env.iteration + 1,
+         env.end_iteration,
+         metrics(results),
+      )
 
    def setup_dirs() -> None:
       d_mod = os.path.dirname(f_mod)
@@ -69,39 +116,45 @@ def model(
          params = dict(params)
          rounds = params.pop("early_stopping")
          rounds = 10 if (rounds is True) else int(rounds)
-         if rounds:
-            report("debug", f"activating early stopping: stopping_rounds={rounds}")
+         if rounds and same_data:
+            report(
+               "debug",
+               "ignoring early stopping because training and validation data are identical",
+            )
+         elif rounds:
+            report("debug",
+                   f"activating early stopping: stopping_rounds={rounds}")
             callbacks.append(
-               lgb.early_stopping(rounds, first_metric_only=True, verbose=True))
+               lgb.early_stopping(rounds, first_metric_only=True,
+                                  verbose=True))
       callbacks.append(iteration_callback)
 
    def build_model() -> "Booster":
       nonlocal bst, begin, end, params, callbacks
       report("build_begin", f_mod, params["num_round"])
       begin = time.time()
-      bst = lgb.train(
-         params,
-         dtrain,
-         valid_sets=[dtrain, dtest],
-         valid_names=["train", "valid"],
-         callbacks=callbacks)
+      valid_sets = [dtrain] if same_data else [dtrain, dtest]
+      valid_names = ["train"] if same_data else ["train", "valid"]
+      bst = lgb.train(params,
+                      dtrain,
+                      valid_sets=valid_sets,
+                      valid_names=valid_names,
+                      keep_training_booster=True,
+                      callbacks=callbacks)
       end = time.time()
       if hasattr(bst, "best_iteration"):
-         report("debug", f"early stopping: best_iteration={bst.best_iteration}")
-      bst.save_model(f_mod)
+         report("debug",
+                f"early stopping: best_iteration={bst.best_iteration}")
       return bst
 
    def check_model() -> None:
       nonlocal mlscore, acc, trainacc
       assert bst
-      (axs, ays) = (dtest.get_data(), dtest.get_label())
-      assert type(axs) is csr_matrix
-      assert type(ays) is ndarray
-      acc = accuracy(bst, axs, ays)
-      (taxs, tays) = (dtrain.get_data(), dtrain.get_label())
-      assert type(taxs) is csr_matrix
-      assert type(tays) is ndarray
-      trainacc = accuracy(bst, taxs, tays)
+      (selected, values) = selected_metrics(bst, same_data)
+      report("build_selected", selected, values)
+      trainacc = accuracy_tuple(values["train"])
+      acc = accuracy_tuple(values["valid"])
+      bst.save_model(f_mod)
       bst.free_dataset()
       bst.free_network()
       mlscore = POS_ACC_WEIGHT * acc[1] + acc[2]
@@ -124,10 +177,10 @@ def model(
 
 
 def score(
-   stats: dict[str, Any],
-   builder: "AutoTuner | None",
-   nick: str,
-   talker: Talker = Talker(),
+      stats: dict[str, Any],
+      builder: "AutoTuner | None",
+      nick: str,
+      talker: Talker = Talker(),
 ) -> None:
    if not builder:
       stats["score"] = stats["mlscore"]

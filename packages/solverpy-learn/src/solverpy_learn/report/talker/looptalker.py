@@ -48,7 +48,8 @@ class LoopTalker(EvalTalker):
       + tune_trial_begin(nick, it, values)
       + tune_trial_done(stats)
       + build_begin(f_mod, total)
-      + build_step(n, total, loss)
+      + build_step(n, total, metrics)
+      + build_selected(iteration, metrics)
       + build_done(score)
    }
    ```
@@ -100,12 +101,28 @@ class LoopTalker(EvalTalker):
 
    # --- ATP evaluation overrides ---
 
-   def eval_begin(self, jobs, *, refjob=None, sidnames=True, miniters=1, **kwargs) -> None:
+   def eval_begin(self,
+                  jobs,
+                  *,
+                  refjob=None,
+                  sidnames=True,
+                  miniters=1,
+                  **kwargs) -> None:
       """Outside tuning: full EvalTalker bars. Inside tuning: single RunningBar, skips report."""
       if not self._in_tuning:
-         EvalTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, miniters=miniters, **kwargs)
+         EvalTalker.eval_begin(self,
+                               jobs,
+                               refjob=refjob,
+                               sidnames=sidnames,
+                               miniters=miniters,
+                               **kwargs)
          return
-      LogTalker.eval_begin(self, jobs, refjob=refjob, sidnames=sidnames, report=False, **kwargs)
+      LogTalker.eval_begin(self,
+                           jobs,
+                           refjob=refjob,
+                           sidnames=sidnames,
+                           report=False,
+                           **kwargs)
       if not self._headless:
          max_job = max(len(_bids.problems(bid)) for (_, bid, _) in jobs)
          self._total_bar = RunningBar(
@@ -205,15 +222,31 @@ class LoopTalker(EvalTalker):
       """Open a ``BuilderBar`` with [N/M] build label if not headless."""
       LogTalker.build_begin(self, f_mod, total)
       if not self._headless:
-         self._builder_bar = BuilderBar(total, self._trial_desc("build"), colour="blue", leave=True)
+         self._builder_bar = BuilderBar(total,
+                                        self._trial_desc("build"),
+                                        colour="blue",
+                                        leave=True)
 
-   def build_step(self, n: int, total: int, loss: list[float]) -> None:
+   def build_step(
+      self,
+      n: int,
+      total: int,
+      metrics: dict[str, dict[str, float]],
+   ) -> None:
       """Update the builder bar, refresh tune bar, and emit periodic log lines."""
       if self._builder_bar:
-         self._builder_bar.status(loss)
+         self._builder_bar.status(metrics)
       if self._tune_bar:
          self._tune_bar.refresh()
-      LogTalker.build_step(self, n, total, loss)
+      LogTalker.build_step(self, n, total, metrics)
+
+   def build_selected(
+      self,
+      iteration: int,
+      metrics: dict[str, dict[str, float]],
+   ) -> None:
+      """Report selected-model metrics through the log/reporting layer."""
+      LogTalker.build_selected(self, iteration, metrics)
 
    def build_done(self, score: float) -> None:
       """Close the builder bar."""

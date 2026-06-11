@@ -117,8 +117,15 @@ class LogTalker(Talker):
       self._total_jobs = len(jobs)
       self._nick_dw = len(str(self._total_jobs))
       self._job_index = 0
-      (self._total_nicks_full, self._total_desc) = summary.legend(jobs, refjob, sidnames=sidnames, report=report)
-      self._total_nicks = {k[1:3]:v for (k,v) in self._total_nicks_full.items()}
+      (self._total_nicks_full,
+       self._total_desc) = summary.legend(jobs,
+                                          refjob,
+                                          sidnames=sidnames,
+                                          report=report)
+      self._total_nicks = {
+         k[1:3]: v
+         for (k, v) in self._total_nicks_full.items()
+      }
       self._total_errors = 0
 
       self.info(f"Evaluating {len(jobs)} jobs with {self._total_count} tasks.")
@@ -215,18 +222,22 @@ class LogTalker(Talker):
    def tune_phase_begin(self, nick: str, iters: int, timeout: int) -> None:
       """Start a tuning phase: write heading to report and reset trial table."""
       del timeout
-      report = markdown.newline() + markdown.heading(f"Tuning `{nick}`", level=3)
+      report = markdown.newline() + markdown.heading(f"Tuning `{nick}`",
+                                                     level=3)
       reporter.add(report)
       self.info(f"Running tuning phase: {nick}")
       self._tune_iters = f"/{iters}" if iters else ""
-      self._tune_header = ["it", nick, "score", "test.acc", "train.acc", "time"]
+      self._tune_header = [
+         "it", nick, "score", "test.acc", "train.acc", "time"
+      ]
       self._tune_table = []
 
    def tune_trial_begin(self, nick: str, it: int, values: list) -> None:
       """Record the current trial description; log if ``_headless``."""
       del nick
       self._tune_it = it + 1
-      vals = ", ".join("%.4f" % v if type(v) is float else str(v) for v in values)
+      vals = ", ".join("%.4f" % v if type(v) is float else str(v)
+                       for v in values)
       self._tune_desc = f"[{it+1}{self._tune_iters}] {vals:8s}"
       self._tune_values = vals
       if self._headless:
@@ -251,11 +262,12 @@ class LogTalker(Talker):
       lines = []
       lines.extend(markdown.newline())
       lines.extend(markdown.heading("Trials", level=4))
-      lines.extend(markdown.table(
-         self._tune_header,
-         self._tune_table,
-         key=lambda x: float(x[2]),
-      ))
+      lines.extend(
+         markdown.table(
+            self._tune_header,
+            self._tune_table,
+            key=lambda x: float(x[2]),
+         ))
       lines.append("")
       reporter.add(lines)
       self.info(
@@ -272,20 +284,38 @@ class LogTalker(Talker):
       if self._headless:
          self.info(f"Building model: {f_mod}")
 
-   def build_step(self, n: int, total: int, loss: list[float]) -> None:
+   def build_step(
+      self,
+      n: int,
+      total: int,
+      metrics: dict[str, dict[str, float]],
+   ) -> None:
       """Emit periodic progress log lines during model training."""
       if n > 3 and (n % 10 != 0):
          return
       elapsed = time.perf_counter() - self._builder_last
       if n > 3 and elapsed < self._builder_wait:
          return
-      msg = "/".join(f"{x:.4f}" for x in loss)
+      msg = " ".join(f"{dataset}.{metric}={value:.4f}"
+                     for (dataset, values) in metrics.items()
+                     for (metric, value) in values.items())
       runtime = time.perf_counter() - self._builder_start
       if self._headless:
-         self.info(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
+         self.info(f"   metrics @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
       else:
-         logger.debug(f"   loss @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
+         logger.debug(f"   metrics @ {runtime:0.3f}s\t{n:02d}/{total}\t{msg}")
       self._builder_last = time.perf_counter()
+
+   def build_selected(
+      self,
+      iteration: int,
+      metrics: dict[str, dict[str, float]],
+   ) -> None:
+      """Log the metrics of the selected model iteration."""
+      msg = " ".join(f"{dataset}.{metric}={value:.4f}"
+                     for (dataset, values) in metrics.items()
+                     for (metric, value) in values.items())
+      self.info(f"Selected iteration {iteration}: {msg}")
 
    def build_done(self, score: float) -> None:
       """Log completion of model training."""

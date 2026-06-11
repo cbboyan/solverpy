@@ -80,6 +80,39 @@ def _terminate_tuner(process: multiprocessing.Process) -> None:
    process.join()
 
 
+def _datasets(
+   f_train: str,
+   f_test: str,
+   params: dict[str, Any] | None = None,
+) -> tuple[lgb.Dataset, lgb.Dataset, int, int]:
+   (xs, ys) = svm.load(f_train)
+   pos = int(sum(ys))
+   neg = len(ys) - pos
+   dtrain = lgb.Dataset(
+      xs,
+      label=ys,
+      params=params,
+      free_raw_data=True,
+   )
+   dtrain.construct()
+   del xs, ys
+
+   if f_test == f_train:
+      return (dtrain, dtrain, pos, neg)
+
+   (xs, ys) = svm.load(f_test)
+   dtest = lgb.Dataset(
+      xs,
+      label=ys,
+      reference=dtrain,
+      params=params,
+      free_raw_data=True,
+   )
+   dtest.construct()
+   del xs, ys
+   return (dtrain, dtest, pos, neg)
+
+
 def tuner(
    f_train: str,
    f_test: str,
@@ -102,35 +135,33 @@ def tuner(
    _n_phases = len(phases.split(":"))
    _iters0 = (iters // _n_phases) if iters else 0
    _total = _n_phases * _iters0 + (1 if init_params is not None else 0)
-   talker.tune_begin(time.time(), _total)
-   talker.info(resource_summary("tuner", started_at))
-   talker.debug(usage("tuner start"))
-   (xs, ys) = svm.load(f_train)
-   dtrain = lgb.Dataset(xs, label=ys, free_raw_data=False)
-   dtrain.construct()
-   (xs0, ys0) = svm.load(f_test) if f_test != f_train else (xs, ys)
-   dtest = lgb.Dataset(xs0, label=ys0, free_raw_data=False)
-   dtest.construct()
-
-   os.makedirs(d_tmp, exist_ok=True)
-
    phases0 = phases.split(":")
    params = dict(DEFAULTS)
    if init_params: params.update(init_params)
-   pos = sum(ys)
-   neg = len(ys) - pos
+   if "m" in phases0:
+      params["feature_pre_filter"] = "false"
+
+   talker.tune_begin(time.time(), _total)
+   talker.info(resource_summary("tuner", started_at))
+   talker.debug(usage("tuner start"))
+   (dtrain, dtest, pos, neg) = _datasets(f_train, f_test, params)
+
+   os.makedirs(d_tmp, exist_ok=True)
+
    if "w" in phases0:
       params["scale_pos_weight"] = neg / pos
-      talker.debug(f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)")
+      talker.debug(
+         f"posneg balancing: base scale_pos_weight = {params['scale_pos_weight']} (tuning multiplier)"
+      )
    elif posneg_weight == 0:
       params["is_unbalance"] = "true" if neg != pos else "false"
-      talker.debug(f"posneg balancing: is_unbalance = {params['is_unbalance']}")
+      talker.debug(
+         f"posneg balancing: is_unbalance = {params['is_unbalance']}")
    else:
       params["scale_pos_weight"] = posneg_weight * (neg / pos)
-      talker.debug(f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
+      talker.debug(
+         f"posneg balancing: scale_pos_weight = {params['scale_pos_weight']}")
 
-   if "m" in phases:
-      params["feature_pre_filter"] = "false"
    timeout0 = timeout / len(phases0) if timeout else None
    iters0 = iters // len(phases0) if iters else None
    args = dict(

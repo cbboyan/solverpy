@@ -101,7 +101,9 @@ class Talker:
       self.log_prepare()
       assert self._log_queue
       root = logging.getLogger()
-      self._listener = QueueListener(self._log_queue, *root.handlers, respect_handler_level=True)
+      self._listener = QueueListener(self._log_queue,
+                                     *root.handlers,
+                                     respect_handler_level=True)
       self._listener.start()
 
    def log_stop(self) -> None:
@@ -192,7 +194,8 @@ class Talker:
       """Tuning produced a final result value."""
       self._result = val
 
-   def tune_phase_begin(self, nick: str, iters: int, timeout: "int | None") -> None:
+   def tune_phase_begin(self, nick: str, iters: int,
+                        timeout: "int | None") -> None:
       """A new tuning phase starting (e.g. ``"leaves"``)."""
       del nick, iters, timeout
 
@@ -219,9 +222,22 @@ class Talker:
       """LightGBM model training starting; total iteration count known."""
       del f_mod, total
 
-   def build_step(self, n: int, total: int, loss: "list[float]") -> None:
-      """One LightGBM training iteration completed; current loss values known."""
-      del n, total, loss
+   def build_step(
+      self,
+      n: int,
+      total: int,
+      metrics: "dict[str, dict[str, float]]",
+   ) -> None:
+      """One LightGBM training iteration completed; labeled metrics are known."""
+      del n, total, metrics
+
+   def build_selected(
+      self,
+      iteration: int,
+      metrics: "dict[str, dict[str, float]]",
+   ) -> None:
+      """The selected LightGBM iteration and its final metrics are known."""
+      del iteration, metrics
 
    def build_done(self, score: float) -> None:
       """Model training finished; final ML score known."""

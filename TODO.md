@@ -1,152 +1,223 @@
-# Known Issues
+# TODO
 
-## High
+Outstanding work for `solverpy` and `solverpy-learn`, ordered by importance
+within each section. Headings use stable descriptive labels instead of numbers.
 
-### 1. Refactor tuning pipeline to use `RemoteTalker` — `builder/autotune/autotune.py`
+## Bugs
 
-**✓ Subtask 1a done:** `RemoteTalker` revival — proxy machinery stripped from `TuneTalker`;
-`prettytuner()` wraps the real talker in `RemoteTalker(talker, queue=multiprocessing.Queue())`,
-forks the child with `remote` as the talker, does `p.join()` then `remote.listening_stop()`
-(which drains the queue to guarantee `tune_result` is dispatched), and returns `talker._result`.
-`RemoteTalker` uses a `LOCALS` set (inverse of the old `REMOTES`): every public method not
-in `LOCALS` is queued; `LOCALS` contains only `log_*`, `listening_*`, and `listening_handle`.
-`_local` is excluded from pickling so spawn workers only carry the queue.
-`Talker` now defines no-op stubs for all tuning/build methods so `Talker | None` is the
-correct type throughout `tune.py`, `check.py`, `build.py`, and `autotune.py`.
+### tunerfailure
 
----
+`prettytuner()` joins the tuner child without checking its exit code, and the
+shared talker's result is not reset before a new run. A failed later tuner can
+therefore return a stale result from an earlier run and select an old model.
 
-**✓ Subtask 1b done:** Logging refactor — child process logging routed through the
-forkserver Manager queue to the parent's `QueueListener`.  `Talker.log_config()` called
-at the top of `tuner()` to redirect the child's root logger; `talker._log_queue` set on
-`TuneTalker` after `listening_start()` so `eval_launch` injects it into ATP spawn workers.
-`QueueListener` uses `respect_handler_level=True` so DEBUG records from child are
-suppressed by the console handler (INFO) and only reach the file handler.
+Reset the result before launch, propagate abnormal child exits, and test that a
+failed tuner cannot return stale state.
 
----
+Relevant code:
+`packages/solverpy-learn/src/solverpy_learn/builder/autotune/autotune.py`.
 
-**✓ Subtask 1c done:** Child-side logging moved to talker methods — all `logger.debug`
-calls in `tuner()` (`autotune.py`) replaced with `talker.debug(...)`.  `logging` import
-and `logger` instance removed from `autotune.py`.  `LogTalker.debug()` promoted from
-no-op to `logger.debug(msg)`.
+### solvedby
 
----
+`solvedby` is intended only to accelerate the first real train/development
+evaluation that recreates training data. The tuning setup inherits `solvedby`
+and `it == 0`, so ATP evaluations during tuning are restricted to the
+reference-solved subset and skipped problems become synthetic `TIMEOUT`
+results. This biases model selection toward retaining reference solutions.
 
-### 1d. Refactor Talker hierarchy to multiple inheritance — `report/talker/`
+Apply `solvedby` only to the first real loop evaluation. Tuning evaluations
+must always use their complete configured benchmark. Add a regression test.
 
-After subtasks 1a–1c, the `TuneTalker` is a pure UI class inheriting a long chain
-`Talker → LogTalker → SolverTalker → TuneTalker`.  Refactor to composable mixins.
+Relevant code:
+`packages/solverpy/src/solverpy/benchmark/evaluation.py` and
+`packages/solverpy-learn/src/solverpy_learn/builder/autotune/build.py`.
 
-**Proposed structure:**
+### dbcache
 
-```
-Talker                  — abstract base: all lifecycle hooks as no-ops
-  EvalTalker            — log-based eval methods (begin/end/next/launching/finished/done/status)
-  TuneEventTalker       — log-based tune methods (trials/trying/tried/trialed/building/iteration/built/tuning/tuned/result)
-  EvalBarTalker(Talker) — bar overrides for eval events; owns _total_bar / _task_bar slots
-  TuneBarTalker(Talker) — bar overrides for tune events; shares _total_bar / _task_bar slots
-  RemoteTalker          — cross-process proxy (unchanged)
+`DB.loaded` retains every provider for every `(bid, sid)` pair for the lifetime
+of the learning loop. Cached providers such as `Jsons` retain complete result
+dictionaries, and `DB.commit()` revisits all historical providers. Experiments
+with many generated strategies therefore grow the main process by roughly the
+size of each loop's result data.
 
-# Concrete classes (via MI):
-SolverTalker(EvalBarTalker, EvalTalker)                         — solverpy (eval only)
-FullTalker(EvalBarTalker, TuneBarTalker, EvalTalker, TuneEventTalker) — solverpy-learn (eval + tuning)
-```
+Define an evaluation-scoped provider lifetime or eviction mechanism. Providers
+must be committed before release, while reuse within one evaluation should
+remain cheap. Add a multi-loop memory/provider-count regression test.
 
-**Bar model:** exactly two slots, `_total_bar` and `_task_bar`, defined on a shared
-`BarTalker` base (slots only, no logic). The assigned bar type changes by context:
+Relevant code:
+`packages/solverpy/src/solverpy/benchmark/db/db.py` and
+`packages/solverpy/src/solverpy/benchmark/db/providers/jsons.py`.
 
-| Context | `_total_bar` | `_task_bar` |
-|---|---|---|
-| Normal eval | `RunningBar` | `SolvingBar` |
-| Tuning (eval phase) | `DefaultBar` (trial counter) | `RunningBar` (leave=False) |
-| Tuning (build phase) | `DefaultBar` (trial counter) | `BuilderBar` |
+### interrupts
 
-**Handler pattern:** store a callable alongside each bar at creation time so callers
-never need to know the bar type:
+The `external` decorator starts a forked process and performs an unguarded
+`join()`. `KeyboardInterrupt` can leave that process and its pool descendants
+running, notably during training-data compression.
 
-```python
-self._task_bar = BuilderBar(...)
-self._task_update = lambda v: self._task_bar.status(v)
-# finished() and iteration() both call self._task_update(v)
-```
+Terminate and join the complete child process tree on interruption and test the
+cleanup path.
 
-**New events:** add `tune_eval_begin(jobs)` and `tune_eval_end(results)` called from
-`prettytuner()` to bracket the ATP evaluation phase inside tuning. This lets
-`EvalBarTalker` distinguish "create normal eval bars" from "create inner eval bar
-(leave=False)" without overriding `eval_begin`/`eval_end` with `report=False` hacks.
+Relevant code: `packages/solverpy/src/solverpy/tools/external.py`.
 
-## Medium
+### remotelifecycle
 
-### 2. `Limits.__lt__` returns `None` — `solver/plugins/shell/limits.py:64–65`
-Returns `None` (not `False`) when limits are incomparable. Python's sort/comparison
-infrastructure expects `bool` from `__lt__`; `None` causes silent incorrect comparisons
-or `TypeError` depending on context. See the existing `-> bool | None` annotation which
-documents the problem but doesn't fix it.
+The default `RemoteTalker` constructor owns a forkserver `Manager`, but normal
+listener shutdown does not shut that manager down. Current autotuning passes a
+plain queue and is unaffected; default API users can leak a Manager server.
 
-### 3. `print()` inside `Limits.__init__` — `solver/plugins/shell/limits.py:43`
-`print(e)` before re-raising bypasses the logging system. In multiprocessing workers
-the output goes to the worker's stdout and is typically invisible. Use `logger.warning`.
+Make manager ownership explicit and shut it down idempotently. Test repeated
+construction and shutdown.
 
-### 4. LogTalker wait timers grow without bound — `task/logtalker.py:106,112`
-`_wait_time *= 1.1` and `_wait_total *= 2` grow indefinitely. For runs of several hours
-the logging interval becomes so large that hangs are effectively invisible.
+Relevant code:
+`packages/solverpy/src/solverpy/report/talker/remotetalker.py`.
 
-### 5. Exception handling swallows pickling errors — `task/task.py:115–125`
-`runtask` catches `Exception` but pickling failures in spawn mode are raised by the
-Pool machinery **before** `runtask` runs, so they bubble up as opaque worker crashes
-rather than useful error messages.
+### setupkeys
 
-## Low / Design
+Production setup code uses `benchmarks` and `strategies`, but the root README
+and `tests/test_benchmark_eval.py` still use the obsolete `bidlist` and
+`sidlist` keys. This causes test setup errors and misleading examples.
 
-### 6. Unreachable `raise` in `redirect.call()` — `tools/redirect.py:73`
-`raise` after an `except` block that already unconditionally re-raises. Dead code that
-suggests `KeyboardInterrupt` was meant to be handled separately (see commented-out code
-nearby) but was never wired up.
+Update the remaining callers and restore the affected tests.
 
-### 7. Solver mutable state visible across processes — `solver/solverpy.py:22–25`, `solver/solver.py:92`
-`_exitcode` and `_output` are set on the solver during `solve()`. With spawn-based
-multiprocessing, each worker gets its own copy so mutations are silently lost. These
-values are process-internal and never needed in the parent, so this is by design.
+### limits
 
-### 9. Talker log queue never started — `task/launcher.py`
-`LogTalker` does not call `log_start()` before `launching()`, so `_log_queue` is always
-`None` and child process logging is never redirected to the parent. This is intentional:
-worker log output is process-internal. To enable forwarding if ever needed: call
-`log_start()` in `listening_start()` and inject `_log_queue` into tasks in `launching()`.
+`Limits.__lt__()` returns `None` for some incomparable limits. Python
+comparison machinery expects a boolean, and cached-result simulation relies on
+this ordering.
 
-### 10. Scheduler state not reset between loop iterations — `setups/loop.py`
-`LogTalker`/`SolverTalker` instances created once and reused across loop iterations.
-Their internal counters (`_solved`, `_unsolved`, `_errors`) are only reset per job, not
-per iteration, which can give misleading progress totals in multi-loop runs.
+Define and test the intended partial-order behavior without returning `None`.
 
-### 11. Plugin order dependency implicit — `solver/pluginsolver.py:130–141`
-`update()` then `finished()` is called on all decorators in sequence. Plugins that
-depend on result state set by an earlier plugin's `update()` are fragile to reordering.
-No documentation of expected order.
+Relevant code:
+`packages/solverpy/src/solverpy/solver/plugins/shell/limits.py`.
 
-### 12. Mutable defaults in `ShellSolver.__init__` / `StdinSolver.__init__`
-`builder: "LimitBuilder" = {}` and `plugins: list["Plugin"] = []` are mutable defaults.
-Same class of bug as the fixed `SolverTask` issue — safe only because these happen to
-not be mutated in-place, but fragile.
+### limitlogging
 
-# Backlog
+`Limits.__init__()` prints parsing errors directly before raising. This
+bypasses logging and is usually invisible in multiprocessing workers.
 
-1. automated restriction to solvable problems (force implementation)
-2. trains regeneration
-3. show best iteration in the training report
-4. show the initial model in the report
-5. reporting: graphs, super-fences (e.g. render graph data → SVG); `solverpy report` HTML conversion done, superfences not yet wired
-6. progress web api
-7. improve total bar ETA by not including skipped problems
-8. improve ETA by considering timeout
-9. nice ntfy messages
-10. solverpy command script (unified CLI, Approach A) — mostly done
-   - core subcommands: `init` ✓, `run` ✓, `clean` ✓, `esid2strat` ✓, `report` ✓
-   - stubs remaining: `eval sid bid`, `loop bid-train bid-devel`
-   - learn subcommands: `tune` ✓, `compress` ✓, `decompress` ✓, `deconflict` ✓, `filter` ✓
-   - remaining: remove old `scripts/` shell scripts once stubs are implemented
-11. yaml formatter: use named globals (like `trains:`) instead of YAML anchors `&id001`
-    (tried `_shared`/`_replace` approach — reverted; setup+devels now combined in one block)
-12. scripts update
-13. simulated runs from previous outputs
-14. tuning phase for posneg balancing - requires full data storage
+Report the invalid limit through logging or exception context instead.
+
+### progress
+
+`LogTalker` multiplies its time and task reporting intervals without a cap.
+During long runs, progress messages can become too sparse to distinguish slow
+work from a hang.
+
+Cap or otherwise bound both reporting intervals.
+
+Relevant code:
+`packages/solverpy/src/solverpy/report/talker/logtalker.py`.
+
+### pickling
+
+`Task.runtask()` catches exceptions raised by task execution, but spawn-time
+pickling failures occur in the pool before `runtask()` and surface as opaque
+worker failures.
+
+Add useful context at the pool submission/result boundary and cover the spawn
+failure path.
+
+### mutable
+
+`ShellSolver`, `StdinSolver`, and `SolverPy` use mutable default dictionaries
+or lists for constructor arguments. Current code concatenates rather than
+mutating them, but the API remains fragile.
+
+Replace the defaults with `None` and initialize per instance.
+
+### redirect
+
+`redirect.call()` has an unreachable `raise` after an exception handler that
+already re-raises. Remove the dead code and clarify the intended
+`KeyboardInterrupt` behavior.
+
+## Features
+
+### streaming
+
+Construct LightGBM datasets incrementally from sparse NPZ chunks so only a
+bounded number of chunks are resident at once. Preserve parallel chunk
+processing and cheap link-based train-data merging.
+
+The LightGBM C API supports sparse row insertion. A native LightGBM binary file
+may be used as a derived cache, but should not replace the canonical chunked
+data.
+
+### talkers
+
+Consider replacing the current `Talker -> LogTalker -> EvalTalker ->
+LoopTalker` inheritance chain with composable evaluation and tuning mixins.
+Keep the existing two-bar behavior and the current event API.
+
+### solvable
+
+Provide an explicit forced mode for restricting an evaluation to problems
+known to be solvable. Keep this separate from the loop-internal `solvedby`
+optimization described above.
+
+### regeneration
+
+Add an explicit workflow for regenerating training data rather than relying on
+manual experiment setup changes.
+
+### bestiteration
+
+Show the selected LightGBM iteration in the training report.
+
+### initialmodel
+
+Show the initial model and its result in the tuning report.
+
+### reporting
+
+Extend reports with graphs and custom superfences, including rendering graph
+data to SVG. Offline Markdown-to-HTML conversion already exists.
+
+### webapi
+
+Expose evaluation and tuning progress through a web API.
+
+### eta
+
+Improve progress ETA by excluding skipped problems and accounting for per-task
+timeouts.
+
+### notifications
+
+Improve `ntfy` notification content.
+
+### cli
+
+Finish the unified command line interface. `init`, `run`, `clean`,
+`esid2strat`, `report`, `tune`, `compress`, `decompress`, `deconflict`, and
+`filter` exist; `eval` and `loop` remain stubs. Remove superseded shell scripts
+after their replacements exist.
+
+### yaml
+
+Make setup YAML use named shared globals such as `trains` instead of generated
+anchor names such as `&id001`.
+
+### scripts
+
+Update remaining experiment scripts to current setup and CLI APIs.
+
+### replay
+
+Support simulated runs reconstructed from previously saved solver outputs.
+
+### plugins
+
+Document or remove the implicit decorator ordering dependency: all `update()`
+methods run before all `finished()` methods, and some plugins depend on state
+created by an earlier plugin.
+
+## Test Coverage
+
+The related tasks above should add focused tests. Broader process coverage is
+still needed for:
+
+- evaluation interruption and solver descendant cleanup;
+- tuner interruption and nested pool cleanup;
+- repeated loop iterations without Manager or provider growth;
+- explicit `fork`, `forkserver`, and `spawn` paths.
