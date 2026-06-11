@@ -1,5 +1,6 @@
 import gc
 import weakref
+from types import SimpleNamespace
 
 import lightgbm as lgb
 import numpy as np
@@ -206,3 +207,48 @@ def test_same_dataset_is_not_duplicated_or_used_for_early_stopping(
    assert all(set(metrics) == {"train"} for (_, _, metrics) in talker.steps)
    assert talker.selected[0][1]["train"] == talker.selected[0][1]["valid"]
    assert any("ignoring early stopping" in msg for msg in talker.debugs)
+
+
+def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
+   calls = []
+
+   class Solver:
+
+      def call(self, *args):
+         calls.append(args)
+
+   solver = Solver()
+   builder = SimpleNamespace(
+      _dataname="experiment",
+      _trains={"refs": ["reference"]},
+      _devels={
+         "solver": solver,
+         "trains": object(),
+         "benchmarks": ["development"],
+         "strategies": ["reference"],
+         "solvedby": "reference",
+         "it": 0,
+      },
+      applies=lambda refs, model: [f"{refs[0]}-{model}"],
+   )
+   launched = {}
+
+   def launch(**setup):
+      launched.update(setup)
+      return {}
+
+   monkeypatch.setattr(build.evaluation, "launch", launch)
+   stats = {}
+
+   build.score(stats, builder, "trial")
+
+   assert "solvedby" not in launched
+   assert launched["it"] == 0
+   assert launched["benchmarks"] == ["development"]
+   assert stats["score"] == 0
+   assert calls == [
+      ("trains", "disable"),
+      ("debug-trains", "disable"),
+      ("trains", "enable"),
+      ("debug-trains", "enable"),
+   ]

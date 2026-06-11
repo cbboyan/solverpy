@@ -17,21 +17,6 @@ failed tuner cannot return stale state.
 Relevant code:
 `packages/solverpy-learn/src/solverpy_learn/builder/autotune/autotune.py`.
 
-### solvedby
-
-`solvedby` is intended only to accelerate the first real train/development
-evaluation that recreates training data. The tuning setup inherits `solvedby`
-and `it == 0`, so ATP evaluations during tuning are restricted to the
-reference-solved subset and skipped problems become synthetic `TIMEOUT`
-results. This biases model selection toward retaining reference solutions.
-
-Apply `solvedby` only to the first real loop evaluation. Tuning evaluations
-must always use their complete configured benchmark. Add a regression test.
-
-Relevant code:
-`packages/solverpy/src/solverpy/benchmark/evaluation.py` and
-`packages/solverpy-learn/src/solverpy_learn/builder/autotune/build.py`.
-
 ### dbcache
 
 `DB.loaded` retains every provider for every `(bid, sid)` pair for the lifetime

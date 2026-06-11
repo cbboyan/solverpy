@@ -1,5 +1,13 @@
 # DONE
 
+## Tuning evaluations ignore `solvedby` ✓
+
+ATP evaluations used for tuning now remove the loop-internal `solvedby`
+optimization from their copied development setup. The first real loop
+evaluation can still use `solvedby`, while tuning always scores models on the
+complete configured benchmark. A regression test covers the inherited
+`solvedby` plus `it == 0` case.
+
 ## Memory-efficient tuning accuracy and dataset reuse ✓
 
 Autotuning no longer retains complete train/development CSR matrices alongside

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-11)
+## Unreleased changes (2026-06-12)
 
-* docs: finish setup-key rename [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix(autotune): evaluate full tuning benchmark [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: finish setup-key rename [[details](https://github.com/cbboyan/solverpy/commit/e1f7b6b) | [browse](https://github.com/cbboyan/solverpy/tree/e1f7b6b)]
 * feat(report): add training data stats [[details](https://github.com/cbboyan/solverpy/commit/9e040a9) | [browse](https://github.com/cbboyan/solverpy/tree/9e040a9)]
 * fix(autotune): avoid retaining raw training data [[details](https://github.com/cbboyan/solverpy/commit/04a44aa) | [browse](https://github.com/cbboyan/solverpy/tree/04a44aa)]
 * fix: fork tuner before starting listener threads [[details](https://github.com/cbboyan/solverpy/commit/7198dab) | [browse](https://github.com/cbboyan/solverpy/tree/7198dab)]

@@ -189,6 +189,7 @@ def score(
    modelname = f"{builder._dataname}/opt/{nick}"
    strategies = builder.applies(builder._trains["refs"], modelname)
    setup = Setup(builder._devels, strategies=strategies)
+   setup.pop("solvedby", None)
    setup["pool_context"] = "spawn"
    assert "solver" in setup
    assert "trains" in setup
