@@ -71,14 +71,6 @@ construction and shutdown.
 Relevant code:
 `packages/solverpy/src/solverpy/report/talker/remotetalker.py`.
 
-### setupkeys
-
-Production setup code uses `benchmarks` and `strategies`, but the root README
-and `tests/test_benchmark_eval.py` still use the obsolete `bidlist` and
-`sidlist` keys. This causes test setup errors and misleading examples.
-
-Update the remaining callers and restore the affected tests.
-
 ### limits
 
 `Limits.__lt__()` returns `None` for some incomparable limits. Python

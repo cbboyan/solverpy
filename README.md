@@ -61,16 +61,16 @@ You must specify at least the following:
 | key          | type      |   description |
 |--------------|-----------|---------------|
 | `cores` | `int`  | number of CPU cores to use for parallel evaluation |
-| `sidlist` | `[str]` | list of strategies to evaluate |
-| `bidlist` | `[str]` | list of problems to evaluate on |
+| `strategies` | `[str]` | list of strategies to evaluate |
+| `benchmarks` | `[str]` | list of problems to evaluate on |
 | `limit` | `str` | the resource limit for a single solver run |
 
 ### Strategies and _strategy id's_
 
 Strategies are stored in files in the directory `solverpy_db/strats` which must exist in the current working directory (the directory is adjustable by the `SOLVERPY_DB` environment variable).
-The filename of each strategy is used to reference the strategy in `sidlist` and it is called the _strategy id_ (`sid`).
+The filename of each strategy is used to reference the strategy in `strategies` and it is called the _strategy id_ (`sid`).
 
-Hence, for every `sid` in `sidlist` in `mysetup`, there must be the file `solverpy_db/strats/sid` in the current working directory.
+Hence, for every `sid` in `strategies` in `mysetup`, there must be the file `solverpy_db/strats/sid` in the current working directory.
 This file contains the strategy definition (typically command line options) to pass to the `solver.solve` method.
 
 ### Problems and _benchmark id's_
@@ -99,8 +99,8 @@ from solverpy.benchmark import setups
 mysetup = {
     "cores": 4,
     "limit": "T10",
-    "bidlist": ["myproblems"],
-    "sidlist": ["buzzard", "sparrow", "chickadee"],
+    "benchmarks": ["myproblems"],
+    "strategies": ["buzzard", "sparrow", "chickadee"],
 }
 ```
 
@@ -132,7 +132,6 @@ You will see the progress of the experiments on the screen.  Once finished, you 
 | `outputs` | Raw solver output files for each solver run (only if selected). |
 
 Now run the script again and notice that it finished much faster.  It is because the cached results were reused and no solvers were actually launched.  So be careful and always clean the database if you want to force recompute.  Simply delete all the directories in `solverpy_db` except `strats` (see the script `clean_db.sh` in the [example archive](https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz)).
-
 
 
 

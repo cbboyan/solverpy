@@ -178,16 +178,16 @@ during benchmark evaluation.
 ## Production setup-key rename ✓
 
 Renamed the two core Setup keys throughout production code and maintained
-documentation. The legacy root README and benchmark tests still need updating
-and are tracked in `TODO.md`.
+documentation and benchmark tests.
 
 - `setups/setup.py`: TypedDict fields and docstring updated
 - `benchmark/evaluation.py`: `launch()` signature updated
-- `setups/loop.py`: all `setup["sidlist"]` / `setup["bidlist"]` references updated
+- `setups/loop.py`: setup key references updated to `strategies` / `benchmarks`
 - `data/setups/eval-eprover.yml`: uses new key names
 - `docs/tutorial.md`, `docs/index.md`: code examples and table updated
 - `docs/dia/solverpy-benchmark.puml`, `docs/dia/solverpy-ml.puml`: field names updated
 - `docs/dia/solverpy-benchmark.svg`, `docs/dia/solverpy-ml.svg`: inline text updated
+- `README.md`, `tests/test_benchmark_eval.py`: remaining legacy callers updated
 
 ## Plugin repr audit and fixes ✓
 

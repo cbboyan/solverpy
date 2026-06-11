@@ -62,35 +62,35 @@ def solverpy_env():
 @pytest.fixture(params=EVAL_CASES, scope="module")
 def eval_case(request, solverpy_env):
    """Run evaluation (DB caches results) and return (setup, bid, sid)."""
-   solver_fn, bidlist, sidlist = request.param
+   solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
       limit="T1",
-      bidlist=bidlist,
-      sidlist=sidlist,
+      benchmarks=benchmarks,
+      strategies=strategies,
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
    solver_fn(setup)
    setups.evaluation(setup)
    setups.launch(setup)
-   return setup, bidlist[0], sidlist[0]
+   return setup, benchmarks[0], strategies[0]
 
 
 @pytest.fixture(params=EVAL_ATP, scope="module")
 def eval_atp(request, solverpy_env):
    """Return already-evaluated ATP case (results cached by eval_case)."""
-   solver_fn, bidlist, sidlist = request.param
+   solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
       limit="T1",
-      bidlist=bidlist,
-      sidlist=sidlist,
+      benchmarks=benchmarks,
+      strategies=strategies,
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
    solver_fn(setup)
    setups.evaluation(setup)
    setups.launch(setup)
-   return setup, bidlist[0], sidlist[0]
+   return setup, benchmarks[0], strategies[0]
 
 
 @pytest.fixture(scope="module")
