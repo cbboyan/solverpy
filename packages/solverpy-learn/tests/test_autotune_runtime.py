@@ -82,6 +82,43 @@ def test_terminate_tuner_ignores_unstarted_process():
    autotune._terminate_tuner(process)
 
 
+def test_tuner_prefixes_repeated_phase_names(monkeypatch, tmp_path):
+   calls = []
+
+   class FakeTalker:
+      _log_queue = None
+
+      def __getattr__(self, name):
+         del name
+         return lambda *args, **kwargs: None
+
+   def phase(**kwargs):
+      calls.append(kwargs["nick"])
+      return ((0, None, None, None, None), {})
+
+   monkeypatch.setattr(autotune, "_datasets",
+                       lambda *args, **kwargs: (object(), object(), 1, 2))
+   monkeypatch.setattr(
+      autotune,
+      "PHASES",
+      {
+         "l": phase,
+         "w": phase,
+      },
+   )
+
+   autotune.tuner(
+      "train",
+      "test",
+      d_tmp=str(tmp_path),
+      phases="l:w:l",
+      iters=15,
+      talker=FakeTalker(),
+   )
+
+   assert calls == ["01-leaves", "02-posneg", "03-leaves"]
+
+
 def test_prettytuner_starts_process_before_listeners(monkeypatch, tmp_path):
    calls = []
 

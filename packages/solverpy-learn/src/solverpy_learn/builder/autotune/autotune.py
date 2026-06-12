@@ -26,6 +26,16 @@ PHASES: dict[str, Callable[..., "TuneResult"]] = {
    "w": tune.posneg_weight,
 }
 
+PHASE_NAMES = {
+   "l": "leaves",
+   "b": "bagging",
+   "r": "regular",
+   "m": "min_data",
+   "d": "depth",
+   "e": "learning_rate",
+   "w": "posneg",
+}
+
 DEFAULTS: dict[str, Any] = {
    'learning_rate': 0.15,
    'objective': 'binary',
@@ -192,8 +202,9 @@ def tuner(
    else:
       best = (-1, None, None, None, None)
 
-   for phase in phases0:
-      (best0, params0) = PHASES[phase](params=params, **args)
+   for (phase_index, phase) in enumerate(phases0, start=1):
+      nick = f"{phase_index:02d}-{PHASE_NAMES[phase]}"
+      (best0, params0) = PHASES[phase](nick=nick, params=params, **args)
       if best0[0] > best[0]:
          best = best0
          params.update(params0)
