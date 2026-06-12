@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-12)
 
-* fix(autotune): evaluate full tuning benchmark [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt): add llm2smt solver [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix(autotune): evaluate full tuning benchmark [[details](https://github.com/cbboyan/solverpy/commit/a065ca2) | [browse](https://github.com/cbboyan/solverpy/tree/a065ca2)]
 * docs: finish setup-key rename [[details](https://github.com/cbboyan/solverpy/commit/e1f7b6b) | [browse](https://github.com/cbboyan/solverpy/tree/e1f7b6b)]
 * feat(report): add training data stats [[details](https://github.com/cbboyan/solverpy/commit/9e040a9) | [browse](https://github.com/cbboyan/solverpy/tree/9e040a9)]
 * fix(autotune): avoid retaining raw training data [[details](https://github.com/cbboyan/solverpy/commit/04a44aa) | [browse](https://github.com/cbboyan/solverpy/tree/04a44aa)]

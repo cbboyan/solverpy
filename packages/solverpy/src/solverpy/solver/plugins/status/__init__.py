@@ -19,7 +19,7 @@ class solverpy.solver.plugins.status.limiter.Limiter extends solverpy.solver.plu
 | Plugin | Used by | Description |
 |---|---|---|
 | [`Tptp`][solverpy.solver.plugins.status.tptp.Tptp] | E, Vampire, Lash, Prover9 | Parses TPTP SZS status line from solver output |
-| [`Smt`][solverpy.solver.plugins.status.smt.Smt] | Cvc5, Z3, Bitwuzla | Parses SMT-LIB2 status (`sat`/`unsat`/`unknown`) |
+| [`Smt`][solverpy.solver.plugins.status.smt.Smt] | Cvc5, Z3, Bitwuzla, Llm2smt | Parses SMT-LIB2 status (`sat`/`unsat`/`unknown`) |
 | [`Limiter`][solverpy.solver.plugins.status.limiter.Limiter] | optional | Caps `runtime` at the time limit; adds `limit` key to result |
 
 """
@@ -29,4 +29,3 @@ from .tptp import Tptp
 from .limiter import Limiter
 
 __all__ = ["Smt", "Tptp", "Limiter"]
-

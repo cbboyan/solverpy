@@ -33,6 +33,7 @@ SMT_ALL = SMT_OK | SMT_FAILED | SMT_TIMEOUT
 
 SMT_INC_OK = SMT_OK - SMT_INCOMPLETE
 
+
 class Smt(Decorator):
    """Parse the SMT-LIB2 status token from solver output.
 
@@ -48,7 +49,7 @@ class Smt(Decorator):
    - `solver._timeouts` ← `SMT_TIMEOUT`
    - `solver._statuses` ← `SMT_ALL`
 
-   Used by: Cvc5, Z3, Bitwuzla.
+   Used by: Cvc5, Z3, Bitwuzla, Llm2smt.
    """
 
    def __init__(self, complete=True, **kwargs):
@@ -72,7 +73,7 @@ class Smt(Decorator):
       instance: Any,
       strategy: Any,
    ) -> str:
-      del instance, strategy # unused arguments
+      del instance, strategy  # unused arguments
       return cmd
 
    def update(
@@ -83,10 +84,9 @@ class Smt(Decorator):
       result: "Result",
    ) -> None:
       """Extract the SMT status token and write it to `result["status"]`."""
-      del instance, strategy # unused arguments
+      del instance, strategy  # unused arguments
       status = patterns.single(SMT_STATUS, output, "")
       if status:
          result["status"] = status
       elif "status" not in result:
          result["status"] = "error"
-

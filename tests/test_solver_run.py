@@ -67,7 +67,7 @@ def test_run_nonempty(output):
 
 
 def test_run_contains_instance(problem, output):
-   assert Path(problem).stem in output.lower()
+   assert Path(problem).stem.lower() in output.lower()
 
 
 # --- solve() ---
