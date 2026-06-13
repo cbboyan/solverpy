@@ -44,6 +44,23 @@ cleanup path.
 
 Relevant code: `packages/solverpy/src/solverpy/tools/external.py`.
 
+### terminationreporting
+
+Experiment logs do not reliably record how a run ended. Normal completion and
+user interruption should both emit an explicit final log message, and both
+paths should send an `ntfy` notification with the termination reason. The
+current learning-loop `KeyboardInterrupt` handler prints only
+`Terminated (keyboard interrupt)` to the launching terminal, so the message is
+not necessarily preserved in the experiment `.log`.
+
+Make final reporting idempotent so each run emits exactly one terminal status,
+including when nested tuner/evaluation cleanup also handles the interruption.
+Cover normal completion and single-`Ctrl+C` shutdown in tests.
+
+Relevant code:
+`packages/solverpy-learn/src/solverpy_learn/setups/loop.py` and the setup/log
+notification lifecycle.
+
 ### remotelifecycle
 
 The default `RemoteTalker` constructor owns a forkserver `Manager`, but normal
@@ -85,6 +102,24 @@ Cap or otherwise bound both reporting intervals.
 Relevant code:
 `packages/solverpy/src/solverpy/report/talker/logtalker.py`.
 
+### nestedbarpadding
+
+The outer tuning bar is shorter than its inner build/evaluation bar. When tqdm
+redraws the outer bar after an inner evaluation update, characters from the
+longer line can remain visible, for example `0/16998 !0` instead of `0/16`.
+
+Pad nested bars to a shared visible line width. Extend the existing
+`_postfix_width()`/`{pad}` mechanism to cover the complete suffix, including
+the differing `n/total` widths, and have `LoopTalker` calculate the maximum
+suffix width from the outer trial count and inner evaluation size. Avoid fixed
+spaces and account for ANSI colour sequences. Add a formatting regression test
+that redraws a tune bar after a longer evaluation bar and verifies that no
+stale suffix remains.
+
+Relevant code:
+`packages/solverpy/src/solverpy/report/talker/bar.py` and
+`packages/solverpy-learn/src/solverpy_learn/report/talker/looptalker.py`.
+
 ### pickling
 
 `Task.runtask()` catches exceptions raised by task execution, but spawn-time
@@ -119,6 +154,13 @@ processing and cheap link-based train-data merging.
 The LightGBM C API supports sparse row insertion. A native LightGBM binary file
 may be used as a derived cache, but should not replace the canonical chunked
 data.
+
+Also benchmark thread-based NPZ chunk loading. NumPy/SciPy decompression and
+array work should release the GIL sufficiently, while threads avoid process
+result serialization and the page-table cost of forking a process with a large
+resident LightGBM dataset. Cap concurrency by the number of chunks regardless
+of executor type. Keep `spawn` as a fallback to evaluate, not the default:
+loaded sparse matrices would still need to be serialized back to the parent.
 
 ### talkers
 

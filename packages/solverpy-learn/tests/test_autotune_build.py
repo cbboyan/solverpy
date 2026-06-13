@@ -65,6 +65,7 @@ def test_datasets_release_inputs_and_reuse_same_file(monkeypatch):
    references = []
    constructed = []
    dataset_references = []
+   events = []
 
    class Dataset:
 
@@ -83,9 +84,11 @@ def test_datasets_release_inputs_and_reuse_same_file(monkeypatch):
          dataset_references.append(reference)
 
       def construct(self):
+         events.append("construct")
          return self
 
-   def load(_):
+   def load(path):
+      events.append(f"load:{path}")
       return (
          np.array([[0.0], [1.0]]),
          np.array([0, 1]),
@@ -101,11 +104,13 @@ def test_datasets_release_inputs_and_reuse_same_file(monkeypatch):
    assert len(constructed) == 1
    assert dataset_references == [None]
    assert (pos, neg) == (1, 1)
+   assert events == ["load:same", "construct"]
    assert all(reference() is None for reference in references)
 
    references.clear()
    constructed.clear()
    dataset_references.clear()
+   events.clear()
    (dtrain, dtest, pos, neg) = autotune._datasets("train", "valid")
    gc.collect()
 
@@ -113,6 +118,7 @@ def test_datasets_release_inputs_and_reuse_same_file(monkeypatch):
    assert len(constructed) == 2
    assert dataset_references == [None, dtrain]
    assert (pos, neg) == (1, 1)
+   assert events == ["load:train", "load:valid", "construct", "construct"]
    assert all(reference() is None for reference in references)
 
 

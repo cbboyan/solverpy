@@ -95,31 +95,38 @@ def _datasets(
    f_test: str,
    params: dict[str, Any] | None = None,
 ) -> tuple[lgb.Dataset, lgb.Dataset, int, int]:
-   (xs, ys) = svm.load(f_train)
-   pos = int(sum(ys))
-   neg = len(ys) - pos
+   (train_xs, train_ys) = svm.load(f_train)
+   pos = int(sum(train_ys))
+   neg = len(train_ys) - pos
+
+   if f_test == f_train:
+      test_xs = test_ys = None
+   else:
+      (test_xs, test_ys) = svm.load(f_test)
+
    dtrain = lgb.Dataset(
-      xs,
-      label=ys,
+      train_xs,
+      label=train_ys,
       params=params,
       free_raw_data=True,
    )
    dtrain.construct()
-   del xs, ys
+   del train_xs, train_ys
 
    if f_test == f_train:
       return (dtrain, dtrain, pos, neg)
 
-   (xs, ys) = svm.load(f_test)
+   assert test_xs is not None
+   assert test_ys is not None
    dtest = lgb.Dataset(
-      xs,
-      label=ys,
+      test_xs,
+      label=test_ys,
       reference=dtrain,
       params=params,
       free_raw_data=True,
    )
    dtest.construct()
-   del xs, ys
+   del test_xs, test_ys
    return (dtrain, dtest, pos, neg)
 
 
