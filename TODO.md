@@ -3,6 +3,103 @@
 Outstanding work for `solverpy` and `solverpy-learn`, ordered by importance
 within each section. Headings use stable descriptive labels instead of numbers.
 
+## Refactors
+
+### dataset
+
+Extract a `Dataset` TypedDict from `Setup` to separate per-dataset fields from
+shared experiment configuration.  Currently `Setup` holds everything and a
+parallel `devels: Setup` argument is threaded through most functions.  After
+this refactor `Setup` has two nested fields — `training: Dataset` and
+`devels: Dataset` — and all functions that currently take a separate `devels`
+argument drop it.
+
+**New `Dataset` TypedDict** (new file `solverpy_learn/setups/dataset.py`):
+```
+benchmarks, strategies, refs, ref,
+trains, dataname, basedataname, previous_trains,
+proofs, max_proofs, start_dataname
+```
+
+**`Setup` changes**: remove all the above fields; add `training: Dataset` and
+`devels: Dataset`.  `sel_features`, `gen_features` and other ML hyperparams
+stay in `Setup` as shared config.
+
+**Key mechanical changes** (all files listed relative to `packages/`):
+
+1. `evaluation.py:init()` and all `launch(setup, devels=None)` signatures —
+   drop the `devels` parameter; callers read `setup.get("devels")` instead.
+   Affected: `solverpy/benchmark/evaluation.py`,
+   `solverpy/setups/loop.py`, `solverpy_learn/setups/loop.py`.
+
+2. `evaluator.launch(talker=talker, **setup)` at three call sites cannot
+   spread `Setup` directly any more — dataset fields are nested.  Introduce a
+   helper `eval_kwargs(setup: Setup, dataset: Dataset) -> dict` that merges
+   shared fields with a given dataset (excluding the `training`/`devels` keys)
+   and use it at every `**setup` spread:
+   - `solverpy/setups/loop.py:60`
+   - `solverpy_learn/setups/loop.py:167`
+   - `solverpy_learn/builder/autotune/build.py:199`
+
+3. `loopinit(setup)` and `looping(setup)` in `solverpy_learn/setups/loop.py`
+   currently mutate dataset fields directly on `setup`.  Change them to take
+   and return a `Dataset`, operating on `setup["training"]` (or the devels
+   dataset) at the call site.
+
+4. `oneloop(setup, talker, dataset)` in `solverpy_learn/setups/loop.py`
+   operates on one dataset at a time.  Change signature to
+   `oneloop(setup, dataset: Dataset, talker, label)` and update all field
+   accesses (`trains`, `dataname`, `benchmarks`, `strategies`, etc.) to go
+   through the `Dataset` argument instead of `setup`.
+
+5. `initialize(setup, devels)` in `solverpy_learn/setups/loop.py` — collect
+   trains from `setup["training"]` and `setup.get("devels")` instead of the
+   two separate Setup arguments.
+
+6. `do_loop` / `do_iter` closures in `launch()` — currently called with the
+   full `setup` or `devels` Setup object; change them to call
+   `oneloop(setup, setup["training"], ...)` and
+   `oneloop(setup, setup["devels"], ...)`.
+
+7. `AutoTuner.__init__` and all `EnigmaModel` / `EnigmaSel` / `EnigmaGen` /
+   `Enigma` / `Cvc5ML` constructors — currently take `trains: Setup, devels:
+   Setup`.  Change to take `setup: Setup`; access `setup["training"]` and
+   `setup["devels"]` internally.  Store them as `self._training: Dataset` and
+   `self._devels: Dataset`.  `self._dataname` comes from
+   `setup["training"]["dataname"]`.
+
+8. `EnigmaModel` — replace `self._fkey` / `self._trains[self._fkey]` with
+   `self._features: str` initialised from `setup["sel_features"]` or
+   `setup["gen_features"]` at construction time.
+
+9. `autotune/build.py:score()` — replace
+   `Setup(builder._devels, strategies=strategies)` with
+   `eval_kwargs(setup, builder._devels | {"strategies": strategies})`.
+
+10. `enigma.py` sub-builder construction (lines ~159–179) — copy patterns like
+    `Setup(trains, trains=trains["trains"]._sel)` become
+    `Dataset(trains_dataset, trains=trains_dataset["trains"]._sel)`.
+
+11. `setups/solver.py` and `setups/tuner.py` — setup construction helpers
+    that currently set `setup["trains"]`, `setup["dataname"]` etc. must
+    instead build or update `setup["training"]`.
+
+12. `scripts/run.py` and all tests that build Setup dicts directly — update to
+    nest dataset fields under `setup["training"]` (and optionally `"devels"`).
+
+**Risk areas**:
+- `evaluation.run()` receives `it`, `proofs`, `max_proofs` via `**others`
+  from the merged dict; after refactor these come from `Dataset` through
+  `eval_kwargs`, so verify they still flow through.
+- `loopinit()` / `looping()` mutate the dataset in-place; since `Dataset` is
+  a plain dict nested inside `Setup`, mutations propagate correctly without
+  special handling.
+- `builder.reset(dataname)` is called with `dataset["dataname"]` after
+  `loopinit` updates it; the call site in `loopinit` must use the dataset's
+  updated value.
+- `solvedby` field: currently popped in `build.py`; not declared in `Setup`;
+  verify it is never set on the dataset side before removing.
+
 ## Bugs
 
 ### tunerfailure

@@ -16,6 +16,7 @@ from solverpy.report.talker.talker import Talker
 from solverpy.tools.resources import summary as resource_summary, usage
 from solverpy_learn.report.talker.looptalker import LoopTalker
 from ..builder.builder import Builder
+from ..builder.plugins.trains import Trains
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 class Runtime:
    """Process resources owned by one complete learning-loop session."""
 
-   def __init__(self, trains: Iterable) -> None:
+   def __init__(self, trains: Iterable[Trains]) -> None:
       unique = {id(train): train for train in trains}
       self._trains = list(unique.values())
       self._manager = None
@@ -189,25 +190,26 @@ def oneloop(
 
 def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
 
-   talker = make_talker(setup)
    runtime = None
    started_at = time.monotonic()
    dataname = setup.get("dataname", "unknown")
    logger.info(resource_summary("main", started_at))
    logger.debug(usage(f"run start: {dataname}"))
 
-   def do_loop(col: Setup | None, dataset: str) -> None:
-      if not col: return
-      oneloop(col, talker, dataset)
-
-   def do_iter(col: Setup | None, dataset: str) -> None:
-      if not col: return
-      col["strategies"].extend(setup["news"] if "news" in setup else [])
-      loopinit(col)
-      oneloop(col, talker, dataset)
-
    try:
       runtime = initialize(setup, devels)
+      talker = make_talker(setup)
+
+      def do_loop(col: Setup | None, dataset: str) -> None:
+         if not col: return
+         oneloop(col, talker, dataset)
+
+      def do_iter(col: Setup | None, dataset: str) -> None:
+         if not col: return
+         col["strategies"].extend(setup["news"] if "news" in setup else [])
+         loopinit(col)
+         oneloop(col, talker, dataset)
+
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup, devels)
       if "loops" in setup:

@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-13)
+## Unreleased changes (2026-06-14)
 
-* fix(autotune): preload validation data [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor(setup): plan Dataset split and init ordering [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix(autotune): preload validation data [[details](https://github.com/cbboyan/solverpy/commit/4989b84) | [browse](https://github.com/cbboyan/solverpy/tree/4989b84)]
 * fix(autotune): isolate repeated tuning phases [[details](https://github.com/cbboyan/solverpy/commit/16eb4d3) | [browse](https://github.com/cbboyan/solverpy/tree/16eb4d3)]
 * feat(smt): add llm2smt solver [[details](https://github.com/cbboyan/solverpy/commit/c3fc5fc) | [browse](https://github.com/cbboyan/solverpy/tree/c3fc5fc)]
 * fix(autotune): evaluate full tuning benchmark [[details](https://github.com/cbboyan/solverpy/commit/a065ca2) | [browse](https://github.com/cbboyan/solverpy/tree/a065ca2)]
