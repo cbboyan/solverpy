@@ -18,7 +18,6 @@ bars, etc.) are not serialised unnecessarily.
 
 from typing import Any, TYPE_CHECKING
 import logging
-import multiprocessing
 import threading
 
 from .talker import Talker
@@ -61,33 +60,21 @@ class RemoteTalker(Talker):
    """
 
    LOCALS = {
-      "log_prepare",
-      "log_start",
-      "log_stop",
-      "log_config",
       "listening_start",
       "listening_stop",
       "listening_handle",
+      "eval_launch",
    }
    """Methods that execute locally in the calling process (not forwarded via queue)."""
 
-   def __init__(self, local: Talker, queue: "Queue[Any] | None" = None):
+   def __init__(self, local: Talker, queue: "Queue[Any]"):
       """
       Args:
           local: the real talker whose methods are called in the parent process.
-          queue: queue to use for cross-process communication.  If ``None``
-              (default), a forkserver Manager queue is created — required when
-              the queue must survive pickling into spawn workers.  Pass a plain
-              ``multiprocessing.Queue`` when the child is forked and pickling
-              is not needed.
+          queue: plain ``multiprocessing.Queue`` for cross-process communication.
       """
       Talker.__init__(self)
-      if queue is not None:
-         self._remote_queue: Queue[Any] = queue
-         self._remote_manager = None
-      else:
-         self._remote_manager = multiprocessing.get_context("forkserver").Manager()
-         self._remote_queue = self._remote_manager.Queue()
+      self._remote_queue: Queue[Any] = queue
       self._listening_thread: threading.Thread | None = None
       self._stop_listening: threading.Event = threading.Event()
       self._local: Talker = local
@@ -100,9 +87,16 @@ class RemoteTalker(Talker):
          return wrapper
       return super().__getattribute__(name)
 
+   def eval_launch(self, tasks):
+      """Inject log queue into child's tasks locally, then forward to parent for stats."""
+      if self._log_queue is not None:
+         for task in tasks:
+            task.logqueue = self._log_queue
+      queue = object.__getattribute__(self, '_remote_queue')
+      queue.put(("eval_launch", (tasks,), {}))
+
    def listening_start(self):
-      """Start the log queue listener and the ``_remote_queue`` listening thread."""
-      super().listening_start()
+      """Start the ``_remote_queue`` listening thread."""
       if self._listening_thread and self._listening_thread.is_alive():
          logger.warning("Listening thread already running")
          return
@@ -115,9 +109,8 @@ class RemoteTalker(Talker):
       self._listening_thread.start()
 
    def listening_stop(self):
-      """Signal the listening thread to stop, drain remaining queue items, then join."""
+      """Signal the listening thread to stop and drain remaining queue items."""
       if not (self._listening_thread and self._listening_thread.is_alive()):
-         super().listening_stop()
          return
 
       self._stop_listening.set()
@@ -130,8 +123,6 @@ class RemoteTalker(Talker):
             self.listening_handle(method, args, kwargs)
       except Exception:
          pass
-
-      super().listening_stop()
 
    def _listen_loop(self):
       """Drain ``_remote_queue`` and dispatch each message to ``listening_handle``."""
@@ -171,7 +162,6 @@ class RemoteTalker(Talker):
       state = self.__dict__.copy()
       state['_listening_thread'] = None
       state['_stop_listening'] = None
-      state['_remote_manager'] = None
       state['_local'] = None  # only the queue is needed in spawn workers
       return state
 

@@ -48,8 +48,12 @@ def boot(setup: Setup) -> Runtime:
    assert "options" in setup
    headless = "headless" in setup["options"]
    MakeTalker = LoopTalker if "loops" in setup else EvalTalker
-   setup["talker"] = MakeTalker(headless=headless)
-   return initialize(setup)
+   talker = MakeTalker(headless=headless)
+   runtime = initialize(setup)
+   talker._log_queue = runtime.log_queue
+   talker.log_start()
+   setup["talker"] = talker
+   return runtime
 
 
 def oneloop(
@@ -209,6 +213,7 @@ def launch(setup: Setup) -> Setup | None:
    finally:
       try:
          if runtime:
+            setup["talker"].log_stop()
             runtime.shutdown()
       finally:
          logger.info(resource_summary("main", started_at))

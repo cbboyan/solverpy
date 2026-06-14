@@ -56,8 +56,12 @@ def evaluation(setup: Setup) -> Setup:
 
 def boot(setup: Setup) -> Runtime:
    assert "options" in setup
-   setup["talker"] = EvalTalker(headless="headless" in setup["options"])
-   return initialize(setup)
+   talker = EvalTalker(headless="headless" in setup["options"])
+   runtime = initialize(setup)
+   talker._log_queue = runtime.log_queue
+   talker.log_start()
+   setup["talker"] = talker
+   return runtime
 
 
 def launch(setup: Setup) -> Setup | None:
@@ -76,4 +80,5 @@ def launch(setup: Setup) -> Setup | None:
       sys.exit(0)
    finally:
       if runtime:
+         setup["talker"].log_stop()
          runtime.shutdown()

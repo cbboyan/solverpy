@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-14)
+## Unreleased changes (2026-06-15)
 
-* refactor(setup): extract Evalset, Runtime, Managed; move talker into Setup [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(log): route worker logs to parent via persistent Manager queue [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* refactor(setup): extract Evalset, Runtime, Managed; move talker into Setup [[details](https://github.com/cbboyan/solverpy/commit/202f6df) | [browse](https://github.com/cbboyan/solverpy/tree/202f6df)]
 * refactor(setup): plan Dataset split and init ordering [[details](https://github.com/cbboyan/solverpy/commit/7782d6f) | [browse](https://github.com/cbboyan/solverpy/tree/7782d6f)]
 * fix(autotune): preload validation data [[details](https://github.com/cbboyan/solverpy/commit/4989b84) | [browse](https://github.com/cbboyan/solverpy/tree/4989b84)]
 * fix(autotune): isolate repeated tuning phases [[details](https://github.com/cbboyan/solverpy/commit/16eb4d3) | [browse](https://github.com/cbboyan/solverpy/tree/16eb4d3)]

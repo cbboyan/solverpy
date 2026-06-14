@@ -11,15 +11,14 @@ class Runtime:
    def __init__(self, plugins: Iterable[Managed]) -> None:
       unique = {id(p): p for p in plugins}
       self._plugins = list(unique.values())
-      self._manager = None
-      if self._plugins:
-         self._manager = multiprocessing.get_context("forkserver").Manager()
-         try:
-            for p in self._plugins:
-               p.connect(self._manager)
-         except BaseException:
-            self.shutdown()
-            raise
+      self._manager = multiprocessing.get_context("forkserver").Manager()
+      try:
+         self.log_queue = self._manager.Queue()
+         for p in self._plugins:
+            p.connect(self._manager)
+      except BaseException:
+         self.shutdown()
+         raise
 
    def shutdown(self) -> None:
       """Disconnect proxies and stop the shared Manager process."""

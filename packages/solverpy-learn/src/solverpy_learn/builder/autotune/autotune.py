@@ -226,6 +226,7 @@ def tuner(
 
 def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
    remote = RemoteTalker(talker, queue=multiprocessing.Queue())
+   remote._log_queue = talker._log_queue   # inherit persistent log queue from boot
 
    d_tmp = kwargs.get("d_tmp") or "tune-tmp"
    os.makedirs(d_tmp, exist_ok=True)
@@ -235,8 +236,6 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
    kwargs["target"] = tuner
    p = ctx.Process(target=_tuner_process, args=args, kwargs=kwargs)
 
-   remote.log_prepare()
-   talker._log_queue = remote._log_queue  # propagate so eval_launch injects into ATP workers
    try:
       p.start()
       remote.listening_start()
@@ -249,5 +248,4 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
       raise
    finally:
       remote.listening_stop()
-      talker._log_queue = None
    return talker._result

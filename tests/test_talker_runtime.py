@@ -6,28 +6,6 @@ from solverpy.report.talker.remotetalker import RemoteTalker
 from solverpy.report.talker.talker import Talker
 
 
-class FakeManager:
-
-   def __init__(self):
-      self.queue = object()
-      self.stopped = False
-
-   def Queue(self):
-      return self.queue
-
-   def shutdown(self):
-      self.stopped = True
-
-
-class FakeContext:
-
-   def __init__(self, manager):
-      self.manager = manager
-
-   def Manager(self):
-      return self.manager
-
-
 class FakeListener:
 
    def __init__(self, queue, *handlers, **kwargs):
@@ -44,50 +22,38 @@ class FakeListener:
       self.stopped = True
 
 
-def test_log_prepare_does_not_start_listener(monkeypatch):
-   manager = FakeManager()
-   monkeypatch.setattr(
-      talker_module.mp,
-      "get_context",
-      lambda method: FakeContext(manager),
-   )
+def test_log_start_starts_listener_when_queue_set(monkeypatch):
    monkeypatch.setattr(talker_module, "QueueListener", FakeListener)
+   fake_queue = object()
    talker = Talker()
-
-   talker.log_prepare()
-
-   assert talker._log_queue is manager.queue
-   assert talker._listener is None
+   talker._log_queue = fake_queue
 
    talker.log_start()
    listener = talker._listener
-   talker.log_start()
+   talker.log_start()   # second call is a no-op
 
    assert listener is talker._listener
    assert listener.started
    assert listener.kwargs == {"respect_handler_level": True}
 
+
+def test_log_start_noop_without_queue():
+   talker = Talker()
+   talker.log_start()   # _log_queue is None → no-op
+   assert talker._listener is None
+
+
+def test_log_stop_stops_listener(monkeypatch):
+   monkeypatch.setattr(talker_module, "QueueListener", FakeListener)
+   talker = Talker()
+   talker._log_queue = object()
+   talker.log_start()
+   listener = talker._listener
+
    talker.log_stop()
 
    assert listener.stopped
-   assert manager.stopped
-   assert talker._log_queue is None
-
-
-def test_log_stop_cleans_prepared_queue(monkeypatch):
-   manager = FakeManager()
-   monkeypatch.setattr(
-      talker_module.mp,
-      "get_context",
-      lambda method: FakeContext(manager),
-   )
-   talker = Talker()
-
-   talker.log_prepare()
-   talker.log_stop()
-
-   assert manager.stopped
-   assert talker._log_queue is None
+   assert talker._log_queue is not None  # queue is not cleared; Runtime owns its lifecycle
    assert talker._listener is None
 
 

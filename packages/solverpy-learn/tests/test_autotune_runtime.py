@@ -137,10 +137,6 @@ def test_prettytuner_starts_process_before_listeners(monkeypatch, tmp_path):
          del local, queue
          self._log_queue = None
 
-      def log_prepare(self):
-         calls.append("log prepare")
-         self._log_queue = "log queue"
-
       def listening_start(self):
          calls.append("listeners start")
 
@@ -178,7 +174,6 @@ def test_prettytuner_starts_process_before_listeners(monkeypatch, tmp_path):
    assert result == "result"
    assert calls == [
       "process create",
-      "log prepare",
       "process start",
       "listeners start",
       "process join",
@@ -203,10 +198,6 @@ def test_prettytuner_cleans_up_when_process_start_fails(monkeypatch, tmp_path):
       def __init__(self, local, queue):
          del local, queue
          self._log_queue = None
-
-      def log_prepare(self):
-         calls.append("log prepare")
-         self._log_queue = "log queue"
 
       def listening_start(self):
          calls.append("listeners start")
@@ -240,7 +231,6 @@ def test_prettytuner_cleans_up_when_process_start_fails(monkeypatch, tmp_path):
       autotune.prettytuner(talker=talker, d_tmp=str(tmp_path))
 
    assert calls == [
-      "log prepare",
       "process start",
       "talker terminate",
       "listeners stop",

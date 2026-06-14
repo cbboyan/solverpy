@@ -34,6 +34,25 @@ setuptools-git-versioning
 
 There are no automated tests in this repository.
 
+## YAML Scenario Tests
+
+Three YAML scenarios serve as end-to-end integration tests. Run them from their own directories with `solverpy clean` first.
+
+**Eval yaml tests** — test E Prover and llm2smt evaluation:
+```bash
+cd /home/yan/repos/cbboyan/work26/solverpy/eval
+echo "y" | solverpy clean && solverpy run eval-eprover.yml
+echo "y" | solverpy clean && solverpy run eval-llm2smt.yml
+```
+
+**Tune yaml test** — tests ENIGMA tuning loop (eval → train → tune → loop):
+```bash
+cd /home/yan/repos/cbboyan/work26/solverpy/loop
+echo "y" | solverpy clean && solverpy run loop-eprover-atpeval.yml
+```
+
+Check progress via log output (printed to stdout) or `tail -f solverpy_db/logs/*.log`.
+
 ## Versioning
 
 Versioning is automated via a `post-commit` git hook (`.git/hooks/post-commit`) using the `gitautoversion` package (also in this repo). After every commit it:

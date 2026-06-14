@@ -20,6 +20,9 @@ class FakeManager:
       self.namespaces = []
       self.stopped = False
 
+   def Queue(self):
+      return SimpleNamespace()
+
    def Lock(self):
       lock = FakeLock()
       self.locks.append(lock)
