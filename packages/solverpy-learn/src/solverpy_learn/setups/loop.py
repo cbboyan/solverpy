@@ -165,9 +165,6 @@ def launch(setup: Setup) -> Setup | None:
       def do_iter(evalset: Evalset | None) -> None:
          if evalset is None: return
          evalset["strategies"].extend(setup["news"] if "news" in setup else [])
-         loopinit(setup, evalset)
-         if evalset.get("label") == "training" and "builder" in setup:
-            setup["builder"].reset(evalset["dataname"])
          oneloop(setup, evalset)
 
       trains = setup["trains"] if "trains" in setup else None

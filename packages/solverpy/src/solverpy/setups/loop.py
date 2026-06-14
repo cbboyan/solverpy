@@ -17,6 +17,17 @@ logger = logging.getLogger(__name__)
 
 def evaluation(setup: Setup) -> Setup:
 
+   def configure_evalset(evalset: Evalset) -> None:
+      default(evalset, "ref", True)
+      if "strategies" not in evalset:
+         default(evalset, "sidfile", "sids")
+         with open(evalset["sidfile"]) as f:
+            evalset["strategies"] = f.read().strip().split("\n")
+      if "benchmarks" not in evalset:
+         default(evalset, "bidfile", "bids")
+         with open(evalset["bidfile"]) as f:
+            evalset["benchmarks"] = f.read().strip().split("\n")
+
    def check_list(evalset: Evalset, key: str, fun: Callable) -> None:
       if key not in evalset:
          return
@@ -34,23 +45,14 @@ def evaluation(setup: Setup) -> Setup:
    default(setup, "db", db.default(delfix=setup["delfix"]))
    default(setup, "ntfy", None)
 
-   # Initialize trains Evalset
-   if "trains" not in setup:
-      setup["trains"] = Evalset()
-   trains = setup["trains"]
-
-   default(trains, "ref", True)
-   if "strategies" not in trains:
-      default(trains, "sidfile", "sids")
-      with open(trains["sidfile"]) as f:
-         trains["strategies"] = f.read().strip().split("\n")
-   if "benchmarks" not in trains:
-      default(trains, "bidfile", "bids")
-      with open(trains["bidfile"]) as f:
-         trains["benchmarks"] = f.read().strip().split("\n")
-   check_list(trains, "strategies", sids.load)
-   check_list(trains, "refs", sids.load)
-   check_list(trains, "benchmarks", bids.problems)
+   for key in ("trains", "devels"):
+      if key not in setup:
+         continue
+      evalset = setup[key]
+      configure_evalset(evalset)
+      check_list(evalset, "strategies", sids.load)
+      check_list(evalset, "refs", sids.load)
+      check_list(evalset, "benchmarks", bids.problems)
    return setup
 
 

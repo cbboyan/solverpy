@@ -3,6 +3,7 @@ Tests for benchmark evaluation using the solverpy evaluation pipeline.
 Results are cached in tests/data/solverpy_db/ and reused across test runs.
 """
 
+import builtins
 import shutil
 import pytest
 from pathlib import Path
@@ -50,7 +51,10 @@ def solverpy_env():
 
    for d in DB_DIR.iterdir():
       if d.name != "strats" and d.is_dir():
-         shutil.rmtree(d)
+         try:
+            shutil.rmtree(d)
+         except FileNotFoundError:
+            pass
 
    bids_mod.problems.__defaults__[0].clear()
 
@@ -89,6 +93,46 @@ def eval_atp(request, solverpy_env):
    setups.evaluation(setup)
    setups.launch(setup)
    return setup, benchmarks[0], strategies[0]
+
+
+def test_evaluation_initializes_devels(monkeypatch):
+   setup = setups.Setup(
+      limit="T1",
+      trains=setups.Evalset(),
+      devels=setups.Evalset(),
+      options=["headless"],
+      cores=4,
+   )
+   setup["trains"]["sidfile"] = "train.sids"
+   setup["trains"]["bidfile"] = "train.bids"
+   setup["devels"]["sidfile"] = "devel.sids"
+   setup["devels"]["bidfile"] = "devel.bids"
+
+   files = {
+      "train.sids": "s1\ns2\n",
+      "train.bids": "b1\n",
+      "devel.sids": "d1\n",
+      "devel.bids": "db1\ndb2\n",
+   }
+
+   def fake_open(path, *args, **kwargs):
+      if path not in files:
+         raise FileNotFoundError(path)
+      from io import StringIO
+      return StringIO(files[path])
+
+   monkeypatch.setattr(builtins, "open", fake_open)
+   monkeypatch.setattr(sids, "load", lambda sid: sid)
+   monkeypatch.setattr(bids, "problems", lambda bid: [bid])
+
+   setups.evaluation(setup)
+
+   assert setup["trains"]["ref"] is True
+   assert setup["trains"]["strategies"] == ["s1", "s2"]
+   assert setup["trains"]["benchmarks"] == ["b1"]
+   assert setup["devels"]["ref"] is True
+   assert setup["devels"]["strategies"] == ["d1"]
+   assert setup["devels"]["benchmarks"] == ["db1", "db2"]
 
 
 @pytest.fixture(scope="module")

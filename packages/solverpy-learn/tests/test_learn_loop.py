@@ -185,15 +185,14 @@ def loop_result(request, learn_env):
          posneg_ratio=10,
          posneg_weight=2,
       )
-      setup = setups.Setup(
-         common,
+      setup = setups.Setup(**common)
+      setup["trains"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
          refs=[sid],
       )
-      devel = setups.Setup(
-         common,
+      setup["devels"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["devel_bid"]],
          dataname=p["devel_dataname"],
@@ -201,9 +200,9 @@ def loop_result(request, learn_env):
       )
       setups.eprover(setup, training=True)
       setups.evaluation(setup)
-      setups.eprover(devel, training=True)
-      setups.evaluation(devel)
-      setups.enigma(setup, devel, tunesel=p["tune"])
+      setups.eprover(setup, training=True, key="devels")
+      setups.evaluation(setup)
+      setups.enigma(setup, tunesel=p["tune"])
 
    else:  # cvc5
       static = [
@@ -221,15 +220,14 @@ def loop_result(request, learn_env):
          posneg_ratio=2,
          posneg_weight=10.0,
       )
-      setup = setups.Setup(
-         common,
+      setup = setups.Setup(**common)
+      setup["trains"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
          refs=[sid],
       )
-      devel = setups.Setup(
-         common,
+      setup["devels"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["devel_bid"]],
          dataname=p["devel_dataname"],
@@ -237,11 +235,11 @@ def loop_result(request, learn_env):
       )
       setups.cvc5(setup, training=True)
       setups.evaluation(setup)
-      setups.cvc5(devel, training=True)
-      setups.evaluation(devel)
-      setups.cvc5ml(setup, devel, p["tune"])
+      setups.cvc5(setup, training=True, key="devels")
+      setups.evaluation(setup)
+      setups.cvc5ml(setup, p["tune"])
 
-   setups.launch(setup, devel)
+   setups.launch(setup)
    return learn_env, p
 
 
@@ -259,11 +257,11 @@ def test_models_dir_exists(loop_result):
 
 # --- loop directory counts ---
 
-def test_train_has_two_loops(loop_result):
+def test_train_has_three_loops(loop_result):
    db, p = loop_result
    train_base = db / "trains" / p["train_dataname"]
    loops = sorted(d.name for d in train_base.iterdir() if d.is_dir() and d.name.startswith("loop"))
-   assert loops == ["loop00", "loop01"], f"Expected loop00+loop01 in train, got {loops}"
+   assert loops == ["loop00", "loop01", "loop02"], f"Expected loop00-loop02 in train, got {loops}"
 
 
 def test_devel_has_three_loops(loop_result):
@@ -315,7 +313,8 @@ def test_devel_loop01_files(loop_result):
    sel = _sel_dir(db / "trains" / p["devel_dataname"], "loop01")
    assert (sel / "addon.in-stats.txt").exists(), f"Missing addon.in-stats.txt in {sel}"
    assert _has_chunks(sel, "addon.in"), f"No addon.in chunks in {sel}"
-   assert _has_chunks(sel, "train.in"), f"No train.in chunks in {sel}"
+   assert (sel / "train.in-stats.txt").exists(), f"Missing train.in-stats.txt in {sel}"
+   assert (sel / "train.in-meta.json").exists(), f"Missing train.in-meta.json in {sel}"
 
 
 # --- model files ---

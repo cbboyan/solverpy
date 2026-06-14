@@ -140,3 +140,49 @@ def test_launch_shuts_runtime_down_on_failure(monkeypatch):
       ("run start: unknown", False),
       ("run end: unknown", True),
    ]
+
+
+def test_launch_keeps_previous_trains_from_prior_loop(monkeypatch):
+   class FakePlugin:
+
+      def __init__(self):
+         self._dataname = "train"
+         self._filename = "train.in"
+
+      def reset(self, dataname=None, filename="train.in"):
+         if dataname is not None:
+            self._dataname = dataname
+         self._filename = filename
+
+      def path(self):
+         return f"{self._dataname}/{self._filename}"
+
+   runtime = SimpleNamespace()
+   runtime.shutdown = lambda: None
+   runtime.log_queue = SimpleNamespace()
+   talker = SimpleNamespace(log_start=lambda: None, log_stop=lambda: None)
+   evalset = {
+      "dataname": "train",
+      "basedataname": "train",
+      "label": "training",
+      "plugin": FakePlugin(),
+      "strategies": ["sid"],
+      "refs": ["sid"],
+   }
+   setup = {
+      "options": [],
+      "loops": 1,
+      "trains": evalset,
+      "talker": talker,
+   }
+
+   monkeypatch.setattr(loop, "boot", lambda setup: runtime)
+   monkeypatch.setattr(loop, "oneloop", lambda setup, evalset: evalset)
+   monkeypatch.setattr(loop.evaluator, "init", lambda setup: None)
+   monkeypatch.setattr(loop.log, "ntfy", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
+   monkeypatch.setattr(loop, "usage", lambda *args: "")
+
+   loop.launch(setup)
+
+   assert evalset["previous_trains"] == "train/loop00/train.in"
