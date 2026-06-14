@@ -4,6 +4,7 @@ import logging
 from ..builder.cvc5ml import Cvc5ML
 from ..builder.enigma import Enigma
 from solverpy.setups.setup import Setup
+from solverpy.setups.evalset import Evalset
 from solverpy.setups.common import default
 
 if TYPE_CHECKING:
@@ -14,55 +15,55 @@ logger = logging.getLogger(__name__)
 BuilderMaker = Callable[..., "Builder"]
 
 
-def defaultrefs(trains: Setup) -> None:
-   if "refs" not in trains:
-      assert "ref" in trains
-      assert "strategies" in trains
-      ref = trains["ref"]
+def defaultrefs(evalset: Evalset) -> None:
+   if "refs" not in evalset:
+      assert "ref" in evalset
+      assert "strategies" in evalset
+      ref = evalset["ref"]
       idx = ref if (type(ref) is int) else 0
-      trains["refs"] = [trains["strategies"][idx]]
+      evalset["refs"] = [evalset["strategies"][idx]]
 
-def defaultweight(trains: Setup, tune: dict[str, Any] | None) -> None:
+
+def defaultweight(setup: Setup, tune: dict[str, Any] | None) -> None:
    if not tune:
       return
-   if ("posneg_weight" in trains) and ("posneg_weight" not in tune):
-      tune["posneg_weight"] = trains["posneg_weight"]
+   if ("posneg_weight" in setup) and ("posneg_weight" not in tune):
+      tune["posneg_weight"] = setup["posneg_weight"]
+
 
 def autotuner(
    mk_builder: BuilderMaker,
-   trains: Setup,
+   setup: Setup,
    *args: Any,
    **kwargs: Any,
 ) -> Setup:
-   defaultrefs(trains)
-   trains["builder"] = mk_builder(trains, *args, **kwargs)
-   return trains
+   assert "trains" in setup
+   defaultrefs(setup["trains"])
+   setup["builder"] = mk_builder(setup, *args, **kwargs)
+   return setup
 
 
 def cvc5ml(
-   trains: Setup,
-   devels: (Setup | None) = None,
+   setup: Setup,
    tuneargs: (dict[str, Any] | None) = None,
 ) -> Setup:
-   defaultweight(trains, tuneargs)
-   return autotuner(Cvc5ML, trains, devels, tuneargs)
+   defaultweight(setup, tuneargs)
+   return autotuner(Cvc5ML, setup, tuneargs)
 
 
 def enigma(
-   trains: Setup,
-   devels: (Setup | None) = None,
+   setup: Setup,
    tunesel: (dict[str, Any] | None) = None,
    tunegen: (dict[str, Any] | None) = None,
 ) -> Setup:
-   default(trains, "templates", None)
-   defaultweight(trains, tunesel)
-   defaultweight(trains, tunegen)
-   assert "templates" in trains
+   default(setup, "templates", None)
+   defaultweight(setup, tunesel)
+   defaultweight(setup, tunegen)
+   assert "templates" in setup
    return autotuner(
       Enigma,
-      trains,
-      devels,
+      setup,
       tunesel,
       tunegen,
-      templates=trains["templates"],
+      templates=setup["templates"],
    )

@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import Any
 import os
 import shutil
 import logging
@@ -29,15 +29,14 @@ class AutoTuner(Builder):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None) = None,
+      setup: Setup,
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
    ):
-      assert "dataname" in trains
-      Builder.__init__(self, trains["dataname"])
-      self._trains = trains
-      self._devels = devels or trains
+      assert "trains" in setup
+      assert "dataname" in setup["trains"]
+      Builder.__init__(self, setup["trains"]["dataname"])
+      self._setup = setup
       self._tuneargs: dict[str, Any] = TUNEARGS | (tuneargs or {})
       self._templates = templates or []
 
@@ -56,22 +55,24 @@ class AutoTuner(Builder):
          return super().path()
 
    def build(self, talker: Talker = Talker()) -> None:
-      assert "trains" in self._trains
-      assert "trains" in self._devels
-      assert "refs" in self._trains
+      trains = self._setup["trains"]
+      devels = self._setup["devels"] if "devels" in self._setup else trains
+      assert "plugin" in trains
+      assert "plugin" in devels
+      assert "refs" in trains
       report = markdown.newline() + markdown.heading(f"Building model `{self._dataname}`", level=2)
       reporter.add(report)
       logger.info(f"Building model: {self._dataname}")
-      logger.debug(f'using trains: {self._trains["trains"].path()}')
+      logger.debug(f'using trains: {trains["plugin"].path()}')
 
       f_model = self.path()
       if os.path.exists(f_model):
          logger.info(f"Skipped model building; model {self._dataname} exists.")
-         self._strats = self.applies(self._trains["refs"], self._dataname)
+         self._strats = self.applies(trains["refs"], self._dataname)
          return
 
-      f_train = self._trains["trains"].path()
-      f_test = self._devels["trains"].path()
+      f_train = trains["plugin"].path()
+      f_test = devels["plugin"].path()
 
       use_builder = ("atpeval" in self._tuneargs) and self._tuneargs["atpeval"]
       started_at = time.monotonic()
@@ -99,7 +100,7 @@ class AutoTuner(Builder):
       (pos, neg) = (int(pos), int(neg))
       shutil.copyfile(f_best, f_model)
       #self._models = [f_model]
-      self._strats = self.applies(self._trains["refs"], self._dataname)
+      self._strats = self.applies(trains["refs"], self._dataname)
 
       progress.build(self._dataname, *ret)
       logger.info(f"Model {self._dataname} built.")

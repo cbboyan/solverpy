@@ -2,7 +2,7 @@ from typing import Any, TYPE_CHECKING
 import os
 import logging
 
-from solverpy.solver.plugins.decorator import Decorator
+from solverpy.solver.plugins.managed import Managed
 from solverpy.benchmark.path import bids
 
 if TYPE_CHECKING:
@@ -22,10 +22,10 @@ def rellink(f_src: str, f_dst: str):
    os.symlink(rel, f_dst)
 
 
-class Trains(Decorator):
+class Trains(Managed):
 
    def __init__(self, dataname: str, filename: str = "train.in", **kwargs: Any):
-      Decorator.__init__(
+      Managed.__init__(
          self,
          pid="trains",
          dataname=dataname,

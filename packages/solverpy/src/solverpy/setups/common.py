@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 GENERICS = frozenset(["binary", "plugins", "static", "complete"])
 
 
-def default(setup: Setup, key: str, val: Any) -> None:
+def default(setup: Any, key: str, val: Any) -> None:
    if key not in setup:
       setup[key] = val
 

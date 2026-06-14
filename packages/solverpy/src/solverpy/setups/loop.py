@@ -8,18 +8,19 @@ from ..report import log
 from .common import default
 from ..benchmark.path import bids, sids
 from .setup import Setup
+from .evalset import Evalset
+from .runtime import Runtime, initialize
 from ..report.talker.evaltalker import EvalTalker
-from ..report.talker.logtalker import LogTalker
 
 logger = logging.getLogger(__name__)
 
 
 def evaluation(setup: Setup) -> Setup:
 
-   def check_list(setup: Setup, key: str, fun: Callable) -> None:
-      if key not in setup:
+   def check_list(evalset: Evalset, key: str, fun: Callable) -> None:
+      if key not in evalset:
          return
-      for id in setup[key]:
+      for id in evalset[key]:
          try:
             fun(id)
          except Exception as e:
@@ -28,38 +29,51 @@ def evaluation(setup: Setup) -> Setup:
             sys.exit(0)
 
    default(setup, "cores", 4)
-   default(setup, "ref", True)
-   default(setup, "bidfile", "bids")
-   assert "bidfile" in setup
-   default(setup, "sidfile", "sids")
-   assert "sidfile" in setup
    default(setup, "delfix", None)
    assert "delfix" in setup
    default(setup, "db", db.default(delfix=setup["delfix"]))
    default(setup, "ntfy", None)
-   if "strategies" not in setup:
-      with open(setup["sidfile"]) as f:
-         setup["strategies"] = f.read().strip().split("\n")
-   if "benchmarks" not in setup:
-      with open(setup["bidfile"]) as f:
-         setup["benchmarks"] = f.read().strip().split("\n")
-   check_list(setup, "strategies", sids.load)
-   check_list(setup, "refs", sids.load)
-   check_list(setup, "benchmarks", bids.problems)
+
+   # Initialize trains Evalset
+   if "trains" not in setup:
+      setup["trains"] = Evalset()
+   trains = setup["trains"]
+
+   default(trains, "ref", True)
+   if "strategies" not in trains:
+      default(trains, "sidfile", "sids")
+      with open(trains["sidfile"]) as f:
+         trains["strategies"] = f.read().strip().split("\n")
+   if "benchmarks" not in trains:
+      default(trains, "bidfile", "bids")
+      with open(trains["bidfile"]) as f:
+         trains["benchmarks"] = f.read().strip().split("\n")
+   check_list(trains, "strategies", sids.load)
+   check_list(trains, "refs", sids.load)
+   check_list(trains, "benchmarks", bids.problems)
    return setup
 
 
-def launch(setup: Setup, devels: Setup | None = None) -> Setup | None:
+def boot(setup: Setup) -> Runtime:
+   assert "options" in setup
+   setup["talker"] = EvalTalker(headless="headless" in setup["options"])
+   return initialize(setup)
+
+
+def launch(setup: Setup) -> Setup | None:
+   runtime = None
    try:
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup)
-      if "headless" in setup.get("options", []):
-         talker = LogTalker()
-      else:
-         talker = EvalTalker()
-      evaluator.launch(talker=talker, **setup)
+      runtime = boot(setup)
+      assert "trains" in setup
+      evaluator.launch(setup["trains"], **setup)
       log.ntfy(setup, "solverpy: done")
       return setup
    except KeyboardInterrupt:
+      logger.warning("Terminated (keyboard interrupt)")
       print("Terminated (keyboard interrupt)")
       sys.exit(0)
+   finally:
+      if runtime:
+         runtime.shutdown()

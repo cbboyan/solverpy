@@ -226,21 +226,25 @@ def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
    solver = Solver()
    builder = SimpleNamespace(
       _dataname="experiment",
-      _trains={"refs": ["reference"]},
-      _devels={
+      _setup={
          "solver": solver,
-         "trains": object(),
-         "benchmarks": ["development"],
-         "strategies": ["reference"],
-         "solvedby": "reference",
+         "trains": {"refs": ["reference"]},
+         "devels": {
+            "plugin": object(),
+            "benchmarks": ["development"],
+            "strategies": ["reference"],
+            "solvedby": "reference",
+         },
          "it": 0,
       },
       applies=lambda refs, model: [f"{refs[0]}-{model}"],
    )
-   launched = {}
+   launched_evalset = {}
+   launched_setup = {}
 
-   def launch(**setup):
-      launched.update(setup)
+   def launch(evalset, talker=None, **setup):
+      launched_evalset.update(evalset)
+      launched_setup.update(setup)
       return {}
 
    monkeypatch.setattr(build.evaluation, "launch", launch)
@@ -248,9 +252,9 @@ def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
 
    build.score(stats, builder, "trial")
 
-   assert "solvedby" not in launched
-   assert launched["it"] == 0
-   assert launched["benchmarks"] == ["development"]
+   assert "solvedby" not in launched_evalset
+   assert launched_setup["it"] == 0
+   assert launched_evalset["benchmarks"] == ["development"]
    assert stats["score"] == 0
    assert calls == [
       ("trains", "disable"),

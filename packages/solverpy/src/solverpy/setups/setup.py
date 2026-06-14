@@ -9,6 +9,8 @@ if TYPE_CHECKING:
    from ..benchmark.db import DB
    from ..solver.solverpy import SolverPy
    from ..solver.plugins.plugin import Plugin
+   from ..report.talker.talker import Talker
+   from .evalset import Evalset
 
 
 class Setup(TypedDict, total=False):
@@ -32,10 +34,8 @@ class Setup(TypedDict, total=False):
        complete: Complete use of the solver (sat/Satisfiable are successes).
    
    The following parameters additional parameters for an evaluation run:
-   
-   Attributes: 
-       bidfile: Load benchmark ids from a file.
-       sidfile: Load strategy ids from a file.
+
+   Attributes:
        ref: Reference strategy id.
        binary: Custom solver binary.  Must be in `PATH`.
        static: Fixed solver options.
@@ -84,50 +84,39 @@ class Setup(TypedDict, total=False):
 
    The following are user options for ML experiments.
 
-   Attributes: 
+   Attributes:
        loops: Number of iterations of the eval/ML loop.
-       refs: Reference strategies.
        force: Recompute everything.
        shuffle: Shuffle problem order.
-       dataname: Data id for ML experiments.
-       start_dataname: Start the looping with training instead of evaluation.
        max_proofs: Maximum number of proofs per problem for ML experiments.
        e_training_examples: Output format of training samples for `eprover`.
        gen_features: ENIGMA features for generation filtering.
        sel_features: ENIGMA features for clause selection.
        posneg_ratio: Maximum ratio of negative to positive examples.
        templates: Templates for strategy generation.
-   
+       trains: Training dataset configuration (Evalset with benchmarks, strategies, plugin, etc.).
+       devels: Development dataset configuration (Evalset).
+
    # Internal parameters
 
-   The following parameters are used internally and should not be set 
+   The following parameters are used internally and should not be set
    directly by the user.
 
-   Attributes: 
+   Attributes:
        it: Current iteration number.
        news: New ML strategies.
-       basedataname: Original data id.
        db: Database object.
        builder: Builder object.
-       solver: Solver object.
-       trains: Trains object.
-       previous_trains: Training data from the previous iteration.
-       proofs: Count of proofs per problem.
+       solver: Solver object (base eval path; moves to trains/devels Evalset for ML).
    """
    limit: str
    cores: int
-   ref: (bool | int | str | None)
-   bidfile: str
-   sidfile: str
-   benchmarks: list[str]
-   strategies: list[str]
    binary: str
    static: list[str]
    ntfy: str
    it: int
    loops: int
    news: list[str]
-   refs: list[str]
    options: list[str]
    delfix: (int | str | None)
    complete: bool
@@ -135,18 +124,15 @@ class Setup(TypedDict, total=False):
    force: bool
    shuffle: bool
 
-   dataname: str
-   start_dataname: str
-   basedataname: str
    db: "DB"
    builder: Any  # set by solverpy_learn
    solver: "SolverPy"
+   talker: "Talker"
    reloader: bool
-   trains: Any  # set by solverpy_learn
-   previous_trains: str | tuple[str]
+   trains: "Evalset"  # training dataset (set by solverpy_learn or evaluation())
+   devels: "Evalset"  # development dataset (set by solverpy_learn)
    plugins: list["Plugin"]
    max_proofs: int
-   proofs: (dict[str, int] | None)
 
    e_training_examples: str
    gen_features: str

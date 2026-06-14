@@ -1,4 +1,4 @@
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable
 import os
 import re
 import logging
@@ -9,6 +9,7 @@ from solverpy.report.talker.talker import Talker
 from solverpy.benchmark.path import sids, bids
 from .plugins import enigma
 from solverpy.setups.setup import Setup
+from solverpy.setups.evalset import Evalset
 
 logger = logging.getLogger(__name__)
 
@@ -17,19 +18,19 @@ class EnigmaModel(AutoTuner):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None),
+      setup: Setup,
       tuneargs: (dict[str, Any] | None),
       variant: str,
       templates: (list[str] | None) = None,
    ):
-      AutoTuner.__init__(self, trains, devels, tuneargs, templates)
+      AutoTuner.__init__(self, setup, tuneargs, templates)
       self._variant = variant
-      self._fkey = f"{variant}_features"
+      assert f"{variant}_features" in setup
+      self._features: str = setup[f"{variant}_features"]
       self.reset(self._dataname)
 
    def featurepath(self) -> str:
-      fpath = enigma.featurepath(self._trains[self._fkey])
+      fpath = enigma.featurepath(self._features)
       return f"{self._variant}_{fpath}"
 
    def reset(self, dataname: str) -> None:
@@ -60,23 +61,20 @@ class EnigmaModel(AutoTuner):
    def makemap(self, mapfile: str | None = None) -> None:
       f_map = mapfile or self.path("enigma.map")
       logger.debug(f"creating enigma map: {f_map}")
-      features = self._trains[self._fkey]
-      open(f_map, "w").write(f'features("{features}").\n')
+      open(f_map, "w").write(f'features("{self._features}").\n')
 
 
 class EnigmaSel(EnigmaModel):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None) = None,
+      setup: Setup,
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
    ):
       EnigmaModel.__init__(
          self,
-         trains,
-         devels,
+         setup,
          tuneargs,
          "sel",
          templates,
@@ -102,15 +100,13 @@ class EnigmaGen(EnigmaModel):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None) = None,
+      setup: Setup,
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
    ):
       EnigmaModel.__init__(
          self,
-         trains,
-         devels,
+         setup,
          tuneargs,
          "gen",
          templates,
@@ -132,8 +128,7 @@ class Enigma(EnigmaModel):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None) = None,
+      setup: Setup,
       tunesel: (dict[str, Any] | None) = None,
       tunegen: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
@@ -141,48 +136,38 @@ class Enigma(EnigmaModel):
       templates = templates or ["coop", "solo", "gen"]
       AutoTuner.__init__(
          self,
-         trains,
-         devels,
+         setup,
          tunesel,
          templates=templates,
       )
-      assert "trains" in trains
-      assert "sel_features" in trains
-      assert "gen_features" in trains
-      sel = trains["sel_features"]
-      gen = trains["gen_features"]
-      trains0 = trains
-      devels0 = devels
-      if sel and gen:
-         # split the multi train data if it is the case
-         assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
-         trains0 = Setup(trains, trains=trains["trains"]._sel)
-         if devels:
-            assert "trains" in devels
-            assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
-            devels0 = Setup(trains, trains=devels["trains"]._sel)
-      self._sel = EnigmaSel(
-         trains0,
-         devels0,
-         tunesel,
-         templates,
-      ) if sel else None
+      assert "trains" in setup
+      trains_evalset = setup["trains"]
+      assert "plugin" in trains_evalset
+      assert "sel_features" in setup
+      assert "gen_features" in setup
+      sel = setup["sel_features"]
+      gen = setup["gen_features"]
+      self._features = sel or gen or ""
 
-      trains0 = trains
-      devels0 = devels
+      setup_sel = setup
+      setup_gen = setup
       if sel and gen:
-         assert isinstance(trains["trains"], enigma.EnigmaMultiTrains)
-         trains0 = Setup(trains, trains=trains["trains"]._gen)
-         if devels:
-            assert "trains" in devels
-            assert isinstance(devels["trains"], enigma.EnigmaMultiTrains)
-            devels0 = Setup(trains, trains=devels["trains"]._gen)
-      self._gen = EnigmaGen(
-         trains0,
-         devels0,
-         tunegen,
-         templates,
-      ) if gen else None
+         # split the multi train data for sel and gen sub-builders
+         assert isinstance(trains_evalset["plugin"], enigma.EnigmaMultiTrains)
+         plugin = trains_evalset["plugin"]
+         setup_sel = Setup(setup)
+         setup_sel["trains"] = Evalset(trains_evalset, plugin=plugin._sel)
+         setup_gen = Setup(setup)
+         setup_gen["trains"] = Evalset(trains_evalset, plugin=plugin._gen)
+         if "devels" in setup:
+            devels_evalset = setup["devels"]
+            assert "plugin" in devels_evalset
+            assert isinstance(devels_evalset["plugin"], enigma.EnigmaMultiTrains)
+            setup_sel["devels"] = Evalset(devels_evalset, plugin=devels_evalset["plugin"]._sel)
+            setup_gen["devels"] = Evalset(devels_evalset, plugin=devels_evalset["plugin"]._gen)
+
+      self._sel = EnigmaSel(setup_sel, tunesel, templates) if sel else None
+      self._gen = EnigmaGen(setup_gen, tunegen, templates) if gen else None
 
    def reset(self, dataname: str) -> None:
       if self._sel:
@@ -200,8 +185,9 @@ class Enigma(EnigmaModel):
          self._gen.build(talker)
          self._strats.extend(self._gen.strategies)
       if self._sel and self._gen:
-         assert "refs" in self._trains
-         refs = self._trains["refs"]
+         trains = self._setup["trains"]
+         assert "refs" in trains
+         refs = trains["refs"]
          self._strats.extend(self.applies(refs, self._dataname))
 
    def apply(self, sid: str, model: str) -> list[str]:

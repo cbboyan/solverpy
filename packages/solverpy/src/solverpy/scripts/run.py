@@ -18,6 +18,10 @@ def _run_evaluate(yaml_data):
       print(f"error: unknown solver '{evaluate}'.", file=sys.stderr)
       sys.exit(1)
 
+   trains = yaml_data.setdefault("trains", {})
+   for key in ("benchmarks", "strategies", "bidfile", "sidfile"):
+      if key in yaml_data and key not in trains:
+         trains[key] = yaml_data.pop(key)
    solver_fn(yaml_data)
    setups.evaluation(yaml_data)
    setups.launch(yaml_data)
@@ -30,7 +34,7 @@ def _run_loop(loop_type, yaml_data):
       sys.exit(1)
 
    common = yaml_data.get("common", {})
-   setup_dict = yaml_data.get("train", {})
+   train_dict = yaml_data.get("train", {})
    devel_dict = yaml_data.get("devel", None)
    tune = yaml_data.get("tune", None)
 
@@ -40,25 +44,25 @@ def _run_loop(loop_type, yaml_data):
       print("error: 'loop' requires the solverpy-learn package.", file=sys.stderr)
       sys.exit(1)
 
-   setup = setups.Setup(common, strategies=[sid], refs=[sid], **setup_dict)
-   devel = setups.Setup(common, strategies=[sid], refs=[sid], **devel_dict) if devel_dict else None
+   setup = setups.Setup(**common)
+   setup["trains"] = setups.Evalset(strategies=[sid], refs=[sid], **train_dict)
+   if devel_dict:
+      setup["devels"] = setups.Evalset(strategies=[sid], refs=[sid], **devel_dict)
 
    if loop_type == "enigma":
       setups.eprover(setup, training=True)
+      if devel_dict:
+         setups.eprover(setup, training=True, key="devels")
       setups.evaluation(setup)
-      if devel:
-         setups.eprover(devel, training=True)
-         setups.evaluation(devel)
-      setups.enigma(setup, devel, tunesel=tune)
+      setups.enigma(setup, tunesel=tune)
    elif loop_type == "cvc5ml":
       setups.cvc5(setup, training=True)
+      if devel_dict:
+         setups.cvc5(setup, training=True, key="devels")
       setups.evaluation(setup)
-      if devel:
-         setups.cvc5(devel, training=True)
-         setups.evaluation(devel)
-      setups.cvc5ml(setup, devel, tuneargs=tune)
+      setups.cvc5ml(setup, tuneargs=tune)
 
-   setups.launch(setup, devel)
+   setups.launch(setup)
 
 
 def main(args):

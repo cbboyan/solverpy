@@ -14,14 +14,12 @@ class Cvc5ML(AutoTuner):
 
    def __init__(
       self,
-      trains: Setup,
-      devels: (Setup | None) = None,
+      setup: Setup,
       tuneargs: (dict[str, Any] | None) = None,
    ):
       AutoTuner.__init__(
          self,
-         trains,
-         devels,
+         setup,
          tuneargs,
       )
 

@@ -65,8 +65,7 @@ def eval_case(request, solverpy_env):
    solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
       limit="T1",
-      benchmarks=benchmarks,
-      strategies=strategies,
+      trains=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
@@ -82,8 +81,7 @@ def eval_atp(request, solverpy_env):
    solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
       limit="T1",
-      benchmarks=benchmarks,
-      strategies=strategies,
+      trains=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )

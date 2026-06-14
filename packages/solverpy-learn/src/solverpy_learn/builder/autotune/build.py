@@ -4,7 +4,7 @@ import time
 import lightgbm as lgb
 import numpy as np
 
-from solverpy.setups import Setup
+from solverpy.setups.evalset import Evalset
 from solverpy.benchmark import evaluation
 from solverpy.report.talker.talker import Talker
 
@@ -185,21 +185,24 @@ def score(
    if not builder:
       stats["score"] = stats["mlscore"]
       return
-   assert "refs" in builder._trains
-   modelname = f"{builder._dataname}/opt/{nick}"
-   strategies = builder.applies(builder._trains["refs"], modelname)
-   setup = Setup(builder._devels, strategies=strategies)
-   setup.pop("solvedby", None)
-   setup["pool_context"] = "spawn"
+   setup = builder._setup
+   trains = setup["trains"]
+   devels = setup["devels"] if "devels" in setup else trains
+   assert "refs" in trains
    assert "solver" in setup
-   assert "trains" in setup
-   setup["solver"].call("trains", "disable")
-   setup["solver"].call("debug-trains", "disable")
+   solver = setup["solver"]
+   modelname = f"{builder._dataname}/opt/{nick}"
+   strategies = builder.applies(trains["refs"], modelname)
+   evalset = Evalset(devels, strategies=strategies)
+   evalset.pop("solvedby", None)
+   assert "plugin" in evalset
+   solver.call("trains", "disable")
+   solver.call("debug-trains", "disable")
    talker.tune_eval_begin()
-   res = evaluation.launch(talker=talker, **setup)
+   res = evaluation.launch(evalset, **dict(setup, pool_context="spawn", talker=talker))
    talker.tune_eval_end(res)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r))
    score = sum(solved(s, rs) for ((s, _, _), rs) in res.items())
    stats["score"] = score
-   setup["solver"].call("trains", "enable")
-   setup["solver"].call("debug-trains", "enable")
+   solver.call("trains", "enable")
+   solver.call("debug-trains", "enable")

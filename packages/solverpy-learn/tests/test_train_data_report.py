@@ -155,20 +155,24 @@ def test_oneloop_reports_generated_and_merged_files(monkeypatch):
 
    trains = FakeTrains()
    talker = RecordingTalker()
-   setup = {
+   evalset = {
       "dataname": "sample/loop01",
+      "label": "development",
+      "previous_trains": "previous.in",
+      "plugin": trains,
+   }
+   setup = {
       "it": 1,
       "loops": 2,
       "options": [],
-      "previous_trains": "previous.in",
-      "trains": trains,
    }
-   monkeypatch.setattr(loop.evaluator, "launch", lambda **kwargs: None)
+   monkeypatch.setattr(loop.evaluator, "launch", lambda *args, **kwargs: None)
    monkeypatch.setattr(loop.reporter, "add", lambda report: None)
    monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
    monkeypatch.setattr(loop, "usage", lambda *args: "")
 
-   loop.oneloop(setup, talker, "development")
+   setup["talker"] = talker
+   loop.oneloop(setup, evalset)
 
    assert trains.snapshots == 1
    assert [[stat["path"] for stat in stats]

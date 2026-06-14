@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 from solverpy.report.talker.talker import Talker
+from solverpy.setups import runtime as runtime_mod
 from solverpy_learn.builder.plugins.enigma import EnigmaMultiTrains
 from solverpy_learn.builder.plugins.svm import SvmTrains
 from solverpy_learn.setups import loop
@@ -46,7 +47,7 @@ class FakeContext:
 
 def test_trains_defer_shared_state_until_initialize(monkeypatch):
    context = FakeContext()
-   monkeypatch.setattr(loop.multiprocessing, "get_context", lambda method: context)
+   monkeypatch.setattr(runtime_mod.multiprocessing, "get_context", lambda method: context)
 
    train = SvmTrains("train")
    devel = SvmTrains("devel")
@@ -55,7 +56,7 @@ def test_trains_defer_shared_state_until_initialize(monkeypatch):
    assert train._lock is None
    assert devel._lock is None
 
-   runtime = loop.initialize({"trains": train}, {"trains": devel})
+   runtime = loop.initialize({"plugins": [train, devel]})
    manager = context.managers[0]
 
    assert len(context.managers) == 1
@@ -75,9 +76,9 @@ def test_trains_defer_shared_state_until_initialize(monkeypatch):
 
 def test_runtime_allows_reinitialization(monkeypatch):
    context = FakeContext()
-   monkeypatch.setattr(loop.multiprocessing, "get_context", lambda method: context)
+   monkeypatch.setattr(runtime_mod.multiprocessing, "get_context", lambda method: context)
    trains = SvmTrains("train")
-   setup = {"trains": trains}
+   setup = {"plugins": [trains]}
 
    first = loop.initialize(setup)
    first.shutdown()
@@ -90,11 +91,11 @@ def test_runtime_allows_reinitialization(monkeypatch):
 
 def test_multi_trains_share_session_manager(monkeypatch):
    context = FakeContext()
-   monkeypatch.setattr(loop.multiprocessing, "get_context", lambda method: context)
+   monkeypatch.setattr(runtime_mod.multiprocessing, "get_context", lambda method: context)
    train = EnigmaMultiTrains("train", "sel-features", "gen-features")
    devel = EnigmaMultiTrains("devel", "sel-features", "gen-features")
 
-   runtime = loop.initialize({"trains": train}, {"trains": devel})
+   runtime = loop.initialize({"plugins": [train, devel]})
    manager = context.managers[0]
 
    assert len(context.managers) == 1
@@ -110,8 +111,11 @@ def test_launch_shuts_runtime_down_on_failure(monkeypatch):
    runtime.shutdown = lambda: setattr(runtime, "stopped", True)
    messages = []
 
-   monkeypatch.setattr(loop, "initialize", lambda setup, devels: runtime)
-   monkeypatch.setattr(loop, "make_talker", lambda setup: Talker())
+   def fake_boot(setup):
+      setup["talker"] = Talker()
+      return runtime
+
+   monkeypatch.setattr(loop, "boot", fake_boot)
    monkeypatch.setattr(loop.log, "ntfy", lambda *args, **kwargs: None)
    monkeypatch.setattr(loop, "usage", lambda label: label)
    monkeypatch.setattr(

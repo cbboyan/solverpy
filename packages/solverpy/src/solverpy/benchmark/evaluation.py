@@ -16,21 +16,30 @@ if TYPE_CHECKING:
    from .db.db import DB
    from ..solver.solverpy import SolverPy
    from ..tools.typing import Result, SolverJob
+   from ..setups.evalset import Evalset
 
 logger = logging.getLogger(__name__)
 
 
-def init(setup: Setup | None = None, devels: Setup | None = None):
+def init(setup: Setup | None = None):
    log.init()
    if setup:
       report = []
-      dataname = setup.get("dataname", "noname")
+      dataname = "noname"
+      if "trains" in setup:
+         trains = setup["trains"]
+         if "dataname" in trains:
+            dataname = trains["dataname"]
       report.extend(markdown.heading(f"Experiment {dataname}", level=2))
       report.extend(markdown.heading("Setup", level=3))
-      report.extend(markdown.yaml(setup, devels))
+      report.extend(markdown.yaml(setup))
       report.extend(markdown.newline())
       reporter.add(report)
-   dataname = setup.get("dataname", "noname") if setup else "noname"
+   dataname = "noname"
+   if setup and "trains" in setup:
+      trains = setup["trains"]
+      if "dataname" in trains:
+         dataname = trains["dataname"]
    logger.info(f"Experiments running: {dataname}")
 
 
@@ -174,15 +183,23 @@ def run(
 
 
 def launch(
-   solver: "SolverPy",
-   benchmarks: list[str],
-   strategies: list[str],
-   ref: (bool | int | str | None) = None,
-   sidnames: bool = True,
-   cores: int = 4,
+   evalset: "Evalset",
    talker: Talker = Talker(),
+   cores: int = 4,
+   solver: "SolverPy | None" = None,
+   sidnames: bool = True,
+   trains: Any = None,  # absorbed from **setup spread
+   devels: Any = None,  # absorbed from **setup spread
    **others: Any,
 ) -> dict["SolverJob", "Result"]:
+
+   assert solver is not None
+   assert "benchmarks" in evalset
+   assert "strategies" in evalset
+   benchmarks = evalset["benchmarks"]
+   strategies = evalset["strategies"]
+   ref = evalset["ref"] if "ref" in evalset else None
+   proofs = evalset["proofs"] if "proofs" in evalset else None
 
    jobs: list["SolverJob"] = []
    nicks: dict["SolverJob", str] = {}
@@ -207,6 +224,7 @@ def launch(
                job,
                talker=talker,
                cores=cores,
+               proofs=proofs,
                **others,
             )
             allres[job] = result1  # (bid,sid) should be a primary key
