@@ -13,6 +13,7 @@ from solverpy.setups.evalset import Evalset
 from solverpy.setups.runtime import Runtime, initialize
 from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.talker import Talker
+from solverpy.setups import experiment
 from solverpy.tools.resources import summary as resource_summary, usage
 from solverpy_learn.report.talker.looptalker import LoopTalker
 
@@ -146,6 +147,7 @@ def oneloop(
 
 
 def launch(setup: Setup) -> Setup | None:
+   experiment(setup)
 
    runtime = None
    started_at = time.monotonic()

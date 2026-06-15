@@ -41,7 +41,7 @@ strategy and benchmark id lists), then call
 from .setup import Setup
 from .evalset import Evalset
 from .solver import eprover, vampire, prover9, cvc5, bitwuzla, llm2smt, z3
-from .loop import evaluation, launch
+from .loop import experiment, evaluation, launch
 
 __all__ = [
    "Setup",
@@ -53,6 +53,7 @@ __all__ = [
    "prover9",
    "bitwuzla",
    "llm2smt",
+   "experiment",
    "evaluation",
    "launch",
 ]

@@ -23,6 +23,7 @@ def _run_evaluate(yaml_data):
       if key in yaml_data and key not in trains:
          trains[key] = yaml_data.pop(key)
    solver_fn(yaml_data)
+   setups.experiment(yaml_data)
    setups.evaluation(yaml_data)
    setups.launch(yaml_data)
 
@@ -48,6 +49,7 @@ def _run_loop(loop_type, yaml_data):
    setup["trains"] = setups.Evalset(strategies=[sid], refs=[sid], **train_dict)
    if devel_dict:
       setup["devels"] = setups.Evalset(strategies=[sid], refs=[sid], **devel_dict)
+   setups.experiment(setup)
 
    if loop_type == "enigma":
       setups.eprover(setup, training=True)

@@ -1,4 +1,4 @@
-from solverpy.setups import Setup, Evalset, vampire, prover9, bitwuzla, z3, evaluation
+from solverpy.setups import Setup, Evalset, vampire, prover9, bitwuzla, z3, experiment, evaluation
 from solverpy.setups import launch as _launch_base
 
 from .solver import eprover, cvc5
@@ -15,6 +15,7 @@ __all__ = [
    "z3",
    "prover9",
    "bitwuzla",
+   "experiment",
    # evaluation
    "evaluation",
    # ML loop
