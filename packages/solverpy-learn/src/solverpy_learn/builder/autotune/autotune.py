@@ -1,4 +1,5 @@
 from typing import Any, Callable, TYPE_CHECKING
+import logging
 import os
 import signal
 import time
@@ -11,6 +12,8 @@ from solverpy.report.talker.talker import Talker
 from solverpy.report.talker.remotetalker import RemoteTalker
 from .. import svm
 from . import tune, build
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
    from .tune import TuneResult
@@ -240,6 +243,8 @@ def prettytuner(talker: Talker = Talker(), *args, **kwargs) -> Any:
       p.start()
       remote.listening_start()
       p.join()
+      if p.exitcode not in (0, None):
+         logger.warning(f"tuner child exited with code {p.exitcode}")
    except BaseException:
       try:
          _terminate_tuner(p)

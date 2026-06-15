@@ -7,9 +7,11 @@ within each section. Headings use stable descriptive labels instead of numbers.
 
 ### tunerfailure
 
-`prettytuner()` joins the tuner child without checking its exit code, and the
-shared talker's result is not reset before a new run. A failed later tuner can
-therefore return a stale result from an earlier run and select an old model.
+`prettytuner()` still lets the shared talker's result survive across runs, so a
+failed later tuner can return a stale result from an earlier run and select an
+old model. The child exit code should now be logged when non-zero, but the
+stale-result bug remains until the result is reset and abnormal exits are
+propagated.
 
 Reset the result before launch, propagate abnormal child exits, and test that a
 failed tuner cannot return stale state.
