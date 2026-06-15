@@ -22,8 +22,8 @@ def _run_evaluate(yaml_data):
    for key in ("benchmarks", "strategies", "bidfile", "sidfile"):
       if key in yaml_data and key not in trains:
          trains[key] = yaml_data.pop(key)
-   solver_fn(yaml_data)
    setups.experiment(yaml_data)
+   solver_fn(yaml_data)
    setups.evaluation(yaml_data)
    setups.launch(yaml_data)
 
@@ -52,9 +52,7 @@ def _run_loop(loop_type, yaml_data):
    setups.experiment(setup)
 
    if loop_type == "enigma":
-      setups.eprover(setup, training=True)
-      if devel_dict:
-         setups.eprover(setup, training=True, key="devels")
+      setups.eprover(setup)
       setups.evaluation(setup)
       setups.enigma(setup, tunesel=tune)
    elif loop_type == "cvc5ml":

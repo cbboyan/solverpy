@@ -1,9 +1,11 @@
 import logging
+import copy
 
-from solverpy.solver.atp.eprover import E_STATIC
-from solverpy.setups.common import default, init
+from solverpy.solver.atp.eprover import E_STATIC, E
+from solverpy.solver.plugins.db.sid import Sid
+from solverpy.solver.plugins.db.eprovesid import EProverSid
+from solverpy.setups.common import default, init, make_solver
 from solverpy.setups.setup import Setup
-from solverpy.setups.evalset import Evalset
 from ..builder.plugins import (
    EnigmaTrains,
    EnigmaMultiTrains,
@@ -15,8 +17,8 @@ from ..builder.plugins import (
 logger = logging.getLogger(__name__)
 
 
-def _eprover_training(setup: Setup, key: str = "trains") -> Setup:
-   """Configure an Evalset in setup[key] with an eprover solver and trains plugin."""
+def _eprover_training(setup: Setup) -> Setup:
+   """Configure every present Evalset with an E solver and trains plugin."""
    default(setup, "e_training_examples", "11")
    assert "e_training_examples" in setup
    default(setup, "sel_features", None)
@@ -32,50 +34,76 @@ def _eprover_training(setup: Setup, key: str = "trains") -> Setup:
    default(setup, "static", E_STATIC.split())
    assert "static" in setup
    static = setup["static"]
-   if key == "trains":
-      static.append(f"--training-examples={setup['e_training_examples']}")
-      if sel:
-         static.append(f'--enigmatic-sel-features="{sel}"')
-      if gen:
-         static.append(f'--enigmatic-gen-features="{gen}"')
-   if key not in setup:
-      setup[key] = Evalset()
-   evalset = setup[key]
-   default(evalset, "dataname", "data/model")
-   assert "dataname" in evalset
-   dataname = evalset["dataname"]
-   if sel and gen:
-      plugin = EnigmaMultiTrains(dataname, sel, gen, ratio, chunk_size=chunk_size)
-   elif sel:
-      plugin = EnigmaTrains(dataname, sel, "sel", ratio, chunk_size=chunk_size)
-   elif gen:
-      plugin = EnigmaTrains(dataname, gen, "gen", ratio, chunk_size=chunk_size)
-   else:
+   static.append(f"--training-examples={setup['e_training_examples']}")
+   if sel:
+      static.append(f'--enigmatic-sel-features="{sel}"')
+   if gen:
+      static.append(f'--enigmatic-gen-features="{gen}"')
+   if not sel and not gen:
       raise ValueError(
          "`sel_features` or `gen_features` must be provided in setup to generate trains."
       )
-   evalset["plugin"] = plugin
+
    init(setup)
-   plugs = setup["plugins"]
-   plugs.append(plugin)
-   if key == "trains":
+   assert "plugins" in setup
+   base_plugins = [
+      EProverSid() if isinstance(p, Sid) else p
+      for p in setup["plugins"]
+   ]
+   setup["plugins"] = base_plugins
+   for key in ("trains", "devels"):
+      if key not in setup:
+         continue
+      evalset = setup[key]
+      default(evalset, "dataname", "data/model")
+      assert "dataname" in evalset
+      dataname = evalset["dataname"]
+      if sel and gen:
+         plugin = EnigmaMultiTrains(
+            dataname,
+            sel,
+            gen,
+            ratio,
+            chunk_size=chunk_size,
+         )
+      elif sel:
+         plugin = EnigmaTrains(
+            dataname,
+            sel,
+            "sel",
+            ratio,
+            chunk_size=chunk_size,
+         )
+      else:
+         plugin = EnigmaTrains(
+            dataname,
+            gen,
+            "gen",
+            ratio,
+            chunk_size=chunk_size,
+         )
+      evalset["plugin"] = plugin
+      plugins = copy.deepcopy(base_plugins)
+      plugins.append(plugin)
       flatten = "flatten" in setup["options"]
       if "debug-trains" in setup["options"]:
          if sel:
-            plugs.append(EnigmaTrainsDebug(sel, "sel", flatten, ratio))
+            plugins.append(EnigmaTrainsDebug(sel, "sel", flatten, ratio))
          if gen:
-            plugs.append(EnigmaTrainsDebug(gen, "gen", flatten, ratio))
-   from solverpy.setups.solver import eprover as _eprover_base
-   _eprover_base(setup)
+            plugins.append(EnigmaTrainsDebug(gen, "gen", flatten, ratio))
+      evalset["plugins"] = plugins
+      evalset["solver"] = make_solver(setup, E, plugins)
+   setup.pop("solver", None)
    return setup
 
 
-def eprover(setup: Setup, training: bool = False, key: str = "trains") -> Setup:
+def eprover(setup: Setup) -> Setup:
+   assert "trains" in setup
    from solverpy.setups.solver import eprover as _eprover_base
-   if not training:
+   if not setup.get("sel_features") and not setup.get("gen_features"):
       _eprover_base(setup)
       return setup
-   return _eprover_training(setup, key)
+   return _eprover_training(setup)
 
 
 def _cvc5_training(setup: Setup, key: str = "trains") -> Setup:

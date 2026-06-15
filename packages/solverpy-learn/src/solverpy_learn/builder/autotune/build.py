@@ -189,8 +189,8 @@ def score(
    trains = setup["trains"]
    devels = setup["devels"] if "devels" in setup else trains
    assert "refs" in trains
-   assert "solver" in setup
-   solver = setup["solver"]
+   solver = devels.get("solver", setup.get("solver"))
+   assert solver is not None
    modelname = f"{builder._dataname}/opt/{nick}"
    strategies = builder.applies(trains["refs"], modelname)
    evalset = Evalset(devels, strategies=strategies)

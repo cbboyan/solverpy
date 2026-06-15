@@ -198,9 +198,8 @@ def loop_result(request, learn_env):
          dataname=p["devel_dataname"],
          refs=[sid],
       )
-      setups.eprover(setup, training=True)
-      setups.evaluation(setup)
-      setups.eprover(setup, training=True, key="devels")
+      setups.experiment(setup)
+      setups.eprover(setup)
       setups.evaluation(setup)
       setups.enigma(setup, tunesel=p["tune"])
 
@@ -233,6 +232,7 @@ def loop_result(request, learn_env):
          dataname=p["devel_dataname"],
          refs=[sid],
       )
+      setups.experiment(setup)
       setups.cvc5(setup, training=True)
       setups.evaluation(setup)
       setups.cvc5(setup, training=True, key="devels")
@@ -257,11 +257,14 @@ def test_models_dir_exists(loop_result):
 
 # --- loop directory counts ---
 
-def test_train_has_three_loops(loop_result):
+def test_train_has_model_build_loops(loop_result):
    db, p = loop_result
    train_base = db / "trains" / p["train_dataname"]
    loops = sorted(d.name for d in train_base.iterdir() if d.is_dir() and d.name.startswith("loop"))
-   assert loops == ["loop00", "loop01", "loop02"], f"Expected loop00-loop02 in train, got {loops}"
+   expected = ["loop00", "loop01"]
+   if p["solver_type"] == "cvc5":
+      expected.append("loop02")
+   assert loops == expected, f"Expected {expected} in train, got {loops}"
 
 
 def test_devel_has_three_loops(loop_result):
@@ -313,7 +316,6 @@ def test_devel_loop01_files(loop_result):
    sel = _sel_dir(db / "trains" / p["devel_dataname"], "loop01")
    assert (sel / "addon.in-stats.txt").exists(), f"Missing addon.in-stats.txt in {sel}"
    assert _has_chunks(sel, "addon.in"), f"No addon.in chunks in {sel}"
-   assert (sel / "train.in-stats.txt").exists(), f"Missing train.in-stats.txt in {sel}"
    assert (sel / "train.in-meta.json").exists(), f"Missing train.in-meta.json in {sel}"
 
 

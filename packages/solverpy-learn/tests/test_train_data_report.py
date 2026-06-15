@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 from solverpy.report.talker.logtalker import LogTalker
 from solverpy.report.talker.talker import Talker
 from solverpy_learn.builder.plugins.svm import SvmTrains
@@ -178,3 +180,64 @@ def test_oneloop_reports_generated_and_merged_files(monkeypatch):
    assert [[stat["path"] for stat in stats]
            for stats in talker.stats] == [["addon.in", "train.in"]]
    assert all(stat["dataset"] == "development" for stat in talker.stats[0])
+
+
+def test_iteration_applies_both_start_datanames_before_build(monkeypatch):
+
+   class FakeTrains:
+
+      def __init__(self, dataname):
+         self.dataname = dataname
+
+      def reset(self, dataname=None, filename="train.in"):
+         del filename
+         if dataname is not None:
+            self.dataname = dataname
+
+      def path(self):
+         return self.dataname
+
+      def train_data_stats(self, dataset, paths=None):
+         del paths
+         return {"dataset": dataset, "path": self.path()}
+
+   class FakeBuilder:
+
+      strategies = ["new"]
+
+      def build(self, talker):
+         del talker
+         self.paths = (
+            setup["trains"]["plugin"].path(),
+            setup["devels"]["plugin"].path(),
+         )
+
+   talker = SimpleNamespace(train_data=lambda stats: None)
+   builder = FakeBuilder()
+   setup = {
+      "it": 0,
+      "loops": 1,
+      "options": [],
+      "talker": talker,
+      "builder": builder,
+      "trains": {
+         "dataname": "train/loop00",
+         "label": "training",
+         "start_dataname": "old/train/loop00",
+         "plugin": FakeTrains("train/loop00"),
+      },
+      "devels": {
+         "dataname": "devel/loop00",
+         "label": "development",
+         "start_dataname": "old/devel/loop00",
+         "plugin": FakeTrains("devel/loop00"),
+      },
+   }
+   monkeypatch.setattr(loop.evaluator, "launch", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop.reporter, "add", lambda report: None)
+   monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
+   monkeypatch.setattr(loop, "usage", lambda *args: "")
+
+   loop.iteration(setup)
+
+   assert builder.paths == ("old/train/loop00", "old/devel/loop00")

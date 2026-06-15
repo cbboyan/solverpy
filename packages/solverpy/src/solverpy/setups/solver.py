@@ -1,4 +1,5 @@
 import logging
+import copy
 
 from ..solver.atp.eprover import E_STATIC, E
 from ..solver.atp.prover9 import Prover9
@@ -10,20 +11,30 @@ from ..solver.smt.llm2smt import LLM2SMT_STATIC
 from ..solver.smt.z3 import Z3_STATIC
 from ..solver.plugins.db.sid import Sid
 from ..solver.plugins.db.eprovesid import EProverSid
-from .common import default, init, solver
+from .common import default, init, make_solver, solver
 from .setup import Setup
 
 logger = logging.getLogger(__name__)
 
 
 def eprover(setup: Setup) -> Setup:
+   assert "trains" in setup
    init(setup)
    default(setup, "static", E_STATIC.split())
-   setup["plugins"] = [
+   assert "plugins" in setup
+   plugins = [
       EProverSid() if isinstance(p, Sid) else p
       for p in setup["plugins"]
    ]
-   return solver(setup, E)
+   setup["plugins"] = plugins
+   for key in ("trains", "devels"):
+      if key not in setup:
+         continue
+      evalset = setup[key]
+      evalset["plugins"] = copy.deepcopy(plugins)
+      evalset["solver"] = make_solver(setup, E, evalset["plugins"])
+   setup.pop("solver", None)
+   return setup
 
 
 def vampire(setup: Setup) -> Setup:

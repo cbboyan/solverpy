@@ -73,6 +73,7 @@ def eval_case(request, solverpy_env):
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
+   setups.experiment(setup)
    solver_fn(setup)
    setups.evaluation(setup)
    setups.launch(setup)
@@ -89,6 +90,7 @@ def eval_atp(request, solverpy_env):
       options=["headless", "outputs", "proofs", "premises"],
       cores=4,
    )
+   setups.experiment(setup)
    solver_fn(setup)
    setups.evaluation(setup)
    setups.launch(setup)
@@ -125,6 +127,7 @@ def test_evaluation_initializes_devels(monkeypatch):
    monkeypatch.setattr(sids, "load", lambda sid: sid)
    monkeypatch.setattr(bids, "problems", lambda bid: [bid])
 
+   setups.experiment(setup)
    setups.evaluation(setup)
 
    assert setup["trains"]["ref"] is True
@@ -178,7 +181,8 @@ def db_error_count(eval_case):
 @pytest.fixture(scope="module")
 def valid_statuses(eval_case):
    setup, _, _ = eval_case
-   solver = setup["solver"]
+   solver = setup["trains"].get("solver", setup.get("solver"))
+   assert solver is not None
    return solver._statuses
 
 

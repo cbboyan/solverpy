@@ -13,11 +13,18 @@ from solverpy.setups.evalset import Evalset
 from solverpy.setups.runtime import Runtime, initialize
 from solverpy.report.talker.evaltalker import EvalTalker
 from solverpy.report.talker.talker import Talker
-from solverpy.setups import experiment
 from solverpy.tools.resources import summary as resource_summary, usage
 from solverpy_learn.report.talker.looptalker import LoopTalker
 
 logger = logging.getLogger(__name__)
+
+EVALSETS = ("devels", "trains")
+
+
+def evalsets(setup: Setup):
+   for key in EVALSETS:
+      if key in setup:
+         yield setup[key]
 
 
 def loopinit(setup: Setup, evalset: Evalset) -> Evalset:
@@ -43,6 +50,30 @@ def looping(setup: Setup, evalset: Evalset) -> Evalset:
    if setup["max_proofs"] > 0:
       evalset["proofs"] = {}
    return evalset
+
+
+def iteration_init(setup: Setup) -> None:
+   assert "it" in setup
+   news = setup.get("news", [])
+   for evalset in evalsets(setup):
+      if setup["it"] > 0:
+         evalset["strategies"].extend(news)
+      loopinit(setup, evalset)
+   if "builder" in setup:
+      setup["builder"].reset(setup["trains"]["dataname"])
+
+
+def model_build(setup: Setup) -> None:
+   if "builder" not in setup:
+      return
+   if "loops" in setup and setup["it"] == setup["loops"]:
+      return
+   builder = setup["builder"]
+   if not builder:
+      return
+   builder.build(setup["talker"])
+   setup["news"] = builder.strategies
+   logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
 
 
 def boot(setup: Setup) -> Runtime:
@@ -96,15 +127,6 @@ def oneloop(
       plugin.merge(evalset["previous_trains"], "train.in")
       plugin.reset(filename="train.in")
 
-   def model_build() -> None:
-      if "builder" not in setup:
-         return
-      builder = setup["builder"]
-      if builder and not is_last():
-         builder.build(setup["talker"])
-         setup["news"] = builder.strategies
-         logger.info("New ML strategies:\n" + "\n".join(setup["news"]))
-
    def train_data_stats(paths=None) -> list[dict]:
       assert "plugin" in evalset
       stats = evalset["plugin"].train_data_stats(evalset["label"], paths)
@@ -139,16 +161,23 @@ def oneloop(
          )
          evalset["plugin"].reset(evalset["start_dataname"])
          setup["talker"].train_data(train_data_stats())
-      model_build()
       return evalset
    finally:
       logger.info(resource_summary("main", started_at))
       logger.debug(usage(f"loop {it} end: {dataname}"))
 
 
-def launch(setup: Setup) -> Setup | None:
-   experiment(setup)
+def iteration(setup: Setup) -> None:
+   if "devels" in setup:
+      oneloop(setup, setup["devels"])
+      if "loops" in setup and setup["it"] == setup["loops"]:
+         return
+   if "trains" in setup:
+      oneloop(setup, setup["trains"])
+   model_build(setup)
 
+
+def launch(setup: Setup) -> Setup | None:
    runtime = None
    started_at = time.monotonic()
    dataname = "unknown"
@@ -159,20 +188,10 @@ def launch(setup: Setup) -> Setup | None:
 
    try:
       runtime = boot(setup)
-
-      def do_loop(evalset: Evalset | None) -> None:
-         if evalset is None: return
-         oneloop(setup, evalset)
-
-      def do_iter(evalset: Evalset | None) -> None:
-         if evalset is None: return
-         evalset["strategies"].extend(setup["news"] if "news" in setup else [])
-         oneloop(setup, evalset)
-
-      trains = setup["trains"] if "trains" in setup else None
-      devels = setup["devels"] if "devels" in setup else None
-      default(trains, "label", "training") if trains else None
-      default(devels, "label", "development") if devels else None
+      if "trains" in setup:
+         default(setup["trains"], "label", "training")
+      if "devels" in setup:
+         default(setup["devels"], "label", "development")
 
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup)
@@ -180,29 +199,18 @@ def launch(setup: Setup) -> Setup | None:
          default(setup, "max_proofs", 0)
          default(setup, "chunk_size", 1_000_000)
          setup["it"] = 0
-         if trains:
-            looping(setup, trains)
-            loopinit(setup, trains)
-         if devels:
-            looping(setup, devels)
-            loopinit(setup, devels)
-      do_loop(devels)
-      do_loop(trains)
-      if "loops" in setup:
-         while setup["it"] < setup["loops"]:
+         for evalset in evalsets(setup):
+            looping(setup, evalset)
+         while True:
+            iteration_init(setup)
+            iteration(setup)
+            if setup["it"] == setup["loops"]:
+               break
             gc.collect()
             log.ntfy(setup, f"solverpy: iter #{setup['it']}")
             setup["it"] += 1
-            if devels:
-               loopinit(setup, devels)
-            if trains:
-               loopinit(setup, trains)
-               if "builder" in setup:
-                  setup["builder"].reset(trains["dataname"])
-            do_iter(devels)
-            if devels and (setup['it'] == setup["loops"]):
-               break
-            do_iter(trains)
+      else:
+         iteration(setup)
       log.ntfy(setup, "solverpy: done")
       return setup
    except KeyboardInterrupt:

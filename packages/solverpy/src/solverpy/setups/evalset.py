@@ -1,4 +1,8 @@
-from typing import Any, TypedDict
+from typing import Any, TypedDict, TYPE_CHECKING
+
+if TYPE_CHECKING:
+   from ..solver.solverpy import SolverPy
+   from ..solver.plugins.plugin import Plugin
 
 
 class Evalset(TypedDict, total=False):
@@ -11,6 +15,8 @@ class Evalset(TypedDict, total=False):
    refs: list[str]
    ref: bool | int | str | None
    plugin: Any  # SvmTrains
+   plugins: list["Plugin"]
+   solver: "SolverPy"
    dataname: str
    basedataname: str
    previous_trains: str | tuple[str]

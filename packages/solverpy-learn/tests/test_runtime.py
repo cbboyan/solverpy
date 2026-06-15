@@ -6,6 +6,7 @@ from solverpy.report.talker.talker import Talker
 from solverpy.setups import runtime as runtime_mod
 from solverpy_learn.builder.plugins.enigma import EnigmaMultiTrains
 from solverpy_learn.builder.plugins.svm import SvmTrains
+from solverpy_learn import setups
 from solverpy_learn.setups import loop
 
 
@@ -109,6 +110,28 @@ def test_multi_trains_share_session_manager(monkeypatch):
    assert manager.stopped
 
 
+def test_eprover_configures_independent_evalset_solvers():
+   setup = setups.Setup(
+      options=["headless"],
+      sel_features="features",
+      trains=setups.Evalset(dataname="train"),
+      devels=setups.Evalset(dataname="devel"),
+   )
+
+   setups.experiment(setup)
+   setups.eprover(setup)
+
+   trains = setup["trains"]
+   devels = setup["devels"]
+   assert "solver" not in setup
+   assert trains["solver"] is not devels["solver"]
+   assert trains["plugin"] is not devels["plugin"]
+   assert trains["plugin"] in trains["solver"].decorators
+   assert trains["plugin"] not in devels["solver"].decorators
+   assert devels["plugin"] in devels["solver"].decorators
+   assert devels["plugin"] not in trains["solver"].decorators
+
+
 def test_launch_shuts_runtime_down_on_failure(monkeypatch):
    runtime = SimpleNamespace(stopped=False)
    runtime.shutdown = lambda: setattr(runtime, "stopped", True)
@@ -140,6 +163,77 @@ def test_launch_shuts_runtime_down_on_failure(monkeypatch):
       ("run start: unknown", False),
       ("run end: unknown", True),
    ]
+
+
+def test_launch_prepares_both_evalsets_then_builds_once(monkeypatch):
+   events = []
+
+   class FakePlugin:
+
+      def __init__(self, dataname):
+         self.dataname = dataname
+
+      def path(self):
+         return f"{self.dataname}/train.in"
+
+      def reset(self, dataname=None, filename="train.in"):
+         del filename
+         if dataname is not None:
+            self.dataname = dataname
+
+   class FakeBuilder:
+
+      strategies = ["new"]
+
+      def reset(self, dataname):
+         events.append(("reset", dataname))
+
+      def build(self, talker):
+         del talker
+         events.append(("build",))
+
+   runtime = SimpleNamespace(shutdown=lambda: None)
+   talker = SimpleNamespace(log_stop=lambda: None)
+   setup = {
+      "options": [],
+      "loops": 1,
+      "trains": {
+         "dataname": "train",
+         "plugin": FakePlugin("train"),
+         "strategies": ["sid"],
+      },
+      "devels": {
+         "dataname": "devel",
+         "plugin": FakePlugin("devel"),
+         "strategies": ["sid"],
+      },
+      "builder": FakeBuilder(),
+      "talker": talker,
+   }
+
+   monkeypatch.setattr(loop, "boot", lambda setup: runtime)
+   monkeypatch.setattr(
+      loop,
+      "oneloop",
+      lambda setup, evalset: events.append(("prepare", evalset["label"])),
+   )
+   monkeypatch.setattr(loop.evaluator, "init", lambda setup: None)
+   monkeypatch.setattr(loop.log, "ntfy", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
+   monkeypatch.setattr(loop, "usage", lambda *args: "")
+
+   loop.launch(setup)
+
+   assert events == [
+      ("reset", "train/loop00"),
+      ("prepare", "development"),
+      ("prepare", "training"),
+      ("build",),
+      ("reset", "train/loop01"),
+      ("prepare", "development"),
+   ]
+   assert setup["trains"]["strategies"] == ["sid", "new"]
+   assert setup["devels"]["strategies"] == ["sid", "new"]
 
 
 def test_launch_keeps_previous_trains_from_prior_loop(monkeypatch):

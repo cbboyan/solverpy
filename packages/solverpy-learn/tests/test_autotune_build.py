@@ -227,9 +227,11 @@ def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
    builder = SimpleNamespace(
       _dataname="experiment",
       _setup={
-         "solver": solver,
-         "trains": {"refs": ["reference"]},
+         "trains": {
+            "refs": ["reference"],
+         },
          "devels": {
+            "solver": solver,
             "plugin": object(),
             "benchmarks": ["development"],
             "strategies": ["reference"],

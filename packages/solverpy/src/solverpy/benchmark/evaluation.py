@@ -193,6 +193,7 @@ def launch(
    **others: Any,
 ) -> dict["SolverJob", "Result"]:
 
+   solver = evalset.get("solver", solver)
    assert solver is not None
    assert "benchmarks" in evalset
    assert "strategies" in evalset
