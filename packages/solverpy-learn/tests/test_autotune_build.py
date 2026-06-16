@@ -227,7 +227,7 @@ def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
    builder = SimpleNamespace(
       _dataname="experiment",
       _setup={
-         "trains": {
+         "evals": {
             "refs": ["reference"],
          },
          "devels": {
@@ -255,6 +255,8 @@ def test_score_does_not_restrict_tuning_evaluation_with_solvedby(monkeypatch):
    build.score(stats, builder, "trial")
 
    assert "solvedby" not in launched_evalset
+   assert launched_evalset["pool_context"] == "spawn"
+   assert "pool_context" not in launched_setup
    assert launched_setup["it"] == 0
    assert launched_evalset["benchmarks"] == ["development"]
    assert stats["score"] == 0

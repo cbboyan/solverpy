@@ -175,18 +175,19 @@ def loop_result(request, learn_env):
    sid = p["sid"]
 
    if p["solver_type"] == "eprover":
-      common = setups.Setup(
-         limit="T1",
+      setup = setups.Setup(
+         common={
+            "limit": "T1",
+            "cores": 4,
+            "binary": "eprover-ho",
+         },
          options=["outputs", "debug-trains", "headless"],
          loops=2,
-         cores=4,
-         binary="eprover-ho",
          sel_features="C(l,x,s,r,v[b=2048],h,c,d,t,a):M:F:S:G",
          posneg_ratio=10,
          posneg_weight=2,
       )
-      setup = setups.Setup(**common)
-      setup["trains"] = setups.Evalset(
+      setup["evals"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
@@ -209,18 +210,19 @@ def loop_result(request, learn_env):
          "--produce-proofs", "--produce-models",
          "--dump-instantiations", "--print-inst-full", "--ml-engine",
       ]
-      common = setups.Setup(
-         limit="T1",
+      setup = setups.Setup(
+         common={
+            "limit": "T1",
+            "cores": 4,
+            "binary": "cvc5ml",
+            "static": static,
+         },
          options=["outputs", "debug-trains", "headless"],
          loops=2,
-         cores=4,
-         binary="cvc5ml",
-         static=static,
          posneg_ratio=2,
          posneg_weight=10.0,
       )
-      setup = setups.Setup(**common)
-      setup["trains"] = setups.Evalset(
+      setup["evals"] = setups.Evalset(
          strategies=[sid],
          benchmarks=[p["train_bid"]],
          dataname=p["train_dataname"],
@@ -233,9 +235,7 @@ def loop_result(request, learn_env):
          refs=[sid],
       )
       setups.experiment(setup)
-      setups.cvc5(setup, training=True)
-      setups.evaluation(setup)
-      setups.cvc5(setup, training=True, key="devels")
+      setups.cvc5(setup)
       setups.evaluation(setup)
       setups.cvc5ml(setup, p["tune"])
 
@@ -261,10 +261,7 @@ def test_train_has_model_build_loops(loop_result):
    db, p = loop_result
    train_base = db / "trains" / p["train_dataname"]
    loops = sorted(d.name for d in train_base.iterdir() if d.is_dir() and d.name.startswith("loop"))
-   expected = ["loop00", "loop01"]
-   if p["solver_type"] == "cvc5":
-      expected.append("loop02")
-   assert loops == expected, f"Expected {expected} in train, got {loops}"
+   assert loops == ["loop00", "loop01"], f"Expected loop00-loop01 in train, got {loops}"
 
 
 def test_devel_has_three_loops(loop_result):

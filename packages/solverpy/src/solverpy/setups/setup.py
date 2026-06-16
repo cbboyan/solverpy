@@ -7,7 +7,6 @@ from typing import Any, TypedDict, TYPE_CHECKING
 
 if TYPE_CHECKING:
    from ..benchmark.db import DB
-   from ..solver.solverpy import SolverPy
    from ..solver.plugins.plugin import Plugin
    from ..report.talker.talker import Talker
    from .evalset import Evalset
@@ -88,13 +87,12 @@ class Setup(TypedDict, total=False):
        loops: Number of iterations of the eval/ML loop.
        force: Recompute everything.
        shuffle: Shuffle problem order.
-       max_proofs: Maximum number of proofs per problem for ML experiments.
        e_training_examples: Output format of training samples for `eprover`.
        gen_features: ENIGMA features for generation filtering.
        sel_features: ENIGMA features for clause selection.
        posneg_ratio: Maximum ratio of negative to positive examples.
        templates: Templates for strategy generation.
-       trains: Training dataset configuration (Evalset with benchmarks, strategies, plugin, etc.).
+       evals: Primary evaluation dataset configuration (Evalset with benchmarks, strategies, plugin, etc.).
        devels: Development dataset configuration (Evalset).
 
    # Internal parameters
@@ -107,7 +105,6 @@ class Setup(TypedDict, total=False):
        news: New ML strategies.
        db: Database object.
        builder: Builder object.
-       solver: Solver object (base eval path; moves to trains/devels Evalset for ML).
    """
    limit: str
    cores: int
@@ -118,6 +115,7 @@ class Setup(TypedDict, total=False):
    loops: int
    news: list[str]
    options: list[str]
+   common: dict[str, Any]
    delfix: (int | str | None)
    complete: bool
 
@@ -126,14 +124,11 @@ class Setup(TypedDict, total=False):
 
    db: "DB"
    builder: Any  # set by solverpy_learn
-   solver: "SolverPy"
    talker: "Talker"
    reloader: bool
-   trains: "Evalset"  # training dataset (set by solverpy_learn or evaluation())
+   evals: "Evalset"  # primary evaluation dataset (set by solverpy_learn or evaluation())
    devels: "Evalset"  # development dataset (set by solverpy_learn)
    plugins: list["Plugin"]
-   max_proofs: int
-
    e_training_examples: str
    gen_features: str
    sel_features: str
@@ -142,4 +137,3 @@ class Setup(TypedDict, total=False):
    templates: list[str]
    chunk_size: int  # rows per NPZ chunk when compressing SVM-Light trains (default 1_000_000)
    pool_context: str  # multiprocessing start method for the evaluation pool (default "forkserver")
-

@@ -186,20 +186,20 @@ def score(
       stats["score"] = stats["mlscore"]
       return
    setup = builder._setup
-   trains = setup["trains"]
+   trains = setup["evals"]
    devels = setup["devels"] if "devels" in setup else trains
    assert "refs" in trains
-   solver = devels.get("solver", setup.get("solver"))
-   assert solver is not None
+   assert "solver" in devels
+   solver = devels["solver"]
    modelname = f"{builder._dataname}/opt/{nick}"
    strategies = builder.applies(trains["refs"], modelname)
-   evalset = Evalset(devels, strategies=strategies)
+   evalset = Evalset(devels, strategies=strategies, pool_context="spawn")
    evalset.pop("solvedby", None)
    assert "plugin" in evalset
    solver.call("trains", "disable")
    solver.call("debug-trains", "disable")
    talker.tune_eval_begin()
-   res = evaluation.launch(evalset, **dict(setup, pool_context="spawn", talker=talker))
+   res = evaluation.launch(evalset, **dict(setup, talker=talker))
    talker.tune_eval_end(res)
    solved = lambda s, rs: sum(1 for r in rs.values() if s.solved(r))
    score = sum(solved(s, rs) for ((s, _, _), rs) in res.items())

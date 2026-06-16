@@ -52,15 +52,12 @@ def init(setup: Setup) -> Setup:
    return setup
 
 
-def solver(setup: Setup, mk_solver: "SolverMaker") -> Setup:
-   setup["solver"] = make_solver(setup, mk_solver)
-   return setup
-
-
 def make_solver(
    setup: Setup,
    mk_solver: "SolverMaker",
    plugins: list | None = None,
+   reloader: bool = False,
+   options: list[str] | None = None,
 ):
    assert "static" in setup
    assert "limit" in setup
@@ -69,9 +66,9 @@ def make_solver(
       kwargs["plugins"] = plugins
    kwargs["static"] = " ".join(setup["static"])
    _solver = mk_solver(setup["limit"], **kwargs)
-   if setup.get("reloader"):
+   if reloader:
       from ..solver.reloader import Reloader
-      options = setup.get("options", [])
+      options = options or []
       _solver = Reloader(
          _solver,
          flatten="flatten" in options,

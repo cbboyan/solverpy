@@ -4,6 +4,7 @@ import pytest
 
 from solverpy.report.talker.talker import Talker
 from solverpy.setups import runtime as runtime_mod
+from solverpy_learn.builder.plugins.cvc5 import Cvc5TrainsDebug
 from solverpy_learn.builder.plugins.enigma import EnigmaMultiTrains
 from solverpy_learn.builder.plugins.svm import SvmTrains
 from solverpy_learn import setups
@@ -114,14 +115,14 @@ def test_eprover_configures_independent_evalset_solvers():
    setup = setups.Setup(
       options=["headless"],
       sel_features="features",
-      trains=setups.Evalset(dataname="train"),
+      evals=setups.Evalset(dataname="train"),
       devels=setups.Evalset(dataname="devel"),
    )
 
    setups.experiment(setup)
    setups.eprover(setup)
 
-   trains = setup["trains"]
+   trains = setup["evals"]
    devels = setup["devels"]
    assert "solver" not in setup
    assert trains["solver"] is not devels["solver"]
@@ -130,6 +131,29 @@ def test_eprover_configures_independent_evalset_solvers():
    assert trains["plugin"] not in devels["solver"].decorators
    assert devels["plugin"] in devels["solver"].decorators
    assert devels["plugin"] not in trains["solver"].decorators
+
+
+def test_cvc5_configures_independent_evalset_solvers():
+   setup = setups.Setup(
+      options=["headless", "debug-trains"],
+      evals=setups.Evalset(dataname="train"),
+      devels=setups.Evalset(dataname="devel"),
+   )
+
+   setups.experiment(setup)
+   setups.cvc5(setup)
+
+   trains = setup["evals"]
+   devels = setup["devels"]
+   assert "solver" not in setup
+   assert trains["solver"] is not devels["solver"]
+   assert trains["plugin"] is not devels["plugin"]
+   assert trains["plugin"] in trains["solver"].decorators
+   assert trains["plugin"] not in devels["solver"].decorators
+   assert devels["plugin"] in devels["solver"].decorators
+   assert devels["plugin"] not in trains["solver"].decorators
+   assert any(isinstance(p, Cvc5TrainsDebug) for p in trains["plugins"])
+   assert any(isinstance(p, Cvc5TrainsDebug) for p in devels["plugins"])
 
 
 def test_launch_shuts_runtime_down_on_failure(monkeypatch):
@@ -197,7 +221,7 @@ def test_launch_prepares_both_evalsets_then_builds_once(monkeypatch):
    setup = {
       "options": [],
       "loops": 1,
-      "trains": {
+      "evals": {
          "dataname": "train",
          "plugin": FakePlugin("train"),
          "strategies": ["sid"],
@@ -232,7 +256,7 @@ def test_launch_prepares_both_evalsets_then_builds_once(monkeypatch):
       ("reset", "train/loop01"),
       ("prepare", "development"),
    ]
-   assert setup["trains"]["strategies"] == ["sid", "new"]
+   assert setup["evals"]["strategies"] == ["sid", "new"]
    assert setup["devels"]["strategies"] == ["sid", "new"]
 
 
@@ -266,7 +290,7 @@ def test_launch_keeps_previous_trains_from_prior_loop(monkeypatch):
    setup = {
       "options": [],
       "loops": 1,
-      "trains": evalset,
+      "evals": evalset,
       "talker": talker,
    }
 

@@ -18,7 +18,7 @@ from solverpy_learn.report.talker.looptalker import LoopTalker
 
 logger = logging.getLogger(__name__)
 
-EVALSETS = ("devels", "trains")
+EVALSETS = ("devels", "evals")
 
 
 def evalsets(setup: Setup):
@@ -46,8 +46,7 @@ def loopinit(setup: Setup, evalset: Evalset) -> Evalset:
 def looping(setup: Setup, evalset: Evalset) -> Evalset:
    assert "dataname" in evalset
    evalset["basedataname"] = evalset["dataname"]
-   assert "max_proofs" in setup
-   if setup["max_proofs"] > 0:
+   if evalset.get("max_proofs", 0) > 0:
       evalset["proofs"] = {}
    return evalset
 
@@ -60,7 +59,7 @@ def iteration_init(setup: Setup) -> None:
          evalset["strategies"].extend(news)
       loopinit(setup, evalset)
    if "builder" in setup:
-      setup["builder"].reset(setup["trains"]["dataname"])
+      setup["builder"].reset(setup["evals"]["dataname"])
 
 
 def model_build(setup: Setup) -> None:
@@ -121,15 +120,17 @@ def oneloop(
          logger.warning(f"No trains found: {plugin.path()}.")
          logger.warning(f"Reusing previous trains: {previous}.")
          plugin.link(previous)
-         if "max_proofs" in setup and setup["max_proofs"] > 0:
-            setup["max_proofs"] += 1
-            logger.info(f"Increasing max_proofs to: {setup['max_proofs']}")
+         if evalset.get("max_proofs", 0) > 0:
+            evalset["max_proofs"] += 1
+            logger.info(f"Increasing max_proofs to: {evalset['max_proofs']}")
       plugin.merge(evalset["previous_trains"], "train.in")
       plugin.reset(filename="train.in")
 
    def train_data_stats(paths=None) -> list[dict]:
       assert "plugin" in evalset
       stats = evalset["plugin"].train_data_stats(evalset["label"], paths)
+      if stats is None:
+         return []
       return [stats] if isinstance(stats, dict) else stats
 
    assert "dataname" in evalset
@@ -172,8 +173,8 @@ def iteration(setup: Setup) -> None:
       oneloop(setup, setup["devels"])
       if "loops" in setup and setup["it"] == setup["loops"]:
          return
-   if "trains" in setup:
-      oneloop(setup, setup["trains"])
+   if "evals" in setup:
+      oneloop(setup, setup["evals"])
    model_build(setup)
 
 
@@ -181,22 +182,21 @@ def launch(setup: Setup) -> Setup | None:
    runtime = None
    started_at = time.monotonic()
    dataname = "unknown"
-   if "trains" in setup and "dataname" in setup["trains"]:
-      dataname = setup["trains"]["dataname"]
+   if "evals" in setup and "dataname" in setup["evals"]:
+      dataname = setup["evals"]["dataname"]
    logger.info(resource_summary("main", started_at))
    logger.debug(usage(f"run start: {dataname}"))
 
    try:
       runtime = boot(setup)
-      if "trains" in setup:
-         default(setup["trains"], "label", "training")
+      if "evals" in setup:
+         default(setup["evals"], "label", "training")
       if "devels" in setup:
          default(setup["devels"], "label", "development")
 
       log.ntfy(setup, "solverpy: init")
       evaluator.init(setup)
       if "loops" in setup:
-         default(setup, "max_proofs", 0)
          default(setup, "chunk_size", 1_000_000)
          setup["it"] = 0
          for evalset in evalsets(setup):

@@ -182,6 +182,88 @@ def test_oneloop_reports_generated_and_merged_files(monkeypatch):
    assert all(stat["dataset"] == "development" for stat in talker.stats[0])
 
 
+def test_oneloop_allows_empty_generated_data(monkeypatch):
+
+   class FakeTrains:
+
+      def __init__(self):
+         self.filename = "addon.in"
+         self.merged = False
+
+      def path(self, dataname=None, filename=None):
+         del dataname
+         return filename or self.filename
+
+      def train_data_snapshot(self):
+         pass
+
+      def train_data_stats(self, dataset, path=None):
+         path = path or self.path()
+         if path == "addon.in":
+            return None
+         return {
+            "dataset": dataset,
+            "path": path,
+            "format": "binary/chunks",
+            "stored_bytes": 10,
+            "chunks": 1,
+            "files": 2,
+         }
+
+      def exists(self):
+         return self.filename != "addon.in"
+
+      def link(self, previous):
+         assert previous == "previous.in"
+         self.filename = previous
+
+      def merge(self, previous, filename):
+         assert previous == "previous.in"
+         assert filename == "train.in"
+         self.merged = True
+
+      def reset(self, dataname=None, filename="train.in"):
+         del dataname
+         self.filename = filename
+
+   class RecordingTalker(Talker):
+
+      def __init__(self):
+         super().__init__()
+         self.stats = []
+
+      def train_data(self, stats):
+         self.stats.append(stats)
+
+   trains = FakeTrains()
+   talker = RecordingTalker()
+   evalset = {
+      "dataname": "sample/loop01",
+      "label": "development",
+      "previous_trains": "previous.in",
+      "plugin": trains,
+      "max_proofs": 3,
+   }
+   setup = {
+      "it": 1,
+      "loops": 2,
+      "options": [],
+      "talker": talker,
+   }
+   monkeypatch.setattr(loop.evaluator, "launch", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop.reporter, "add", lambda report: None)
+   monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
+   monkeypatch.setattr(loop, "usage", lambda *args: "")
+
+   loop.oneloop(setup, evalset)
+
+   assert trains.merged
+   assert evalset["max_proofs"] == 4
+   assert [[stat["path"] for stat in stats]
+           for stats in talker.stats] == [["train.in"]]
+   assert talker.stats[0][0]["dataset"] == "development"
+
+
 def test_iteration_applies_both_start_datanames_before_build(monkeypatch):
 
    class FakeTrains:
@@ -208,7 +290,7 @@ def test_iteration_applies_both_start_datanames_before_build(monkeypatch):
       def build(self, talker):
          del talker
          self.paths = (
-            setup["trains"]["plugin"].path(),
+            setup["evals"]["plugin"].path(),
             setup["devels"]["plugin"].path(),
          )
 
@@ -220,7 +302,7 @@ def test_iteration_applies_both_start_datanames_before_build(monkeypatch):
       "options": [],
       "talker": talker,
       "builder": builder,
-      "trains": {
+      "evals": {
          "dataname": "train/loop00",
          "label": "training",
          "start_dataname": "old/train/loop00",

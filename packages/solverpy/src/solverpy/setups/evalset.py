@@ -14,6 +14,16 @@ class Evalset(TypedDict, total=False):
    sidfile: str
    refs: list[str]
    ref: bool | int | str | None
+   limit: str
+   cores: int
+   binary: str
+   static: list[str]
+   complete: bool
+   force: bool
+   shuffle: bool
+   solvedby: str
+   max_proofs: int
+   pool_context: str
    plugin: Any  # SvmTrains
    plugins: list["Plugin"]
    solver: "SolverPy"

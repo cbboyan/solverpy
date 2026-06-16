@@ -145,6 +145,7 @@ def test_prettytuner_starts_process_before_listeners(monkeypatch, tmp_path):
 
    class TuneProcess:
       pid = 123
+      exitcode = 0
 
       def start(self):
          calls.append("process start")

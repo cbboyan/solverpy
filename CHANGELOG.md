@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-15)
+## Unreleased changes (2026-06-16)
 
-* fix: Fixed evaluation/looping for E after refactor [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: finish setup/evalset refactor [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: Fixed evaluation/looping for E after refactor [[details](https://github.com/cbboyan/solverpy/commit/4bdcd7c) | [browse](https://github.com/cbboyan/solverpy/tree/4bdcd7c)]
 * fix: normalize experiment setups [[details](https://github.com/cbboyan/solverpy/commit/99e852b) | [browse](https://github.com/cbboyan/solverpy/tree/99e852b)]
 * fix: warn on non-zero tuner exit [[details](https://github.com/cbboyan/solverpy/commit/4c4fe3e) | [browse](https://github.com/cbboyan/solverpy/tree/4c4fe3e)]
 * test: align slow and learn expectations [[details](https://github.com/cbboyan/solverpy/commit/0931500) | [browse](https://github.com/cbboyan/solverpy/tree/0931500)]

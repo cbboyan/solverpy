@@ -33,9 +33,9 @@ class AutoTuner(Builder):
       tuneargs: (dict[str, Any] | None) = None,
       templates: (list[str] | None) = None,
    ):
-      assert "trains" in setup
-      assert "dataname" in setup["trains"]
-      Builder.__init__(self, setup["trains"]["dataname"])
+      assert "evals" in setup
+      assert "dataname" in setup["evals"]
+      Builder.__init__(self, setup["evals"]["dataname"])
       self._setup = setup
       self._tuneargs: dict[str, Any] = TUNEARGS | (tuneargs or {})
       self._templates = templates or []
@@ -55,7 +55,7 @@ class AutoTuner(Builder):
          return super().path()
 
    def build(self, talker: Talker = Talker()) -> None:
-      trains = self._setup["trains"]
+      trains = self._setup["evals"]
       devels = self._setup["devels"] if "devels" in self._setup else trains
       assert "plugin" in trains
       assert "plugin" in devels

@@ -18,10 +18,6 @@ def _run_evaluate(yaml_data):
       print(f"error: unknown solver '{evaluate}'.", file=sys.stderr)
       sys.exit(1)
 
-   trains = yaml_data.setdefault("trains", {})
-   for key in ("benchmarks", "strategies", "bidfile", "sidfile"):
-      if key in yaml_data and key not in trains:
-         trains[key] = yaml_data.pop(key)
    setups.experiment(yaml_data)
    solver_fn(yaml_data)
    setups.evaluation(yaml_data)
@@ -29,15 +25,15 @@ def _run_evaluate(yaml_data):
 
 
 def _run_loop(loop_type, yaml_data):
-   sid = yaml_data.get("strategy")
+   sid = yaml_data.pop("strategy", None)
    if not sid:
       print("error: 'loop' requires a 'strategy' key.", file=sys.stderr)
       sys.exit(1)
 
-   common = yaml_data.get("common", {})
-   train_dict = yaml_data.get("train", {})
-   devel_dict = yaml_data.get("devel", None)
-   tune = yaml_data.get("tune", None)
+   common = yaml_data.setdefault("common", {})
+   common.setdefault("strategies", [sid])
+   common.setdefault("refs", [sid])
+   tune = yaml_data.pop("tune", None)
 
    try:
       from solverpy_learn import setups
@@ -45,24 +41,18 @@ def _run_loop(loop_type, yaml_data):
       print("error: 'loop' requires the solverpy-learn package.", file=sys.stderr)
       sys.exit(1)
 
-   setup = setups.Setup(**common)
-   setup["trains"] = setups.Evalset(strategies=[sid], refs=[sid], **train_dict)
-   if devel_dict:
-      setup["devels"] = setups.Evalset(strategies=[sid], refs=[sid], **devel_dict)
-   setups.experiment(setup)
+   setups.experiment(yaml_data)
 
    if loop_type == "enigma":
-      setups.eprover(setup)
-      setups.evaluation(setup)
-      setups.enigma(setup, tunesel=tune)
+      setups.eprover(yaml_data)
+      setups.evaluation(yaml_data)
+      setups.enigma(yaml_data, tunesel=tune)
    elif loop_type == "cvc5ml":
-      setups.cvc5(setup, training=True)
-      if devel_dict:
-         setups.cvc5(setup, training=True, key="devels")
-      setups.evaluation(setup)
-      setups.cvc5ml(setup, tuneargs=tune)
+      setups.cvc5(yaml_data)
+      setups.evaluation(yaml_data)
+      setups.cvc5ml(yaml_data, tuneargs=tune)
 
-   setups.launch(setup)
+   setups.launch(yaml_data)
 
 
 def main(args):

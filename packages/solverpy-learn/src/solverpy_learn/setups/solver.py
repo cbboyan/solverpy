@@ -6,6 +6,8 @@ from solverpy.solver.plugins.db.sid import Sid
 from solverpy.solver.plugins.db.eprovesid import EProverSid
 from solverpy.setups.common import default, init, make_solver
 from solverpy.setups.setup import Setup
+from solverpy.setups.evalset import Evalset
+from solverpy.solver.smt.cvc5 import CVC5_STATIC, Cvc5
 from ..builder.plugins import (
    EnigmaTrains,
    EnigmaMultiTrains,
@@ -15,6 +17,12 @@ from ..builder.plugins import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _append_missing(static: list[str], options: list[str]) -> None:
+   for option in options:
+      if option not in static:
+         static.append(option)
 
 
 def _eprover_training(setup: Setup) -> Setup:
@@ -31,30 +39,30 @@ def _eprover_training(setup: Setup) -> Setup:
    gen = setup["gen_features"]
    ratio = setup["posneg_ratio"]
    chunk_size = setup.get("chunk_size", 1_000_000)
-   default(setup, "static", E_STATIC.split())
-   assert "static" in setup
-   static = setup["static"]
-   static.append(f"--training-examples={setup['e_training_examples']}")
+   training_static = [f"--training-examples={setup['e_training_examples']}"]
    if sel:
-      static.append(f'--enigmatic-sel-features="{sel}"')
+      training_static.append(f'--enigmatic-sel-features="{sel}"')
    if gen:
-      static.append(f'--enigmatic-gen-features="{gen}"')
+      training_static.append(f'--enigmatic-gen-features="{gen}"')
    if not sel and not gen:
       raise ValueError(
          "`sel_features` or `gen_features` must be provided in setup to generate trains."
       )
 
    init(setup)
+   assert "options" in setup
    assert "plugins" in setup
    base_plugins = [
       EProverSid() if isinstance(p, Sid) else p
       for p in setup["plugins"]
    ]
    setup["plugins"] = base_plugins
-   for key in ("trains", "devels"):
+   for key in ("evals", "devels"):
       if key not in setup:
          continue
       evalset = setup[key]
+      default(evalset, "limit", "T1")
+      default(evalset, "static", E_STATIC.split())
       default(evalset, "dataname", "data/model")
       assert "dataname" in evalset
       dataname = evalset["dataname"]
@@ -92,13 +100,21 @@ def _eprover_training(setup: Setup) -> Setup:
          if gen:
             plugins.append(EnigmaTrainsDebug(gen, "gen", flatten, ratio))
       evalset["plugins"] = plugins
-      evalset["solver"] = make_solver(setup, E, plugins)
+      evalset["static"] = list(evalset["static"])
+      _append_missing(evalset["static"], training_static)
+      evalset["solver"] = make_solver(
+         evalset,
+         E,
+         plugins,
+         reloader=setup.get("reloader", False),
+         options=setup["options"],
+      )
    setup.pop("solver", None)
    return setup
 
 
 def eprover(setup: Setup) -> Setup:
-   assert "trains" in setup
+   assert "evals" in setup
    from solverpy.setups.solver import eprover as _eprover_base
    if not setup.get("sel_features") and not setup.get("gen_features"):
       _eprover_base(setup)
@@ -106,20 +122,21 @@ def eprover(setup: Setup) -> Setup:
    return _eprover_training(setup)
 
 
-def _cvc5_training(setup: Setup, key: str = "trains") -> Setup:
+def _ensure_cvc5_training_static(evalset: Evalset) -> None:
+   default(evalset, "static", CVC5_STATIC.split())
+   assert "static" in evalset
+   evalset["static"] = list(evalset["static"])
+   _append_missing(evalset["static"], [
+      "--produce-proofs",
+      "--produce-models",
+      "--dump-instantiations",
+      "--print-inst-full",
+      "--ml-engine",
+   ])
+
+
+def _cvc5_training(setup: Setup, key: str = "evals") -> Setup:
    """Configure an Evalset in setup[key] with a cvc5 solver and trains plugin."""
-   from solverpy.solver.smt.cvc5 import CVC5_STATIC
-   default(setup, "static", CVC5_STATIC.split())
-   assert "static" in setup
-   static = setup["static"]
-   if key == "trains":
-      static.extend([
-         "--produce-proofs",
-         "--produce-models",
-         "--dump-instantiations",
-         "--print-inst-full",
-         "--ml-engine",
-      ])
    default(setup, "posneg_ratio", 0)
    assert "posneg_ratio" in setup
    ratio = setup["posneg_ratio"]
@@ -127,26 +144,37 @@ def _cvc5_training(setup: Setup, key: str = "trains") -> Setup:
    if key not in setup:
       setup[key] = Evalset()
    evalset = setup[key]
+   default(evalset, "limit", "T1")
+   _ensure_cvc5_training_static(evalset)
    default(evalset, "dataname", "data/model")
    assert "dataname" in evalset
    dataname = evalset["dataname"]
    plugin = Cvc5Trains(dataname, ratio, chunk_size=chunk_size)
    evalset["plugin"] = plugin
    init(setup)
-   plugs = setup["plugins"]
+   assert "options" in setup
+   assert "plugins" in setup
+   plugs = copy.deepcopy(setup["plugins"])
    plugs.append(plugin)
-   if key == "trains":
-      options = setup["options"]
-      if "debug-trains" in options:
-         plugs.append(Cvc5TrainsDebug("flatten" in options, ratio))
-   from solverpy.setups.solver import cvc5 as _cvc5_base
-   _cvc5_base(setup)
+   options = setup["options"]
+   if "debug-trains" in options:
+      plugs.append(Cvc5TrainsDebug("flatten" in options, ratio))
+   evalset["plugins"] = plugs
+   evalset["solver"] = make_solver(
+      evalset,
+      Cvc5,
+      plugs,
+      reloader=setup.get("reloader", False),
+      options=setup["options"],
+   )
+   setup.pop("solver", None)
    return setup
 
 
-def cvc5(setup: Setup, training: bool = False, key: str = "trains") -> Setup:
-   from solverpy.setups.solver import cvc5 as _cvc5_base
-   if not training:
-      _cvc5_base(setup)
-      return setup
-   return _cvc5_training(setup, key)
+def cvc5(setup: Setup, key: str | None = None) -> Setup:
+   if key is not None:
+      return _cvc5_training(setup, key)
+   for evalset_key in ("evals", "devels"):
+      if evalset_key in setup:
+         _cvc5_training(setup, evalset_key)
+   return setup

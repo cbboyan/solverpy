@@ -26,20 +26,20 @@ def init(setup: Setup | None = None):
    if setup:
       report = []
       dataname = "noname"
-      if "trains" in setup:
-         trains = setup["trains"]
-         if "dataname" in trains:
-            dataname = trains["dataname"]
+      if "evals" in setup:
+         evals = setup["evals"]
+         if "dataname" in evals:
+            dataname = evals["dataname"]
       report.extend(markdown.heading(f"Experiment {dataname}", level=2))
       report.extend(markdown.heading("Setup", level=3))
       report.extend(markdown.yaml(setup))
       report.extend(markdown.newline())
       reporter.add(report)
    dataname = "noname"
-   if setup and "trains" in setup:
-      trains = setup["trains"]
-      if "dataname" in trains:
-         dataname = trains["dataname"]
+   if setup and "evals" in setup:
+      evals = setup["evals"]
+      if "dataname" in evals:
+         dataname = evals["dataname"]
    logger.info(f"Experiments running: {dataname}")
 
 
@@ -185,22 +185,29 @@ def run(
 def launch(
    evalset: "Evalset",
    talker: Talker = Talker(),
-   cores: int = 4,
-   solver: "SolverPy | None" = None,
    sidnames: bool = True,
-   trains: Any = None,  # absorbed from **setup spread
-   devels: Any = None,  # absorbed from **setup spread
    **others: Any,
 ) -> dict["SolverJob", "Result"]:
 
-   solver = evalset.get("solver", solver)
-   assert solver is not None
+   assert "solver" in evalset
+   solver = evalset["solver"]
    assert "benchmarks" in evalset
    assert "strategies" in evalset
    benchmarks = evalset["benchmarks"]
    strategies = evalset["strategies"]
    ref = evalset["ref"] if "ref" in evalset else None
    proofs = evalset["proofs"] if "proofs" in evalset else None
+   cores = evalset.get("cores", 4)
+   run_args = {
+      key: others[key]
+      for key in ("db", "it")
+      if key in others
+   }
+   run_args.update({
+      key: evalset[key]
+      for key in ("force", "shuffle", "solvedby", "max_proofs", "pool_context")
+      if key in evalset
+   })
 
    jobs: list["SolverJob"] = []
    nicks: dict["SolverJob", str] = {}
@@ -226,7 +233,7 @@ def launch(
                talker=talker,
                cores=cores,
                proofs=proofs,
-               **others,
+               **run_args,
             )
             allres[job] = result1  # (bid,sid) should be a primary key
          talker.eval_end(allres, refjob=refjob)

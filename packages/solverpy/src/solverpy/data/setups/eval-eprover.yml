@@ -1,11 +1,13 @@
 evaluate: eprover
-limit: T1        # resource limit (T=time, M=memory, e.g. T10-M4096)
-dataname: eval   # label for output directories
-benchmarks:
-  - problems/bushy010
-strategies:
-  - eprover-default
+common:
+  limit: T1      # resource limit (T=time, M=memory, e.g. T10-M4096)
+  cores: 4
+evals:
+  dataname: eval # label for output directories
+  benchmarks:
+    - problems/bushy010
+  strategies:
+    - eprover-default
 options:
   - outputs      # keep raw solver output files
   - headless     # no progress bars
-cores: 4

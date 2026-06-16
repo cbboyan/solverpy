@@ -35,7 +35,7 @@ class Runtime:
 def initialize(setup: Setup) -> Runtime:
    """Initialize all Managed plugins in the setup with a shared Manager."""
    configured = list(setup.get("plugins", []))
-   for key in ("trains", "devels"):
+   for key in ("evals", "devels"):
       if key in setup:
          configured.extend(setup[key].get("plugins", []))
    plugins = [p for p in configured if isinstance(p, Managed)]

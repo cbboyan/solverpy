@@ -140,8 +140,8 @@ class Enigma(EnigmaModel):
          tunesel,
          templates=templates,
       )
-      assert "trains" in setup
-      trains_evalset = setup["trains"]
+      assert "evals" in setup
+      trains_evalset = setup["evals"]
       assert "plugin" in trains_evalset
       assert "sel_features" in setup
       assert "gen_features" in setup
@@ -156,9 +156,9 @@ class Enigma(EnigmaModel):
          assert isinstance(trains_evalset["plugin"], enigma.EnigmaMultiTrains)
          plugin = trains_evalset["plugin"]
          setup_sel = Setup(setup)
-         setup_sel["trains"] = Evalset(trains_evalset, plugin=plugin._sel)
+         setup_sel["evals"] = Evalset(trains_evalset, plugin=plugin._sel)
          setup_gen = Setup(setup)
-         setup_gen["trains"] = Evalset(trains_evalset, plugin=plugin._gen)
+         setup_gen["evals"] = Evalset(trains_evalset, plugin=plugin._gen)
          if "devels" in setup:
             devels_evalset = setup["devels"]
             assert "plugin" in devels_evalset
@@ -185,7 +185,7 @@ class Enigma(EnigmaModel):
          self._gen.build(talker)
          self._strats.extend(self._gen.strategies)
       if self._sel and self._gen:
-         trains = self._setup["trains"]
+         trains = self._setup["evals"]
          assert "refs" in trains
          refs = trains["refs"]
          self._strats.extend(self.applies(refs, self._dataname))

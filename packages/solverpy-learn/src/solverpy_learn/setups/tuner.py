@@ -37,8 +37,8 @@ def autotuner(
    *args: Any,
    **kwargs: Any,
 ) -> Setup:
-   assert "trains" in setup
-   defaultrefs(setup["trains"])
+   assert "evals" in setup
+   defaultrefs(setup["evals"])
    setup["builder"] = mk_builder(setup, *args, **kwargs)
    return setup
 

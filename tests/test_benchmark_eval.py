@@ -9,6 +9,7 @@ import pytest
 from pathlib import Path
 
 from solverpy import setups
+from solverpy.benchmark import evaluation as eval_mod
 from solverpy.benchmark.db.providers.jsons import JsonsStore
 from solverpy.benchmark.db.providers.solved import Solved
 from solverpy.benchmark.db.providers.status import Status
@@ -68,10 +69,9 @@ def eval_case(request, solverpy_env):
    """Run evaluation (DB caches results) and return (setup, bid, sid)."""
    solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
-      limit="T1",
-      trains=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
+      common={"limit": "T1", "cores": 4},
+      evals=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
       options=["headless", "outputs", "proofs", "premises"],
-      cores=4,
    )
    setups.experiment(setup)
    solver_fn(setup)
@@ -85,10 +85,9 @@ def eval_atp(request, solverpy_env):
    """Return already-evaluated ATP case (results cached by eval_case)."""
    solver_fn, benchmarks, strategies = request.param
    setup = setups.Setup(
-      limit="T1",
-      trains=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
+      common={"limit": "T1", "cores": 4},
+      evals=setups.Evalset(benchmarks=benchmarks, strategies=strategies),
       options=["headless", "outputs", "proofs", "premises"],
-      cores=4,
    )
    setups.experiment(setup)
    solver_fn(setup)
@@ -99,14 +98,13 @@ def eval_atp(request, solverpy_env):
 
 def test_evaluation_initializes_devels(monkeypatch):
    setup = setups.Setup(
-      limit="T1",
-      trains=setups.Evalset(),
+      common={"limit": "T1", "cores": 4},
+      evals=setups.Evalset(),
       devels=setups.Evalset(),
       options=["headless"],
-      cores=4,
    )
-   setup["trains"]["sidfile"] = "train.sids"
-   setup["trains"]["bidfile"] = "train.bids"
+   setup["evals"]["sidfile"] = "train.sids"
+   setup["evals"]["bidfile"] = "train.bids"
    setup["devels"]["sidfile"] = "devel.sids"
    setup["devels"]["bidfile"] = "devel.bids"
 
@@ -130,19 +128,165 @@ def test_evaluation_initializes_devels(monkeypatch):
    setups.experiment(setup)
    setups.evaluation(setup)
 
-   assert setup["trains"]["ref"] is True
-   assert setup["trains"]["strategies"] == ["s1", "s2"]
-   assert setup["trains"]["benchmarks"] == ["b1"]
+   assert setup["evals"]["ref"] is True
+   assert setup["evals"]["strategies"] == ["s1", "s2"]
+   assert setup["evals"]["benchmarks"] == ["b1"]
    assert setup["devels"]["ref"] is True
    assert setup["devels"]["strategies"] == ["d1"]
    assert setup["devels"]["benchmarks"] == ["db1", "db2"]
+
+
+def test_experiment_merges_common_into_evalsets():
+   setup = setups.Setup(
+      common={
+         "strategies": ["sid"],
+         "refs": ["sid"],
+         "limit": "T1",
+      },
+      evals={
+         "benchmarks": ["train"],
+      },
+      devels={
+         "benchmarks": ["devel"],
+         "strategies": ["dev-sid"],
+      },
+   )
+
+   setups.experiment(setup)
+
+   assert "common" not in setup
+   assert setup["evals"]["benchmarks"] == ["train"]
+   assert setup["evals"]["strategies"] == ["sid"]
+   assert setup["evals"]["refs"] == ["sid"]
+   assert setup["evals"]["limit"] == "T1"
+   assert setup["devels"]["benchmarks"] == ["devel"]
+   assert setup["devels"]["strategies"] == ["dev-sid"]
+   assert setup["devels"]["refs"] == ["sid"]
+
+
+def test_experiment_accepts_trains_alias_for_evals():
+   setup = setups.Setup(trains={"benchmarks": ["b"], "strategies": ["s"]})
+
+   setups.experiment(setup)
+
+   assert "trains" not in setup
+   assert setup["evals"]["benchmarks"] == ["b"]
+   assert setup["evals"]["strategies"] == ["s"]
+
+
+def test_base_solver_configures_evalset_solver():
+   setup = setups.Setup(
+      evals=setups.Evalset(benchmarks=["b"], strategies=["s"], limit="T2"),
+      devels=setups.Evalset(benchmarks=["d"], strategies=["s"], limit="T3"),
+   )
+
+   setups.experiment(setup)
+   setups.cvc5(setup)
+
+   assert "solver" not in setup
+   assert "solver" in setup["evals"]
+   assert "solver" in setup["devels"]
+   assert setup["evals"]["solver"] is not setup["devels"]["solver"]
+   assert setup["evals"]["solver"]._limits.limit == "T2"
+   assert setup["devels"]["solver"]._limits.limit == "T3"
+
+
+def test_launch_forwards_evalset_execution_overrides(monkeypatch):
+   calls = []
+
+   class Talker:
+
+      def eval_begin(self, *args, **kwargs):
+         pass
+
+      def eval_end(self, *args, **kwargs):
+         pass
+
+      def terminate(self):
+         pass
+
+   def run(job, **kwargs):
+      calls.append((job, kwargs))
+      return {}
+
+   monkeypatch.setattr(eval_mod, "run", run)
+   evalset = setups.Evalset(
+      solver=object(),
+      benchmarks=["b"],
+      strategies=["s"],
+      solvedby="baseline",
+      force=True,
+      shuffle=False,
+      cores=7,
+      pool_context="spawn",
+   )
+
+   eval_mod.launch(
+      evalset,
+      talker=Talker(),
+      cores=1,
+      solvedby="root",
+      force=False,
+      shuffle=True,
+      pool_context="forkserver",
+   )
+
+   (_, kwargs), = calls
+   assert kwargs["cores"] == 7
+   assert kwargs["solvedby"] == "baseline"
+   assert kwargs["force"] is True
+   assert kwargs["shuffle"] is False
+   assert kwargs["pool_context"] == "spawn"
+
+
+def test_launch_ignores_root_execution_fallbacks(monkeypatch):
+   calls = []
+
+   class Talker:
+
+      def eval_begin(self, *args, **kwargs):
+         pass
+
+      def eval_end(self, *args, **kwargs):
+         pass
+
+      def terminate(self):
+         pass
+
+   def run(job, **kwargs):
+      calls.append((job, kwargs))
+      return {}
+
+   monkeypatch.setattr(eval_mod, "run", run)
+   evalset = setups.Evalset(
+      solver=object(),
+      benchmarks=["b"],
+      strategies=["s"],
+   )
+
+   eval_mod.launch(
+      evalset,
+      talker=Talker(),
+      cores=9,
+      solvedby="root",
+      force=True,
+      shuffle=False,
+      pool_context="spawn",
+   )
+
+   (_, kwargs), = calls
+   assert kwargs["cores"] == 4
+   assert "solvedby" not in kwargs
+   assert "force" not in kwargs
+   assert "shuffle" not in kwargs
+   assert "pool_context" not in kwargs
 
 
 @pytest.fixture(scope="module")
 def db_results(eval_case):
    """Results dict loaded from DB: {problem: result}."""
    setup, bid, sid = eval_case
-   jsons = JsonsStore(bid, sid, setup["limit"])
+   jsons = JsonsStore(bid, sid, setup["evals"]["limit"])
    return jsons.cache
 
 
@@ -150,7 +294,7 @@ def db_results(eval_case):
 def db_solved(eval_case):
    """Solved set loaded from DB: set of problem names."""
    setup, bid, sid = eval_case
-   solved = Solved(bid, sid, setup["limit"])
+   solved = Solved(bid, sid, setup["evals"]["limit"])
    return solved.cache
 
 
@@ -158,13 +302,13 @@ def db_solved(eval_case):
 def atp_solved(eval_atp):
    """Solved set for ATP cases."""
    setup, bid, sid = eval_atp
-   solved = Solved(bid, sid, setup["limit"])
+   solved = Solved(bid, sid, setup["evals"]["limit"])
    return solved.cache
 
 
 def _file_count(subdir: str, eval_case) -> int:
    setup, bid, sid = eval_case
-   d = DB_DIR / subdir / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
+   d = DB_DIR / subdir / bids.name(bid, limit=setup["evals"]["limit"]) / sids.name(sid)
    return len(list(d.glob("*"))) if d.exists() else 0
 
 
@@ -181,8 +325,7 @@ def db_error_count(eval_case):
 @pytest.fixture(scope="module")
 def valid_statuses(eval_case):
    setup, _, _ = eval_case
-   solver = setup["trains"].get("solver", setup.get("solver"))
-   assert solver is not None
+   solver = setup["evals"]["solver"]
    return solver._statuses
 
 
@@ -190,7 +333,7 @@ def valid_statuses(eval_case):
 def db_status(eval_case):
    """Status dict loaded from DB: {problem: 'status\truntime'}."""
    setup, bid, sid = eval_case
-   status = Status(bid, sid, setup["limit"])
+   status = Status(bid, sid, setup["evals"]["limit"])
    return status.cache
 
 
@@ -198,7 +341,7 @@ def db_status(eval_case):
 
 def test_results_file_exists(eval_case):
    setup, bid, sid = eval_case
-   path = Path(JsonsStore(bid, sid, setup["limit"]).cachepath() + ".gz")
+   path = Path(JsonsStore(bid, sid, setup["evals"]["limit"]).cachepath() + ".gz")
    assert path.exists()
 
 
@@ -220,7 +363,7 @@ def test_results_all_have_runtime(db_results):
 
 def test_solved_file_exists(eval_case):
    setup, bid, sid = eval_case
-   path = Path(Solved(bid, sid, setup["limit"]).cachepath())
+   path = Path(Solved(bid, sid, setup["evals"]["limit"]).cachepath())
    assert path.exists()
 
 
@@ -262,7 +405,7 @@ def test_premises_nonempty(db_premises_count, atp_solved):
 
 def test_premises_content_valid(eval_atp, atp_solved):
    setup, bid, sid = eval_atp
-   d = DB_DIR / "premises" / bids.name(bid, limit=setup["limit"]) / sids.name(sid)
+   d = DB_DIR / "premises" / bids.name(bid, limit=setup["evals"]["limit"]) / sids.name(sid)
    for problem in atp_solved:
       p = d / problem.replace("/", "_._")
       assert p.exists(), f"Missing premises file for {problem}"

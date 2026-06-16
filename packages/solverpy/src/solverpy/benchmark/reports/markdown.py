@@ -49,11 +49,8 @@ def text(txt: str) -> "Report":
    return [txt]
 
 
-def yaml(obj: Any, devels: Any = None) -> "Report":
-   if isinstance(obj, dict) and devels:
-      top = dict(setup=obj, devels=devels)
-      txt = pyyaml.dump(top, default_flow_style=False)
-   elif type(obj) is str:
+def yaml(obj: Any) -> "Report":
+   if type(obj) is str:
       txt = obj
    else:
       txt = pyyaml.dump(obj, default_flow_style=False)
@@ -184,4 +181,3 @@ def dump(report: "Report", prefix: str = "") -> str:
    if not report:
       return ""
    return f"{prefix}" + f"\n{prefix}".join(collect(report))
-
