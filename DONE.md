@@ -1,5 +1,24 @@
 # DONE
 
+## Setup/Evalset Refactor Regressions ✓
+
+The learning-loop refactor that split `Setup` and `Evalset` ownership was
+finished and the remaining edge cases were closed out.
+
+- `Setup` now stays focused on orchestration and shared session state.
+- `common` is merged into each evalset during `experiment()`.
+- `evals` is the canonical primary evalset key; `trains` remains an input
+  alias.
+- Solvers now belong to their evalset, not the root setup.
+- `max_proofs`, `solvedby`, `pool_context`, and the other loop-local knobs are
+  handled per evalset.
+- The loop now tolerates empty generated train data when `max_proofs`
+  suppresses all new proofs.
+- `start_dataname` is covered for both symmetric and asymmetric evalset cases.
+- The first builder reset is verified to target `trains/.../loop00`.
+
+Covered regressions now live in the learning-loop and benchmark tests.
+
 ## Tuning evaluations ignore `solvedby` ✓
 
 ATP evaluations used for tuning now remove the loop-internal `solvedby`
