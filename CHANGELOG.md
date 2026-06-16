@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-06-16)
 
-* docs: archive setup/evalset refactor regressions [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* test: cover asymmetrical loop setup paths [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: archive setup/evalset refactor regressions [[details](https://github.com/cbboyan/solverpy/commit/3f3051c) | [browse](https://github.com/cbboyan/solverpy/tree/3f3051c)]
 * fix: finish setup/evalset refactor [[details](https://github.com/cbboyan/solverpy/commit/ed4b805) | [browse](https://github.com/cbboyan/solverpy/tree/ed4b805)]
 * fix: Fixed evaluation/looping for E after refactor [[details](https://github.com/cbboyan/solverpy/commit/4bdcd7c) | [browse](https://github.com/cbboyan/solverpy/tree/4bdcd7c)]
 * fix: normalize experiment setups [[details](https://github.com/cbboyan/solverpy/commit/99e852b) | [browse](https://github.com/cbboyan/solverpy/tree/99e852b)]

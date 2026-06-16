@@ -371,3 +371,141 @@ def test_solved_opt_entries_count(loop_result):
    db, p = loop_result
    assert len(_opt_entries(db, p)) == p["opt_count"], \
       f"Expected {p['opt_count']} opt entries"
+
+
+def test_oneloop_applies_start_dataname_to_one_evalset(monkeypatch):
+   from solverpy_learn.setups import loop
+
+   class FakeTrains:
+
+      def __init__(self, dataname):
+         self.dataname = dataname
+
+      def path(self, dataname=None, filename=None):
+         del dataname, filename
+         return self.dataname
+
+      def train_data_snapshot(self):
+         pass
+
+      def train_data_stats(self, dataset, path=None):
+         del path
+         return {
+            "dataset": dataset,
+            "path": self.dataname,
+         }
+
+      def exists(self):
+         return True
+
+      def merge(self, previous, filename):
+         del previous, filename
+
+      def reset(self, dataname=None, filename="train.in"):
+         del filename
+         if dataname is not None:
+            self.dataname = dataname
+
+   class RecordingTalker:
+
+      def __init__(self):
+         self.stats = []
+
+      def train_data(self, stats):
+         self.stats.append(stats)
+
+   class FakeBuilder:
+
+      strategies = ["new"]
+
+      def __init__(self, setup):
+         self.setup = setup
+         self.paths = None
+
+      def build(self, talker):
+         del talker
+         self.paths = (
+            self.setup["evals"]["plugin"].path(),
+            self.setup["devels"]["plugin"].path(),
+         )
+
+   talker = RecordingTalker()
+   setup = {
+      "it": 0,
+      "loops": 1,
+      "options": [],
+      "talker": talker,
+   }
+   setup["devels"] = {
+      "dataname": "devel/loop00",
+      "label": "development",
+      "plugin": FakeTrains("devel/loop00"),
+   }
+   setup["evals"] = {
+      "dataname": "train/loop00",
+      "start_dataname": "old/train/loop00",
+      "label": "training",
+      "plugin": FakeTrains("train/loop00"),
+   }
+   builder = FakeBuilder(setup)
+   setup["builder"] = builder
+
+   monkeypatch.setattr(loop.evaluator, "launch", lambda *args, **kwargs: None)
+   monkeypatch.setattr(loop.reporter, "add", lambda report: None)
+   monkeypatch.setattr(loop, "resource_summary", lambda *args: "")
+   monkeypatch.setattr(loop, "usage", lambda *args: "")
+
+   loop.oneloop(setup, setup["devels"])
+   loop.oneloop(setup, setup["evals"])
+   loop.model_build(setup)
+
+   assert setup["evals"]["plugin"].path() == "old/train/loop00"
+   assert setup["devels"]["plugin"].path() == "devel/loop00"
+   assert builder.paths == ("old/train/loop00", "devel/loop00")
+
+
+def test_iteration_init_resets_builder_to_loop00(monkeypatch):
+   from solverpy_learn.setups import loop
+
+   class FakePlugin:
+
+      def __init__(self, dataname):
+         self.dataname = dataname
+         self.resets = []
+
+      def reset(self, dataname=None, filename="train.in"):
+         self.resets.append((dataname, filename))
+         if dataname is not None:
+            self.dataname = dataname
+
+   class FakeBuilder:
+
+      def __init__(self):
+         self.resets = []
+
+      def reset(self, dataname):
+         self.resets.append(dataname)
+
+   setup = {
+      "it": 0,
+      "options": [],
+      "evals": {
+         "dataname": "train/base",
+         "label": "training",
+         "plugin": FakePlugin("train/base"),
+      },
+      "devels": {
+         "dataname": "devel/base",
+         "label": "development",
+         "plugin": FakePlugin("devel/base"),
+      },
+      "builder": FakeBuilder(),
+   }
+
+   loop.looping(setup, setup["devels"])
+   loop.looping(setup, setup["evals"])
+   loop.iteration_init(setup)
+
+   assert setup["evals"]["dataname"] == "train/base/loop00"
+   assert setup["devels"]["dataname"] == "devel/base/loop00"
+   assert setup["builder"].resets == ["train/base/loop00"]
