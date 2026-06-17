@@ -37,6 +37,12 @@ Source edits are immediately active. Do not reinstall packages after changes.
 ## Code And Testing
 
 - Use 3-space indentation and the repository's YAPF/PEP8 style.
+- Prefer single expressive words for function, method, and variable names.
+  Avoid underscores merely to connect phrase words. Use underscores mainly for
+  stable common prefixes that group related operations, with the shared subject
+  first, such as `model_build`, `model_prepare`, `chunk_path`, `chunk_files`,
+  `raw_path`, and `raw_files`. Prefer this grouped-prefix style over mixed
+  verb-first phrases such as `build_model` and `prepare_model`.
 - Follow existing module, type-annotation, setup, plugin, and talker patterns.
 - Keep changes scoped and preserve unrelated working-tree changes.
 - Run focused `pytest` tests for changed behavior, broadening according to risk.

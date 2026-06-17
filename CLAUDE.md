@@ -68,6 +68,12 @@ The commit hash shown by `git commit` will differ from the final hash after the 
 
 - **Indent width: 3 spaces** (configured in `pyproject.toml` via `[tool.yapf]`)
 - Based on PEP8 style via `yapf`
+- Prefer single expressive words for function, method, and variable names.
+  Avoid underscores merely to connect phrase words. Use underscores mainly for
+  stable common prefixes that group related operations, with the shared subject
+  first, such as `model_build`, `model_prepare`, `chunk_path`, `chunk_files`,
+  `raw_path`, and `raw_files`. Prefer this grouped-prefix style over mixed
+  verb-first phrases such as `build_model` and `prepare_model`.
 
 ## Architecture
 
