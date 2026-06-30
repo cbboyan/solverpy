@@ -128,7 +128,7 @@ You will see the progress of the experiments on the screen.  Once finished, you 
 | `results` | Results by each strategy (`sid`) for each `bid`.  The result for each `sid` and `bid` is a JSON file (gzip-ed) with a Python dictionary `{problem: result}`. |
 | `solved` | List of solved problem names by each strategy for each `bid`.  One per line, easy to `grep` and `cat`. |
 | `status` | Statuses of all problems by each strategy for each `bid`.  Problem name and status at one line, TAB separated.  Easy to `cut`. |
-| `log` | Console log for each `solverpy` experiment run. |
+| `logs` | Console log for each `solverpy` experiment run. |
 | `outputs` | Raw solver output files for each solver run (only if selected). |
 
 Now run the script again and notice that it finished much faster.  It is because the cached results were reused and no solvers were actually launched.  So be careful and always clean the database if you want to force recompute.  Simply delete all the directories in `solverpy_db` except `strats` (see the script `clean_db.sh` in the [example archive](https://github.com/cbboyan/solverpy/raw/main/docs/example.tar.gz)).

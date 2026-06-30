@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-06-17)
+## v2.1.1 (2026-06-30)
 
-* docs: add experiment refactor task notes [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!: correct logs directory name in quickstart docs [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: add experiment refactor task notes [[details](https://github.com/cbboyan/solverpy/commit/3f0cd4b) | [browse](https://github.com/cbboyan/solverpy/tree/3f0cd4b)]
 * test: cover asymmetrical loop setup paths [[details](https://github.com/cbboyan/solverpy/commit/0f3ac03) | [browse](https://github.com/cbboyan/solverpy/tree/0f3ac03)]
 * docs: archive setup/evalset refactor regressions [[details](https://github.com/cbboyan/solverpy/commit/3f3051c) | [browse](https://github.com/cbboyan/solverpy/tree/3f3051c)]
 * fix: finish setup/evalset refactor [[details](https://github.com/cbboyan/solverpy/commit/ed4b805) | [browse](https://github.com/cbboyan/solverpy/tree/ed4b805)]
