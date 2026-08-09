@@ -4,10 +4,11 @@ import copy
 from ..solver.atp.eprover import E_STATIC, E
 from ..solver.atp.prover9 import Prover9
 from ..solver.atp.vampire import V_STATIC, Vampire
-from ..solver.smt import Cvc5, Z3, Bitwuzla, Llm2smt
+from ..solver.smt import Cvc5, Z3, Bitwuzla, Llm2smt, Primo
 from ..solver.smt.bitwuzla import BWZ_STATIC
 from ..solver.smt.cvc5 import CVC5_STATIC
 from ..solver.smt.llm2smt import LLM2SMT_STATIC
+from ..solver.smt.primo import PRIMO_STATIC
 from ..solver.smt.z3 import Z3_STATIC
 from ..solver.plugins.db.sid import Sid
 from ..solver.plugins.db.eprovesid import EProverSid
@@ -95,3 +96,8 @@ def cvc5(setup: Setup) -> Setup:
 def llm2smt(setup: Setup) -> Setup:
    init(setup)
    return _evalset_solvers(setup, Llm2smt, LLM2SMT_STATIC.split())
+
+
+def primo(setup: Setup) -> Setup:
+   init(setup)
+   return _evalset_solvers(setup, Primo, PRIMO_STATIC.split())

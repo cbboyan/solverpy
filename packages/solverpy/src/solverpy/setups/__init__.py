@@ -30,6 +30,7 @@ and its static options in `setup`:
 | [`z3(setup)`][solverpy.setups.solver.z3] | [`Z3`][solverpy.solver.smt.z3.Z3] |
 | [`bitwuzla(setup)`][solverpy.setups.solver.bitwuzla] | [`Bitwuzla`][solverpy.solver.smt.bitwuzla.Bitwuzla] |
 | [`llm2smt(setup)`][solverpy.setups.solver.llm2smt] | [`Llm2smt`][solverpy.solver.smt.llm2smt.Llm2smt] |
+| [`primo(setup)`][solverpy.setups.solver.primo] | [`Primo`][solverpy.solver.smt.primo.Primo] |
 
 After choosing a solver, call [`evaluation`][solverpy.setups.loop.evaluation]
 to configure the benchmark evaluation pipeline (DB providers, parallel cores,
@@ -40,7 +41,7 @@ strategy and benchmark id lists), then call
 
 from .setup import Setup
 from .evalset import Evalset
-from .solver import eprover, vampire, prover9, cvc5, bitwuzla, llm2smt, z3
+from .solver import eprover, vampire, prover9, cvc5, bitwuzla, llm2smt, primo, z3
 from .loop import experiment, evaluation, launch
 
 __all__ = [
@@ -53,6 +54,7 @@ __all__ = [
    "prover9",
    "bitwuzla",
    "llm2smt",
+   "primo",
    "experiment",
    "evaluation",
    "launch",

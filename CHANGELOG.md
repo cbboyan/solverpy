@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-08-10)
+
+* feat(smt): add primo solver plugin [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.1.1 (2026-06-30)
 
-* feat!: correct logs directory name in quickstart docs [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!: correct logs directory name in quickstart docs [[details](https://github.com/cbboyan/solverpy/commit/f77e743) | [browse](https://github.com/cbboyan/solverpy/tree/f77e743)]
 * docs: add experiment refactor task notes [[details](https://github.com/cbboyan/solverpy/commit/3f0cd4b) | [browse](https://github.com/cbboyan/solverpy/tree/3f0cd4b)]
 * test: cover asymmetrical loop setup paths [[details](https://github.com/cbboyan/solverpy/commit/0f3ac03) | [browse](https://github.com/cbboyan/solverpy/tree/0f3ac03)]
 * docs: archive setup/evalset refactor regressions [[details](https://github.com/cbboyan/solverpy/commit/3f3051c) | [browse](https://github.com/cbboyan/solverpy/tree/3f3051c)]
