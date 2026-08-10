@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-08-10)
 
-* feat(smt): add primo solver plugin [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt): add opensmt solver plugin [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt): add primo solver plugin [[details](https://github.com/cbboyan/solverpy/commit/e7ca1e8) | [browse](https://github.com/cbboyan/solverpy/tree/e7ca1e8)]
 
 ## v2.1.1 (2026-06-30)
 
