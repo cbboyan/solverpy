@@ -11,7 +11,6 @@ from ..solver.smt.llm2smt import LLM2SMT_STATIC
 from ..solver.smt.opensmt import OPENSMT_STATIC
 from ..solver.smt.primo import PRIMO_STATIC
 from ..solver.smt.yices import YICES_STATIC
-from ..solver.smt.z3 import Z3_STATIC
 from ..solver.plugins.db.sid import Sid
 from ..solver.plugins.db.eprovesid import EProverSid
 from .common import default, init, make_solver
@@ -87,7 +86,12 @@ def bitwuzla(setup: Setup) -> Setup:
 
 def z3(setup: Setup) -> Setup:
    init(setup)
-   return _evalset_solvers(setup, Z3, Z3_STATIC.split())
+   # No static: `Z3` is a `StdinSolver`, where `static` is the prefix of the
+   # stdin payload and not the command line.  `Z3_STATIC` is already baked
+   # into the command by `Z3.__init__`, and passing it here as well sent
+   # `-smt2 -st` down the SMT-LIB2 stream, so every z3 run answered with a
+   # leading `(error "line 1 column 1: invalid command, '(' expected")`.
+   return _evalset_solvers(setup, Z3)
 
 
 def cvc5(setup: Setup) -> Setup:

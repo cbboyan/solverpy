@@ -7,9 +7,10 @@ SMT (Satisfiability Modulo Theories) solvers for the
 ```plantuml name="solver-smt"
 
 abstract class solverpy.solver.shellsolver.ShellSolver
+abstract class solverpy.solver.stdinsolver.StdinSolver
 
 class solverpy.solver.smt.cvc5.Cvc5 extends solverpy.solver.shellsolver.ShellSolver
-class solverpy.solver.smt.z3.Z3 extends solverpy.solver.shellsolver.ShellSolver
+class solverpy.solver.smt.z3.Z3 extends solverpy.solver.stdinsolver.StdinSolver
 class solverpy.solver.smt.bitwuzla.Bitwuzla extends solverpy.solver.shellsolver.ShellSolver
 class solverpy.solver.smt.llm2smt.Llm2smt extends solverpy.solver.shellsolver.ShellSolver
 class solverpy.solver.smt.primo.Primo extends solverpy.solver.shellsolver.ShellSolver
