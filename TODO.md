@@ -86,6 +86,35 @@ Define and test the intended partial-order behavior without returning `None`.
 Relevant code:
 `packages/solverpy/src/solverpy/solver/plugins/shell/limits.py`.
 
+### unknownstatus
+
+`SolverPy.simulate()` never recomputes a cached result whose status is
+`unknown`. `Smt` puts `unknown` in the failure set rather than the timeout set,
+so simulation takes the `result["status"] in self.statuses` branch and returns
+the cached result unchanged whenever the new limits are not strictly smaller. A
+give-up recorded at a short cutoff is therefore reused at a longer one instead
+of being re-run.
+
+This is not hypothetical: `primo` catches the shell `timeout` wrapper's
+`SIGTERM` and prints SMT-LIB-compliant `unknown` before exiting, so its
+timeouts are stored as `unknown` and never revisited. Nothing measured so far
+is affected, because the evaluations that produced the current results all set
+`force: true`.
+
+The general question is what `unknown` should mean to the cache. Different
+solvers use it for different things -- an interrupted search, an incomplete
+fragment, a resource limit -- and the answer cannot be inferred from the token.
+The safe default is to always recompute `unknown`, since the only cost is
+repeated work, whereas the present behavior silently keeps a stale give-up.
+
+Decide and document the policy, implement it in `simulate()`, and test that an
+`unknown` cached at a shorter limit is re-run at a longer one.
+
+Relevant code:
+`packages/solverpy/src/solverpy/solver/solverpy.py` (`simulate`) and
+`packages/solverpy/src/solverpy/solver/plugins/status/smt.py` (`SMT_FAILED`,
+`SMT_TIMEOUT`).
+
 ### limitlogging
 
 `Limits.__init__()` prints parsing errors directly before raising. This
