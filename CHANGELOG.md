@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-08-18)
+## Unreleased changes (2026-08-21)
 
-* docs: record the unknown-status caching question [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(plugins): add a RunHash status decorator [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: record the unknown-status caching question [[details](https://github.com/cbboyan/solverpy/commit/65eb1b9) | [browse](https://github.com/cbboyan/solverpy/tree/65eb1b9)]
 * fix(setups): stop prefixing z3's stdin with Z3_STATIC [[details](https://github.com/cbboyan/solverpy/commit/45cb299) | [browse](https://github.com/cbboyan/solverpy/tree/45cb299)]
 * feat(smt): add yices solver plugin [[details](https://github.com/cbboyan/solverpy/commit/eb0b477) | [browse](https://github.com/cbboyan/solverpy/tree/eb0b477)]
 * test(smt): cover the opensmt plugin [[details](https://github.com/cbboyan/solverpy/commit/1637c53) | [browse](https://github.com/cbboyan/solverpy/tree/1637c53)]
