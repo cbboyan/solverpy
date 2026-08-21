@@ -3,6 +3,7 @@ import re
 
 from ..shellsolver import ShellSolver
 from ..plugins.status.smt import Smt
+from ..plugins.status.runhash import RunHash
 from ..plugins.shell.time import Time
 from ...tools import human, patterns
 
@@ -24,6 +25,59 @@ PRIMO_STATS: Pattern = re.compile(
    flags=re.MULTILINE,
 )
 
+# Keys from PRIMO_STATS to include in the runhash (see `RunHash`): the
+# counters that describe what primo actually *did* on an instance --
+# preprocessing rewrites, SAT search stats, LRA propagation/tableau counts --
+# as opposed to keys that vary for reasons unrelated to solver behaviour
+# (e.g. `*-us` timings) or that are themselves derived/environmental. Two runs
+# of the same instance that agree on every key here did byte-identical
+# internal work, whatever command-line options produced them.
+PRIMO_RUNHASH_GEN = frozenset("""
+euf.pure-atoms.negative
+euf.pure-atoms.positive
+euf.theory-atoms
+input.assertions
+lra.online-check-calls
+lra.row-nonzeros
+lra.rows
+lra.tableau-vars
+lra.theory-propagations
+no.purification.skipped-no-sites
+preprocessing.assertions
+preprocessing.auto.single-assertion
+preprocessing.boolean-flatten-post.accepted
+preprocessing.boolean-flatten-post.attempts
+preprocessing.boolean-flatten-post.max-arity
+preprocessing.boolean-flatten-post.rewrites
+preprocessing.boolean-shape.not-nodes
+preprocessing.boolean-shape.or-nodes
+preprocessing.changed-passes
+preprocessing.equality-query.add-term-requests
+preprocessing.equality-query.add-term-seen-hits
+preprocessing.equality-query.memo-hits
+preprocessing.equality-query.nodes
+preprocessing.forced-atoms.disequalities
+preprocessing.forced-atoms.facts
+preprocessing.forced-atoms.rewrites
+preprocessing.passes
+preprocessing.real-equality-lowering.lowered
+preprocessing.solve-eqs.accepted
+preprocessing.solve-eqs.gaussian-candidates
+preprocessing.solve-eqs.rejected-cycles
+preprocessing.solve-eqs.rewrites
+preprocessing.term-size.final
+preprocessing.term-size.initial
+sat.binary-clauses
+sat.clause-lits
+sat.clauses
+sat.conflicts
+sat.decisions
+sat.propagations
+sat.solve-calls
+sat.unit-clauses
+sat.vars
+solver.qf-lra
+""".strip().split("\n"))
 
 class Primo(ShellSolver):
    """
@@ -49,6 +103,7 @@ class Primo(ShellSolver):
       plugins = plugins + [
          Time(),
          Smt(complete=complete),
+         RunHash(PRIMO_RUNHASH_GEN),
       ]
       ShellSolver.__init__(
          self,
