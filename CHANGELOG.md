@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-08-28)
 
-* docs: merge AGENTS.md and CLAUDE.md into one guide [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt): add SPASS-SATT solver plugin [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: merge AGENTS.md and CLAUDE.md into one guide [[details](https://github.com/cbboyan/solverpy/commit/b55642e) | [browse](https://github.com/cbboyan/solverpy/tree/b55642e)]
 * feat(smt,atp): wire RunHash into Primo and E [[details](https://github.com/cbboyan/solverpy/commit/992532a) | [browse](https://github.com/cbboyan/solverpy/tree/992532a)]
 * feat(plugins): add a RunHash status decorator [[details](https://github.com/cbboyan/solverpy/commit/c5ffcc5) | [browse](https://github.com/cbboyan/solverpy/tree/c5ffcc5)]
 * docs: record the unknown-status caching question [[details](https://github.com/cbboyan/solverpy/commit/65eb1b9) | [browse](https://github.com/cbboyan/solverpy/tree/65eb1b9)]

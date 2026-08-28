@@ -32,6 +32,7 @@ and its static options in `setup`:
 | [`llm2smt(setup)`][solverpy.setups.solver.llm2smt] | [`Llm2smt`][solverpy.solver.smt.llm2smt.Llm2smt] |
 | [`primo(setup)`][solverpy.setups.solver.primo] | [`Primo`][solverpy.solver.smt.primo.Primo] |
 | [`opensmt(setup)`][solverpy.setups.solver.opensmt] | [`Opensmt`][solverpy.solver.smt.opensmt.Opensmt] |
+| [`spasssatt(setup)`][solverpy.setups.solver.spasssatt] | [`SpassSatt`][solverpy.solver.smt.spasssatt.SpassSatt] |
 | [`yices(setup)`][solverpy.setups.solver.yices] | [`Yices`][solverpy.solver.smt.yices.Yices] |
 
 After choosing a solver, call [`evaluation`][solverpy.setups.loop.evaluation]
@@ -43,7 +44,7 @@ strategy and benchmark id lists), then call
 
 from .setup import Setup
 from .evalset import Evalset
-from .solver import eprover, vampire, prover9, cvc5, bitwuzla, llm2smt, opensmt, primo, yices, z3
+from .solver import eprover, vampire, prover9, cvc5, bitwuzla, llm2smt, opensmt, primo, spasssatt, yices, z3
 from .loop import experiment, evaluation, launch
 
 __all__ = [
@@ -58,6 +59,7 @@ __all__ = [
    "llm2smt",
    "primo",
    "opensmt",
+   "spasssatt",
    "yices",
    "experiment",
    "evaluation",
