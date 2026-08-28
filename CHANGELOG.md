@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-08-21)
+## Unreleased changes (2026-08-28)
 
-* feat(smt,atp): wire RunHash into Primo and E [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: merge AGENTS.md and CLAUDE.md into one guide [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt,atp): wire RunHash into Primo and E [[details](https://github.com/cbboyan/solverpy/commit/992532a) | [browse](https://github.com/cbboyan/solverpy/tree/992532a)]
 * feat(plugins): add a RunHash status decorator [[details](https://github.com/cbboyan/solverpy/commit/c5ffcc5) | [browse](https://github.com/cbboyan/solverpy/tree/c5ffcc5)]
 * docs: record the unknown-status caching question [[details](https://github.com/cbboyan/solverpy/commit/65eb1b9) | [browse](https://github.com/cbboyan/solverpy/tree/65eb1b9)]
 * fix(setups): stop prefixing z3's stdin with Z3_STATIC [[details](https://github.com/cbboyan/solverpy/commit/45cb299) | [browse](https://github.com/cbboyan/solverpy/tree/45cb299)]
