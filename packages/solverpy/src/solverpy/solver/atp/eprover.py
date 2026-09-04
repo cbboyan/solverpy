@@ -16,7 +16,7 @@ E_BINARY = "eprover"
 E_STATIC: str = "-s -p -R --print-statistics --proof-statistics --tstp-format --memory-limit=2048"
 
 E_BUILDER: "LimitBuilder" = {
-   "T": lambda x: "--soft-cpu-limit=%s --cpu-limit=%s" % (x, int(x) + 10),
+   "T": lambda x: "--cpu-limit=%s --soft-cpu-limit=%s" % (int(x) + 10, x),
    "P": "--processed-set-limit=%s",
    "C": "--processed-clauses-limit=%s",
    "G": "--generated-limit=%s"

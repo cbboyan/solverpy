@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased changes (2026-08-28)
+## Unreleased changes (2026-09-04)
 
-* feat(smt): add SPASS-SATT solver plugin [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: E cpu-limit/soft-cpu-limit order for --auto-schedule [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat(smt): add SPASS-SATT solver plugin [[details](https://github.com/cbboyan/solverpy/commit/631f999) | [browse](https://github.com/cbboyan/solverpy/tree/631f999)]
 * docs: merge AGENTS.md and CLAUDE.md into one guide [[details](https://github.com/cbboyan/solverpy/commit/b55642e) | [browse](https://github.com/cbboyan/solverpy/tree/b55642e)]
 * feat(smt,atp): wire RunHash into Primo and E [[details](https://github.com/cbboyan/solverpy/commit/992532a) | [browse](https://github.com/cbboyan/solverpy/tree/992532a)]
 * feat(plugins): add a RunHash status decorator [[details](https://github.com/cbboyan/solverpy/commit/c5ffcc5) | [browse](https://github.com/cbboyan/solverpy/tree/c5ffcc5)]
