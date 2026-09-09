@@ -1,4 +1,4 @@
-site_name: SolverPy
+site_name: 📟 SolverPy
 site_url: https://cbboyan.github.io/solverpy/
 
 theme: 
@@ -6,6 +6,7 @@ theme:
 
 markdown_extensions:
   #- markdown.extensions.attr_list
+  - admonition
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.superfences:
@@ -38,8 +39,14 @@ plugins:
 
 
 nav:
-  - Home: index.md
-  - Tutorial: tutorial.md
-  - Options: options.md
-  - Markdown: markdown.md
-  - Test: test.md
+  - 🏠 Home: index.md
+  - 📥 Install: install.md
+  - 🧭 Usage: usage.md
+  - 🎓 Tutorials:
+      - 🧪 Evaluating E: tutorials/eval-eprover.md
+      - ⚗️ Evaluating cvc5: tutorials/eval-cvc5.md
+      - 🧠 Training ENIGMA: tutorials/enigma-training.md
+      - 🐍 Python API:
+          - 💡 Solving a problem: tutorials/python-solving.md
+          - 🔧 Benchmark evaluation: tutorials/python-evaluation.md
+  - ⌨️ Commands: commands.md

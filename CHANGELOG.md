@@ -2,7 +2,8 @@
 
 ## Unreleased changes (2026-09-10)
 
-* fix: correct default eprover strategy sid in bundled eval-eprover.yml [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* docs: restructure site into Home/Install/Usage/Tutorials/Commands [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* fix: correct default eprover strategy sid in bundled eval-eprover.yml [[details](https://github.com/cbboyan/solverpy/commit/b94661d) | [browse](https://github.com/cbboyan/solverpy/tree/b94661d)]
 * docs(api): add missing docstrings closing mkdocs cross-reference gaps [[details](https://github.com/cbboyan/solverpy/commit/a0455f6) | [browse](https://github.com/cbboyan/solverpy/tree/a0455f6)]
 * fix: E cpu-limit/soft-cpu-limit order for --auto-schedule [[details](https://github.com/cbboyan/solverpy/commit/55385ad) | [browse](https://github.com/cbboyan/solverpy/tree/55385ad)]
 * feat(smt): add SPASS-SATT solver plugin [[details](https://github.com/cbboyan/solverpy/commit/631f999) | [browse](https://github.com/cbboyan/solverpy/tree/631f999)]
