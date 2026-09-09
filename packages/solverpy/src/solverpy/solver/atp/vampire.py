@@ -33,6 +33,16 @@ V_TABLE = {
 
 
 class Vampire(ShellSolver):
+   """
+   The `vampire` automated theorem prover for first-order logic.
+
+   The strategy (sid) supplies Vampire's command-line options, appended
+   after the static options. Output includes a TPTP proof and a `--stat
+   full` statistics block, parsed by
+   [`process`][solverpy.solver.atp.vampire.Vampire.process]. Status is
+   decided by the [`Tptp`][solverpy.solver.plugins.status.tptp.Tptp] plugin
+   from the TSTP `SZS status` line.
+   """
 
    _binary = V_BINARY
 
@@ -61,6 +71,7 @@ class Vampire(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse Vampire's `--stat full` statistics block into a result dict."""
       result = patterns.keyval(V_PAT, output, V_TABLE)
       result = patterns.mapval(result, human.numeric)
       return result

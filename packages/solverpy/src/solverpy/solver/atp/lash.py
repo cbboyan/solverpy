@@ -26,6 +26,16 @@ L_TABLE = {
 
 
 class Lash(ShellSolver):
+   """
+   The `lash` higher-order automated theorem prover.
+
+   The strategy (sid) supplies Lash's command-line options, appended after
+   the static option `-p tstp` (TSTP output). Output is parsed for `Steps`
+   and `Mode` by
+   [`process`][solverpy.solver.atp.lash.Lash.process]. Status is decided by
+   the [`Tptp`][solverpy.solver.plugins.status.tptp.Tptp] plugin from the
+   TSTP `SZS status` line.
+   """
 
    _binary = L_BINARY
 
@@ -54,6 +64,7 @@ class Lash(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse Lash's `Steps`/`Mode` output lines into a result dict."""
       result = patterns.keyval(L_PAT, output, L_TABLE)
       result = patterns.mapval(result, human.numeric)
       return result

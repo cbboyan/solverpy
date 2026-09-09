@@ -160,9 +160,10 @@ object. Helper functions in `setups/` populate it:
 
 `builder/` contains ML model builders (`Builder` base class) for guided
 strategy construction:
-- `EnigmaBuilder` — builds LightGBM/SVM models for E Prover's ENIGMA guidance
-- `Cvc5MlBuilder` — builds models for cvc5
-- `AutoTuner` — Optuna-based hyperparameter tuning
+- `AutoTuner` — Optuna-based hyperparameter tuning, base for the builders below
+- `EnigmaModel` (and its `EnigmaSel`/`EnigmaGen`/`Enigma` variants) — builds
+  LightGBM/SVM models for E Prover's ENIGMA guidance
+- `Cvc5ML` — builds models for cvc5
 
 The iterative eval/build loop runs: evaluate strategies → collect proofs →
 train ML model → generate new strategies → repeat.
@@ -175,27 +176,33 @@ single `(solver, bid, sid, problem)` run. `Talker` subclasses report progress
 
 ### Talker Hierarchy and Progress Reporting
 
-Talkers form a single inheritance chain plus one proxy:
+Talkers form a single inheritance chain plus one proxy, split across
+`solverpy` and `solverpy-learn`:
 
 ```
-Talker (task/talker.py)               — abstract: log queue, lifecycle hooks
-  └─ LogTalker (task/logtalker.py)    — log-based defaults for all events
-       └─ SolverTalker (task/solvertalker.py)  — adds tqdm bars (RunningBar, SolvingBar)
-            └─ TuneTalker (autotune/tunetalker.py)  — self-contained tuning talker
+Talker (solverpy/report/talker/talker.py)            — abstract: log queue, lifecycle hooks
+  └─ LogTalker (solverpy/report/talker/logtalker.py) — log-based defaults for all events
+       └─ EvalTalker (solverpy/report/talker/evaltalker.py)   — adds tqdm bars (RunningBar, SolvingBar)
+            └─ LoopTalker (solverpy_learn/report/talker/looptalker.py)  — adds tuning/build bars
 
 Talker
-  └─ RemoteTalker (task/remotetalker.py)  — cross-process proxy, wraps a local Talker
+  └─ RemoteTalker (solverpy/report/talker/remotetalker.py)  — cross-process proxy, wraps a local Talker
 ```
 
 `LogTalker._log_progress` controls verbosity: `True` → `logger.info`, `False`
-→ `logger.debug`. `SolverTalker` sets it `False` and renders tqdm bars
-instead. `TuneTalker` overrides it with the `headless` flag after
-`super().__init__()`.
+→ `logger.debug`. `EvalTalker` sets it `False` and renders tqdm bars
+instead. `LoopTalker` behaves like `EvalTalker` outside a tuning phase and
+switches to a two-bar tuning mode (outer `tune` bar over trials, inner
+`build`/`eval` bar) between `tune_begin`/`tune_end`.
 
-`LogTalker` has log-based default implementations for all event methods
-including tuning events (`trials`, `trying`, `tried`, `trialed`, `building`,
-`iteration`, `built`, `tuning`, `tuned`). These serve as fallbacks in
-headless mode and as the base for `TuneTalker`'s bar overrides.
+`LogTalker` has log-based default implementations for all event methods,
+evaluation (`eval_begin`, `eval_end`, `eval_next`, `eval_launch`,
+`eval_taskdone`, `eval_done`, `eval_status`) and tuning (`tune_begin`,
+`tune_end`, `tune_phase_begin`, `tune_trial_begin`, `tune_trial_done`,
+`tune_phase_done`, `build_begin`, `build_step`, `build_selected`,
+`build_done`, `train_data`) alike — see `talkers.md` for the full method
+list and per-talker implementation matrix. These serve as fallbacks in
+headless mode and as the base for `LoopTalker`'s bar overrides.
 
 ### Multiprocessing Process Layers (Tuning Pipeline)
 
@@ -208,9 +215,9 @@ main process
 ```
 
 1. **`prettytuner`** (`builder/autotune/autotune.py`) forks a child with
-   `multiprocessing.Process(target=tuner)`. Fork is used because `TuneTalker`
-   holds a plain `multiprocessing.Queue` which is not picklable — fork
-   shares it via memory copy.
+   `multiprocessing.Process(target=tuner)`. Fork is used because the
+   `multiprocessing.Queue` passed into `RemoteTalker` is shared with the
+   child via memory copy rather than pickled.
 2. **ATP eval workers** (`builder/autotune/build.py`) are spawned via
    `Pool(context="spawn")`. Spawn is used explicitly (not forkserver)
    because **forkserver cannot be started from inside a forked child
@@ -220,25 +227,32 @@ main process
    rendered in the child would go to the log file, not the terminal — which
    is why all progress rendering happens in the parent via the queue.
 
-### TuneTalker Architecture
+### RemoteTalker
 
-`TuneTalker` is a self-contained talker for the tuning pipeline that
-replaces the former `RemoteTalker(SolverTalker()) + AutotuneListener` pair.
+`RemoteTalker` is a generic cross-process proxy: it wraps a local `Talker`
+(the real `LoopTalker`/`EvalTalker` instance living in the parent process)
+and makes its methods callable from a child process. It is the only
+proxying mechanism now — there is no separate self-contained tuning talker.
 
 **Key design:**
-- Holds a plain `multiprocessing.Queue` (works because the child is forked,
-  not spawned — no pickling needed).
-- `__getattribute__` intercepts every method in `REMOTES` in the child and
-  puts `(name, args, kwargs)` on the queue instead of calling the real
-  method.
-- The parent's listening thread calls `object.__getattribute__(self, name)`
-  to bypass the proxy and invoke the real handler.
-- `wait()` blocks on `_result_event` until the child calls `result(val)`.
-- `listening_start()` does **not** call `log_start()` — no Manager queue, no
-  log queue infrastructure.
-- Worker `task.logqueue` is intentionally `None`; child worker logging is
-  suppressed. To enable: call `self.log_start()` in `listening_start()` and
-  inject `self._log_queue` into tasks in `launching()`.
+- `__getattribute__` intercepts every public (non-underscore) method not
+  listed in `LOCALS` and replaces it with a wrapper that puts
+  `(name, args, kwargs)` on `_remote_queue` instead of calling it directly.
+  `LOCALS` names the handful of methods that must run locally in the
+  calling process (`listening_start`, `listening_stop`, `listening_handle`,
+  `eval_launch`).
+- A background thread in the parent (`listening_start`) drains
+  `_remote_queue` and calls the real method on `_local` via
+  `listening_handle`.
+- `eval_launch` is special-cased: it injects `self._log_queue` into the
+  child's tasks locally, then still forwards the call to the parent for
+  stats.
+- `prettytuner` constructs the `RemoteTalker` with a plain
+  `multiprocessing.Queue()` (not a Manager queue) — safe because the child
+  is forked, not spawned, so the queue does not need to be pickled.
+- `__getstate__` drops `_local` (and the thread/event) from the pickled
+  state, so only the queue crosses into the child; `_local` stays `None`
+  there and `listening_handle` becomes a no-op.
 
 ### Log Queue Mechanism
 
@@ -252,28 +266,11 @@ by design**:
   logging normally.
 - In the tuning pipeline, child output is intentionally redirected to
   `autotune.log` via `redirect.call` and structured progress events travel
-  via the `TuneTalker` queue — so log records from workers are suppressed.
+  via the `RemoteTalker` queue — so log records from workers are suppressed.
 
 To enable worker log forwarding: call `self.log_start()` in
 `listening_start()`, then inject `self._log_queue` into each task in
 `launching()`.
-
-### RemoteTalker
-
-`RemoteTalker` is a generic cross-process proxy that wraps any local
-`Talker` and makes its methods callable from a child process. It is not used
-in the tuning pipeline (replaced by `TuneTalker`) but remains available for
-other uses.
-
-- `queue=None` (default): creates a Manager queue via forkserver —
-  picklable into spawn workers.
-- `queue=<queue>`: uses the provided queue directly — suitable when the
-  child is forked and pickling is not needed.
-- `_remote_manager` is stored as an instance attribute to prevent GC of the
-  Manager server process.
-- `log_start`, `log_stop`, `log_config` are **not** in `REMOTES` — they must
-  execute locally on the `RemoteTalker` instance (or in the child process),
-  not be forwarded to `_local`.
 
 ### Environment Variables
 

@@ -47,6 +47,17 @@ P9_STATUS = {
 
 
 class Prover9(StdinSolver):
+   """
+   The `prover9` automated theorem prover for first-order logic.
+
+   Unlike the other ATP solvers, Prover9 is a
+   [`StdinSolver`][solverpy.solver.stdinsolver.StdinSolver]: the strategy
+   (sid) supplies Prover9 input-language commands (e.g.
+   `assign(max_seconds, ...)`) fed on stdin, not command-line options. Output
+   is parsed by [`process`][solverpy.solver.atp.prover9.Prover9.process],
+   which reads the termination reason and the `STATISTICS` block, and maps
+   the reason to a TPTP-compatible status.
+   """
 
    _binary = P9_BINARY
 
@@ -72,6 +83,7 @@ class Prover9(StdinSolver):
       self._complete = complete
 
    def process(self, output: str) -> "Result":
+      """Parse the termination reason and `STATISTICS` block into a result dict."""
       reason = P9_REASON.search(output)
       if not reason:
          return {}

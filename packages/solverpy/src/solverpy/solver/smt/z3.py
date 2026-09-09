@@ -45,6 +45,18 @@ Z3_USING = re.compile(
 
 
 class Z3(StdinSolver):
+   """
+   The `z3` SMT solver.
+
+   A [`StdinSolver`][solverpy.solver.stdinsolver.StdinSolver]: the strategy
+   (sid) is SMT-LIB2 fed on stdin along with the problem instance, after
+   the static options `-smt2 -st`. If the strategy contains a
+   `check-sat-using` command, it replaces the instance's own `check-sat`.
+   Output is parsed by
+   [`process`][solverpy.solver.smt.z3.Z3.process]; status is decided by the
+   [`Smt`][solverpy.solver.plugins.status.smt.Smt] plugin, with an explicit
+   `memout` status set on an "out of memory" error.
+   """
 
    _binary = Z3_BINARY
 
@@ -75,6 +87,7 @@ class Z3(StdinSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse z3's `-st` statistics into a result dict; sets `memout` on out-of-memory."""
       result = patterns.keyval(Z3_PAT, output)
       result = patterns.mapval(result, human.numeric)
       if re.search(Z3_MEMOUT, output):

@@ -109,7 +109,15 @@ E_RUNHASH_GEN = frozenset(E_TABLE.values()) - {"Subsumes", "TermBank"}
 
 class E(ShellSolver):
    """
-   E Prover
+   The `eprover` automated theorem prover for first-order logic with
+   equality.
+
+   The strategy (sid) supplies E's command-line options, appended after the
+   static options (`--print-statistics --proof-statistics --tstp-format`,
+   ...). TSTP-format statistics output is parsed by
+   [`process`][solverpy.solver.atp.eprover.E.process]. Status is decided by
+   the [`Tptp`][solverpy.solver.plugins.status.tptp.Tptp] plugin from the
+   TSTP `SZS status` line.
    """
 
    _binary = E_BINARY
@@ -140,6 +148,7 @@ class E(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse E's TSTP statistics block into a result dict."""
       result = patterns.keyval(E_PAT, output, E_TABLE)
       result = patterns.mapval(result, human.numeric)
       return result

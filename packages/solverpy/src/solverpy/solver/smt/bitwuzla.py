@@ -43,6 +43,16 @@ BWZ_PAT: Pattern = re.compile(
 
 
 class Bitwuzla(ShellSolver):
+   """
+   The `bitwuzla` SMT solver for bit-vectors, floating-point, arrays, and
+   uninterpreted functions.
+
+   The strategy (sid) supplies Bitwuzla's command-line options, appended
+   after the static option `-v` (verbose, needed for statistics). Verbose
+   core statistics are parsed by
+   [`process`][solverpy.solver.smt.bitwuzla.Bitwuzla.process]; status is
+   decided by the [`Smt`][solverpy.solver.plugins.status.smt.Smt] plugin.
+   """
 
    _binary = BWZ_BINARY
 
@@ -70,6 +80,7 @@ class Bitwuzla(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse Bitwuzla's verbose core statistics into a result dict."""
       result = patterns.valkey(BWZ_PAT, output, BWZ_TABLE)
       result = patterns.mapval(result, human.numeric)
       return result

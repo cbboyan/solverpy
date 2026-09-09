@@ -47,6 +47,7 @@ def cvc5ml(
    setup: Setup,
    tuneargs: (dict[str, Any] | None) = None,
 ) -> Setup:
+   """Configure `setup` with a [`Cvc5ML`][solverpy_learn.builder.cvc5ml.Cvc5ML] builder."""
    defaultweight(setup, tuneargs)
    return autotuner(Cvc5ML, setup, tuneargs)
 
@@ -56,6 +57,7 @@ def enigma(
    tunesel: (dict[str, Any] | None) = None,
    tunegen: (dict[str, Any] | None) = None,
 ) -> Setup:
+   """Configure `setup` with an [`Enigma`][solverpy_learn.builder.enigma.Enigma] builder."""
    default(setup, "templates", None)
    defaultweight(setup, tunesel)
    defaultweight(setup, tunegen)

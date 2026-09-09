@@ -70,7 +70,7 @@ class SolverTask(Task):
 
       First, plugin calls from `calls` given to the constructor are executed on
       the [`solver`][solverpy.task.solvertask.SolverTask.solver]. Then,
-      [`SolverPy.solve`][solverpy.solver.solverpy.SolverPy.solve] is called on
+      [`SolverPy.solve`][solverpy.solver.solver.Solver.solve] is called on
       [`instance`][solverpy.task.solvertask.SolverTask.instance] and
       [`strategy`][solverpy.task.solvertask.SolverTask.strategy].
 

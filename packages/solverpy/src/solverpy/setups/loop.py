@@ -34,6 +34,7 @@ def experiment(setup: Setup) -> Setup:
 
 
 def evaluation(setup: Setup) -> Setup:
+   """Configure `setup` for benchmark evaluation: DB, cores, strategies, and benchmarks."""
    def configure_evalset(evalset: Evalset) -> None:
       default(evalset, "ref", True)
       if "strategies" not in evalset:
@@ -84,6 +85,7 @@ def boot(setup: Setup) -> Runtime:
 
 
 def launch(setup: Setup) -> Setup | None:
+   """Run the configured evaluation to completion, then shut down the runtime."""
    runtime = None
    try:
       log.ntfy(setup, "solverpy: init")

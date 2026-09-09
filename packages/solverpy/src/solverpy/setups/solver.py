@@ -1,3 +1,11 @@
+"""
+# Solver setup functions
+
+Each function here selects and configures one solver for a
+[`Setup`][solverpy.setups.setup.Setup], filling in its `evals`/`devels`
+solver instances and static options.
+"""
+
 import logging
 import copy
 
@@ -21,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 def _evalset_solvers(setup: Setup, mk_solver, static: list[str] | None = None) -> Setup:
+   """Build `mk_solver` instances for `evals`/`devels` in `setup`."""
    assert "evals" in setup
    assert "plugins" in setup
    assert "options" in setup
@@ -43,6 +52,7 @@ def _evalset_solvers(setup: Setup, mk_solver, static: list[str] | None = None) -
 
 
 def eprover(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`E`][solverpy.solver.atp.eprover.E] solver."""
    assert "evals" in setup
    init(setup)
    assert "options" in setup
@@ -71,21 +81,25 @@ def eprover(setup: Setup) -> Setup:
 
 
 def vampire(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Vampire`][solverpy.solver.atp.vampire.Vampire] solver."""
    init(setup)
    return _evalset_solvers(setup, Vampire, V_STATIC.split())
 
 
 def prover9(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Prover9`][solverpy.solver.atp.prover9.Prover9] solver."""
    init(setup)
    return _evalset_solvers(setup, Prover9)
 
 
 def bitwuzla(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Bitwuzla`][solverpy.solver.smt.bitwuzla.Bitwuzla] solver."""
    init(setup)
    return _evalset_solvers(setup, Bitwuzla, BWZ_STATIC.split())
 
 
 def z3(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Z3`][solverpy.solver.smt.z3.Z3] solver."""
    init(setup)
    # No static: `Z3` is a `StdinSolver`, where `static` is the prefix of the
    # stdin payload and not the command line.  `Z3_STATIC` is already baked
@@ -96,30 +110,36 @@ def z3(setup: Setup) -> Setup:
 
 
 def cvc5(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Cvc5`][solverpy.solver.smt.cvc5.Cvc5] solver."""
    init(setup)
    return _evalset_solvers(setup, Cvc5, CVC5_STATIC.split())
 
 
 def llm2smt(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Llm2smt`][solverpy.solver.smt.llm2smt.Llm2smt] solver."""
    init(setup)
    return _evalset_solvers(setup, Llm2smt, LLM2SMT_STATIC.split())
 
 
 def primo(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Primo`][solverpy.solver.smt.primo.Primo] solver."""
    init(setup)
    return _evalset_solvers(setup, Primo, PRIMO_STATIC.split())
 
 
 def opensmt(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Opensmt`][solverpy.solver.smt.opensmt.Opensmt] solver."""
    init(setup)
    return _evalset_solvers(setup, Opensmt, OPENSMT_STATIC.split())
 
 
 def spasssatt(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`SpassSatt`][solverpy.solver.smt.spasssatt.SpassSatt] solver."""
    init(setup)
    return _evalset_solvers(setup, SpassSatt, SPASSSATT_STATIC.split())
 
 
 def yices(setup: Setup) -> Setup:
+   """Configure `setup` to use the [`Yices`][solverpy.solver.smt.yices.Yices] solver."""
    init(setup)
    return _evalset_solvers(setup, Yices, YICES_STATIC.split())

@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 
 # depricated
 class Cvc5(ShellSolver):
+   """
+   Deprecated: runs `cvc5` in its legacy `--lang=tptp` mode against TPTP
+   problems, reusing the SMT
+   [`Cvc5`][solverpy.solver.smt.cvc5.Cvc5]'s statistics parsing. Prefer
+   the SMT-LIB2 [`Cvc5`][solverpy.solver.smt.cvc5.Cvc5] for new work.
+   """
 
    def __init__(
       self,

@@ -133,7 +133,7 @@ def db():
       Sid(),
    ]
 
-def outputs(flatten=True, compress=True):
+def outputs(flatten: bool = True, compress: bool = True):
    """Return DB plugins plus output-capture plugins for debugging.
 
    Returns `[Bid(), Sid(), Outputs(...), Errors(...)]`.  Solver stdout is

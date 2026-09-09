@@ -15,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 class EnigmaModel(AutoTuner):
+   """
+   [`AutoTuner`][solverpy_learn.builder.autotuner.AutoTuner] for one ENIGMA
+   model variant (a feature set such as `sel` or `gen`). Subclasses
+   [`EnigmaSel`][solverpy_learn.builder.enigma.EnigmaSel] and
+   [`EnigmaGen`][solverpy_learn.builder.enigma.EnigmaGen] fix the variant;
+   [`Enigma`][solverpy_learn.builder.enigma.Enigma] combines both.
+   """
 
    def __init__(
       self,
@@ -65,6 +72,7 @@ class EnigmaModel(AutoTuner):
 
 
 class EnigmaSel(EnigmaModel):
+   """[`EnigmaModel`][solverpy_learn.builder.enigma.EnigmaModel] fixed to the `sel` (clause selection) feature variant."""
 
    def __init__(
       self,
@@ -97,6 +105,7 @@ class EnigmaSel(EnigmaModel):
 
 
 class EnigmaGen(EnigmaModel):
+   """[`EnigmaModel`][solverpy_learn.builder.enigma.EnigmaModel] fixed to the `gen` (clause generation) feature variant."""
 
    def __init__(
       self,
@@ -125,6 +134,11 @@ class EnigmaGen(EnigmaModel):
 
 
 class Enigma(EnigmaModel):
+   """
+   [`EnigmaModel`][solverpy_learn.builder.enigma.EnigmaModel] combining the
+   `sel` and `gen` feature sets, training either or both depending on which
+   feature options are set in `setup`.
+   """
 
    def __init__(
       self,

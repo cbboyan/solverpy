@@ -1,3 +1,11 @@
+"""
+# Setup helpers
+
+Shared helpers used by the solver setup functions in
+[`solver`][solverpy.setups.solver] to fill in `Setup` defaults and build
+solver instances.
+"""
+
 from typing import Any, TYPE_CHECKING
 import logging
 
@@ -14,17 +22,20 @@ GENERICS = frozenset(["binary", "plugins", "static", "complete"])
 
 
 def default(setup: Any, key: str, val: Any) -> None:
+   """Set `setup[key] = val` unless `key` is already present."""
    if key not in setup:
       setup[key] = val
 
 
 def ensure(options: list[str], option: str) -> None:
+   """Append `option` to `options` unless it or its `no-` negation is present."""
    baseopt = option if not option.startswith("no-") else option[3:]
    if (baseopt not in options) and (f"no-{baseopt}" not in options):
       options.append(option)
 
 
 def init(setup: Setup) -> Setup:
+   """Fill in `options`, `limit`, `dataname`, and `plugins` defaults on `setup`."""
    default(setup, "options", ["flatten", "compress"])
    assert "options" in setup
    options = setup["options"]
@@ -59,6 +70,7 @@ def make_solver(
    reloader: bool = False,
    options: list[str] | None = None,
 ):
+   """Build a solver via `mk_solver(setup["limit"], ...)`, wrapping it in a `Reloader` if requested."""
    assert "static" in setup
    assert "limit" in setup
    kwargs = {x: setup[x] for x in setup if x in GENERICS}

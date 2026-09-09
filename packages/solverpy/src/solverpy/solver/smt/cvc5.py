@@ -44,6 +44,17 @@ CVC5_TIMEOUT = re.compile(r"cvc5 interrupted by (timeout)")
 
 
 class Cvc5(ShellSolver):
+   """
+   The `cvc5` SMT solver.
+
+   The strategy (sid) supplies cvc5's command-line options, appended after
+   the static options `-Lsmt2 --stats --stats-internal`. Statistics matching
+   `CVC5_KEYS` are parsed by
+   [`process`][solverpy.solver.smt.cvc5.Cvc5.process]; status is decided by
+   the [`Smt`][solverpy.solver.plugins.status.smt.Smt] plugin, with an
+   explicit `timeout` status set when cvc5 reports being interrupted by a
+   timeout.
+   """
 
    _binary = CVC5_BINARY
 
@@ -76,6 +87,7 @@ class Cvc5(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse cvc5's `--stats` output into a result dict."""
 
       def parseval(val: str) -> Any:  # value or dict of values
          if val.startswith("{") and val.endswith("}"):

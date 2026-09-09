@@ -11,6 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class Cvc5ML(AutoTuner):
+   """
+   [`AutoTuner`][solverpy_learn.builder.autotuner.AutoTuner] that trains an
+   ML-enhanced cvc5 strategy: `apply`/`template` produce an `-ml`-suffixed
+   sid pointing at the trained model.
+   """
 
    def __init__(
       self,

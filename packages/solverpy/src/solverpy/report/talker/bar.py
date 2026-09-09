@@ -1,3 +1,13 @@
+"""
+# Progress bars
+
+`tqdm`-based progress bars used by
+[`EvalTalker`][solverpy.report.talker.evaltalker.EvalTalker]:
+[`RunningBar`][solverpy.report.talker.bar.RunningBar] for a plain job count
+with an error tally, and [`SolvingBar`][solverpy.report.talker.bar.SolvingBar]
+which further splits progress into solved/unsolved/errors.
+"""
+
 from typing import Any
 
 import datetime
@@ -39,6 +49,7 @@ def _build_bar(n: int, total: int, colour: str = "") -> str:
 
 
 class DefaultBar(tqdm):
+   """`tqdm` bar rendering a fixed-width filled bar and an ETA speed estimate."""
 
    def __init__(
       self,
@@ -82,6 +93,7 @@ class DefaultBar(tqdm):
 
 
 class BuilderBar(tqdm):
+   """`tqdm` bar for model-building progress, showing per-iteration loss values."""
 
    def __init__(
       self,
@@ -131,6 +143,7 @@ def _postfix_width(total: int) -> int:
 
 
 class RunningBar(DefaultBar):
+   """[`DefaultBar`][solverpy.report.talker.bar.DefaultBar] with an error tally shown alongside progress."""
 
    def __init__(
       self,
@@ -170,6 +183,7 @@ class RunningBar(DefaultBar):
 
 
 class SolvingBar(RunningBar):
+   """[`RunningBar`][solverpy.report.talker.bar.RunningBar] splitting progress into solved/unsolved/errors."""
 
    def __init__(
       self,

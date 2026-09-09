@@ -21,6 +21,16 @@ LLM2SMT_STATS: Pattern = re.compile(
 
 
 class Llm2smt(ShellSolver):
+   """
+   The `llm2smt` SMT solver.
+
+   The strategy (sid) supplies llm2smt's command-line options, appended
+   after the static options `--quiet --stats`, as for
+   [`Opensmt`][solverpy.solver.smt.opensmt.Opensmt]. Output statistics are
+   parsed by
+   [`process`][solverpy.solver.smt.llm2smt.Llm2smt.process]; status is
+   decided by the [`Smt`][solverpy.solver.plugins.status.smt.Smt] plugin.
+   """
 
    _binary = LLM2SMT_BINARY
 
@@ -46,5 +56,6 @@ class Llm2smt(ShellSolver):
       )
 
    def process(self, output: str) -> "Result":
+      """Parse llm2smt's `--stats` output into a result dict."""
       result = patterns.keyval(LLM2SMT_STATS, output)
       return patterns.mapval(result, human.numeric)

@@ -51,7 +51,7 @@
 
 ### Evaluation lifecycle
 
-| Method | Talker | LogTalker | SolverTalker | TuneTalker |
+| Method | Talker | LogTalker | EvalTalker | LoopTalker |
 |---|---|---|---|---|
 | `eval_begin(jobs, refjob, sidnames)` | abstract | counters, legend, log | + RunningBar (green) | + RunningBar (blue, leave=False), no report |
 | `eval_end(results, refjob)` | → `terminate()` | log summary, report | harvest errors | close eval bar, update tune bar, no report |
@@ -64,7 +64,7 @@
 
 ### Tuning lifecycle
 
-| Method | LogTalker | TuneTalker |
+| Method | LogTalker | LoopTalker |
 |---|---|---|
 | `tune_begin(t_start, total)` | no-op | create tune bar (green) |
 | `tune_end(t_end)` | no-op | close tune bar |
@@ -86,7 +86,7 @@
 
 ### Logging helpers
 
-| Method | LogTalker | TuneTalker |
+| Method | LogTalker | LoopTalker |
 |---|---|---|
 | `info(msg)` | `logger.info` | inherited (queued in child) |
 | `debug(msg)` | no-op | inherited (queued in child) |
@@ -284,4 +284,4 @@ For each method: where it is called, from which file, and with what arguments.
 |---|---|---|
 | `build.model()` via `report()` | `builder/autotune/build.py:57,74,92` | Debug strings (results list, early-stopping config, best iteration) |
 
-These are only queued through the `TuneTalker` queue in the child process; in the parent they resolve to `logger.info` / no-op respectively.
+These are only queued through the `RemoteTalker` queue in the child process; in the parent they resolve to `logger.info` / no-op respectively.

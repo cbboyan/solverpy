@@ -26,6 +26,11 @@ TUNEARGS = dict(
 
 
 class AutoTuner(Builder):
+   """
+   [`Builder`][solverpy_learn.builder.builder.Builder] that trains a model by
+   running Optuna-based hyperparameter tuning (`autotune.prettytuner`) over
+   the training/development strategy files, then saves the best model.
+   """
 
    def __init__(
       self,
