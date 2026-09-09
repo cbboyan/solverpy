@@ -2,22 +2,47 @@
 @startuml
 skinparam backgroundColor transparent
 
-
 abstract class solverpy.solver.pluginsolver.PluginSolver {
-   # decorators : list[Decorator]
-   # translators : list[Translator]
+   + decorators : list[Decorator]
+   + translators : list[Translator]
    --
-   + solve(instance, strategy) : Result
+   + init(plugins)
+   + call(pid, method)
 }
 
 abstract class solverpy.solver.plugins.plugin.Plugin {
+   # _id : str
+   # _enabled : bool
+   --
    + register(solver)
+   + enable()
+   + disable()
 }
 
-abstract class solverpy.solver.plugins.decorator.Decorator extends solverpy.solver.plugins.plugin.Plugin 
+abstract class solverpy.solver.plugins.decorator.Decorator extends solverpy.solver.plugins.plugin.Plugin {
+   + decorate(cmd, instance, strategy) : str
+   + update(instance, strategy, output, result)
+   + finished(instance, strategy, output, result)
+}
 
-abstract class solverpy.solver.plugins.translator.Translator extends solverpy.solver.plugins.plugin.Plugin 
+abstract class solverpy.solver.plugins.translator.Translator extends solverpy.solver.plugins.plugin.Plugin {
+   + translate(instance, strategy) : tuple
+}
 
-solverpy.solver.plugins.plugin.Plugin "*" o-r- solverpy.solver.pluginsolver.PluginSolver
+solverpy.solver.pluginsolver.PluginSolver "1" o-right "n" solverpy.solver.plugins.plugin.Plugin
 
+class solverpy.solver.plugins.shell.Limits extends solverpy.solver.plugins.decorator.Decorator
+solverpy.solver.plugins.shell.Limits --|> solverpy.solver.plugins.translator.Translator
+class solverpy.solver.plugins.shell.Timeout extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.shell.Time extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.shell.Memory extends solverpy.solver.plugins.decorator.Decorator
+
+class solverpy.solver.plugins.status.Tptp extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.status.Smt extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.status.Limiter extends solverpy.solver.plugins.decorator.Decorator
+
+class solverpy.solver.plugins.db.Bid extends solverpy.solver.plugins.translator.Translator
+class solverpy.solver.plugins.db.Sid extends solverpy.solver.plugins.translator.Translator
+class solverpy.solver.plugins.db.Outputs extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.db.Errors extends solverpy.solver.plugins.db.Outputs
 @enduml

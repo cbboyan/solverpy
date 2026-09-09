@@ -3,7 +3,7 @@
 skinparam backgroundColor transparent
 
 dataclass solverpy.setups.Setup {
-   + sidlist : list[Sid]
+   + strategies : list[Sid]
    + dataname : str
    + loops : int
    ...

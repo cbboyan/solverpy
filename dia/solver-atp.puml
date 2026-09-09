@@ -1,0 +1,14 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+abstract class solverpy.solver.shellsolver.ShellSolver
+abstract class solverpy.solver.stdinsolver.StdinSolver
+
+class solverpy.solver.atp.eprover.E extends solverpy.solver.shellsolver.ShellSolver
+class solverpy.solver.atp.vampire.Vampire extends solverpy.solver.shellsolver.ShellSolver
+class solverpy.solver.atp.lash.Lash extends solverpy.solver.shellsolver.ShellSolver
+class solverpy.solver.atp.prover9.Prover9 extends solverpy.solver.stdinsolver.StdinSolver
+
+@enduml

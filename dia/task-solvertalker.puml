@@ -1,0 +1,19 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+abstract class solverpy.task.talker.Talker
+class solverpy.task.logtalker.LogTalker extends solverpy.task.talker.Talker
+class solverpy.task.solvertalker.SolverTalker extends solverpy.task.logtalker.LogTalker {
+   - _job_bar: SolvingBar | None
+   - _total_bar: RunningBar | None
+   --
+   + begin(jobs, refjob, sidnames, **kwargs)
+   + end(results, refjob)
+   + terminate()
+   + next(job)
+   + launching(tasks)
+   + done()
+   + status(new, n)
+}
+@enduml

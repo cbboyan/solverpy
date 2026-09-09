@@ -1,0 +1,12 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+abstract class solverpy.solver.plugins.decorator.Decorator
+
+class solverpy.solver.plugins.status.tptp.Tptp extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.status.smt.Smt extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.status.limiter.Limiter extends solverpy.solver.plugins.decorator.Decorator
+
+@enduml

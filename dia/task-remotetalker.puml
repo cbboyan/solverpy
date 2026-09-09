@@ -1,0 +1,20 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+abstract class solverpy.report.talker.talker.Talker
+class solverpy.report.talker.remotetalker.RemoteTalker extends solverpy.report.talker.talker.Talker {
+   + LOCALS: set[str]
+   - _remote_queue: Queue[Any]
+   - _listening_thread: Thread | None
+   - _local: Talker
+   --
+   + listening_start()
+   + listening_stop()
+   + listening_handle(method, args, kwargs)
+   + terminate()
+}
+class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
+solverpy.report.talker.remotetalker.RemoteTalker o-- solverpy.report.talker.talker.Talker : wraps
+@enduml

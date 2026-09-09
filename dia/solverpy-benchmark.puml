@@ -3,8 +3,8 @@
 skinparam backgroundColor transparent
 
 dataclass solverpy.setups.Setup {
-   + bidlist : list[Bid] 
-   + sidlist : list[Sid] 
+   + benchmarks : list[Bid] 
+   + strategies : list[Sid] 
    + cores : int
    + limit : str
    --

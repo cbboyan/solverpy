@@ -1,0 +1,14 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+abstract class solverpy.solver.plugins.translator.Translator
+abstract class solverpy.solver.plugins.decorator.Decorator
+
+class solverpy.solver.plugins.db.bid.Bid extends solverpy.solver.plugins.translator.Translator
+class solverpy.solver.plugins.db.sid.Sid extends solverpy.solver.plugins.translator.Translator
+class solverpy.solver.plugins.db.outputs.Outputs extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.db.errors.Errors extends solverpy.solver.plugins.db.outputs.Outputs
+
+@enduml

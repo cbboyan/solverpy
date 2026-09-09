@@ -1,3 +1,10 @@
+/* Home page intro box */
+.md-typeset .admonition.intro {
+  font-size: 1.15em;
+  background-color: rgba(169, 117, 43, 0.05);
+  border-color: #a9752b; /* muted gold-brown, complements the crimson theme */
+}
+
 .image-container {
   display: block;
   cursor: pointer;

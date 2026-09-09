@@ -1,0 +1,29 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+abstract class solverpy.report.talker.talker.Talker
+class solverpy.report.talker.logtalker.LogTalker extends solverpy.report.talker.talker.Talker
+class solverpy.report.talker.evaltalker.EvalTalker extends solverpy.report.talker.logtalker.LogTalker
+class solverpy_learn.report.talker.looptalker.LoopTalker extends solverpy.report.talker.evaltalker.EvalTalker {
+   - _tune_bar: DefaultBar | None
+   - _builder_bar: BuilderBar | None
+   - _total_trials: int
+   - _current_trial: int
+   - _in_tuning: bool
+   - _in_optuna_trial: bool
+   --
+   + eval_begin(jobs, *, refjob, sidnames, miniters, **kwargs)
+   + eval_end(results, refjob, **kwargs)
+   + eval_launch(tasks)
+   + eval_done()
+   + tune_begin(t_start, total)
+   + tune_end(t_end)
+   + tune_trial_begin(nick, it, values)
+   + tune_trial_done(stats)
+   + build_begin(f_mod, total)
+   + build_step(n, total, metrics)
+   + build_selected(iteration, metrics)
+   + build_done(score)
+}
+@enduml

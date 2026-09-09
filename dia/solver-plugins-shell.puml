@@ -1,0 +1,16 @@
+
+@startuml
+skinparam backgroundColor transparent
+
+
+abstract class solverpy.solver.plugins.decorator.Decorator
+abstract class solverpy.solver.plugins.translator.Translator
+
+class solverpy.solver.plugins.shell.limits.Limits extends solverpy.solver.plugins.decorator.Decorator
+solverpy.solver.plugins.shell.limits.Limits --|> solverpy.solver.plugins.translator.Translator
+
+class solverpy.solver.plugins.shell.timeout.Timeout extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.shell.time.Time extends solverpy.solver.plugins.decorator.Decorator
+class solverpy.solver.plugins.shell.memory.Memory extends solverpy.solver.plugins.decorator.Decorator
+
+@enduml
