@@ -1,8 +1,9 @@
-site_name: 📟 SolverPy
+site_name: SolverPy
 site_url: https://cbboyan.github.io/solverpy/
 
-theme: 
+theme:
   name: material
+  favicon: img/favicon.svg
 
 markdown_extensions:
   #- markdown.extensions.attr_list
