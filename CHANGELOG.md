@@ -1,8 +1,12 @@
 # Change Log
 
+## Unreleased changes (2026-09-10)
+
+* docs: fix v2.1.2 release date and SMT phrasing on Home [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+
 ## v2.1.2 (2026-09-10)
 
-* feat!: add a pager-emoji favicon to the docs site [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
+* feat!: add a pager-emoji favicon to the docs site [[details](https://github.com/cbboyan/solverpy/commit/27590f7) | [browse](https://github.com/cbboyan/solverpy/tree/27590f7)]
 * docs: restructure site into Home/Install/Usage/Tutorials/Commands [[details](https://github.com/cbboyan/solverpy/commit/de15203) | [browse](https://github.com/cbboyan/solverpy/tree/de15203)]
 * fix: correct default eprover strategy sid in bundled eval-eprover.yml [[details](https://github.com/cbboyan/solverpy/commit/b94661d) | [browse](https://github.com/cbboyan/solverpy/tree/b94661d)]
 * docs(api): add missing docstrings closing mkdocs cross-reference gaps [[details](https://github.com/cbboyan/solverpy/commit/a0455f6) | [browse](https://github.com/cbboyan/solverpy/tree/a0455f6)]

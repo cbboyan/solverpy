@@ -2,8 +2,8 @@
 
 !!! quote intro ""
     `SolverPy` is a generic Python interface for **evaluation** and **machine
-    learning** of automated theorem provers (ATPs) and SMT (Satisfiability
-    Modulo Theories) solvers. Most everyday work happens through the
+    learning** of automated theorem provers (ATPs) and Satisfiability Modulo
+    Theories solvers (SMTs). Most everyday work happens through the
     `solverpy` shell command and YAML experiment files — no Python code
     required — though a full Python API is available too.
 
@@ -33,8 +33,11 @@ solver binaries, `solverpy-learn`).
   trains ML-enhanced cvc5 strategies, both as iterative evaluate → train →
   re-evaluate loops.
 
-## 🚀 What's new in v2.1.2 (2026-09-04)
+## 🚀 What's new in v2.1.2 (2026-09-10)
 
+- Revamped this documentation site: Home/Install/Usage/Tutorials/Commands,
+  step-by-step tutorials (including a full ENIGMA training walkthrough),
+  and a proper favicon.
 - Added the `SPASS-SATT` SMT solver plugin.
 - Wired the new `RunHash` status decorator into `E` and `Primo`, for
   reproducibility checks across runs.
