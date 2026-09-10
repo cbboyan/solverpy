@@ -89,6 +89,9 @@ class LogTalker(Talker):
       self._headless = headless
       self._last_time = None
       self._suspend_info: bool = False
+      # Checkpoint reporting at multiples of the job's cutoff
+      self._checkpoint_cutoff: float = 0.0
+      self._checkpoint_next: float = 0.0
       # Tuning state shared with LoopTalker
       self._tune_iters: str = ""
       self._tune_header: list[str] | None = None
@@ -150,6 +153,8 @@ class LogTalker(Talker):
       """Reset per-job counters and log the start of the next job."""
       jname = jobname(*job)
       self._solved = self._unsolved = self._errors = 0
+      self._checkpoint_cutoff = job[0].limits.timeout
+      self._checkpoint_next = self._checkpoint_cutoff
       self._job_index += 1
       nick = self._total_nicks[job[1:3]]
       dw = self._nick_dw
@@ -216,6 +221,15 @@ class LogTalker(Talker):
          prefix = f"done {total} @ {after:0.3f}s"
          waiting = f"# waiting {self._wait_total} tasks"
          logme(f"   {prefix}\t{bar}\t{waiting}")
+      if self._checkpoint_cutoff and after >= self._checkpoint_next:
+         # This task's own completion may have crossed the checkpoint, so
+         # its contribution to _solved is not yet decided as of the
+         # checkpoint moment -- report the count from just before it.
+         solved = self._solved - (1 if new is True else 0)
+         prefix = f"checkpoint @ {self._checkpoint_next:0.1f}s"
+         logme(f"   {prefix}\tsolved={solved}")
+         while after >= self._checkpoint_next:
+            self._checkpoint_next += self._checkpoint_cutoff
 
    # --- Tuning event defaults (log-based) ---
 

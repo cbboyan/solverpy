@@ -100,6 +100,11 @@ class SolverPy(PluginSolver):
       return result
 
    @property
+   def limits(self) -> Limits:
+      """This solver's resource limits (time/memory)."""
+      return self._limits
+
+   @property
    def timeouts(self) -> frozenset[str]:
       """The set of timeout statuses, populated by the solver's status plugin."""
       return self._timeouts
@@ -113,5 +118,3 @@ class SolverPy(PluginSolver):
    def statuses(self) -> frozenset[str]:
       """The set of all valid statuses, populated by the solver's status plugin."""
       return self._statuses
-
-

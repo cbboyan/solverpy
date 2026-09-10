@@ -2,6 +2,7 @@
 
 ## Unreleased changes (2026-09-10)
 
+* fix(talker): report solved count at cutoff-multiple checkpoints [[details](https://github.com/cbboyan/solverpy/commit/) | [browse](https://github.com/cbboyan/solverpy/tree/)]
 * docs: fix v2.1.2 release date and SMT phrasing on Home [[details](https://github.com/cbboyan/solverpy/commit/e458490) | [browse](https://github.com/cbboyan/solverpy/tree/e458490)]
 
 ## v2.1.2 (2026-09-10)
